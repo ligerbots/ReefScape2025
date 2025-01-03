@@ -15,8 +15,6 @@ import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Config;
-import frc.robot.Constants;
-import frc.robot.FieldConstants;
 
 import java.io.File;
 import java.util.function.BooleanSupplier;
@@ -37,6 +35,9 @@ import swervelib.parser.SwerveDriveConfiguration;
 import swervelib.parser.SwerveParser;
 import swervelib.telemetry.SwerveDriveTelemetry;
 import swervelib.telemetry.SwerveDriveTelemetry.TelemetryVerbosity;
+
+import frc.robot.Constants;
+import frc.robot.FieldConstants;
 
 public class DriveTrain extends SubsystemBase {
 
@@ -78,14 +79,14 @@ public class DriveTrain extends SubsystemBase {
     // Swerve drive object
     private final SwerveDrive m_swerveDrive;
 
-    // private final AprilTagVision m_aprilTagVision;
+    private final AprilTagVision m_aprilTagVision;
 
     /**
      * Initialize {@link SwerveDrive} with the directory provided.
      *
      * @param directory Directory of swerve drive config files.
      */
-    public DriveTrain() {
+    public DriveTrain(AprilTagVision apriltagVision) {
         // Configure the Telemetry before creating the SwerveDrive to avoid unnecessary
         // objects being created.
         SwerveDriveTelemetry.verbosity = TelemetryVerbosity.HIGH;
@@ -112,7 +113,7 @@ public class DriveTrain extends SubsystemBase {
         // for now (testing!!), turn off periodic sync of the absolute encoders
         m_swerveDrive.setModuleEncoderAutoSynchronize(false, 3.0);
 
-        // m_aprilTagVision = apriltagVision;
+        m_aprilTagVision = apriltagVision;
         
         setupPathPlanner();
     }

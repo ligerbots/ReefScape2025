@@ -24,8 +24,8 @@ public class RobotContainer {
 
     private final CommandXboxController m_driverController = new CommandXboxController(0);
 
-    // private final AprilTagVision m_aprilTagVision = new AprilTagVision();
-    private final DriveTrain m_driveTrain = new DriveTrain();
+    private final AprilTagVision m_aprilTagVision = new AprilTagVision();
+    private final DriveTrain m_driveTrain = new DriveTrain(m_aprilTagVision);
 
     public RobotContainer() {
         configureBindings();

@@ -101,18 +101,18 @@ public class AprilTagVision extends SubsystemBase {
         if (USE_MULTITAG) {
             m_photonPoseEstimatorFront = new PhotonPoseEstimator(m_aprilTagFieldLayout,
                     PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR,
-                    m_aprilTagCameraFront, m_robotToFrontAprilTagCam);
+                    m_robotToFrontAprilTagCam);
             m_photonPoseEstimatorFront.setMultiTagFallbackStrategy(PoseStrategy.CLOSEST_TO_REFERENCE_POSE);
 
             m_photonPoseEstimatorBack = new PhotonPoseEstimator(m_aprilTagFieldLayout,
                     PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR,
-                    m_aprilTagCameraBack, m_robotToBackAprilTagCam);
+                    m_robotToBackAprilTagCam);
             m_photonPoseEstimatorBack.setMultiTagFallbackStrategy(PoseStrategy.CLOSEST_TO_REFERENCE_POSE);
         } else {
             m_photonPoseEstimatorFront = new PhotonPoseEstimator(m_aprilTagFieldLayout,
-                    PoseStrategy.CLOSEST_TO_REFERENCE_POSE, m_aprilTagCameraFront, m_robotToFrontAprilTagCam);
+                    PoseStrategy.CLOSEST_TO_REFERENCE_POSE, m_robotToFrontAprilTagCam);
             m_photonPoseEstimatorBack = new PhotonPoseEstimator(m_aprilTagFieldLayout,
-                    PoseStrategy.CLOSEST_TO_REFERENCE_POSE, m_aprilTagCameraBack, m_robotToBackAprilTagCam);
+                    PoseStrategy.CLOSEST_TO_REFERENCE_POSE, m_robotToBackAprilTagCam);
         }
 
         // set the driver mode to false
@@ -152,6 +152,7 @@ public class AprilTagVision extends SubsystemBase {
             // Example: cannot fetch timestamp without checking for the camera.
             // Make sure to test!
 
+            // TODO rework to use all waiting image results
             Pose2d robotPose = swerve.getPose();
             Optional<EstimatedRobotPose> frontEstimate = 
                    getEstimateForCamera(m_aprilTagCameraFront, m_photonPoseEstimatorFront, robotPose);
@@ -318,7 +319,8 @@ public class AprilTagVision extends SubsystemBase {
 
         try {
             poseEstimator.setReferencePose(robotPose);
-            return poseEstimator.update();
+            PhotonPipelineResult res = cam.getLatestResult();
+            return poseEstimator.update(res);
         } catch (Exception e) {
             // bad! log this and keep going
             DriverStation.reportError("Exception running PhotonPoseEstimator", e.getStackTrace());
