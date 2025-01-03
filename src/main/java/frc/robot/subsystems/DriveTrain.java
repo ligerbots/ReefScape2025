@@ -75,17 +75,6 @@ public class DriveTrain extends SubsystemBase {
     private static final double PRECISION_MODE_SCALE_FACTOR = 1.0 / 6.0;
     private static final double OUTREACH_MODE_SCALE_FACTOR = 0.5;
 
-    // 2024: store status of whether we are on goal for turning while driving
-    private boolean m_onGoalForActiveTurn;
-
-    // offset to heading when shooting into Speaker
-    // persists throughout the match
-    private final static double HEADING_ADJUSTMENT_STEP = Math.toRadians(1);
-    // Angle offset from directly at Speaker
-    private final static double SHOOT_OFFSET_RADIANS = Math.toRadians(-5.0);
-
-    private double m_headingAdjustment = SHOOT_OFFSET_RADIANS;
-
     // Swerve drive object
     private final SwerveDrive m_swerveDrive;
 
@@ -97,24 +86,6 @@ public class DriveTrain extends SubsystemBase {
      * @param directory Directory of swerve drive config files.
      */
     public DriveTrain() {
-
-        // // Angle conversion factor is 360 / (GEAR RATIO * ENCODER RESOLUTION)
-        // // In this case the gear ratio is 12.8 motor revolutions per wheel rotation.
-        // // The encoder resolution per motor revolution is 1 per motor revolution.
-        // double angleConversionFactor = SwerveMath.calculateDegreesPerSteeringRotation(STEER_GEAR_RATIO);
-
-        // // Motor conversion factor is (PI * WHEEL DIAMETER IN METERS) / (GEAR RATIO * ENCODER RESOLUTION).
-        // // In this case the wheel diameter is 4 inches, which must be converted to
-        // // meters to get meters/second.
-        // // The gear ratio is 6.75 motor revolutions per wheel rotation.
-        // // The encoder resolution per motor revolution is 1 per motor revolution.
-        // double driveConversionFactor = SwerveMath.calculateMetersPerRotation(WHEEL_DIAMETER, DRIVE_GEAR_RATIO);
-
-        // System.out.println("\"conversionFactor\": {");
-        // System.out.println("\t\"angle\": " + angleConversionFactor + ",");
-        // System.out.println("\t\"drive\": " + driveConversionFactor);
-        // System.out.println("}");
-
         // Configure the Telemetry before creating the SwerveDrive to avoid unnecessary
         // objects being created.
         SwerveDriveTelemetry.verbosity = TelemetryVerbosity.HIGH;
@@ -130,7 +101,7 @@ public class DriveTrain extends SubsystemBase {
         }
 
         // remember configured max rotation speed
-        m_maxRotationSpeed = m_swerveDrive.getMaximumAngularVelocity();
+        m_maxRotationSpeed = m_swerveDrive.getMaximumChassisAngularVelocity();
 
         // Heading correction should only be used while controlling the robot via angle.
         m_swerveDrive.setHeadingCorrection(false);
@@ -229,9 +200,9 @@ public class DriveTrain extends SubsystemBase {
         // field centric: flip direction if we are Red
         double flipDirection = FieldConstants.isRedAlliance() ? -1.0 : 1.0;
 
-        double v_x = flipDirection * translationX * m_swerveDrive.getMaximumVelocity();
-        double v_y = flipDirection * translationY * m_swerveDrive.getMaximumVelocity();
-        double v_ang = angularRotation * m_swerveDrive.getMaximumAngularVelocity();
+        double v_x = flipDirection * translationX * m_swerveDrive.getMaximumChassisVelocity();
+        double v_y = flipDirection * translationY * m_swerveDrive.getMaximumChassisVelocity();
+        double v_ang = angularRotation * m_swerveDrive.getMaximumChassisAngularVelocity();
 
         driveWithSpeeds(v_x, v_y, v_ang, robotCentric);
     }
@@ -250,8 +221,8 @@ public class DriveTrain extends SubsystemBase {
         // for now, only allow field-centric
         double flipDirection = FieldConstants.isRedAlliance() ? -1.0 : 1.0;
 
-        double v_x = flipDirection * translationX * m_swerveDrive.getMaximumVelocity();
-        double v_y = flipDirection * translationY * m_swerveDrive.getMaximumVelocity();
+        double v_x = flipDirection * translationX * m_swerveDrive.getMaximumChassisVelocity();
+        double v_y = flipDirection * translationY * m_swerveDrive.getMaximumChassisVelocity();
 
         // use PID in SwerveController to compute desired angular velocity
         double v_ang = m_swerveDrive.swerveController.headingCalculate(m_swerveDrive.getOdometryHeading().getRadians(), heading);
@@ -269,16 +240,12 @@ public class DriveTrain extends SubsystemBase {
      * @param robotCentric - if true, x/y speeds are robot-centric
     */
     public void driveWithSpeeds(double speedX, double speedY, double speedAng, boolean robotCentric) {
+        // SwerveDrive::drive() uses robot-relative speeds
         ChassisSpeeds speeds;
-        speeds = new ChassisSpeeds(speedX, speedY, speedAng);
-        //FIXME: May be wrong, had to update to toRobotRelativeSpeeds from fromFieldRelativeSpeeds
-        if (!robotCentric) {
-            // speeds = new ChassisSpeeds(speedX, speedY, speedAng);
-            speeds.toRobotRelativeSpeeds(m_swerveDrive.getOdometryHeading());
+        if (robotCentric) {
+            speeds = new ChassisSpeeds(speedX, speedY, speedAng);
         } else {
-            // speeds = ChassisSpeeds.fromFieldRelativeSpeeds(speedX, speedY, speedAng, m_swerveDrive.getOdometryHeading());
-
-            // speeds.toRobotRelativeSpeeds(m_swerveDrive.getOdometryHeading());
+            speeds = ChassisSpeeds.fromFieldRelativeSpeeds(speedX, speedY, speedAng, m_swerveDrive.getOdometryHeading());
         }
 
         // TODO: add in acceleration controls
@@ -339,7 +306,7 @@ public class DriveTrain extends SubsystemBase {
             maxSpeed *= OUTREACH_MODE_SCALE_FACTOR;
             maxAngSpeed *= OUTREACH_MODE_SCALE_FACTOR;
         }
-        m_swerveDrive.setMaximumSpeeds(maxSpeed, maxSpeed, maxAngSpeed);
+        m_swerveDrive.setMaximumSpeeds(maxSpeed, maxAngSpeed);
     }
 
     // @Override
@@ -521,38 +488,5 @@ public class DriveTrain extends SubsystemBase {
                         new Config(),
                         this, m_swerveDrive),
                 3.0, 5.0, 3.0);
-    }
-
-    //======================================================================================
-
-    public double getSpeakerDistance() {
-        return getPose().getTranslation().getDistance(FieldConstants.flipTranslation(FieldConstants.BLUE_SPEAKER));
-    }
-
-    public Rotation2d headingToSpeaker() {
-        Translation2d robotTrans = getPose().getTranslation();
-        double blueX = FieldConstants.flipTranslation(robotTrans).getX();
-        Translation2d targetTrans = blueX > FieldConstants.BLUE_PASS_SHOT_X_LIMIT ? 
-                FieldConstants.BLUE_PASS_TARGET : FieldConstants.BLUE_SPEAKER;
-
-        // Note: the choice of which to flip is important; we want the heading in
-        //  real field coordinates, not in Blue coordinates
-        return FieldConstants.flipTranslation(targetTrans).minus(robotTrans).getAngle();
-    }
-
-    public void adjustHeading(boolean goUp) {
-        m_headingAdjustment += (goUp ? 1 : -1) * HEADING_ADJUSTMENT_STEP;
-    }
-
-    public double getHeadingAdjustment() {
-        return m_headingAdjustment;
-    }
-
-    public boolean getOnGoalForActiveTurn() {
-        return m_onGoalForActiveTurn;
-    }
-
-    public void setOnGoalForActiveTurn(boolean value) {
-        m_onGoalForActiveTurn = value;
     }
 }
