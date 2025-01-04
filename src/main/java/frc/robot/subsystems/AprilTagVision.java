@@ -127,7 +127,7 @@ public class AprilTagVision extends SubsystemBase {
     @Override
     public void periodic() {
         // set the driver mode to false
-        setDriverMode(false);
+        // setDriverMode(false);
 
         SmartDashboard.putBoolean("aprilTagVision/frontCamera", m_aprilTagCameraFront.isConnected());
         SmartDashboard.putBoolean("aprilTagVision/backCamera", m_aprilTagCameraBack.isConnected());
