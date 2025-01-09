@@ -20,7 +20,7 @@ public class KitbotRobotContainer {
     // Need to know where the robot starts on the field
     // For this simulation, just make it fixed
     // Location: x = 2 meters, y = 1/2 of field, angle is forward
-    private static final Pose2d START_LOCATION = new Pose2d(8.03, 0.77, Rotation2d.fromDegrees(0.46));
+    private static final Pose2d START_LOCATION = new Pose2d(2, 5, Rotation2d.fromDegrees(0));
 
     private final CommandXboxController m_driverController = new CommandXboxController(0);
 
