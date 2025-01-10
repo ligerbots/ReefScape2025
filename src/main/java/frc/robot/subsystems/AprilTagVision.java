@@ -77,7 +77,7 @@ public class AprilTagVision extends SubsystemBase {
         private PhotonPoseEstimator poseEstimator;
         Optional<EstimatedRobotPose> estimate;
 
-        private  Camera(String name, Transform3d robotToCam) {
+        private Camera (String name, Transform3d robotToCam) {
             this.robotToCam = robotToCam;
             camera = new PhotonCamera(name);
 
