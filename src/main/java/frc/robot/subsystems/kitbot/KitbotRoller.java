@@ -3,36 +3,40 @@
 // the WPILib BSD license file in the root directory of this project.
 
 package frc.robot.subsystems.kitbot;
-import com.revrobotics.spark.SparkBase;
 import com.revrobotics.spark.SparkBase.PersistMode;
 import com.revrobotics.spark.SparkBase.ResetMode;
-import com.revrobotics.spark.SparkClosedLoopController;
 import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
-import com.revrobotics.spark.config.ClosedLoopConfig.FeedbackSensor;
-import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.revrobotics.spark.config.SparkMaxConfig;
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.Constants;
+
 
 public class KitbotRoller extends SubsystemBase {
-  /** Creates a new kitbotRoller. */
-  final double ROLLER_SPEED = .44; //TODO: Change to realstic number
-  final SparkMax m_roller;
-  final SparkClosedLoopController m_rollerPID;
+  public static final int ROLLER_MOTOR_ID = 5;
+  public static final int ROLLER_MOTOR_CURRENT_LIMIT = 60;
+  public static final double ROLLER_MOTOR_VOLTAGE_COMP = 10;
+  public static final double ROLLER_EJECT_VALUE = 0.44;
+
+  private final SparkMax rollerMotor;
 
   public KitbotRoller() {
-    m_roller = new SparkMax(Constants.KITBOT_ROLLER_ID, MotorType.kBrushless);
-    m_rollerPID = m_roller.getClosedLoopController();
+    // Set up the roller motor as a brushed motor
+    rollerMotor = new SparkMax(ROLLER_MOTOR_ID, MotorType.kBrushed);
 
-    SparkMaxConfig config = new SparkMaxConfig();
+    // Set can timeout. Because this project only sets parameters once on
+    // construction, the timeout can be long without blocking robot operation. Code
+    // which sets or gets parameters during operation may need a shorter timeout.
+    rollerMotor.setCANTimeout(250);
 
-    config.inverted(true).idleMode(IdleMode.kBrake);
-    config.encoder.positionConversionFactor(0.5).velocityConversionFactor(0.5);
-    config.closedLoop.feedbackSensor(FeedbackSensor.kPrimaryEncoder).pid(1.0, 0.0, 0.0);
-    
-    m_roller.configure(config, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
+    // Create and apply configuration for roller motor. Voltage compensation helps
+    // the roller behave the same as the battery
+    // voltage dips. The current limit helps prevent breaker trips or burning out
+    // the motor in the event the roller stalls.
+    SparkMaxConfig rollerConfig = new SparkMaxConfig();
+    rollerConfig.voltageCompensation(ROLLER_MOTOR_VOLTAGE_COMP);
+    rollerConfig.smartCurrentLimit(ROLLER_MOTOR_CURRENT_LIMIT);
+    rollerMotor.configure(rollerConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
   }
 
   @Override
@@ -41,10 +45,10 @@ public class KitbotRoller extends SubsystemBase {
   }
 
   public void runRollerOut() {
-    m_rollerPID.setReference(ROLLER_SPEED, SparkBase.ControlType.kVelocity);
+    rollerMotor.set(ROLLER_EJECT_VALUE);
   }
 
   public void stopRoller() {
-    m_rollerPID.setReference(0, SparkBase.ControlType.kVelocity);
+    rollerMotor.stopMotor();
   }
 }
