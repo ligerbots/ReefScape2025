@@ -14,6 +14,7 @@ import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.revrobotics.spark.config.SparkMaxConfig;
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Constants;
 
 public class KitbotRoller extends SubsystemBase {
   /** Creates a new kitbotRoller. */
@@ -22,7 +23,7 @@ public class KitbotRoller extends SubsystemBase {
   final SparkClosedLoopController m_rollerPID;
 
   public KitbotRoller() {
-      m_roller = new SparkMax(1, MotorType.kBrushless);
+      m_roller = new SparkMax(Constants.KITBOT_ROLLER_ID, MotorType.kBrushless);
       m_rollerPID = m_roller.getClosedLoopController();
 
 
