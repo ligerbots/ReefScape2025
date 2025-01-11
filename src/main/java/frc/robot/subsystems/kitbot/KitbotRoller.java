@@ -23,21 +23,14 @@ public class KitbotRoller extends SubsystemBase {
   final SparkClosedLoopController m_rollerPID;
 
   public KitbotRoller() {
-      m_roller = new SparkMax(Constants.KITBOT_ROLLER_ID, MotorType.kBrushless);
-      m_rollerPID = m_roller.getClosedLoopController();
+    m_roller = new SparkMax(Constants.KITBOT_ROLLER_ID, MotorType.kBrushless);
+    m_rollerPID = m_roller.getClosedLoopController();
 
+    SparkMaxConfig config = new SparkMaxConfig();
 
-SparkMaxConfig config = new SparkMaxConfig();
-
-config
-    .inverted(true)
-    .idleMode(IdleMode.kBrake);
-config.encoder
-    .positionConversionFactor(1000)
-    .velocityConversionFactor(1000);
-config.closedLoop
-    .feedbackSensor(FeedbackSensor.kPrimaryEncoder)
-    .pid(1.0, 0.0, 0.0);
+    config.inverted(true).idleMode(IdleMode.kBrake);
+    config.encoder.positionConversionFactor(1000).velocityConversionFactor(1000);
+    config.closedLoop.feedbackSensor(FeedbackSensor.kPrimaryEncoder).pid(1.0, 0.0, 0.0);
     
     m_roller.configure(config, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
   }
@@ -49,11 +42,9 @@ config.closedLoop
 
   public void runRollerOut() {
     m_rollerPID.setReference(.44, SparkBase.ControlType.kVelocity);
-
   }
 
   public void stopRoller() {
     m_rollerPID.setReference(0, SparkBase.ControlType.kVelocity);
-
   }
 }
