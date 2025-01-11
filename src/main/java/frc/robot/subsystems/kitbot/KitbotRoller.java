@@ -29,7 +29,7 @@ public class KitbotRoller extends SubsystemBase {
     SparkMaxConfig config = new SparkMaxConfig();
 
     config.inverted(true).idleMode(IdleMode.kBrake);
-    config.encoder.positionConversionFactor(1000).velocityConversionFactor(1000);
+    config.encoder.positionConversionFactor(0.5).velocityConversionFactor(0.5);
     config.closedLoop.feedbackSensor(FeedbackSensor.kPrimaryEncoder).pid(1.0, 0.0, 0.0);
     
     m_roller.configure(config, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
