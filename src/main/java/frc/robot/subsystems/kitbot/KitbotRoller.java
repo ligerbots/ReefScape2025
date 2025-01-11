@@ -18,7 +18,7 @@ import frc.robot.Constants;
 
 public class KitbotRoller extends SubsystemBase {
   /** Creates a new kitbotRoller. */
-  final int ROLLER_SPEED = .44; //TODO: Change to realstic number
+  final double ROLLER_SPEED = .44; //TODO: Change to realstic number
   final SparkMax m_roller;
   final SparkClosedLoopController m_rollerPID;
 
