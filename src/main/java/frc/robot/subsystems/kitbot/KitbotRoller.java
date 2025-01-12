@@ -10,19 +10,19 @@ import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.config.SparkMaxConfig;
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Constants;
 
 
 public class KitbotRoller extends SubsystemBase {
-  public static final int ROLLER_MOTOR_ID = 5;
-  public static final int ROLLER_MOTOR_CURRENT_LIMIT = 60;
-  public static final double ROLLER_MOTOR_VOLTAGE_COMP = 10;
-  public static final double ROLLER_EJECT_VALUE = 0.44;
+  public static final int MOTOR_CURRENT_LIMIT = 20;
+  public static final double MOTOR_VOLTAGE_COMP = 10; //This sets a limit for voltage to 10 so it is repeatable untill the battery dips below 10 volts
+  public static final double EJECT_VALUE = 0.44;
 
   private final SparkMax rollerMotor;
 
   public KitbotRoller() {
     // Set up the roller motor as a brushed motor
-    rollerMotor = new SparkMax(ROLLER_MOTOR_ID, MotorType.kBrushed);
+    rollerMotor = new SparkMax(Constants.KITBOT_ROLLER_ID, MotorType.kBrushed);
 
     // Set can timeout. Because this project only sets parameters once on
     // construction, the timeout can be long without blocking robot operation. Code
@@ -34,18 +34,13 @@ public class KitbotRoller extends SubsystemBase {
     // voltage dips. The current limit helps prevent breaker trips or burning out
     // the motor in the event the roller stalls.
     SparkMaxConfig rollerConfig = new SparkMaxConfig();
-    rollerConfig.voltageCompensation(ROLLER_MOTOR_VOLTAGE_COMP);
-    rollerConfig.smartCurrentLimit(ROLLER_MOTOR_CURRENT_LIMIT);
+    rollerConfig.voltageCompensation(MOTOR_VOLTAGE_COMP);
+    rollerConfig.smartCurrentLimit(MOTOR_CURRENT_LIMIT);
     rollerMotor.configure(rollerConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
   }
 
-  @Override
-  public void periodic() {
-    // This method will be called once per scheduler run
-  }
-
   public void runRollerOut() {
-    rollerMotor.set(ROLLER_EJECT_VALUE);
+    rollerMotor.set(EJECT_VALUE);
   }
 
   public void stopRoller() {
