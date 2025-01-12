@@ -22,12 +22,16 @@ import org.photonvision.targeting.PhotonTrackedTarget;
 // import edu.wpi.first.apriltag.AprilTag;
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
+import edu.wpi.first.math.Matrix;
+import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation3d;
+import edu.wpi.first.math.numbers.N1;
+import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
@@ -55,6 +59,9 @@ public class AprilTagVision extends SubsystemBase {
     static final double SHED_TAG_NODE_XOFFSET = 0.45;
     static final double SHED_TAG_NODE_ZOFFSET = 0.31;
     static final double SHED_TAG_SUBSTATION_YOFFSET = 1.19;
+
+    static final Matrix<N3, N1> SINGLE_TAG_BASE_STDDEV = VecBuilder.fill(4, 4, 8);
+    static final Matrix<N3, N1> MULTI_TAG_BASE_STDDEV = VecBuilder.fill(0.5, 0.5, 1);
 
     private static final String CAMERA_NAME_FRONT = "ArducamFront";
     private static final String CAMERA_NAME_BACK = "ArducamBack";
@@ -145,7 +152,7 @@ public class AprilTagVision extends SubsystemBase {
             //  simulator when updating the vision simulation during the simulation.       
             m_visionSim.update(swerve.getSimulationDriveTrainPose().get());
         }
-        
+
         // Cannot do anything if there is no field layout
         if (m_aprilTagFieldLayout == null)
             return;
@@ -170,8 +177,10 @@ public class AprilTagVision extends SubsystemBase {
             // if front estimate is not there just add back estimate
             if (!frontEstimate.isPresent()) {
                 if (backEstimate.isPresent()) {
-                    Pose2d pose = backEstimate.get().estimatedPose.toPose2d();
-                    swerve.addVisionMeasurement(pose, m_aprilTagCameraBack.getLatestResult().getTimestampSeconds());
+                    Pose3d pose3d = backEstimate.get().estimatedPose;
+                    Pose2d pose = pose3d.toPose2d();
+                    swerve.addVisionMeasurement(pose, m_aprilTagCameraBack.getLatestResult().getTimestampSeconds(),
+                            estimateStdDev(pose3d, m_aprilTagCameraBack.getLatestResult().getTargets()));
 
                     if (PLOT_POSE_SOLUTIONS) {
                         plotVisionPose(swerve.field, pose);
@@ -195,8 +204,10 @@ public class AprilTagVision extends SubsystemBase {
 
             // if back estimate is not there add front estimate because we know it is there
             if (!backEstimate.isPresent()) {
-                Pose2d pose = frontEstimate.get().estimatedPose.toPose2d();
-                swerve.addVisionMeasurement(pose, m_aprilTagCameraFront.getLatestResult().getTimestampSeconds());
+                Pose3d pose3d = frontEstimate.get().estimatedPose;
+                Pose2d pose = pose3d.toPose2d();
+                swerve.addVisionMeasurement(pose, m_aprilTagCameraFront.getLatestResult().getTimestampSeconds(),
+                        estimateStdDev(pose3d, m_aprilTagCameraFront.getLatestResult().getTargets()));
 
                 if (PLOT_POSE_SOLUTIONS) {
                     plotVisionPose(swerve.field, pose);
@@ -256,8 +267,10 @@ public class AprilTagVision extends SubsystemBase {
                 }
             }
 
-            swerve.addVisionMeasurement(bestFrontPose3d.toPose2d(), m_aprilTagCameraFront.getLatestResult().getTimestampSeconds());
-            swerve.addVisionMeasurement(bestBackPose3d.toPose2d(), m_aprilTagCameraBack.getLatestResult().getTimestampSeconds());
+            swerve.addVisionMeasurement(bestFrontPose3d.toPose2d(), m_aprilTagCameraFront.getLatestResult().getTimestampSeconds(), 
+                    estimateStdDev(bestFrontPose3d, m_aprilTagCameraFront.getLatestResult().getTargets()));
+            swerve.addVisionMeasurement(bestBackPose3d.toPose2d(), m_aprilTagCameraBack.getLatestResult().getTimestampSeconds(),
+                    estimateStdDev(bestBackPose3d, m_aprilTagCameraBack.getLatestResult().getTargets()));
 
             if (PLOT_POSE_SOLUTIONS) {
                 plotVisionPoses(swerve.field, List.of(bestFrontPose3d.toPose2d(), bestBackPose3d.toPose2d()));
@@ -314,6 +327,50 @@ public class AprilTagVision extends SubsystemBase {
             return Optional.empty(); // returns an empty optional
         }
         return Optional.of(tagPose.get().toPose2d());
+    }
+
+    // Calculates new standard deviations This algorithm is a heuristic that creates dynamic standard deviations based
+    // on number of tags, estimation strategy, and distance from the tags.
+    private Matrix<N3, N1> estimateStdDev(Pose3d estimatedPose, List<PhotonTrackedTarget> targets) {
+
+        // Pose present. Start running Heuristic
+        int numTags = 0;
+        double avgDist = 0;
+
+        // Precalculation - see how many tags we found, and calculate an
+        // average-distance metric
+        for (PhotonTrackedTarget tgt : targets) {
+            var tagPose = m_aprilTagFieldLayout.getTagPose(tgt.getFiducialId());
+            if (tagPose.isEmpty()) {
+                continue;
+            }
+            numTags++;
+            avgDist += tagPose
+                    .get()
+                    .toPose2d()
+                    .getTranslation()
+                    .getDistance(estimatedPose.toPose2d().getTranslation());
+        }
+
+        if (numTags == 0)
+            // No tags visible. Default to single-tag std devs
+            return SINGLE_TAG_BASE_STDDEV;
+
+        avgDist /= numTags;
+
+        // Single tags further away than 4 meter (~13 ft) are useless
+        if (numTags == 1 && avgDist > 4.0) 
+            return VecBuilder.fill(Double.MAX_VALUE, Double.MAX_VALUE, Double.MAX_VALUE);
+
+        // Starting estimate = multitag or not
+        Matrix<N3, N1> estStdDev = numTags == 1 ? SINGLE_TAG_BASE_STDDEV : MULTI_TAG_BASE_STDDEV;
+
+        // Increase std devs based on (average) distance
+        // This is taken from YAGSL vision example.
+        // TODO figure out why
+        estStdDev = estStdDev.times(1.0 + avgDist * avgDist / 30.0);
+
+        return estStdDev;
     }
 
     // Private routines for calculating the odometry info
