@@ -13,6 +13,9 @@ package frc.robot;
 * constants are needed, to reduce verbosity.
 */
 public final class Constants {
+    public static final int KITBOT_ROLLER_ID = 5; //TODO: Verify ID
+
+
     public static double MAX_VOLTAGE = 12.0;
     
     public static boolean OUTREACH_MODE = false;

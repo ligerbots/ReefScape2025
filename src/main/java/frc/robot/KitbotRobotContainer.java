@@ -9,10 +9,12 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.StartEndCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 
 //import frc.robot.commands.*;
 import frc.robot.subsystems.*;
+import frc.robot.subsystems.kitbot.KitbotRoller;
 
 public class KitbotRobotContainer {
     private static final double JOYSTICK_DEADBAND = 0.05;
@@ -26,6 +28,7 @@ public class KitbotRobotContainer {
 
     private final AprilTagVision m_aprilTagVision = new AprilTagVision();
     private final DriveTrain m_driveTrain = new DriveTrain("swerve/kitbot", m_aprilTagVision);
+    private final KitbotRoller m_kitbotRoller = new KitbotRoller();
 
     public KitbotRobotContainer() {
         configureBindings();
@@ -37,6 +40,8 @@ public class KitbotRobotContainer {
         if (Robot.isSimulation()) {
             DriverStation.silenceJoystickConnectionWarning(true);
         }
+
+        m_driverController.leftBumper().whileTrue(new StartEndCommand(m_kitbotRoller::runRollerOut, m_kitbotRoller::stopRoller, m_kitbotRoller));
     }
     
     public Command getAutonomousCommand() {
