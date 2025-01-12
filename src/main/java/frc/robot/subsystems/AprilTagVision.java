@@ -62,6 +62,7 @@ public class AprilTagVision extends SubsystemBase {
 
     static final Matrix<N3, N1> SINGLE_TAG_BASE_STDDEV = VecBuilder.fill(4, 4, 8);
     static final Matrix<N3, N1> MULTI_TAG_BASE_STDDEV = VecBuilder.fill(0.5, 0.5, 1);
+    static final Matrix<N3, N1> INFINITE_STDDEV = VecBuilder.fill(Double.MAX_VALUE, Double.MAX_VALUE, Double.MAX_VALUE);
 
     private static final String CAMERA_NAME_FRONT = "ArducamFront";
     private static final String CAMERA_NAME_BACK = "ArducamBack";
@@ -342,22 +343,22 @@ public class AprilTagVision extends SubsystemBase {
         // average-distance metric
         for (PhotonTrackedTarget tgt : targets) {
             var tagPose = m_aprilTagFieldLayout.getTagPose(tgt.getFiducialId());
-            if (tagPose.isEmpty()) {
+            if (tagPose.isEmpty())
                 continue;
-            }
+
             numTags++;
             avgDist += tagPose.get().toPose2d().getTranslation().getDistance(estimatedPose.getTranslation());
         }
 
+        // Should not happen, but protect against divide by zero
         if (numTags == 0)
-            // No tags visible. Default to single-tag std devs
-            return SINGLE_TAG_BASE_STDDEV;
+            return INFINITE_STDDEV;
 
         avgDist /= numTags;
 
         // Single tags further away than 4 meter (~13 ft) are useless
         if (numTags == 1 && avgDist > 4.0) 
-            return VecBuilder.fill(Double.MAX_VALUE, Double.MAX_VALUE, Double.MAX_VALUE);
+            return INFINITE_STDDEV;
 
         // Starting estimate = multitag or not
         Matrix<N3, N1> estStdDev = numTags == 1 ? SINGLE_TAG_BASE_STDDEV : MULTI_TAG_BASE_STDDEV;
