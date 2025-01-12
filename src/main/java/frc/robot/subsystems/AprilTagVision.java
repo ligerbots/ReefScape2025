@@ -4,7 +4,6 @@
 
 package frc.robot.subsystems;
 
-import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -36,19 +35,21 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import swervelib.SwerveDrive;
+import swervelib.telemetry.SwerveDriveTelemetry;
 
 public class AprilTagVision extends SubsystemBase {
     // variable to turn on/off our private tag layout
     // if this is false, the compiler should remove all the unused code.
-    public static final boolean USE_PRIVATE_TAG_LAYOUT = false;
+    static final boolean USE_PRIVATE_TAG_LAYOUT = false;
 
     // Use the multitag pose estimator
-    public static final boolean USE_MULTITAG = true;
+    static final PoseStrategy POSE_STRATEGY = PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR;
+    // static final PoseStrategy POSE_STRATEGY = PoseStrategy.CLOSEST_TO_REFERENCE_POSE;
 
     // Plot vision solutions
-    public static final boolean PLOT_VISIBLE_TAGS = true;
-    public static final boolean PLOT_POSE_SOLUTIONS = true;
-    public static final boolean PLOT_ALTERNATE_POSES = true;
+    static final boolean PLOT_VISIBLE_TAGS = true;
+    static final boolean PLOT_POSE_SOLUTIONS = true;
+    static final boolean PLOT_ALTERNATE_POSES = true;
 
     // constants for extra tags in the shed lengths in meters!!)
     static final double SHED_TAG_NODE_XOFFSET = 0.45;
@@ -97,23 +98,17 @@ public class AprilTagVision extends SubsystemBase {
         // m_aprilTagCameraFront.setVersionCheckEnabled(false);
         // m_aprilTagCameraBack.setVersionCheckEnabled(false);
 
-        // if there is multitag, use the corresponding strategy with reference as back up
-        if (USE_MULTITAG) {
-            m_photonPoseEstimatorFront = new PhotonPoseEstimator(m_aprilTagFieldLayout,
-                    PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR,
-                    m_robotToFrontAprilTagCam);
-            m_photonPoseEstimatorFront.setMultiTagFallbackStrategy(PoseStrategy.CLOSEST_TO_REFERENCE_POSE);
+        // Use the standard PoseStrategy
+        // Setting a fallback strategy is needed for MultiTag, and no harm for others
+        m_photonPoseEstimatorFront = new PhotonPoseEstimator(m_aprilTagFieldLayout,
+                POSE_STRATEGY,
+                m_robotToFrontAprilTagCam);
+        m_photonPoseEstimatorFront.setMultiTagFallbackStrategy(PoseStrategy.CLOSEST_TO_REFERENCE_POSE);
 
-            m_photonPoseEstimatorBack = new PhotonPoseEstimator(m_aprilTagFieldLayout,
-                    PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR,
-                    m_robotToBackAprilTagCam);
-            m_photonPoseEstimatorBack.setMultiTagFallbackStrategy(PoseStrategy.CLOSEST_TO_REFERENCE_POSE);
-        } else {
-            m_photonPoseEstimatorFront = new PhotonPoseEstimator(m_aprilTagFieldLayout,
-                    PoseStrategy.CLOSEST_TO_REFERENCE_POSE, m_robotToFrontAprilTagCam);
-            m_photonPoseEstimatorBack = new PhotonPoseEstimator(m_aprilTagFieldLayout,
-                    PoseStrategy.CLOSEST_TO_REFERENCE_POSE, m_robotToBackAprilTagCam);
-        }
+        m_photonPoseEstimatorBack = new PhotonPoseEstimator(m_aprilTagFieldLayout,
+                POSE_STRATEGY,
+                m_robotToBackAprilTagCam);
+        m_photonPoseEstimatorBack.setMultiTagFallbackStrategy(PoseStrategy.CLOSEST_TO_REFERENCE_POSE);
 
         // set the driver mode to false
         setDriverMode(false);
@@ -138,6 +133,19 @@ public class AprilTagVision extends SubsystemBase {
     }
 
     public void updateOdometry(SwerveDrive swerve) {
+
+        if (SwerveDriveTelemetry.isSimulation && swerve.getSimulationDriveTrainPose().isPresent()) {
+            //  In the maple-sim, odometry is simulated using encoder values, accounting for
+            //  factors like skidding and drifting.
+            //  As a result, the odometry may not always be 100% accurate.
+            //  However, the vision system should be able to provide a reasonably accurate
+            //  pose estimation, even when odometry is incorrect.
+            //  (This is why teams implement vision system to correct odometry.)
+            //  Therefore, we must ensure that the actual robot pose is provided in the
+            //  simulator when updating the vision simulation during the simulation.       
+            m_visionSim.update(swerve.getSimulationDriveTrainPose().get());
+        }
+        
         // Cannot do anything if there is no field layout
         if (m_aprilTagFieldLayout == null)
             return;
@@ -380,8 +388,8 @@ public class AprilTagVision extends SubsystemBase {
         SimCameraProperties prop = new SimCameraProperties();
         prop.setCalibration(800, 600, Rotation2d.fromDegrees(90.0));
         prop.setFPS(60);
-        prop.setAvgLatencyMs(10.0);
-        prop.setLatencyStdDevMs(3.0);
+        prop.setAvgLatencyMs(20.0);
+        prop.setLatencyStdDevMs(5.0);
 
         // Note: NetworkTables does not update the timestamp of an entry if the value does not change.
         // The timestamp is used by PVLib to know if there is a new frame, so in a simulation
