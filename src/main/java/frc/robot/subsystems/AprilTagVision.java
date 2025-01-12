@@ -177,10 +177,9 @@ public class AprilTagVision extends SubsystemBase {
             // if front estimate is not there just add back estimate
             if (!frontEstimate.isPresent()) {
                 if (backEstimate.isPresent()) {
-                    Pose3d pose3d = backEstimate.get().estimatedPose;
-                    Pose2d pose = pose3d.toPose2d();
+                    Pose2d pose = backEstimate.get().estimatedPose.toPose2d();
                     swerve.addVisionMeasurement(pose, m_aprilTagCameraBack.getLatestResult().getTimestampSeconds(),
-                            estimateStdDev(pose3d, m_aprilTagCameraBack.getLatestResult().getTargets()));
+                            estimateStdDev(pose, m_aprilTagCameraBack.getLatestResult().getTargets()));
 
                     if (PLOT_POSE_SOLUTIONS) {
                         plotVisionPose(swerve.field, pose);
@@ -204,10 +203,9 @@ public class AprilTagVision extends SubsystemBase {
 
             // if back estimate is not there add front estimate because we know it is there
             if (!backEstimate.isPresent()) {
-                Pose3d pose3d = frontEstimate.get().estimatedPose;
-                Pose2d pose = pose3d.toPose2d();
+                Pose2d pose = frontEstimate.get().estimatedPose.toPose2d();
                 swerve.addVisionMeasurement(pose, m_aprilTagCameraFront.getLatestResult().getTimestampSeconds(),
-                        estimateStdDev(pose3d, m_aprilTagCameraFront.getLatestResult().getTargets()));
+                        estimateStdDev(pose, m_aprilTagCameraFront.getLatestResult().getTargets()));
 
                 if (PLOT_POSE_SOLUTIONS) {
                     plotVisionPose(swerve.field, pose);
@@ -267,10 +265,13 @@ public class AprilTagVision extends SubsystemBase {
                 }
             }
 
-            swerve.addVisionMeasurement(bestFrontPose3d.toPose2d(), m_aprilTagCameraFront.getLatestResult().getTimestampSeconds(), 
-                    estimateStdDev(bestFrontPose3d, m_aprilTagCameraFront.getLatestResult().getTargets()));
-            swerve.addVisionMeasurement(bestBackPose3d.toPose2d(), m_aprilTagCameraBack.getLatestResult().getTimestampSeconds(),
-                    estimateStdDev(bestBackPose3d, m_aprilTagCameraBack.getLatestResult().getTargets()));
+            Pose2d p = bestFrontPose3d.toPose2d();
+            swerve.addVisionMeasurement(p, m_aprilTagCameraFront.getLatestResult().getTimestampSeconds(), 
+                    estimateStdDev(p, m_aprilTagCameraFront.getLatestResult().getTargets()));
+
+            p = bestBackPose3d.toPose2d();
+            swerve.addVisionMeasurement(p, m_aprilTagCameraBack.getLatestResult().getTimestampSeconds(),
+                    estimateStdDev(p, m_aprilTagCameraBack.getLatestResult().getTargets()));
 
             if (PLOT_POSE_SOLUTIONS) {
                 plotVisionPoses(swerve.field, List.of(bestFrontPose3d.toPose2d(), bestBackPose3d.toPose2d()));
@@ -331,7 +332,7 @@ public class AprilTagVision extends SubsystemBase {
 
     // Calculates new standard deviations This algorithm is a heuristic that creates dynamic standard deviations based
     // on number of tags, estimation strategy, and distance from the tags.
-    private Matrix<N3, N1> estimateStdDev(Pose3d estimatedPose, List<PhotonTrackedTarget> targets) {
+    private Matrix<N3, N1> estimateStdDev(Pose2d estimatedPose, List<PhotonTrackedTarget> targets) {
 
         // Pose present. Start running Heuristic
         int numTags = 0;
@@ -345,11 +346,7 @@ public class AprilTagVision extends SubsystemBase {
                 continue;
             }
             numTags++;
-            avgDist += tagPose
-                    .get()
-                    .toPose2d()
-                    .getTranslation()
-                    .getDistance(estimatedPose.toPose2d().getTranslation());
+            avgDist += tagPose.get().toPose2d().getTranslation().getDistance(estimatedPose.getTranslation());
         }
 
         if (numTags == 0)
