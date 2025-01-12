@@ -18,16 +18,16 @@ public class KitbotRoller extends SubsystemBase {
   static final double MOTOR_VOLTAGE_COMP = 10; //This sets a limit for voltage to 10 so it is repeatable untill the battery dips below 10 volts
   static final double EJECT_VALUE = 0.44;
 
-  private final SparkMax m_rollerMotor;
+  private final SparkMax m_motor;
 
   public KitbotRoller() {
     // Set up the roller motor as a brushed motor
-    m_rollerMotor = new SparkMax(Constants.KITBOT_ROLLER_ID, MotorType.kBrushed);
+    m_motor = new SparkMax(Constants.KITBOT_ROLLER_ID, MotorType.kBrushed);
 
     // Set can timeout. Because this project only sets parameters once on
     // construction, the timeout can be long without blocking robot operation. Code
     // which sets or gets parameters during operation may need a shorter timeout.
-    m_rollerMotor.setCANTimeout(250);
+    m_motor.setCANTimeout(250);
 
     // Create and apply configuration for roller motor. Voltage compensation helps
     // the roller behave the same as the battery
@@ -36,14 +36,14 @@ public class KitbotRoller extends SubsystemBase {
     SparkMaxConfig rollerConfig = new SparkMaxConfig();
     rollerConfig.voltageCompensation(MOTOR_VOLTAGE_COMP);
     rollerConfig.smartCurrentLimit(MOTOR_CURRENT_LIMIT);
-    m_rollerMotor.configure(rollerConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
+    m_motor.configure(rollerConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
   }
 
   public void runRollerOut() {
-    m_rollerMotor.set(EJECT_VALUE);
+    m_motor.set(EJECT_VALUE);
   }
 
   public void stopRoller() {
-    m_rollerMotor.stopMotor();
+    m_motor.stopMotor();
   }
 }
