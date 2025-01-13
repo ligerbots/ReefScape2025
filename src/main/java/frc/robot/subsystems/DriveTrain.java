@@ -86,12 +86,12 @@ public class DriveTrain extends SubsystemBase {
      *
      * @param directory Directory of swerve drive config files.
      */
-    public DriveTrain(AprilTagVision apriltagVision) {
+    public DriveTrain(String jsonPath, AprilTagVision apriltagVision) {
         // Configure the Telemetry before creating the SwerveDrive to avoid unnecessary
         // objects being created.
         SwerveDriveTelemetry.verbosity = TelemetryVerbosity.HIGH;
         try {
-            File jsonDir = new File(Filesystem.getDeployDirectory(), "swerve");
+            File jsonDir = new File(Filesystem.getDeployDirectory(), jsonPath);
 
             // use the conversion factors included in the JSON
             m_swerveDrive = new SwerveParser(jsonDir).createSwerveDrive(MAX_SPEED);
@@ -307,22 +307,22 @@ public class DriveTrain extends SubsystemBase {
             maxSpeed *= OUTREACH_MODE_SCALE_FACTOR;
             maxAngSpeed *= OUTREACH_MODE_SCALE_FACTOR;
         }
-        m_swerveDrive.setMaximumSpeeds(maxSpeed, maxAngSpeed);
+        m_swerveDrive.setMaximumAllowableSpeeds(maxSpeed, maxAngSpeed);
     }
 
-    // @Override
-    // public void periodic() {
-    //     // Have the vision system update based on the Apriltags, if seen
-    //     // need to add the pipeline result
-    //     m_aprilTagVision.updateOdometry(m_swerveDrive);
-    // }
+    @Override
+    public void periodic() {
+        // Have the vision system update based on the Apriltags, if seen
+        // need to add the pipeline result
+        m_aprilTagVision.updateOdometry(m_swerveDrive);
+    }
 
-    // @Override
-    // public void simulationPeriodic() {
-    //     // update the Apriltag sim. Needs the robot pose
-    //     Pose2d robotPose = getPose();
-    //     m_aprilTagVision.updateSimulation(robotPose);
-    // }
+    @Override
+    public void simulationPeriodic() {
+        // update the Apriltag sim. Needs the robot pose
+        Pose2d robotPose = getPose();
+        m_aprilTagVision.updateSimulation(robotPose);
+    }
 
     /**
      * Get the swerve drive kinematics object.

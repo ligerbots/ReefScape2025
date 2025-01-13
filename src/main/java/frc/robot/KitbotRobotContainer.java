@@ -9,25 +9,28 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.StartEndCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 
-import frc.robot.commands.*;
+//import frc.robot.commands.*;
 import frc.robot.subsystems.*;
+import frc.robot.subsystems.kitbot.KitbotRoller;
 
-public class RobotContainer {
+public class KitbotRobotContainer {
     private static final double JOYSTICK_DEADBAND = 0.05;
 
     // Need to know where the robot starts on the field
     // For this simulation, just make it fixed
     // Location: x = 2 meters, y = 1/2 of field, angle is forward
-    private static final Pose2d START_LOCATION = new Pose2d(8.03, 0.77, Rotation2d.fromDegrees(0.46));
+    private static final Pose2d START_LOCATION = new Pose2d(2, 5, Rotation2d.fromDegrees(0));
 
     private final CommandXboxController m_driverController = new CommandXboxController(0);
 
     private final AprilTagVision m_aprilTagVision = new AprilTagVision();
-    private final DriveTrain m_driveTrain = new DriveTrain(m_aprilTagVision);
+    private final DriveTrain m_driveTrain = new DriveTrain("swerve/kitbot", m_aprilTagVision);
+    private final KitbotRoller m_kitbotRoller = new KitbotRoller();
 
-    public RobotContainer() {
+    public KitbotRobotContainer() {
         configureBindings();
 
         m_driveTrain.setDefaultCommand(getDriveCommand());
@@ -37,6 +40,8 @@ public class RobotContainer {
         if (Robot.isSimulation()) {
             DriverStation.silenceJoystickConnectionWarning(true);
         }
+
+        m_driverController.leftBumper().whileTrue(new StartEndCommand(m_kitbotRoller::runRollerOut, m_kitbotRoller::stopRoller, m_kitbotRoller));
     }
     
     public Command getAutonomousCommand() {
