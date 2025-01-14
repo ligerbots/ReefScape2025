@@ -126,7 +126,7 @@ public class AprilTagVision extends SubsystemBase {
             return options;
         }
 
-        public void plot(Optional<EstimatedRobotPose> estimate, SwerveDrive swerve) {
+        public void plotAndUpdate(Optional<EstimatedRobotPose> estimate, SwerveDrive swerve) {
             Pose2d pose = estimate.get().estimatedPose.toPose2d();
             swerve.addVisionMeasurement(pose, camera.getLatestResult().getTimestampSeconds());
 
@@ -241,9 +241,9 @@ public class AprilTagVision extends SubsystemBase {
             }
 
             if (frontEstimate.isPresent()) {
-                Camera.FRONT.plot(frontEstimate, swerve);
+                Camera.FRONT.plotAndUpdate(frontEstimate, swerve);
             } else if (backEstimate.isPresent()) {
-                Camera.BACK.plot(frontEstimate, swerve);
+                Camera.BACK.plotAndUpdate(frontEstimate, swerve);
             } else {
                 // no results, so clear the list in the Field
                 plotVisionPoses(swerve.field, null);
