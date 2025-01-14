@@ -11,7 +11,7 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.StartEndCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
-
+import frc.robot.commands.HelloWorldAuto;
 //import frc.robot.commands.*;
 import frc.robot.subsystems.*;
 import frc.robot.subsystems.kitbot.KitbotRoller;
@@ -45,8 +45,7 @@ public class KitbotRobotContainer {
     }
     
     public Command getAutonomousCommand() {
-        // TODO add an auto
-        return null;
+        return new HelloWorldAuto(this.getDriveTrain());
     }
 
     public Pose2d getInitialPose() {
