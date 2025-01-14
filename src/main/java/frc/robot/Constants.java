@@ -14,6 +14,9 @@ package frc.robot;
 */
 public final class Constants {
     public static final int KITBOT_ROLLER_ID = 5; //TODO: Verify ID
+    public static final int END_EFFECTOR_PIVOT_ID; // TODO: INITIALIZE ID
+    public static final int END_EFFECTOR_CORAL_INTAKE_ID; // TODO: INITIALIZE ID
+    public static final int END_EFFECTOR_ALGAE_INTAKE_ID; // TODO: INITIALIZE ID
 
 
     public static double MAX_VOLTAGE = 12.0;
