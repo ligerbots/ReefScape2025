@@ -51,7 +51,7 @@ public class DriveTrain extends SubsystemBase {
     // This is the L2 gearing
     // private static final double DRIVE_GEAR_RATIO = (50.0 / 14.0) * (17.0 / 27.0) * (45.0 / 15.0);
 
-    public static final double ROBOT_SWERVE_OFFSET_X_INCHES = -3.0;
+    public static final double ROBOT_SWERVE_OFFSET_X_INCHES = 0.0;
     private static final Translation2d ROTATION_CENTER_OFFSET = new Translation2d(Units.inchesToMeters(ROBOT_SWERVE_OFFSET_X_INCHES), 0 );
 
     // values from 2024 competition. Maybe should be tuned
