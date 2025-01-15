@@ -4,6 +4,8 @@
 
 package frc.robot;
 
+import com.pathplanner.lib.commands.PathPlannerAuto;
+
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -45,7 +47,8 @@ public class KitbotRobotContainer {
     }
     
     public Command getAutonomousCommand() {
-        return new HelloWorldAuto(this.getDriveTrain());
+        // return new HelloWorldAuto(this.getDriveTrain());
+        return new PathPlannerAuto("First Auto");
     }
 
     public Pose2d getInitialPose() {

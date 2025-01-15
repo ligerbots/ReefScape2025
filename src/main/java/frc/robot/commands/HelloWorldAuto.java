@@ -4,6 +4,7 @@
 
 package frc.robot.commands;
 
+import com.pathplanner.lib.commands.PathPlannerAuto;
 import com.pathplanner.lib.path.PathPlannerPath;
 
 import edu.wpi.first.math.geometry.Pose2d;
@@ -23,7 +24,9 @@ public class HelloWorldAuto extends AutoCommandInterface {
         m_driveTrain = driveTrain;
 
         try {
-            PathPlannerPath startPath = PathPlannerPath.fromPathFile("Start1 to Shot1");
+            // PathPlannerAuto firstAuto = new PathPlannerAuto("Shot1 to Source1");
+
+            PathPlannerPath startPath = PathPlannerPath.fromPathFile("Shot1 to Source1");
             m_initPose = startPath.getStartingDifferentialPose();
             addCommands(m_driveTrain.followPath(startPath));
 
