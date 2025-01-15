@@ -46,6 +46,7 @@ public class KitbotRobotContainer {
         m_driverController.back().onTrue(new InstantCommand(m_driveTrain::zeroHeading, m_driveTrain));
 
         m_driverController.leftBumper().whileTrue(new StartEndCommand(m_kitbotRoller::runRollerOut, m_kitbotRoller::stopRoller, m_kitbotRoller));
+        m_driverController.rightBumper().whileTrue(new StartEndCommand(m_kitbotRoller::runRollerBack, m_kitbotRoller::stopRoller, m_kitbotRoller));
     }
     
     public Command getAutonomousCommand() {

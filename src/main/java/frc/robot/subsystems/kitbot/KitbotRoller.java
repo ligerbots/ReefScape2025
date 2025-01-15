@@ -46,6 +46,10 @@ public class KitbotRoller extends SubsystemBase {
     m_motor.set(EJECT_VALUE);
   }
 
+  public void runRollerBack() {
+    m_motor.set(-EJECT_VALUE);
+  }
+
   public void stopRoller() {
     m_motor.stopMotor();
   }
