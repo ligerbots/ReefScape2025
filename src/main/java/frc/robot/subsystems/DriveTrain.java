@@ -474,7 +474,7 @@ public class DriveTrain extends SubsystemBase {
         return SwerveDriveTest.generateSysIdCommand(
                 SwerveDriveTest.setDriveSysIdRoutine(
                         new Config(),
-                        this, m_swerveDrive, 12),
+                        this, m_swerveDrive, 12, false),
                 3.0, 5.0, 3.0);
     }
 
