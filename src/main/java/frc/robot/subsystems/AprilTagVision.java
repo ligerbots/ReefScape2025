@@ -59,8 +59,14 @@ public class AprilTagVision extends SubsystemBase {
     // private final PhotonCamera m_aprilTagCameraFront = new PhotonCamera(CAMERA_NAME_FRONT);
     // private final PhotonCamera m_aprilTagCameraBack = new PhotonCamera(CAMERA_NAME_BACK);
 
-    private Camera frontCamera;
-    private Camera backCamera;
+    private enum Cam {
+        FRONT(0),
+        BACK(1);
+
+        int idx;
+        Cam(int idx) { this.idx = idx; }
+    }
+
     private Camera[] cameras;
 
     private static AprilTagFieldLayout m_aprilTagFieldLayout;
@@ -123,24 +129,21 @@ public class AprilTagVision extends SubsystemBase {
         }
 
         // initialize cameras
-        frontCamera = new Camera("ArducamFront", new Transform3d(
+        cameras = new Camera[2];
+
+        cameras[Cam.FRONT.idx] = new Camera("ArducamFront", new Transform3d(
             new Translation3d(Units.inchesToMeters(0.5 - DriveTrain.ROBOT_SWERVE_OFFSET_X_INCHES), 0, Units.inchesToMeters(18.5)),
             new Rotation3d(0.0, Math.toRadians(-19.4), 0.0)
         ));
 
-        backCamera = new Camera("ArducamBack", new Transform3d(
+        cameras[Cam.BACK.idx] = new Camera("ArducamBack", new Transform3d(
             new Translation3d(Units.inchesToMeters(-17.25 - DriveTrain.ROBOT_SWERVE_OFFSET_X_INCHES), 0, Units.inchesToMeters(10.0)),
             new Rotation3d(0.0, Math.toRadians(-18.0), Math.toRadians(180.0))
         ));
-
-        cameras = new Camera[] {
-            frontCamera,
-            backCamera
-        };
         
         // set the driver mode to false
-        frontCamera.setDriverMode(false);
-        backCamera.setDriverMode(false);
+        cameras[Cam.FRONT.idx].setDriverMode(false);
+        cameras[Cam.BACK.idx].setDriverMode(false);
     }
 
     @Override
@@ -148,8 +151,8 @@ public class AprilTagVision extends SubsystemBase {
         // set the driver mode to false
         // setDriverMode(false);
 
-        SmartDashboard.putBoolean("aprilTagVision/frontCamera", frontCamera.pCamera.isConnected());
-        SmartDashboard.putBoolean("aprilTagVision/backCamera", backCamera.pCamera.isConnected());
+        SmartDashboard.putBoolean("aprilTagVision/frontCamera", cameras[Cam.FRONT.idx].pCamera.isConnected());
+        SmartDashboard.putBoolean("aprilTagVision/backCamera", cameras[Cam.BACK.idx].pCamera.isConnected());
     }
 
     public void updateSimulation(Pose2d pose) {
@@ -163,7 +166,7 @@ public class AprilTagVision extends SubsystemBase {
 
         try {
             if (PLOT_VISIBLE_TAGS) {
-                plotVisibleTags(swerve.field, List.of(frontCamera.pCamera, backCamera.pCamera));
+                plotVisibleTags(swerve.field, List.of(cameras[Cam.FRONT.idx].pCamera, cameras[Cam.BACK.idx].pCamera));
             }
 
             // Warning: be careful about fetching values. If cameras are not connected, you
@@ -172,76 +175,79 @@ public class AprilTagVision extends SubsystemBase {
             // Make sure to test!
 
             
-            List<Pose3d> options;
+            // Do MultiTag
+            // By doing it this way, does it account for the robotToCam displacement?
             for (Camera c : cameras) {
                 Optional<EstimatedRobotPose> estimate = getEstimate(swerve, c);
                 if (estimate.isPresent()) {
-                    List<Pose3d> ops = getOptions(c, estimate);
-                    options.addAll(ops);
-                }
-            }
-
-            Pose3d bestBackPose3d = new Pose3d();
-            Pose3d bestFrontPose3d = new Pose3d();
-            double minDistance = 1e6;
-
-            int O = options.size();
-            for (int i = 0; i < O; i++) {
-                for (int j = i+1; j < O; j++) {
-                    
-                }
-            }
-
-            Optional<EstimatedRobotPose> frontEstimate = getEstimate(swerve, frontCamera);
-            Optional<EstimatedRobotPose> backEstimate = getEstimate(swerve, backCamera);
-            
-            if (frontEstimate.isPresent() && backEstimate.isPresent()) {
-                // Both are present
-                // Create a list of Pose3d options for the front camera
-                List<Pose3d> frontOptions = Camera.FRONT.getOptions();
-                List<Pose3d> backOptions = Camera.BACK.getOptions();
-
-                Pose3d bestBackPose3d = new Pose3d();
-                Pose3d bestFrontPose3d = new Pose3d();
-                double minDistance = 1e6;
-
-                if (PLOT_ALTERNATE_POSES) {
-                    plotAlternateSolutions(swerve.field, List.of(frontOptions, backOptions));
-                }
-
-                // compare all backposes and frontposes to each other to find correct robot pose
-                for (Pose3d backPose : backOptions) {
-                    for (Pose3d frontPose : frontOptions) {
-                        double distance = calculateDifference(frontPose, backPose);
-
-                        // makes the smallest difference the measurement
-                        if (distance < minDistance) {
-                            bestBackPose3d = backPose;
-                            bestFrontPose3d = frontPose;
-                            minDistance = distance;
-                        }
+                    if (estimate.get().strategy == PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR) {
+                        swerve.addVisionMeasurement(estimate.get().estimatedPose.toPose2d(), c.pCamera.getLatestResult().getTimestampSeconds());
                     }
                 }
+            }
 
-                swerve.addVisionMeasurement(bestFrontPose3d.toPose2d(), Camera.FRONT.camera.getLatestResult().getTimestampSeconds());
-                swerve.addVisionMeasurement(bestBackPose3d.toPose2d(), Camera.BACK.camera.getLatestResult().getTimestampSeconds());
-
-                if (PLOT_POSE_SOLUTIONS) {
-                    plotVisionPoses(swerve.field, List.of(bestFrontPose3d.toPose2d(), bestBackPose3d.toPose2d()));
+            // Do SingleTag
+            for (Camera c : cameras) {
+                // MultiTag doesn't account for the robotToCam displacement?
+                Optional<EstimatedRobotPose> estimate = getEstimate(swerve, c);
+                if (estimate.isPresent()) {
+                    if (estimate.get().strategy != PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR) {
+                        swerve.addVisionMeasurement(estimate.get().estimatedPose.toPose2d(), c.pCamera.getLatestResult().getTimestampSeconds());
+                    }
                 }
-
-                return;
             }
 
-            if (frontEstimate.isPresent()) {
-                Camera.FRONT.plotAndUpdate(frontEstimate, swerve);
-            } else if (backEstimate.isPresent()) {
-                Camera.BACK.plotAndUpdate(frontEstimate, swerve);
-            } else {
-                // no results, so clear the list in the Field
-                plotVisionPoses(swerve.field, null);
-                swerve.field.getObject("visionAltPoses").setPoses();
-            }
+
+            // Optional<EstimatedRobotPose> frontEstimate = getEstimate(swerve, cameras[Cam.FRONT.idx]);
+            // Optional<EstimatedRobotPose> backEstimate = getEstimate(swerve, cameras[Cam.BACK.idx]);
+            
+            // if (frontEstimate.isPresent() && backEstimate.isPresent()) {
+            //     // Both are present
+            //     // Create a list of Pose3d options for the front camera
+            //     List<Pose3d> frontOptions = Camera.FRONT.getOptions();
+            //     List<Pose3d> backOptions = Camera.BACK.getOptions();
+
+            //     Pose3d bestBackPose3d = new Pose3d();
+            //     Pose3d bestFrontPose3d = new Pose3d();
+            //     double minDistance = 1e6;
+
+            //     if (PLOT_ALTERNATE_POSES) {
+            //         plotAlternateSolutions(swerve.field, List.of(frontOptions, backOptions));
+            //     }
+
+            //     // compare all backposes and frontposes to each other to find correct robot pose
+            //     for (Pose3d backPose : backOptions) {
+            //         for (Pose3d frontPose : frontOptions) {
+            //             double distance = calculateDifference(frontPose, backPose);
+
+            //             // makes the smallest difference the measurement
+            //             if (distance < minDistance) {
+            //                 bestBackPose3d = backPose;
+            //                 bestFrontPose3d = frontPose;
+            //                 minDistance = distance;
+            //             }
+            //         }
+            //     }
+
+            //     swerve.addVisionMeasurement(bestFrontPose3d.toPose2d(), Camera.FRONT.camera.getLatestResult().getTimestampSeconds());
+            //     swerve.addVisionMeasurement(bestBackPose3d.toPose2d(), Camera.BACK.camera.getLatestResult().getTimestampSeconds());
+
+            //     if (PLOT_POSE_SOLUTIONS) {
+            //         plotVisionPoses(swerve.field, List.of(bestFrontPose3d.toPose2d(), bestBackPose3d.toPose2d()));
+            //     }
+
+            //     return;
+            // }
+
+            // if (frontEstimate.isPresent()) {
+            //     Camera.FRONT.plotAndUpdate(frontEstimate, swerve);
+            // } else if (backEstimate.isPresent()) {
+            //     Camera.BACK.plotAndUpdate(frontEstimate, swerve);
+            // } else {
+            //     // no results, so clear the list in the Field
+            //     plotVisionPoses(swerve.field, null);
+            //     swerve.field.getObject("visionAltPoses").setPoses();
+            // }
 
             return;
 
@@ -291,10 +297,10 @@ public class AprilTagVision extends SubsystemBase {
     // we might want to use this to do fine adjustments on field element locations
     public int getCentralTagId() {
         // make sure camera connected
-        if (!frontCamera.pCamera.isConnected())
+        if (!cameras[Cam.FRONT.idx].pCamera.isConnected())
             return -1;
 
-        var targetResult = frontCamera.pCamera.getLatestResult();
+        var targetResult = cameras[Cam.FRONT.idx].pCamera.getLatestResult();
         // make a temp holder var for least Y translation, set to first tags translation
         double minY = 1.0e6; // big number
         int targetID = -1;
@@ -416,13 +422,13 @@ public class AprilTagVision extends SubsystemBase {
         // So, always have a little bit of uncertainty.
         prop.setCalibError(0.1, 0.03);
 
-        PhotonCameraSim cam = new PhotonCameraSim(frontCamera.pCamera, prop);
+        PhotonCameraSim cam = new PhotonCameraSim(cameras[Cam.FRONT.idx].pCamera, prop);
         cam.setMaxSightRange(Units.feetToMeters(20.0));
-        m_visionSim.addCamera(cam, frontCamera.robotToCam);
+        m_visionSim.addCamera(cam, cameras[Cam.FRONT.idx].robotToCam);
 
-        cam = new PhotonCameraSim(backCamera.pCamera, prop);
+        cam = new PhotonCameraSim(cameras[Cam.BACK.idx].pCamera, prop);
         cam.setMaxSightRange(Units.feetToMeters(20.0));
-        m_visionSim.addCamera(cam, backCamera.robotToCam);
+        m_visionSim.addCamera(cam, cameras[Cam.BACK.idx].robotToCam);
 
         m_visionSim.addAprilTags(m_aprilTagFieldLayout);
     }
