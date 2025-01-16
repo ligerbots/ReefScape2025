@@ -4,7 +4,7 @@
 
 package frc.robot.subsystems;
 
-import java.io.IOException;
+import java.io.UncheckedIOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -22,12 +22,16 @@ import org.photonvision.targeting.PhotonTrackedTarget;
 // import edu.wpi.first.apriltag.AprilTag;
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
+import edu.wpi.first.math.Matrix;
+import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation3d;
+import edu.wpi.first.math.numbers.N1;
+import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
@@ -35,19 +39,23 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import swervelib.SwerveDrive;
+import swervelib.telemetry.SwerveDriveTelemetry;
 
 public class AprilTagVision extends SubsystemBase {
     // variable to turn on/off our private tag layout
     // if this is false, the compiler should remove all the unused code.
-    public static final boolean USE_PRIVATE_TAG_LAYOUT = false;
+    static final boolean USE_PRIVATE_TAG_LAYOUT = false;
 
     // Use the multitag pose estimator
+    static final PoseStrategy POSE_STRATEGY = PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR;
+    // static final PoseStrategy POSE_STRATEGY = PoseStrategy.CLOSEST_TO_REFERENCE_POSE;
+    
     public static final boolean USE_MULTITAG = true;
 
     // Plot vision solutions
-    public static final boolean PLOT_VISIBLE_TAGS = true;
-    public static final boolean PLOT_POSE_SOLUTIONS = true;
-    public static final boolean PLOT_ALTERNATE_POSES = true;
+    static final boolean PLOT_VISIBLE_TAGS = true;
+    static final boolean PLOT_POSE_SOLUTIONS = true;
+    static final boolean PLOT_ALTERNATE_POSES = true;
 
     // constants for extra tags in the shed lengths in meters!!)
     static final double SHED_TAG_NODE_XOFFSET = 0.45;
@@ -116,9 +124,8 @@ public class AprilTagVision extends SubsystemBase {
 
     public AprilTagVision() {
         try {
-            m_aprilTagFieldLayout = AprilTagFieldLayout
-                    .loadFromResource(AprilTagFields.k2024Crescendo.m_resourceFile);
-        } catch (IOException e) {
+            m_aprilTagFieldLayout = AprilTagFieldLayout.loadField(AprilTagFields.k2025Reefscape);
+        } catch (UncheckedIOException e) {
             System.out.println("Unable to load AprilTag layout " + e.getMessage());
             m_aprilTagFieldLayout = null;
         }
@@ -160,6 +167,19 @@ public class AprilTagVision extends SubsystemBase {
     }
 
     public void updateOdometry(SwerveDrive swerve) {
+
+        if (SwerveDriveTelemetry.isSimulation && swerve.getSimulationDriveTrainPose().isPresent()) {
+            //  In the maple-sim, odometry is simulated using encoder values, accounting for
+            //  factors like skidding and drifting.
+            //  As a result, the odometry may not always be 100% accurate.
+            //  However, the vision system should be able to provide a reasonably accurate
+            //  pose estimation, even when odometry is incorrect.
+            //  (This is why teams implement vision system to correct odometry.)
+            //  Therefore, we must ensure that the actual robot pose is provided in the
+            //  simulator when updating the vision simulation during the simulation.       
+            m_visionSim.update(swerve.getSimulationDriveTrainPose().get());
+        }
+
         // Cannot do anything if there is no field layout
         if (m_aprilTagFieldLayout == null)
             return;
@@ -341,6 +361,46 @@ public class AprilTagVision extends SubsystemBase {
         return Optional.of(tagPose.get().toPose2d());
     }
 
+    // Calculates new standard deviations This algorithm is a heuristic that creates dynamic standard deviations based
+    // on number of tags, estimation strategy, and distance from the tags.
+    // private Matrix<N3, N1> estimateStdDev(Pose2d estimatedPose, List<PhotonTrackedTarget> targets) {
+
+    //     // Pose present. Start running Heuristic
+    //     int numTags = 0;
+    //     double avgDist = 0;
+
+    //     // Precalculation - see how many tags we found, and calculate an
+    //     // average-distance metric
+    //     for (PhotonTrackedTarget tgt : targets) {
+    //         var tagPose = m_aprilTagFieldLayout.getTagPose(tgt.getFiducialId());
+    //         if (tagPose.isEmpty())
+    //             continue;
+
+    //         numTags++;
+    //         avgDist += tagPose.get().toPose2d().getTranslation().getDistance(estimatedPose.getTranslation());
+    //     }
+
+    //     // Should not happen, but protect against divide by zero
+    //     if (numTags == 0)
+    //         return INFINITE_STDDEV;
+
+    //     avgDist /= numTags;
+
+    //     // Single tags further away than 4 meter (~13 ft) are useless
+    //     if (numTags == 1 && avgDist > 4.0) 
+    //         return INFINITE_STDDEV;
+
+    //     // Starting estimate = multitag or not
+    //     Matrix<N3, N1> estStdDev = numTags == 1 ? SINGLE_TAG_BASE_STDDEV : MULTI_TAG_BASE_STDDEV;
+
+    //     // Increase std devs based on (average) distance
+    //     // This is taken from YAGSL vision example.
+    //     // TODO figure out why
+    //     estStdDev = estStdDev.times(1.0 + avgDist * avgDist / 30.0);
+
+    //     return estStdDev;
+    // }
+
     // Private routines for calculating the odometry info
 
     private double calculateDifference(Pose3d x, Pose3d y) {
@@ -413,8 +473,8 @@ public class AprilTagVision extends SubsystemBase {
         SimCameraProperties prop = new SimCameraProperties();
         prop.setCalibration(800, 600, Rotation2d.fromDegrees(90.0));
         prop.setFPS(60);
-        prop.setAvgLatencyMs(10.0);
-        prop.setLatencyStdDevMs(3.0);
+        prop.setAvgLatencyMs(20.0);
+        prop.setLatencyStdDevMs(5.0);
 
         // Note: NetworkTables does not update the timestamp of an entry if the value does not change.
         // The timestamp is used by PVLib to know if there is a new frame, so in a simulation
