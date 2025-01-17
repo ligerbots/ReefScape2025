@@ -263,28 +263,36 @@ public class AprilTagVision extends SubsystemBase {
     // This is used
     public void addVisionMeasurements(SwerveDrive swerve, boolean useMultiTag) {
         for (Camera c : cameras) {
-            Optional<EstimatedRobotPose> estimate = getEstimate(swerve, c);
-            if (estimate.isPresent() && c.pCamera.isConnected()) {
-                // This is xnor
-                if (!(useMultiTag ^ estimate.get().strategy == PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR)) {
-                    swerve.addVisionMeasurement(estimate.get().estimatedPose.toPose2d(), c.pCamera.getLatestResult().getTimestampSeconds());
+            List<Optional<EstimatedRobotPose>> estimates = getEstimates(swerve, c);
+            for (Optional<EstimatedRobotPose> estimate : estimates) {
+                if (estimate.isPresent() && c.pCamera.isConnected()) {
+                    // This is xnor
+                    if (!(useMultiTag ^ estimate.get().strategy == PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR)) {
+                        swerve.addVisionMeasurement(estimate.get().estimatedPose.toPose2d(), c.pCamera.getLatestResult().getTimestampSeconds());
+                    }
                 }
             }
         }
     }
 
     // This is used
-    public Optional<EstimatedRobotPose> getEstimate(SwerveDrive swerve, Camera cam) {
+    public List<Optional<EstimatedRobotPose>> getEstimates(SwerveDrive swerve, Camera cam) {
         Pose2d robotPose = swerve.getPose();
 
         try {
             cam.poseEstimator.setReferencePose(robotPose);
-            PhotonPipelineResult res = cam.pCamera.getLatestResult();
-            return cam.poseEstimator.update(res);
+            List<PhotonPipelineResult> res = cam.pCamera.getAllUnreadResults();
+            List<Optional<EstimatedRobotPose>> estimates = new ArrayList<>();
+            
+            for (PhotonPipelineResult estimate : res) {
+                estimates.add(cam.poseEstimator.update(estimate));
+            }
+
+            return estimates;
         } catch (Exception e) {
             // bad! log this and keep going
             DriverStation.reportError("Exception running PhotonPoseEstimator", e.getStackTrace());
-            return Optional.empty();
+            return new ArrayList<>();
         }
     }
 
