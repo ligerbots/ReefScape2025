@@ -14,6 +14,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.StartEndCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import frc.robot.commands.AutoCommandInterface;
 import frc.robot.commands.HelloWorldAuto;
 //import frc.robot.commands.*;
 import frc.robot.subsystems.*;
@@ -25,7 +26,7 @@ public class KitbotRobotContainer {
     // Need to know where the robot starts on the field
     // For this simulation, just make it fixed
     // Location: x = 2 meters, y = 1/2 of field, angle is forward
-    private static final Pose2d START_LOCATION = new Pose2d(7.9, 7.1, Rotation2d.fromDegrees(0));
+    // private static final Pose2d START_LOCATION = new Pose2d(7.9, 7.1, Rotation2d.fromDegrees(0));
 
     private final CommandXboxController m_driverController = new CommandXboxController(0);
 
@@ -33,12 +34,15 @@ public class KitbotRobotContainer {
     private final DriveTrain m_driveTrain = new DriveTrain("swerve/kitbot", m_aprilTagVision);
     private final KitbotRoller m_kitbotRoller = new KitbotRoller();
 
+    private  AutoCommandInterface m_autoCommand;
+
     public KitbotRobotContainer() {
         configureBindings();
-
-        m_driveTrain.setDefaultCommand(getDriveCommand());
-    }
-    
+        configureAutos();
+        
+                m_driveTrain.setDefaultCommand(getDriveCommand());
+            }
+            
     private void configureBindings() {
         if (Robot.isSimulation()) {
             DriverStation.silenceJoystickConnectionWarning(true);
@@ -51,13 +55,17 @@ public class KitbotRobotContainer {
         m_driverController.leftTrigger().whileTrue(new StartEndCommand(m_kitbotRoller::runRollerBack, m_kitbotRoller::stop, m_kitbotRoller));
     }
     
+    private void configureAutos() {
+        // TODO Auto-generated method stub
+        m_autoCommand = new HelloWorldAuto(m_driveTrain);
+    }
+
     public Command getAutonomousCommand() {
-        return new HelloWorldAuto(this.getDriveTrain());
-        // return new PathPlannerAuto("First Auto");
+        return m_autoCommand;
     }
 
     public Pose2d getInitialPose() {
-        return FieldConstants.flipPose(START_LOCATION);
+        return m_autoCommand.getInitialPose();
     }
 
     public Command getDriveCommand() {
