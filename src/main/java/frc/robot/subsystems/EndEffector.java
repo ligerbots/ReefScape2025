@@ -4,11 +4,13 @@
 
 package frc.robot.subsystems;
 
+import com.revrobotics.spark.config.*;
+import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.revrobotics.AbsoluteEncoder;
-import com.revrobotics.CANSparkMax;
+import com.revrobotics.spark.SparkMax;
 // import com.revrobotics.RelativeEncoder;
-import com.revrobotics.SparkPIDController;
-import com.revrobotics.CANSparkBase.IdleMode;
+import com.revrobotics.spark.SparkClosedLoopController;
+// import com.revrobotics.CANSparkBase.IdleMode;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
@@ -19,7 +21,7 @@ import edu.wpi.first.wpilibj2.command.TrapezoidProfileSubsystem;
 
 import frc.robot.Constants;
 
-public class Climber extends TrapezoidProfileSubsystem {
+public class EndEffector extends TrapezoidProfileSubsystem {
     private static final double TWO_PI = 2.0 * Math.PI;
     
     public static final double MIN_ANGLE = Math.toRadians(0.0);
@@ -62,8 +64,8 @@ public class Climber extends TrapezoidProfileSubsystem {
     // private static final double RADIANS_PER_MOTOR_ROTATION = 2 * Math.PI * GEAR_RATIO;
 
     // private final DutyCycleEncoder m_absoluteEncoder = new DutyCycleEncoder(0);  
-    private final CANSparkMax m_motor;
-    private final SparkPIDController m_pidController;
+    private final SparkMax m_motor;
+    private final SparkClosedLoopController m_pidController;
     // private final RelativeEncoder m_encoder;
     private final AbsoluteEncoder m_absoluteEncoder;
     
@@ -74,19 +76,22 @@ public class Climber extends TrapezoidProfileSubsystem {
     private double m_angleAdjustment = Math.toRadians(0.0);
 
     // Construct a new shooterPivot subsystem
-    public Climber() {
+    public EndEffector() {
         super(new TrapezoidProfile.Constraints(MAX_VEL_RADIAN_PER_SEC, MAX_ACC_RADIAN_PER_SEC_SQ));
        
-        m_motor = new CANSparkMax(Constants.SHOOTER_PIVOT_CAN_ID, CANSparkMax.MotorType.kBrushless);
-        m_motor.restoreFactoryDefaults();
-        m_motor.setInverted(true);
+        m_motor = new SparkMax(Constants.SHOOTER_PIVOT_CAN_ID, SparkMax.MotorType.kBrushless);
+        SparkMaxConfig config = new SparkMaxConfig();
+        // m_motor.restoreFactoryDefaults();
+        // m_motor.setInverted(true);
+        config
+        .inverted(true);
 
         m_motor.setSmartCurrentLimit(CURRENT_LIMIT);
     
         m_absoluteEncoder = m_motor.getAbsoluteEncoder();
         m_absoluteEncoder.setZeroOffset(POSITION_OFFSET);
 
-        m_pidController = m_motor.getPIDController();
+        // m_pidController = m_motor.getPIDController();
         m_pidController.setP(K_P);
         m_pidController.setI(K_I);
         m_pidController.setD(K_D);
@@ -139,7 +144,7 @@ public class Climber extends TrapezoidProfileSubsystem {
     protected void useState(TrapezoidProfile.State setPoint) {
         // Remember that the encoder was already set to account for the gear ratios.
 
-        m_pidController.setReference(setPoint.position, CANSparkMax.ControlType.kPosition);
+        m_pidController.setReference(setPoint.position, SparkMax.ControlType.kPosition);
         SmartDashboard.putNumber("shooterPivot/setPoint", Math.toDegrees(TWO_PI * setPoint.position));
     }
 
