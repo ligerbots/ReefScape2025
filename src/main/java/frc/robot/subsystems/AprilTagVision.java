@@ -266,8 +266,8 @@ public class AprilTagVision extends SubsystemBase {
             List<Optional<EstimatedRobotPose>> estimates = getEstimates(swerve, c);
             for (Optional<EstimatedRobotPose> estimate : estimates) {
                 if (estimate.isPresent() && c.pCamera.isConnected()) {
-                    // This is xnor
-                    if (!(useMultiTag ^ estimate.get().strategy == PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR)) {
+                    // This is like xnor
+                    if (useMultiTag == (estimate.get().strategy == PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR)) {
                         swerve.addVisionMeasurement(estimate.get().estimatedPose.toPose2d(), c.pCamera.getLatestResult().getTimestampSeconds());
                     }
                 }
