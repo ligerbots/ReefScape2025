@@ -197,26 +197,10 @@ public class AprilTagVision extends SubsystemBase {
             
             // Do MultiTag
             // By doing it this way, does it account for the robotToCam displacement?
-            for (Camera c : cameras) {
-                Optional<EstimatedRobotPose> estimate = getEstimate(swerve, c);
-                if (estimate.isPresent()) {
-                    if (estimate.get().strategy == PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR) {
-                        swerve.addVisionMeasurement(estimate.get().estimatedPose.toPose2d(), c.pCamera.getLatestResult().getTimestampSeconds());
-                    }
-                }
-            }
+            addVisionMeasurements(swerve, true);
 
             // Do SingleTag
-            for (Camera c : cameras) {
-                // MultiTag doesn't account for the robotToCam displacement?
-                Optional<EstimatedRobotPose> estimate = getEstimate(swerve, c);
-                if (estimate.isPresent()) {
-                    if (estimate.get().strategy != PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR) {
-                        swerve.addVisionMeasurement(estimate.get().estimatedPose.toPose2d(), c.pCamera.getLatestResult().getTimestampSeconds());
-                    }
-                }
-            }
-
+            addVisionMeasurements(swerve, false);
 
             // Optional<EstimatedRobotPose> frontEstimate = getEstimate(swerve, cameras[Cam.FRONT.idx]);
             // Optional<EstimatedRobotPose> backEstimate = getEstimate(swerve, cameras[Cam.BACK.idx]);
@@ -276,12 +260,35 @@ public class AprilTagVision extends SubsystemBase {
         }
     }
 
-    public Optional<EstimatedRobotPose> getEstimate(SwerveDrive swerve, Camera camera) {
-        Pose2d robotPose = swerve.getPose();
-        Optional<EstimatedRobotPose> estimate = getEstimateForCamera(camera.pCamera, camera.poseEstimator, robotPose);
-        return estimate;
+    // This is used
+    public void addVisionMeasurements(SwerveDrive swerve, boolean useMultiTag) {
+        for (Camera c : cameras) {
+            Optional<EstimatedRobotPose> estimate = getEstimate(swerve, c);
+            if (estimate.isPresent() && c.pCamera.isConnected()) {
+                // This is xnor
+                if (!(useMultiTag ^ estimate.get().strategy == PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR)) {
+                    swerve.addVisionMeasurement(estimate.get().estimatedPose.toPose2d(), c.pCamera.getLatestResult().getTimestampSeconds());
+                }
+            }
+        }
     }
 
+    // This is used
+    public Optional<EstimatedRobotPose> getEstimate(SwerveDrive swerve, Camera cam) {
+        Pose2d robotPose = swerve.getPose();
+
+        try {
+            cam.poseEstimator.setReferencePose(robotPose);
+            PhotonPipelineResult res = cam.pCamera.getLatestResult();
+            return cam.poseEstimator.update(res);
+        } catch (Exception e) {
+            // bad! log this and keep going
+            DriverStation.reportError("Exception running PhotonPoseEstimator", e.getStackTrace());
+            return Optional.empty();
+        }
+    }
+
+    // FROM HERE TO THE BOTTOM, ALL ARE NOT USED
     public List<Pose3d> getOptions(Camera camera, Optional<EstimatedRobotPose> estimate) {
         List<Pose3d> options = new ArrayList<Pose3d>();
         if (estimate.get().strategy == PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR) {
@@ -405,20 +412,6 @@ public class AprilTagVision extends SubsystemBase {
 
     private double calculateDifference(Pose3d x, Pose3d y) {
         return x.getTranslation().getDistance(y.getTranslation());
-    }
-
-    private static Optional<EstimatedRobotPose> getEstimateForCamera(PhotonCamera cam, PhotonPoseEstimator poseEstimator, Pose2d robotPose) {
-        if (!cam.isConnected()) return Optional.empty();
-
-        try {
-            poseEstimator.setReferencePose(robotPose);
-            PhotonPipelineResult res = cam.getLatestResult();
-            return poseEstimator.update(res);
-        } catch (Exception e) {
-            // bad! log this and keep going
-            DriverStation.reportError("Exception running PhotonPoseEstimator", e.getStackTrace());
-            return Optional.empty();
-        }
     }
 
     // create a strategy based off closestToReferencePoseStrategy that returns all
