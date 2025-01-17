@@ -76,7 +76,7 @@ public class AprilTagVision extends SubsystemBase {
     // use measurements to center of Swerve, and include offset
     // pitch is the Y angle, and it is positive down
     private final Transform3d m_robotToFrontAprilTagCam = new Transform3d(
-            new Translation3d(Units.inchesToMeters(27.5/2 +2.0), 0, Units.inchesToMeters(18.5)),
+            new Translation3d(Units.inchesToMeters(14.5), 0, Units.inchesToMeters(11.75)),
             new Rotation3d(0.0, Math.toRadians(0), 0.0));
 
     private final Transform3d m_robotToBackAprilTagCam = new Transform3d(
