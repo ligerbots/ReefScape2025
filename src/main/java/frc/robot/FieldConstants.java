@@ -24,7 +24,7 @@ public class FieldConstants {
         if (isRedAlliance()) {
             Rotation2d rot = pose.getRotation();
             // reflect the pose over center line, flip both the X and the rotation
-            return new Pose2d(FIELD_LENGTH - pose.getX(), pose.getY(), new Rotation2d(-rot.getCos(), rot.getSin()));
+            return new Pose2d(FIELD_LENGTH - pose.getX(), FIELD_WIDTH - pose.getY(), new Rotation2d(-rot.getCos(), rot.getSin()));
         }
 
         // Blue or we don't know; return the original pose

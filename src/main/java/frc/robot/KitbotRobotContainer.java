@@ -47,8 +47,8 @@ public class KitbotRobotContainer {
     }
     
     public Command getAutonomousCommand() {
-        // return new HelloWorldAuto(this.getDriveTrain());
-        return new PathPlannerAuto("First Auto");
+        return new HelloWorldAuto(this.getDriveTrain());
+        // return new PathPlannerAuto("First Auto");
     }
 
     public Pose2d getInitialPose() {

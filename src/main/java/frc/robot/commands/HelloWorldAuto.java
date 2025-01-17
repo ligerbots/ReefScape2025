@@ -26,9 +26,21 @@ public class HelloWorldAuto extends AutoCommandInterface {
         try {
             // PathPlannerAuto firstAuto = new PathPlannerAuto("Shot1 to Source1");
 
-            PathPlannerPath startPath = PathPlannerPath.fromPathFile("Shot1 to Source1");
+            PathPlannerPath startPath = PathPlannerPath.fromPathFile("Start1 to Shot1");
             m_initPose = startPath.getStartingDifferentialPose();
+            
             addCommands(m_driveTrain.followPath(startPath));
+
+            addCommands(m_driveTrain.followPath(PathPlannerPath.fromPathFile("Shot1 to Source1")));
+            addCommands(m_driveTrain.followPath(PathPlannerPath.fromPathFile("Source1 to Shot2")));
+
+            addCommands(m_driveTrain.followPath(PathPlannerPath.fromPathFile("Shot2 to Source1")));
+            addCommands(m_driveTrain.followPath(PathPlannerPath.fromPathFile("Source1 to Shot2")));
+
+            // addCommands(m_driveTrain.followPath(PathPlannerPath.fromPathFile("Shot2 to Source1")));
+            // addCommands(m_driveTrain.followPath(PathPlannerPath.fromPathFile("Source1 to Shot2")));
+
+
 
         } catch (Exception e) {
             DriverStation.reportError("Unable to load PP path Test", true);
