@@ -15,8 +15,7 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.StartEndCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.commands.AutoCommandInterface;
-import frc.robot.commands.HelloWorldAuto;
-//import frc.robot.commands.*;
+import frc.robot.commands.*;
 import frc.robot.subsystems.*;
 import frc.robot.subsystems.kitbot.KitbotRoller;
 
@@ -57,7 +56,7 @@ public class KitbotRobotContainer {
     
     private void configureAutos() {
         // TODO Auto-generated method stub
-        m_autoCommand = new HelloWorldAuto(m_driveTrain);
+        m_autoCommand = new HelloWorldAuto2(m_driveTrain, m_kitbotRoller);
     }
 
     public Command getAutonomousCommand() {
