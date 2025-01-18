@@ -63,17 +63,22 @@ public class HelloWorldAuto2 extends AutoCommandInterface {
                 addCommands(m_driveTrain.followPath(PathPlannerPath.fromPathFile("Source1 to Shot2")));
                 addCommands(new StartEndCommand(roller::runRollerOut, roller::stop, roller).withTimeout(.3));
                 ;
+                
+                addCommands(m_driveTrain.followPath(PathPlannerPath.fromPathFile("Shot2 J Path")));
 
-                addCommands(m_driveTrain.followPath(PathPlannerPath.fromPathFile("Shot2 to Source1")));
-                // addCommands(new WaitCommand(.1));
+                addCommands(m_driveTrain.followPath(PathPlannerPath.fromPathFile("Shot2 J Path ReefB")));
 
-                addCommands(m_driveTrain.followPath(PathPlannerPath.fromPathFile("Source1 to ReefB")));
-                addCommands(new StartEndCommand(roller::runRollerOut, roller::stop, roller).withTimeout(.3));
 
-                addCommands(m_driveTrain.followPath(PathPlannerPath.fromPathFile("ReefB to Source1")));
-                // addCommands(new WaitCommand(.1));
-                addCommands(m_driveTrain.followPath(PathPlannerPath.fromPathFile("Source1 to ReefB")));
-                addCommands(new StartEndCommand(roller::runRollerOut, roller::stop, roller).withTimeout(.3));
+                // addCommands(m_driveTrain.followPath(PathPlannerPath.fromPathFile("Shot2 to Source1")));
+                // // addCommands(new WaitCommand(.1));
+
+                // addCommands(m_driveTrain.followPath(PathPlannerPath.fromPathFile("Source1 to ReefB")));
+                // addCommands(new StartEndCommand(roller::runRollerOut, roller::stop, roller).withTimeout(.3));
+
+                // addCommands(m_driveTrain.followPath(PathPlannerPath.fromPathFile("ReefB to Source1")));
+                // // addCommands(new WaitCommand(.1));
+                // addCommands(m_driveTrain.followPath(PathPlannerPath.fromPathFile("Source1 to ReefB")));
+                // addCommands(new StartEndCommand(roller::runRollerOut, roller::stop, roller).withTimeout(.3));
             }
 
         } catch (Exception e) {
