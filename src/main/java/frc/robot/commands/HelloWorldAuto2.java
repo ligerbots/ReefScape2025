@@ -60,7 +60,6 @@ public class HelloWorldAuto2 extends AutoCommandInterface {
                 // addCommands(new WaitCommand(.1));
                 addCommands(m_driveTrain.followPath(PathPlannerPath.fromPathFile("Source1 to Shot2")));
                 addCommands(new StartEndCommand(roller::runRollerOut, roller::stop, roller).withTimeout(.3));
-                ;
                 
                 addCommands(m_driveTrain.followPath(PathPlannerPath.fromPathFile("Shot2 J Path")));
 
