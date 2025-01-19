@@ -34,7 +34,6 @@ import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -62,11 +61,6 @@ public class AprilTagVision extends SubsystemBase {
     static final double SHED_TAG_NODE_XOFFSET = 0.45;
     static final double SHED_TAG_NODE_ZOFFSET = 0.31;
     static final double SHED_TAG_SUBSTATION_YOFFSET = 1.19;
-
-    // private static final String CAMERA_NAME_FRONT = "ArducamFront"; // wouldn't need this if we hardcode it in Camera enum
-    // private static final String CAMERA_NAME_BACK = "ArducamBack";
-    // private final PhotonCamera m_aprilTagCameraFront = new PhotonCamera(CAMERA_NAME_FRONT);
-    // private final PhotonCamera m_aprilTagCameraBack = new PhotonCamera(CAMERA_NAME_BACK);
 
     private enum Cam {
         FRONT(0),
@@ -116,11 +110,6 @@ public class AprilTagVision extends SubsystemBase {
         }
     }
 
-    // Forward B&W camera for Apriltags
-    // relative position of the camera on the robot to the robot center
-    // use measurements to center of Swerve, and include offset
-    // pitch is the Y angle, and it is positive down
-
     // Simulation support
     private VisionSystemSim m_visionSim;
 
@@ -136,13 +125,13 @@ public class AprilTagVision extends SubsystemBase {
         cameras = new Camera[2];
 
         cameras[Cam.FRONT.idx] = new Camera("ArducamFront", new Transform3d(
-            new Translation3d(Units.inchesToMeters(0.5 - DriveTrain.ROBOT_SWERVE_OFFSET_X_INCHES), 0, Units.inchesToMeters(18.5)),
-            new Rotation3d(0.0, Math.toRadians(-19.4), 0.0)
+            new Translation3d(Units.inchesToMeters(14.5), 0, Units.inchesToMeters(11.75)),
+            new Rotation3d(0.0, Math.toRadians(0.0), 0.0)
         ));
 
         cameras[Cam.BACK.idx] = new Camera("ArducamBack", new Transform3d(
-            new Translation3d(Units.inchesToMeters(-17.25 - DriveTrain.ROBOT_SWERVE_OFFSET_X_INCHES), 0, Units.inchesToMeters(10.0)),
-            new Rotation3d(0.0, Math.toRadians(-18.0), Math.toRadians(180.0))
+            new Translation3d(Units.inchesToMeters(-(27.5/2 - 1.0)), 0, Units.inchesToMeters(17.0)),
+            new Rotation3d(0.0, Math.toRadians(0.0), Math.toRadians(180.0))
         ));
         
         // set the driver mode to false
