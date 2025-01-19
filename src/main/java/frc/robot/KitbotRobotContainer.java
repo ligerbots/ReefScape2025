@@ -14,15 +14,10 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 
 import frc.robot.commands.*;
 import frc.robot.subsystems.*;
-import frc.robot.subsystems.kitbot.KitbotRoller;
+import frc.robot.subsystems.kitbot.*;
 
 public class KitbotRobotContainer {
     private static final double JOYSTICK_DEADBAND = 0.05;
-
-    // Need to know where the robot starts on the field
-    // For this simulation, just make it fixed
-    // Location: x = 2 meters, y = 1/2 of field, angle is forward
-    // private static final Pose2d START_LOCATION = new Pose2d(7.9, 7.1, Rotation2d.fromDegrees(0));
 
     private final CommandXboxController m_driverController = new CommandXboxController(0);
 
@@ -30,7 +25,7 @@ public class KitbotRobotContainer {
     private final DriveTrain m_driveTrain = new DriveTrain("swerve/kitbot", m_aprilTagVision);
     private final KitbotRoller m_kitbotRoller = new KitbotRoller();
 
-    private  AutoCommandInterface m_autoCommand;
+    private AutoCommandInterface m_autoCommand;
 
     public KitbotRobotContainer() {
         configureBindings();
