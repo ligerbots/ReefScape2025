@@ -80,7 +80,7 @@ public class AprilTagVision extends SubsystemBase {
             new Rotation3d(0.0, Math.toRadians(0), 0.0));
 
     private final Transform3d m_robotToBackAprilTagCam = new Transform3d(
-            new Translation3d(Units.inchesToMeters(-27.5/2), 0, Units.inchesToMeters(18.5)),
+            new Translation3d(Units.inchesToMeters(-27.5/2 - 1.0), 0, Units.inchesToMeters(17.0)),
             new Rotation3d(0.0, Math.toRadians(0), Math.toRadians(180.0)));
 
     private final PhotonPoseEstimator m_photonPoseEstimatorFront;
