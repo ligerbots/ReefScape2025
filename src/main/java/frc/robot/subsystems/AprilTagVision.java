@@ -62,6 +62,11 @@ public class AprilTagVision extends SubsystemBase {
     static final double SHED_TAG_NODE_ZOFFSET = 0.31;
     static final double SHED_TAG_SUBSTATION_YOFFSET = 1.19;
 
+    // Base standard deviations for vision results
+    static final Matrix<N3, N1> SINGLE_TAG_BASE_STDDEV = VecBuilder.fill(4, 4, 8);
+    static final Matrix<N3, N1> MULTI_TAG_BASE_STDDEV = VecBuilder.fill(0.5, 0.5, 1);
+    static final Matrix<N3, N1> INFINITE_STDDEV = VecBuilder.fill(Double.MAX_VALUE, Double.MAX_VALUE, Double.MAX_VALUE);
+
     private enum Cam {
         FRONT(0),
         BACK(1);
@@ -108,7 +113,7 @@ public class AprilTagVision extends SubsystemBase {
             photonCamera.setDriverMode(false);
         }
 
-        public void setDriverMode(Boolean mode) {
+        void setDriverMode(Boolean mode) {
             photonCamera.setDriverMode(mode);
         }
     }
@@ -215,37 +220,37 @@ public class AprilTagVision extends SubsystemBase {
         }
     }
 
-    // FROM HERE TO THE BOTTOM, ALL ARE NOT USED
-    List<Pose3d> getOptions(Camera camera, Optional<EstimatedRobotPose> estimate) {
-        List<Pose3d> options = new ArrayList<Pose3d>();
-        if (estimate.get().strategy == PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR) {
-            // if multitag is used, add robot pose to options
-            options.add(estimate.get().estimatedPose);
-        } else {
-            // if only one tag is visible, add all possible poses to options
-            options = getAmbiguousPoses(camera.photonCamera.getLatestResult(), camera.robotToCam);
-        }
+    // // FROM HERE TO THE BOTTOM, ALL ARE NOT USED
+    // List<Pose3d> getOptions(Camera camera, Optional<EstimatedRobotPose> estimate) {
+    //     List<Pose3d> options = new ArrayList<Pose3d>();
+    //     if (estimate.get().strategy == PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR) {
+    //         // if multitag is used, add robot pose to options
+    //         options.add(estimate.get().estimatedPose);
+    //     } else {
+    //         // if only one tag is visible, add all possible poses to options
+    //         options = getAmbiguousPoses(camera.photonCamera.getLatestResult(), camera.robotToCam);
+    //     }
 
-        return options;
-    }
+    //     return options;
+    // }
 
-    void plotAndUpdate(Camera camera, Optional<EstimatedRobotPose> estimate, SwerveDrive swerve) {
-        Pose2d pose = estimate.get().estimatedPose.toPose2d();
-        swerve.addVisionMeasurement(pose, camera.photonCamera.getLatestResult().getTimestampSeconds());
+    // void plotAndUpdate(Camera camera, Optional<EstimatedRobotPose> estimate, SwerveDrive swerve) {
+    //     Pose2d pose = estimate.get().estimatedPose.toPose2d();
+    //     swerve.addVisionMeasurement(pose, camera.photonCamera.getLatestResult().getTimestampSeconds());
 
-        if (PLOT_POSE_SOLUTIONS) {
-            plotVisionPose(swerve.field, pose);
-        }
-        if (PLOT_ALTERNATE_POSES) {
-            // *** Yes, this is repeated code, and maybe that is bad.
-            // But this will save some cycles if this PLOT option is turned off.
-            if (estimate.get().strategy != PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR) {
-                plotAlternateSolutions(swerve.field,
-                        List.of(getAmbiguousPoses(camera.photonCamera.getLatestResult(), camera.robotToCam)));
-            } else
-                swerve.field.getObject("visionAltPoses").setPose(pose);
-        }
-    }
+    //     if (PLOT_POSE_SOLUTIONS) {
+    //         plotVisionPose(swerve.field, pose);
+    //     }
+    //     if (PLOT_ALTERNATE_POSES) {
+    //         // *** Yes, this is repeated code, and maybe that is bad.
+    //         // But this will save some cycles if this PLOT option is turned off.
+    //         if (estimate.get().strategy != PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR) {
+    //             plotAlternateSolutions(swerve.field,
+    //                     List.of(getAmbiguousPoses(camera.photonCamera.getLatestResult(), camera.robotToCam)));
+    //         } else
+    //             swerve.field.getObject("visionAltPoses").setPose(pose);
+    //     }
+    // }
 
     // get the tag ID closest to horizontal center of camera
     // we might want to use this to do fine adjustments on field element locations
@@ -297,81 +302,77 @@ public class AprilTagVision extends SubsystemBase {
 
     // Calculates new standard deviations This algorithm is a heuristic that creates dynamic standard deviations based
     // on number of tags, estimation strategy, and distance from the tags.
-    // private Matrix<N3, N1> estimateStdDev(Pose2d estimatedPose, List<PhotonTrackedTarget> targets) {
+    private Matrix<N3, N1> estimateStdDev(Pose2d estimatedPose, List<PhotonTrackedTarget> targets) {
 
-    //     // Pose present. Start running Heuristic
-    //     int numTags = 0;
-    //     double avgDist = 0;
+        // Pose present. Start running Heuristic
+        int numTags = 0;
+        double avgDist = 0;
 
-    //     // Precalculation - see how many tags we found, and calculate an
-    //     // average-distance metric
-    //     for (PhotonTrackedTarget tgt : targets) {
-    //         var tagPose = m_aprilTagFieldLayout.getTagPose(tgt.getFiducialId());
-    //         if (tagPose.isEmpty())
-    //             continue;
+        // Precalculation - see how many tags we found, and calculate an
+        // average-distance metric
+        for (PhotonTrackedTarget tgt : targets) {
+            var tagPose = m_aprilTagFieldLayout.getTagPose(tgt.getFiducialId());
+            if (tagPose.isEmpty())
+                continue;
 
-    //         numTags++;
-    //         avgDist += tagPose.get().toPose2d().getTranslation().getDistance(estimatedPose.getTranslation());
-    //     }
+            numTags++;
+            avgDist += tagPose.get().toPose2d().getTranslation().getDistance(estimatedPose.getTranslation());
+        }
 
-    //     // Should not happen, but protect against divide by zero
-    //     if (numTags == 0)
-    //         return INFINITE_STDDEV;
+        // Should not happen, but protect against divide by zero
+        if (numTags == 0)
+            return INFINITE_STDDEV;
 
-    //     avgDist /= numTags;
+        avgDist /= numTags;
 
-    //     // Single tags further away than 4 meter (~13 ft) are useless
-    //     if (numTags == 1 && avgDist > 4.0) 
-    //         return INFINITE_STDDEV;
+        // Single tags further away than 4 meter (~13 ft) are useless
+        if (numTags == 1 && avgDist > 4.0) 
+            return INFINITE_STDDEV;
 
-    //     // Starting estimate = multitag or not
-    //     Matrix<N3, N1> estStdDev = numTags == 1 ? SINGLE_TAG_BASE_STDDEV : MULTI_TAG_BASE_STDDEV;
+        // Starting estimate = multitag or not
+        Matrix<N3, N1> estStdDev = numTags == 1 ? SINGLE_TAG_BASE_STDDEV : MULTI_TAG_BASE_STDDEV;
 
-    //     // Increase std devs based on (average) distance
-    //     // This is taken from YAGSL vision example.
-    //     // TODO figure out why
-    //     estStdDev = estStdDev.times(1.0 + avgDist * avgDist / 30.0);
+        // Increase std devs based on (average) distance
+        // This is taken from YAGSL vision example.
+        // TODO figure out why
+        estStdDev = estStdDev.times(1.0 + avgDist * avgDist / 30.0);
 
-    //     return estStdDev;
-    // }
+        return estStdDev;
+    }
 
     // Private routines for calculating the odometry info
 
-    private double calculateDifference(Pose3d x, Pose3d y) {
-        return x.getTranslation().getDistance(y.getTranslation());
-    }
+    // // create a strategy based off closestToReferencePoseStrategy that returns all
+    // // possible robot positions
+    // private static ArrayList<Pose3d> getAmbiguousPoses(PhotonPipelineResult result, Transform3d robotToCamera) {
+    //     ArrayList<Pose3d> ambigiousPoses = new ArrayList<>();
+    //     for (PhotonTrackedTarget target : result.targets) {
+    //         int targetFiducialId = target.getFiducialId();
 
-    // create a strategy based off closestToReferencePoseStrategy that returns all
-    // possible robot positions
-    private static ArrayList<Pose3d> getAmbiguousPoses(PhotonPipelineResult result, Transform3d robotToCamera) {
-        ArrayList<Pose3d> ambigiousPoses = new ArrayList<>();
-        for (PhotonTrackedTarget target : result.targets) {
-            int targetFiducialId = target.getFiducialId();
+    //         // Don't report errors for non-fiducial targets. This could also be resolved by
+    //         // adding -1 to
+    //         // the initial HashSet.
+    //         if (targetFiducialId == -1)
+    //             continue;
 
-            // Don't report errors for non-fiducial targets. This could also be resolved by
-            // adding -1 to
-            // the initial HashSet.
-            if (targetFiducialId == -1)
-                continue;
+    //         Optional<Pose3d> targetPosition = m_aprilTagFieldLayout.getTagPose(target.getFiducialId());
 
-            Optional<Pose3d> targetPosition = m_aprilTagFieldLayout.getTagPose(target.getFiducialId());
+    //         if (targetPosition.isEmpty())
+    //             continue;
 
-            if (targetPosition.isEmpty())
-                continue;
+    //         // add all possible robot positions to the array that is returned
+    //         ambigiousPoses.add(
+    //                 targetPosition.get()
+    //                         .transformBy(target.getBestCameraToTarget().inverse())
+    //                         .transformBy(robotToCamera.inverse()));
+    //         ambigiousPoses.add(
+    //                 targetPosition.get()
+    //                         .transformBy(target.getAlternateCameraToTarget().inverse())
+    //                         .transformBy(robotToCamera.inverse()));
+    //     }
 
-            // add all possible robot positions to the array that is returned
-            ambigiousPoses.add(
-                    targetPosition.get()
-                            .transformBy(target.getBestCameraToTarget().inverse())
-                            .transformBy(robotToCamera.inverse()));
-            ambigiousPoses.add(
-                    targetPosition.get()
-                            .transformBy(target.getAlternateCameraToTarget().inverse())
-                            .transformBy(robotToCamera.inverse()));
-        }
-
-        return ambigiousPoses;
-    }
+    //     return ambigiousPoses;
+    // }
 
     // private static AprilTag constructTag(int id, double x, double y, double z,
     // double angle) {
@@ -413,20 +414,20 @@ public class AprilTagVision extends SubsystemBase {
 
     // --- Routines to plot the vision solutions on a Field2d ---------
 
-    private void plotVisionPoses(Field2d field, List<Pose2d> poses) {
-        if (field == null)
-            return;
-        if (poses == null)
-            field.getObject("visionPoses").setPoses();
-        else
-            field.getObject("visionPoses").setPoses(poses);
-    }
+    // private void plotVisionPoses(Field2d field, List<Pose2d> poses) {
+    //     if (field == null)
+    //         return;
+    //     if (poses == null)
+    //         field.getObject("visionPoses").setPoses();
+    //     else
+    //         field.getObject("visionPoses").setPoses(poses);
+    // }
 
-    private void plotVisionPose(Field2d field, Pose2d pose) {
-        if (field == null)
-            return;
-        field.getObject("visionPoses").setPose(pose);
-    }
+    // private void plotVisionPose(Field2d field, Pose2d pose) {
+    //     if (field == null)
+    //         return;
+    //     field.getObject("visionPoses").setPose(pose);
+    // }
 
     private void plotVisibleTags(Field2d field) {
         if (field == null)
@@ -450,16 +451,16 @@ public class AprilTagVision extends SubsystemBase {
         field.getObject("visibleTagPoses").setPoses(poses);
     }
 
-    private void plotAlternateSolutions(Field2d field, List<List<Pose3d>> allPoses) {
-        if (field == null)
-            return;
+    // private void plotAlternateSolutions(Field2d field, List<List<Pose3d>> allPoses) {
+    //     if (field == null)
+    //         return;
 
-        ArrayList<Pose2d> both = new ArrayList<>();
-        for (List<Pose3d> pl : allPoses) {
-            for (Pose3d p : pl)
-                both.add(p.toPose2d());
-        }
+    //     ArrayList<Pose2d> both = new ArrayList<>();
+    //     for (List<Pose3d> pl : allPoses) {
+    //         for (Pose3d p : pl)
+    //             both.add(p.toPose2d());
+    //     }
 
-        field.getObject("visionAltPoses").setPoses(both);
-    }
+    //     field.getObject("visionAltPoses").setPoses(both);
+    // }
 }
