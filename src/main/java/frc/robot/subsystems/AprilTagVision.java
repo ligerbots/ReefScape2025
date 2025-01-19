@@ -89,7 +89,7 @@ public class AprilTagVision extends SubsystemBase {
             pCamera = new PhotonCamera(name);
 
             // In Case of Emergencies!!
-            pCamera.setVersionCheckEnabled(false);
+            // pCamera.setVersionCheckEnabled(false);
 
             // initialize poseEstimator
             // if there is multitag, use the corresponding strategy with reference as back up
@@ -130,11 +130,6 @@ public class AprilTagVision extends SubsystemBase {
             m_aprilTagFieldLayout = null;
         }
 
-        if (Constants.SIMULATION_SUPPORT) {
-            // initialize a simulated camera. Must be done after creating the tag layout
-            initializeSimulation();
-        }
-
         // initialize cameras
         cameras = new Camera[2];
 
@@ -151,6 +146,11 @@ public class AprilTagVision extends SubsystemBase {
         // set the driver mode to false
         cameras[Cam.FRONT.idx].setDriverMode(false);
         cameras[Cam.BACK.idx].setDriverMode(false);
+
+        if (Constants.SIMULATION_SUPPORT) {
+            // initialize a simulated camera. Must be done after creating the tag layout
+            initializeSimulation();
+        }
     }
 
     @Override
@@ -162,12 +162,7 @@ public class AprilTagVision extends SubsystemBase {
         SmartDashboard.putBoolean("aprilTagVision/backCamera", cameras[Cam.BACK.idx].pCamera.isConnected());
     }
 
-    public void updateSimulation(Pose2d pose) {
-        m_visionSim.update(pose);
-    }
-
-    public void updateOdometry(SwerveDrive swerve) {
-
+    public void updateSimulation(SwerveDrive swerve) {
         if (SwerveDriveTelemetry.isSimulation && swerve.getSimulationDriveTrainPose().isPresent()) {
             //  In the maple-sim, odometry is simulated using encoder values, accounting for
             //  factors like skidding and drifting.
@@ -179,6 +174,9 @@ public class AprilTagVision extends SubsystemBase {
             //  simulator when updating the vision simulation during the simulation.       
             m_visionSim.update(swerve.getSimulationDriveTrainPose().get());
         }
+    }
+
+    public void updateOdometry(SwerveDrive swerve) {
 
         // Cannot do anything if there is no field layout
         if (m_aprilTagFieldLayout == null)
@@ -263,9 +261,11 @@ public class AprilTagVision extends SubsystemBase {
     // This is used
     public void addVisionMeasurements(SwerveDrive swerve, boolean useMultiTag) {
         for (Camera c : cameras) {
+            if (!c.pCamera.isConnected()) continue;
+
             List<Optional<EstimatedRobotPose>> estimates = getEstimates(swerve, c);
             for (Optional<EstimatedRobotPose> estimate : estimates) {
-                if (estimate.isPresent() && c.pCamera.isConnected()) {
+                if (estimate.isPresent()) {
                     // This is like xnor
                     if (useMultiTag == (estimate.get().strategy == PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR)) {
                         swerve.addVisionMeasurement(estimate.get().estimatedPose.toPose2d(), c.pCamera.getLatestResult().getTimestampSeconds());

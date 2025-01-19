@@ -319,9 +319,7 @@ public class DriveTrain extends SubsystemBase {
 
     @Override
     public void simulationPeriodic() {
-        // update the Apriltag sim. Needs the robot pose
-        Pose2d robotPose = getPose();
-        m_aprilTagVision.updateSimulation(robotPose);
+        m_aprilTagVision.updateSimulation(m_swerveDrive);
     }
 
     /**
