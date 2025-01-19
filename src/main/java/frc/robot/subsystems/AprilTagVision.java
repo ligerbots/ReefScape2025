@@ -81,14 +81,14 @@ public class AprilTagVision extends SubsystemBase {
     private static AprilTagFieldLayout m_aprilTagFieldLayout;
 
     private class Camera {
-        private PhotonCamera pCamera;
-        private Transform3d robotToCam;
-        private PhotonPoseEstimator poseEstimator;
+        PhotonCamera photonCamera;
+        Transform3d robotToCam;
+        PhotonPoseEstimator poseEstimator;
         List<PhotonPipelineResult> pipeResults;
 
         private Camera(String name, Transform3d robotToCam) {
             this.robotToCam = robotToCam;
-            pCamera = new PhotonCamera(name);
+            photonCamera = new PhotonCamera(name);
 
             // In Case of Emergencies!!
             // pCamera.setVersionCheckEnabled(false);
@@ -112,7 +112,7 @@ public class AprilTagVision extends SubsystemBase {
         }
 
         public void setDriverMode(Boolean mode) {
-            pCamera.setDriverMode(mode);
+            photonCamera.setDriverMode(mode);
         }
     }
 
@@ -160,8 +160,8 @@ public class AprilTagVision extends SubsystemBase {
         // set the driver mode to false
         // setDriverMode(false);
 
-        SmartDashboard.putBoolean("aprilTagVision/frontCamera", cameras[Cam.FRONT.idx].pCamera.isConnected());
-        SmartDashboard.putBoolean("aprilTagVision/backCamera", cameras[Cam.BACK.idx].pCamera.isConnected());
+        SmartDashboard.putBoolean("aprilTagVision/frontCamera", cameras[Cam.FRONT.idx].photonCamera.isConnected());
+        SmartDashboard.putBoolean("aprilTagVision/backCamera", cameras[Cam.BACK.idx].photonCamera.isConnected());
     }
 
     public void updateSimulation(SwerveDrive swerve) {
@@ -186,13 +186,13 @@ public class AprilTagVision extends SubsystemBase {
 
         try {
             if (PLOT_VISIBLE_TAGS) {
-                plotVisibleTags(swerve.field, List.of(cameras[Cam.FRONT.idx].pCamera, cameras[Cam.BACK.idx].pCamera));
+                plotVisibleTags(swerve.field, List.of(cameras[Cam.FRONT.idx].photonCamera, cameras[Cam.BACK.idx].photonCamera));
             }
 
             // Since we want to go through the images twice, we need to fetch the results and save them
             // getAllUnreadResults() forgets the results once called
             for (Camera c : cameras) {
-                c.pipeResults = c.pCamera.getAllUnreadResults();
+                c.pipeResults = c.photonCamera.getAllUnreadResults();
             }
 
             // Do MultiTag
@@ -235,7 +235,7 @@ public class AprilTagVision extends SubsystemBase {
             options.add(estimate.get().estimatedPose);
         } else {
             // if only one tag is visible, add all possible poses to options
-            options = getAmbiguousPoses(camera.pCamera.getLatestResult(), camera.robotToCam);
+            options = getAmbiguousPoses(camera.photonCamera.getLatestResult(), camera.robotToCam);
         }
 
         return options;
@@ -243,7 +243,7 @@ public class AprilTagVision extends SubsystemBase {
 
     void plotAndUpdate(Camera camera, Optional<EstimatedRobotPose> estimate, SwerveDrive swerve) {
         Pose2d pose = estimate.get().estimatedPose.toPose2d();
-        swerve.addVisionMeasurement(pose, camera.pCamera.getLatestResult().getTimestampSeconds());
+        swerve.addVisionMeasurement(pose, camera.photonCamera.getLatestResult().getTimestampSeconds());
 
         if (PLOT_POSE_SOLUTIONS) {
             plotVisionPose(swerve.field, pose);
@@ -253,7 +253,7 @@ public class AprilTagVision extends SubsystemBase {
             // But this will save some cycles if this PLOT option is turned off.
             if (estimate.get().strategy != PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR) {
                 plotAlternateSolutions(swerve.field,
-                        List.of(getAmbiguousPoses(camera.pCamera.getLatestResult(), camera.robotToCam)));
+                        List.of(getAmbiguousPoses(camera.photonCamera.getLatestResult(), camera.robotToCam)));
             } else
                 swerve.field.getObject("visionAltPoses").setPose(pose);
         }
@@ -263,10 +263,10 @@ public class AprilTagVision extends SubsystemBase {
     // we might want to use this to do fine adjustments on field element locations
     public int getCentralTagId() {
         // make sure camera connected
-        if (!cameras[Cam.FRONT.idx].pCamera.isConnected())
+        if (!cameras[Cam.FRONT.idx].photonCamera.isConnected())
             return -1;
 
-        var targetResult = cameras[Cam.FRONT.idx].pCamera.getLatestResult();
+        var targetResult = cameras[Cam.FRONT.idx].photonCamera.getLatestResult();
         // make a temp holder var for least Y translation, set to first tags translation
         double minY = 1.0e6; // big number
         int targetID = -1;
@@ -414,13 +414,11 @@ public class AprilTagVision extends SubsystemBase {
         // So, always have a little bit of uncertainty.
         prop.setCalibError(0.1, 0.03);
 
-        PhotonCameraSim cam = new PhotonCameraSim(cameras[Cam.FRONT.idx].pCamera, prop);
-        cam.setMaxSightRange(Units.feetToMeters(20.0));
-        m_visionSim.addCamera(cam, cameras[Cam.FRONT.idx].robotToCam);
-
-        cam = new PhotonCameraSim(cameras[Cam.BACK.idx].pCamera, prop);
-        cam.setMaxSightRange(Units.feetToMeters(20.0));
-        m_visionSim.addCamera(cam, cameras[Cam.BACK.idx].robotToCam);
+        for (Camera c : cameras) {
+            PhotonCameraSim camSim = new PhotonCameraSim(c.photonCamera, prop);
+            camSim.setMaxSightRange(Units.feetToMeters(20.0));
+            m_visionSim.addCamera(camSim, c.robotToCam);
+        }
 
         m_visionSim.addAprilTags(m_aprilTagFieldLayout);
     }
