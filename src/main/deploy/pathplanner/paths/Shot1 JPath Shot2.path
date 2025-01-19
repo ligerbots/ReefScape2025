@@ -66,7 +66,7 @@
         "x": 0.4,
         "y": 5.5
       },
-      "rotationOffset": -100.0,
+      "rotationOffset": -59.99999999999999,
       "minWaypointRelativePos": 0.7719928186714539,
       "maxWaypointRelativePos": 1.149012567324956,
       "name": "Point Towards Zone"
