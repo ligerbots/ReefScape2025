@@ -103,6 +103,9 @@ public class AprilTagVision extends SubsystemBase {
                     robotToCam
                 );
             }
+
+            // set the driver mode to false
+            photonCamera.setDriverMode(false);
         }
 
         public void setDriverMode(Boolean mode) {
@@ -134,10 +137,6 @@ public class AprilTagVision extends SubsystemBase {
             new Rotation3d(0.0, Math.toRadians(0.0), Math.toRadians(180.0))
         ));
         
-        // set the driver mode to false
-        cameras[Cam.FRONT.idx].setDriverMode(false);
-        cameras[Cam.BACK.idx].setDriverMode(false);
-
         if (Constants.SIMULATION_SUPPORT) {
             // initialize a simulated camera. Must be done after creating the tag layout
             initializeSimulation();
@@ -175,7 +174,7 @@ public class AprilTagVision extends SubsystemBase {
 
         try {
             if (PLOT_VISIBLE_TAGS) {
-                plotVisibleTags(swerve.field, List.of(cameras[Cam.FRONT.idx].photonCamera, cameras[Cam.BACK.idx].photonCamera));
+                plotVisibleTags(swerve.field);
             }
 
             // Since we want to go through the images twice, we need to fetch the results and save them
@@ -423,21 +422,21 @@ public class AprilTagVision extends SubsystemBase {
             field.getObject("visionPoses").setPoses(poses);
     }
 
-    private static void plotVisionPose(Field2d field, Pose2d pose) {
+    private void plotVisionPose(Field2d field, Pose2d pose) {
         if (field == null)
             return;
         field.getObject("visionPoses").setPose(pose);
     }
 
-    private void plotVisibleTags(Field2d field, List<PhotonCamera> cameraList) {
+    private void plotVisibleTags(Field2d field) {
         if (field == null)
             return;
 
         ArrayList<Pose2d> poses = new ArrayList<Pose2d>();
-        for (PhotonCamera cam : cameraList) {
-            if (!cam.isConnected()) continue;
+        for (Camera cam : cameras) {
+            if (!cam.photonCamera.isConnected()) continue;
 
-            for (PhotonTrackedTarget target : cam.getLatestResult().getTargets()) {
+            for (PhotonTrackedTarget target : cam.photonCamera.getLatestResult().getTargets()) {
                 int targetFiducialId = target.getFiducialId();
                 if (targetFiducialId == -1)
                     continue;
@@ -451,7 +450,7 @@ public class AprilTagVision extends SubsystemBase {
         field.getObject("visibleTagPoses").setPoses(poses);
     }
 
-    private static void plotAlternateSolutions(Field2d field, List<List<Pose3d>> allPoses) {
+    private void plotAlternateSolutions(Field2d field, List<List<Pose3d>> allPoses) {
         if (field == null)
             return;
 
