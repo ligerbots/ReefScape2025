@@ -4,14 +4,13 @@
 
 package frc.robot.commands;
 
-import com.pathplanner.lib.commands.PathPlannerAuto;
 import com.pathplanner.lib.path.PathPlannerPath;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.StartEndCommand;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
+
 import frc.robot.FieldConstants;
 import frc.robot.subsystems.DriveTrain;
 import frc.robot.subsystems.kitbot.KitbotRoller;
@@ -50,8 +49,6 @@ public class HelloWorldAuto extends AutoCommandInterface {
 
             // addCommands(m_driveTrain.followPath(PathPlannerPath.fromPathFile("Shot2 to Source1")));
             // addCommands(m_driveTrain.followPath(PathPlannerPath.fromPathFile("Source1 to Shot2")));
-
-
 
         } catch (Exception e) {
             DriverStation.reportError("Unable to load PP path Test", true);
