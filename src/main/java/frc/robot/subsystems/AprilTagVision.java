@@ -50,8 +50,6 @@ public class AprilTagVision extends SubsystemBase {
     static final PoseStrategy POSE_STRATEGY = PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR;
     // static final PoseStrategy POSE_STRATEGY = PoseStrategy.CLOSEST_TO_REFERENCE_POSE;
     
-    public static final boolean USE_MULTITAG = true;
-
     // Plot vision solutions
     static final boolean PLOT_VISIBLE_TAGS = true;
     static final boolean PLOT_POSE_SOLUTIONS = true;
@@ -92,22 +90,10 @@ public class AprilTagVision extends SubsystemBase {
             // In Case of Emergencies!!
             // pCamera.setVersionCheckEnabled(false);
 
-            // initialize poseEstimator
-            // if there is multitag, use the corresponding strategy with reference as back up
-            if (USE_MULTITAG) {
-                poseEstimator = new PhotonPoseEstimator(
-                    m_aprilTagFieldLayout,
-                    PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR,
-                    robotToCam
-                );
-                poseEstimator.setMultiTagFallbackStrategy(PoseStrategy.CLOSEST_TO_REFERENCE_POSE);
-            } else {
-                poseEstimator = new PhotonPoseEstimator(
-                    m_aprilTagFieldLayout,
-                    PoseStrategy.CLOSEST_TO_REFERENCE_POSE,
-                    robotToCam
-                );
-            }
+            // Use the standard PoseStrategy
+            // Setting a fallback strategy is needed for MultiTag, and no harm for others
+            poseEstimator = new PhotonPoseEstimator(m_aprilTagFieldLayout, POSE_STRATEGY, robotToCam);
+            poseEstimator.setMultiTagFallbackStrategy(PoseStrategy.CLOSEST_TO_REFERENCE_POSE);
 
             // set the driver mode to false
             photonCamera.setDriverMode(false);
