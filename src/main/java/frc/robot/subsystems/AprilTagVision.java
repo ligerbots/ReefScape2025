@@ -34,6 +34,7 @@ import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -83,6 +84,7 @@ public class AprilTagVision extends SubsystemBase {
         private PhotonCamera pCamera;
         private Transform3d robotToCam;
         private PhotonPoseEstimator poseEstimator;
+        List<PhotonPipelineResult> pipeResults;
 
         private Camera(String name, Transform3d robotToCam) {
             this.robotToCam = robotToCam;
@@ -187,117 +189,46 @@ public class AprilTagVision extends SubsystemBase {
                 plotVisibleTags(swerve.field, List.of(cameras[Cam.FRONT.idx].pCamera, cameras[Cam.BACK.idx].pCamera));
             }
 
-            // Warning: be careful about fetching values. If cameras are not connected, you
-            // get errors
-            // Example: cannot fetch timestamp without checking for the camera.
-            // Make sure to test!
+            // Since we want to go through the images twice, we need to fetch the results and save them
+            // getAllUnreadResults() forgets the results once called
+            for (Camera c : cameras) {
+                c.pipeResults = c.pCamera.getAllUnreadResults();
+            }
 
-            
             // Do MultiTag
-            // By doing it this way, does it account for the robotToCam displacement?
             addVisionMeasurements(swerve, true);
 
             // Do SingleTag
             addVisionMeasurements(swerve, false);
-
-            // Optional<EstimatedRobotPose> frontEstimate = getEstimate(swerve, cameras[Cam.FRONT.idx]);
-            // Optional<EstimatedRobotPose> backEstimate = getEstimate(swerve, cameras[Cam.BACK.idx]);
-            
-            // if (frontEstimate.isPresent() && backEstimate.isPresent()) {
-            //     // Both are present
-            //     // Create a list of Pose3d options for the front camera
-            //     List<Pose3d> frontOptions = Camera.FRONT.getOptions();
-            //     List<Pose3d> backOptions = Camera.BACK.getOptions();
-
-            //     Pose3d bestBackPose3d = new Pose3d();
-            //     Pose3d bestFrontPose3d = new Pose3d();
-            //     double minDistance = 1e6;
-
-            //     if (PLOT_ALTERNATE_POSES) {
-            //         plotAlternateSolutions(swerve.field, List.of(frontOptions, backOptions));
-            //     }
-
-            //     // compare all backposes and frontposes to each other to find correct robot pose
-            //     for (Pose3d backPose : backOptions) {
-            //         for (Pose3d frontPose : frontOptions) {
-            //             double distance = calculateDifference(frontPose, backPose);
-
-            //             // makes the smallest difference the measurement
-            //             if (distance < minDistance) {
-            //                 bestBackPose3d = backPose;
-            //                 bestFrontPose3d = frontPose;
-            //                 minDistance = distance;
-            //             }
-            //         }
-            //     }
-
-            //     swerve.addVisionMeasurement(bestFrontPose3d.toPose2d(), Camera.FRONT.camera.getLatestResult().getTimestampSeconds());
-            //     swerve.addVisionMeasurement(bestBackPose3d.toPose2d(), Camera.BACK.camera.getLatestResult().getTimestampSeconds());
-
-            //     if (PLOT_POSE_SOLUTIONS) {
-            //         plotVisionPoses(swerve.field, List.of(bestFrontPose3d.toPose2d(), bestBackPose3d.toPose2d()));
-            //     }
-
-            //     return;
-            // }
-
-            // if (frontEstimate.isPresent()) {
-            //     Camera.FRONT.plotAndUpdate(frontEstimate, swerve);
-            // } else if (backEstimate.isPresent()) {
-            //     Camera.BACK.plotAndUpdate(frontEstimate, swerve);
-            // } else {
-            //     // no results, so clear the list in the Field
-            //     plotVisionPoses(swerve.field, null);
-            //     swerve.field.getObject("visionAltPoses").setPoses();
-            // }
-
-            return;
-
         } catch (Exception e) {
             DriverStation.reportError("Error updating odometry from AprilTags " + e.getLocalizedMessage(), false);
         }
     }
 
-    // This is used
     public void addVisionMeasurements(SwerveDrive swerve, boolean useMultiTag) {
-        for (Camera c : cameras) {
-            if (!c.pCamera.isConnected()) continue;
-
-            List<Optional<EstimatedRobotPose>> estimates = getEstimates(swerve, c);
-            for (Optional<EstimatedRobotPose> estimate : estimates) {
-                if (estimate.isPresent()) {
-                    // This is like xnor
-                    if (useMultiTag == (estimate.get().strategy == PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR)) {
-                        swerve.addVisionMeasurement(estimate.get().estimatedPose.toPose2d(), c.pCamera.getLatestResult().getTimestampSeconds());
-                    }
-                }
-            }
-        }
-    }
-
-    // This is used
-    public List<Optional<EstimatedRobotPose>> getEstimates(SwerveDrive swerve, Camera cam) {
         Pose2d robotPose = swerve.getPose();
 
-        try {
-            cam.poseEstimator.setReferencePose(robotPose);
-            List<PhotonPipelineResult> res = cam.pCamera.getAllUnreadResults();
-            List<Optional<EstimatedRobotPose>> estimates = new ArrayList<>();
-            
-            for (PhotonPipelineResult estimate : res) {
-                estimates.add(cam.poseEstimator.update(estimate));
-            }
+        for (Camera c : cameras) {
+            try {
+                c.poseEstimator.setReferencePose(robotPose);
 
-            return estimates;
-        } catch (Exception e) {
-            // bad! log this and keep going
-            DriverStation.reportError("Exception running PhotonPoseEstimator", e.getStackTrace());
-            return new ArrayList<>();
+                for (PhotonPipelineResult pipeRes : c.pipeResults) {
+                    if (useMultiTag == pipeRes.multitagResult.isPresent()) {
+                        Optional<EstimatedRobotPose> estPose = c.poseEstimator.update(pipeRes);
+                        if (estPose.isPresent()) {
+                            swerve.addVisionMeasurement(estPose.get().estimatedPose.toPose2d(), pipeRes.getTimestampSeconds());
+                        }
+                    }
+                }
+            } catch (Exception e) {
+                // bad! log this and keep going
+                DriverStation.reportError("Exception running PhotonPoseEstimator", e.getStackTrace());
+            }
         }
     }
 
     // FROM HERE TO THE BOTTOM, ALL ARE NOT USED
-    public List<Pose3d> getOptions(Camera camera, Optional<EstimatedRobotPose> estimate) {
+    List<Pose3d> getOptions(Camera camera, Optional<EstimatedRobotPose> estimate) {
         List<Pose3d> options = new ArrayList<Pose3d>();
         if (estimate.get().strategy == PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR) {
             // if multitag is used, add robot pose to options
@@ -310,7 +241,7 @@ public class AprilTagVision extends SubsystemBase {
         return options;
     }
 
-    public void plotAndUpdate(Camera camera, Optional<EstimatedRobotPose> estimate, SwerveDrive swerve) {
+    void plotAndUpdate(Camera camera, Optional<EstimatedRobotPose> estimate, SwerveDrive swerve) {
         Pose2d pose = estimate.get().estimatedPose.toPose2d();
         swerve.addVisionMeasurement(pose, camera.pCamera.getLatestResult().getTimestampSeconds());
 
