@@ -192,9 +192,15 @@ public class AprilTagVision extends SubsystemBase {
                 c.poseEstimator.setReferencePose(robotPose);
 
                 for (PhotonPipelineResult pipeRes : c.pipeResults) {
+                    
+                    // Important: PhotonPoseEstimator will not run if the result is the same time as the last call
+                    // So we can't actually run through the list twice
+                    // But, we can test for Multitag before calling the poseEstimator
                     if (useMultiTag == pipeRes.multitagResult.isPresent()) {
                         Optional<EstimatedRobotPose> estPose = c.poseEstimator.update(pipeRes);
                         if (estPose.isPresent()) {
+                            // Update the main poseEstimator with the vision result
+                            // Make sure to use the timestamp of this result
                             swerve.addVisionMeasurement(estPose.get().estimatedPose.toPose2d(), pipeRes.getTimestampSeconds());
                         }
                     }
