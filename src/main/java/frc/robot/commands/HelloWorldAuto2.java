@@ -22,10 +22,9 @@ public class HelloWorldAuto2 extends AutoCommandInterface {
     private Pose2d m_initPose;
 
     /** Creates a new NoteAuto. */
-    public HelloWorldAuto2(DriveTrain driveTrain, KitbotRoller roller) {
+    public HelloWorldAuto2(DriveTrain driveTrain, KitbotRoller roller, boolean awaySideAuto) {
         m_driveTrain = driveTrain;
 
-        boolean awaySideAuto = false;
         try {
 
             if(awaySideAuto) {

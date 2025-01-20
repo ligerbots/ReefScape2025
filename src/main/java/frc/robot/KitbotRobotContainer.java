@@ -6,7 +6,10 @@ package frc.robot;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.StartEndCommand;
@@ -25,6 +28,8 @@ public class KitbotRobotContainer {
     private final DriveTrain m_driveTrain = new DriveTrain("swerve/kitbot", m_aprilTagVision);
     private final KitbotRoller m_kitbotRoller = new KitbotRoller();
 
+    private final SendableChooser<Command> m_chosenAuto = new SendableChooser<>();
+    private final SendableChooser<Pose2d> m_startLocation = new SendableChooser<>();
     private AutoCommandInterface m_autoCommand;
 
     public KitbotRobotContainer() {
@@ -47,16 +52,32 @@ public class KitbotRobotContainer {
     }
     
     private void configureAutos() {
-        // TODO Auto-generated method stub
-        m_autoCommand = new HelloWorldAuto2(m_driveTrain, m_kitbotRoller);
+        // List of start locations
+        // m_startLocation.setDefaultOption("Processor Side", FieldConstants.ROBOT_START_1);
+        // m_startLocation.addOption("Center", FieldConstants.ROBOT_START_2);
+        // m_startLocation.addOption("Away Side (Not Processor)", FieldConstants.ROBOT_START_3);
+        // SmartDashboard.putData("Start Location", m_startLocation);
+
+        m_chosenAuto.setDefaultOption("Processor Side Standard", new HelloWorldAuto2(m_driveTrain, m_kitbotRoller, false));
+        m_chosenAuto.addOption("Processor Side J-Path", new HelloWorldAuto2(m_driveTrain, m_kitbotRoller, false));
+
+        m_chosenAuto.addOption("Away Side Standard", new HelloWorldAuto2(m_driveTrain, m_kitbotRoller, true));
+        m_chosenAuto.addOption("Away Side J-Path", new HelloWorldAuto2(m_driveTrain, m_kitbotRoller, true));
+
+        SmartDashboard.putData("Auto Choice", m_chosenAuto);
+
     }
 
     public Command getAutonomousCommand() {
-        return m_autoCommand;
+        return m_chosenAuto.getSelected();
+        // return m_autoCommand;
     }
 
     public Pose2d getInitialPose() {
-        return m_autoCommand.getInitialPose();
+        // return m_autoCommand.getInitialPose();
+        AutoCommandInterface j = (AutoCommandInterface) m_chosenAuto.getSelected();
+        return j.getInitialPose();
+        // return FieldConstants.flipPose(m_startLocation.getSelected());
     }
 
     public Command getDriveCommand() {
