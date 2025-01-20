@@ -55,18 +55,18 @@ public class PrimaryAutoBase extends AutoCommandInterface {
                 // addCommands(m_driveTrain.followPath(PathPlannerPath.fromPathFile("Source1 to ReefB")));
                 // addCommands(new StartEndCommand(roller::runRollerOut, roller::stop, roller).withTimeout(.3));
             } else {
-                PathPlannerPath startPath = PathPlannerPath.fromPathFile("Start2 to Shot1a");
+                PathPlannerPath startPath = PathPlannerPath.fromPathFile("Start2 to ReefJ");
                 m_initPose = startPath.getStartingDifferentialPose();
                 
                 addCommands(m_driveTrain.followPath(startPath));
                 addCommands(new StartEndCommand(roller::runRollerOut, roller::stop, roller).withTimeout(.5));
 
-                addCommands(m_driveTrain.followPath(PathPlannerPath.fromPathFile("Shot1a to Source2")));
+                addCommands(m_driveTrain.followPath(PathPlannerPath.fromPathFile("ReefJ to Source2")));
                 addCommands(new WaitCommand(.75));
-                addCommands(m_driveTrain.followPath(PathPlannerPath.fromPathFile("Source2 to Shot2a")));
+                addCommands(m_driveTrain.followPath(PathPlannerPath.fromPathFile("Source2 to ReefK")));
                 addCommands(new StartEndCommand(roller::runRollerOut, roller::stop, roller).withTimeout(.5));
 
-                addCommands(m_driveTrain.followPath(PathPlannerPath.fromPathFile("Shot2a to Source2")));
+                addCommands(m_driveTrain.followPath(PathPlannerPath.fromPathFile("ReefK to Source2")));
                 addCommands(new WaitCommand(.75));
                 addCommands(m_driveTrain.followPath(PathPlannerPath.fromPathFile("Source2 to ReefA")));
                 addCommands(new StartEndCommand(roller::runRollerOut, roller::stop, roller).withTimeout(.5));
