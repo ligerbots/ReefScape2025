@@ -73,10 +73,6 @@ public class AprilTagVision extends SubsystemBase {
         Cam(int idx) { this.idx = idx; }
     }
 
-    private Camera[] cameras;
-
-    private static AprilTagFieldLayout m_aprilTagFieldLayout;
-
     private class Camera {
         PhotonCamera photonCamera;
         Transform3d robotToCam;
@@ -104,6 +100,10 @@ public class AprilTagVision extends SubsystemBase {
         }
     }
 
+    private Camera[] m_cameras;
+
+    private AprilTagFieldLayout m_aprilTagFieldLayout;
+
     // Simulation support
     private VisionSystemSim m_visionSim;
 
@@ -116,14 +116,14 @@ public class AprilTagVision extends SubsystemBase {
         }
 
         // initialize cameras
-        cameras = new Camera[2];
+        m_cameras = new Camera[2];
 
-        cameras[Cam.FRONT.idx] = new Camera("ArducamFront", new Transform3d(
+        m_cameras[Cam.FRONT.idx] = new Camera("ArducamFront", new Transform3d(
             new Translation3d(Units.inchesToMeters(14.5), 0, Units.inchesToMeters(11.75)),
             new Rotation3d(0.0, Math.toRadians(0.0), 0.0)
         ));
 
-        cameras[Cam.BACK.idx] = new Camera("ArducamBack", new Transform3d(
+        m_cameras[Cam.BACK.idx] = new Camera("ArducamBack", new Transform3d(
             new Translation3d(Units.inchesToMeters(-(27.5/2 - 1.0)), 0, Units.inchesToMeters(17.0)),
             new Rotation3d(0.0, Math.toRadians(0.0), Math.toRadians(180.0))
         ));
@@ -139,8 +139,8 @@ public class AprilTagVision extends SubsystemBase {
         // set the driver mode to false
         // setDriverMode(false);
 
-        SmartDashboard.putBoolean("aprilTagVision/frontCamera", cameras[Cam.FRONT.idx].photonCamera.isConnected());
-        SmartDashboard.putBoolean("aprilTagVision/backCamera", cameras[Cam.BACK.idx].photonCamera.isConnected());
+        SmartDashboard.putBoolean("aprilTagVision/frontCamera", m_cameras[Cam.FRONT.idx].photonCamera.isConnected());
+        SmartDashboard.putBoolean("aprilTagVision/backCamera", m_cameras[Cam.BACK.idx].photonCamera.isConnected());
     }
 
     public void updateSimulation(SwerveDrive swerve) {
@@ -170,7 +170,7 @@ public class AprilTagVision extends SubsystemBase {
 
             // Since we want to go through the images twice, we need to fetch the results and save them
             // getAllUnreadResults() forgets the results once called
-            for (Camera c : cameras) {
+            for (Camera c : m_cameras) {
                 c.pipeResults = c.photonCamera.getAllUnreadResults();
             }
 
@@ -187,7 +187,7 @@ public class AprilTagVision extends SubsystemBase {
     public void addVisionMeasurements(SwerveDrive swerve, boolean useMultiTag) {
         Pose2d robotPose = swerve.getPose();
 
-        for (Camera c : cameras) {
+        for (Camera c : m_cameras) {
             try {
                 c.poseEstimator.setReferencePose(robotPose);
 
@@ -248,10 +248,10 @@ public class AprilTagVision extends SubsystemBase {
     // we might want to use this to do fine adjustments on field element locations
     public int getCentralTagId() {
         // make sure camera connected
-        if (!cameras[Cam.FRONT.idx].photonCamera.isConnected())
+        if (!m_cameras[Cam.FRONT.idx].photonCamera.isConnected())
             return -1;
 
-        var targetResult = cameras[Cam.FRONT.idx].photonCamera.getLatestResult();
+        var targetResult = m_cameras[Cam.FRONT.idx].photonCamera.getLatestResult();
         // make a temp holder var for least Y translation, set to first tags translation
         double minY = 1.0e6; // big number
         int targetID = -1;
@@ -395,7 +395,7 @@ public class AprilTagVision extends SubsystemBase {
         // So, always have a little bit of uncertainty.
         prop.setCalibError(0.1, 0.03);
 
-        for (Camera c : cameras) {
+        for (Camera c : m_cameras) {
             PhotonCameraSim camSim = new PhotonCameraSim(c.photonCamera, prop);
             camSim.setMaxSightRange(Units.feetToMeters(20.0));
             m_visionSim.addCamera(camSim, c.robotToCam);
@@ -426,7 +426,7 @@ public class AprilTagVision extends SubsystemBase {
             return;
 
         ArrayList<Pose2d> poses = new ArrayList<Pose2d>();
-        for (Camera cam : cameras) {
+        for (Camera cam : m_cameras) {
             if (!cam.photonCamera.isConnected()) continue;
 
             for (PhotonTrackedTarget target : cam.photonCamera.getLatestResult().getTargets()) {
