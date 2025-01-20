@@ -32,12 +32,13 @@ public class PrimaryAutoBase extends AutoCommandInterface {
                 m_initPose = startPath.getStartingDifferentialPose();
                 
                 addCommands(m_driveTrain.followPath(startPath));
-                addCommands(new StartEndCommand(roller::runRollerOut, roller::stop, roller).withTimeout(.3));
+                addCommands(new ScoreCommand(roller).withTimeout(.3));
 
                 addCommands(m_driveTrain.followPath(PathPlannerPath.fromPathFile("ReefF to Source1")));
                 // addCommands(new WaitCommand(.1));
                 addCommands(m_driveTrain.followPath(PathPlannerPath.fromPathFile("Source1 to ReefD")));
-                addCommands(new StartEndCommand(roller::runRollerOut, roller::stop, roller).withTimeout(.3));
+                addCommands(new ScoreCommand(roller).withTimeout(.3));
+
                 
                 addCommands(m_driveTrain.followPath(PathPlannerPath.fromPathFile("Shot2 J Path")));
 
@@ -59,22 +60,21 @@ public class PrimaryAutoBase extends AutoCommandInterface {
                 m_initPose = startPath.getStartingDifferentialPose();
                 
                 addCommands(m_driveTrain.followPath(startPath));
-                addCommands(new StartEndCommand(roller::runRollerOut, roller::stop, roller).withTimeout(.5));
+                addCommands(new ScoreCommand(roller).withTimeout(.3));
 
                 addCommands(m_driveTrain.followPath(PathPlannerPath.fromPathFile("ReefJ to Source2")));
                 addCommands(new WaitCommand(.75));
                 addCommands(m_driveTrain.followPath(PathPlannerPath.fromPathFile("Source2 to ReefK")));
-                addCommands(new StartEndCommand(roller::runRollerOut, roller::stop, roller).withTimeout(.5));
-
+                addCommands(new ScoreCommand(roller).withTimeout(.3));
                 addCommands(m_driveTrain.followPath(PathPlannerPath.fromPathFile("ReefK to Source2")));
                 addCommands(new WaitCommand(.75));
                 addCommands(m_driveTrain.followPath(PathPlannerPath.fromPathFile("Source2 to ReefA")));
-                addCommands(new StartEndCommand(roller::runRollerOut, roller::stop, roller).withTimeout(.5));
+                addCommands(new ScoreCommand(roller).withTimeout(.3));
 
                 addCommands(m_driveTrain.followPath(PathPlannerPath.fromPathFile("ReefA to Source2")));
                 addCommands(new WaitCommand(.75));
                 addCommands(m_driveTrain.followPath(PathPlannerPath.fromPathFile("Source2 to ReefA")));
-                addCommands(new StartEndCommand(roller::runRollerOut, roller::stop, roller).withTimeout(.5));
+                addCommands(new ScoreCommand(roller).withTimeout(.3));
             } 
 
         } catch (Exception e) {
