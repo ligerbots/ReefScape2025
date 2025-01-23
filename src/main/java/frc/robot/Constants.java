@@ -26,4 +26,7 @@ public final class Constants {
     
     // if true, burn the settings into the controllers after init
     public static final boolean SPARKMAX_BURN_FLASH = false;
+
+
+    public static final int END_EFFECTOR_PIVOT_CAN_ID = 0;
 }
