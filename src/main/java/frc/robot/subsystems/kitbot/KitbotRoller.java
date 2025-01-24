@@ -17,7 +17,7 @@ import frc.robot.Constants;
 public class KitbotRoller extends SubsystemBase {
     static final int MOTOR_CURRENT_LIMIT = 30;
     static final double MOTOR_VOLTAGE_COMP = 10; //This sets a limit for voltage to 10 so it is repeatable untill the battery dips below 10 volts
-    static final double EJECT_VALUE = 0.35;
+    static final double EJECT_VALUE = 0.25;
     
     private final SparkMax m_motor;
     
