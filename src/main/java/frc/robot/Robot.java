@@ -4,7 +4,10 @@
 
 package frc.robot;
 
+import edu.wpi.first.wpilibj.DataLogManager;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.TimedRobot;
+import edu.wpi.first.wpilibj.livewindow.LiveWindow;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 
@@ -25,11 +28,29 @@ public class Robot extends TimedRobot {
     * initialization code.
     */
     public Robot() {
+        // // If you are trying to work with a real PV and simulation, enable this code.
+        // // Otherwise it is not needed, even when running a simulation
+        // if (isSimulation()) {
+        //   // At-Home Network Debug Only - host the NT server on photonvision and connect to it.
+        //   var ntinst = edu.wpi.first.networktables.NetworkTableInstance.getDefault();
+        //   ntinst.stopServer();
+        //   ntinst.setServer("photonvision.local");
+        //   ntinst.startClient4("MainRobotProgram");
+        // }
+
+        // Disable the LiveWindow telemetry to lower the network load
+        LiveWindow.disableAllTelemetry();
+
+        // Enable local logging.
+        // ** CAREFUL: this probably should be disabled during competition.
+        DataLogManager.start();
+        DriverStation.startDataLog(DataLogManager.getLog());
+
         // Instantiate our RobotContainer.  This will perform all our button bindings, and put our
         // autonomous chooser on the dashboard.
         m_robotContainer = new KitbotRobotContainer();
     }
-    
+
     /**
     * This function is called every 20 ms, no matter the mode. Use this for items like diagnostics
     * that you want ran during disabled, autonomous, teleoperated and test.

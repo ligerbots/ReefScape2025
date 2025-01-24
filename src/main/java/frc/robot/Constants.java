@@ -14,7 +14,7 @@ package frc.robot;
 */
 public final class Constants {
     public static final int KITBOT_ROLLER_ID = 5; //TODO: Verify ID
-
+    public static final int MAIN_BOT_CORAL_ID = 7;
 
     public static double MAX_VOLTAGE = 12.0;
     
