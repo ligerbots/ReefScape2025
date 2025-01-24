@@ -24,8 +24,8 @@ public final class Constants {
     // Can turn this off for competition to save a tiny bit of speed
     public static final boolean SIMULATION_SUPPORT = true;
     
-    // if true, burn the settings into the controllers after init
-    public static final boolean SPARKMAX_BURN_FLASH = false;
+    // if true, save the settings into the controllers after init
+    public static final boolean SPARKMAX_PERSIST_PARAMETERS = false;
 
 
     public static final int END_EFFECTOR_PIVOT_CAN_ID = 0; // TODO: INITIALIZE ID
