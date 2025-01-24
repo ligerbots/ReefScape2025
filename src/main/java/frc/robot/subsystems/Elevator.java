@@ -88,14 +88,14 @@ public class Elevator extends SubsystemBase {
     // set Motion Magic settings
         m_magicConfigs = m_talonFXConfigs.MotionMagic;
     
-        m_magicConfigs.MotionMagicCruiseVelocity = 80; // Target cruise velocity of 80 rps //TODO Change values 
-        m_magicConfigs.MotionMagicAcceleration = 160; // Target acceleration of 160 rps/s (0.5 seconds)
-        m_magicConfigs.MotionMagicJerk = 1600; // Target jerk of 1600 rps/s/s (0.1 seconds)
+        m_magicConfigs.MotionMagicCruiseVelocity = heightToRotations(60); // Target cruise velocity of 80 rps //TODO Change values TOTAL GUESSES 
+        m_magicConfigs.MotionMagicAcceleration = heightToRotations(120); // Target acceleration of 160 rps/s (0.5 seconds)
+        m_magicConfigs.MotionMagicJerk = heightToRotations(600); // Target jerk of 1600 rps/s/s (0.1 seconds)
     
         m_motor.getConfigurator().apply(m_talonFXConfigs);
         m_stringPotentiometer = new AnalogPotentiometer(POTENTIOMETER_CHANNEL, POTENTIOMETER_RANGE_METERS, POTENTIOMETER_OFFSET);
             
-        m_motor.setPosition(positionToRotations(m_stringPotentiometer.get()));
+        m_motor.setPosition(heightToRotations(m_stringPotentiometer.get()));
           
         }
     
@@ -113,7 +113,7 @@ public class Elevator extends SubsystemBase {
         }
     
        
-    
+   
     
     
         public double getLength() {
@@ -125,17 +125,20 @@ public class Elevator extends SubsystemBase {
             // updateMotorEncoderOffset();
         }
     
-        // public double getPotentiometerReadingMeters(){
-        //     return m_stringPotentiometer.get();
-        // }
+        public double getPotentiometerReadingMeters(){
+            return m_stringPotentiometer.get();
+        }
     
-        // public void updateMotorEncoderOffset() {
-        //     m_encoder.setPosition(getPotentiometerReadingMeters());
-        // }
+        public void updateMotorEncoderOffset() {
+            m_motor.setPosition(getPotentiometerReadingMeters());
+        }
 
-        public static double positionToRotations(double position){
-            return 
-            //TODO add conversion 
+        public static double heightToRotations(double position){
+             position = position/2;//single stage movement 
+             position = position/1.432; //pitch diameter 
+             return position/12;// gear ration 
+            
+
         }
     
         private static double limitElevatorLength(double length){
@@ -145,8 +148,8 @@ public class Elevator extends SubsystemBase {
         // set elevator length in meters
         public void setLength(double goal, boolean includeAdjustment) {
             final MotionMagicVoltage m_request = new MotionMagicVoltage(0);        
-            goal = limitElevatorLength(positionToRotations(goal) + (includeAdjustment ? 1 : 0) * m_lengthAdjustment);
-            m_motor.setControl(m_request.withPosition(goal))
+            goal = limitElevatorLength(heightToRotations(goal + (includeAdjustment ? 1 : 0) * m_lengthAdjustment));
+            m_motor.setControl(m_request.withPosition(goal));
             SmartDashboard.putNumber("elevator/goal", Units.metersToInches(goal));
         }
     
