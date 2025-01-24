@@ -5,10 +5,12 @@
 package frc.robot.subsystems;
 
 import com.revrobotics.spark.config.*;
+import com.revrobotics.spark.config.ClosedLoopConfig.FeedbackSensor;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.revrobotics.AbsoluteEncoder;
 import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.SparkBase.ControlType;
+import com.revrobotics.spark.SparkBase.PersistMode;
 // import com.revrobotics.RelativeEncoder;
 import com.revrobotics.spark.SparkClosedLoopController;
 // import com.revrobotics.CANSparkBase.IdleMode;
@@ -82,7 +84,16 @@ public class EndEffectorPivot extends SubsystemBase {
     // Construct a new shooterPivot subsystem
     public EndEffectorPivot() {
         // super(new TrapezoidProfile.Constraints(MAX_VEL_RADIAN_PER_SEC, MAX_ACC_RADIAN_PER_SEC_SQ));
+        SparkMax max = new SparkMax(1, MotorType.kBrushless);
+        SparkMaxConfig config = new SparkMaxConfig();
 
+        // config.inverted(true).idleMode(IdleMode.kBrake);
+        // config.encoder.positionConversionFactor(1000).velocityConversionFactor(1000);
+        // config.closedLoop.feedbackSensor(FeedbackSensor.kPrimaryEncoder)
+        // config.closedLoop.pid(K_P, K_I, K_D);
+            
+        max.configure(config, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
+        
         m_profile = new TrapezoidProfile(
             new TrapezoidProfile.Constraints(
                 MAX_VEL_RADIAN_PER_SEC,
@@ -90,11 +101,10 @@ public class EndEffectorPivot extends SubsystemBase {
   
        
         m_motor = new SparkMax(Constants.END_EFFECTOR_PIVOT_CAN_ID, SparkMax.MotorType.kBrushless);
-        SparkMaxConfig config = new SparkMaxConfig();
+        // SparkMaxConfig config = new SparkMaxConfig();
         // m_motor.restoreFactoryDefaults();
         // m_motor.setInverted(true);
-        config
-        .inverted(true);
+        // config.inverted(true);
 
         m_motor.setSmartCurrentLimit(CURRENT_LIMIT);
     
@@ -104,14 +114,17 @@ public class EndEffectorPivot extends SubsystemBase {
         // m_pidController = m_motor.getPIDController();
         m_pidController = m_motor.getClosedLoopController();
         // m_pidController.setP(K_P);
-        m_pidController.setReference(K_P, ControlType.kPosition);
-        m_pidController.setReference(K_I, ControlType.);
-        m_pidController.setReference(K_D, ControlType.);
-        m_pidController.setReference(K_FF, ControlType.);
-
-        m_pidController.setI(K_I);
-        m_pidController.setD(K_D);
-        m_pidController.setFF(K_FF);
+        // m_pidController.setReference(K_P, ControlType.kPosition);
+        // m_pidController.setReference(K_I, .);
+        // m_pidController.setReference(K_D, ControlType.);
+        // m_pidController.setReference(K_FF, ControlType.);
+        // m_pidController.setIAccum(ADJUSTMENT_STEP)
+    
+        config.closedLoop.pid(K_P, K_I, K_D);
+        m_pidController.;
+        // m_pidController.setI(K_I);
+        // m_pidController.setD(K_D);
+        // m_pidController.setFF(K_FF);
         m_pidController.setOutputRange(-1, 1);
         m_pidController.setFeedbackDevice(m_absoluteEncoder);
         m_pidController.setPositionPIDWrappingEnabled(true);

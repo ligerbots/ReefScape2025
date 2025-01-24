@@ -28,5 +28,8 @@ public final class Constants {
     public static final boolean SPARKMAX_BURN_FLASH = false;
 
 
-    public static final int END_EFFECTOR_PIVOT_CAN_ID = 0;
+    public static final int END_EFFECTOR_PIVOT_CAN_ID = 0; // TODO: INITIALIZE ID
+    public static final int END_EFFECTOR_PIVOT_ID = 0; // TODO: INITIALIZE ID
+    public static final int END_EFFECTOR_CORAL_INTAKE_ID = 0; // TODO: INITIALIZE ID
+    public static final int END_EFFECTOR_ALGAE_INTAKE_ID = 0; // TODO: INITIALIZE ID
 }
