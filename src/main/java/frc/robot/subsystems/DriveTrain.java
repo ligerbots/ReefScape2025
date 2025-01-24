@@ -20,6 +20,8 @@ import java.io.File;
 import java.util.function.BooleanSupplier;
 import java.util.function.DoubleSupplier;
 
+import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
+import com.ctre.phoenix6.hardware.TalonFX;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.commands.PathfindingCommand;
 import com.pathplanner.lib.config.RobotConfig;
@@ -30,6 +32,7 @@ import com.pathplanner.lib.config.PIDConstants;
 import swervelib.SwerveController;
 import swervelib.SwerveDrive;
 import swervelib.SwerveDriveTest;
+import swervelib.SwerveModule;
 // import swervelib.math.SwerveMath;
 import swervelib.parser.SwerveDriveConfiguration;
 import swervelib.parser.SwerveParser;
@@ -44,6 +47,8 @@ public class DriveTrain extends SubsystemBase {
     public static final double MAX_SPEED = Units.feetToMeters(14.5);
     
     public static final double ANGLE_TOLERANCE_RADIANS = Math.toRadians(2.0);
+
+    private static final double DRIVE_STATOR_LIMIT = 40;
 
     // private static final double STEER_GEAR_RATIO = (50.0 / 14.0) * (60.0 / 10.0);
 
@@ -112,6 +117,12 @@ public class DriveTrain extends SubsystemBase {
         
         // for now (testing!!), turn off periodic sync of the absolute encoders
         m_swerveDrive.setModuleEncoderAutoSynchronize(false, 3.0);
+
+        CurrentLimitsConfigs configs = new CurrentLimitsConfigs().withStatorCurrentLimit(DRIVE_STATOR_LIMIT);
+
+        for (SwerveModule swerveModule : m_swerveDrive.getModules()) {
+            ((TalonFX) swerveModule.getDriveMotor().getMotor()).getConfigurator().apply(configs);
+        }
 
         m_aprilTagVision = apriltagVision;
         
