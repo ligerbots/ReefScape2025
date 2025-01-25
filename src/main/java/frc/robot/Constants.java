@@ -15,7 +15,6 @@ package frc.robot;
 public final class Constants {
     public static final int KITBOT_ROLLER_ID = 5; //TODO: Verify ID
 
-
     public static double MAX_VOLTAGE = 12.0;
     
     public static boolean OUTREACH_MODE = false;
@@ -24,6 +23,12 @@ public final class Constants {
     // Can turn this off for competition to save a tiny bit of speed
     public static final boolean SIMULATION_SUPPORT = true;
     
-    // if true, burn the settings into the controllers after init
-    public static final boolean SPARKMAX_BURN_FLASH = false;
+    // if true, save the settings into the controllers after init
+    public static final boolean SPARKMAX_PERSIST_PARAMETERS = false;
+
+
+    public static final int END_EFFECTOR_PIVOT_CAN_ID = 0; // TODO: INITIALIZE ID
+    public static final int END_EFFECTOR_PIVOT_ID = 0; // TODO: INITIALIZE ID
+    public static final int END_EFFECTOR_CORAL_INTAKE_ID = 0; // TODO: INITIALIZE ID
+    public static final int END_EFFECTOR_ALGAE_INTAKE_ID = 0; // TODO: INITIALIZE ID
 }
