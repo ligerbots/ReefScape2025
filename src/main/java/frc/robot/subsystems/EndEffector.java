@@ -9,7 +9,6 @@ import com.revrobotics.spark.SparkLimitSwitch;
 import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.config.SparkMaxConfig;
-import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -41,6 +40,7 @@ public class EndEffector extends SubsystemBase {
         // which sets or gets parameters during operation may need a shorter timeout.
         m_coralMotor.setCANTimeout(250);
         m_algaeMotor.setCANTimeout(250);
+        
         // Create and apply configuration for roller motor. Voltage compensation help
         // the roller behave the same as the battery
         // voltage dips. The current limit helps prevent breaker trips or burning out
@@ -49,6 +49,7 @@ public class EndEffector extends SubsystemBase {
         config.inverted(false);
         config.voltageCompensation(MOTOR_VOLTAGE_COMP);
         config.smartCurrentLimit(MOTOR_CURRENT_LIMIT);
+        
         m_coralMotor.configure(config, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
         m_algaeMotor.configure(config, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
     }
