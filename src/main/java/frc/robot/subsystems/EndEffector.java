@@ -20,16 +20,17 @@ public class EndEffector extends SubsystemBase {
     static final double EJECT_VALUE = 1;
     
     private final SparkMax m_coralMotor;
+    private final SparkMax m_algaeMotor;
     
     public EndEffector() {
-        // Set up the roller motor as a brushed motor
+        // Set up the coral and algae motor as brushed motors
         m_coralMotor = new SparkMax(Constants.END_EFFECTOR_CORAL_INTAKE_ID, MotorType.kBrushless);
-        
+        m_algaeMotor = new SparkMax(Constants.END_EFFECTOR_ALGAE_INTAKE_ID, MotorType.kBrushless);
         // Set can timeout. Because this project only sets parameters once on
         // construction, the timeout can be long without blocking robot operation. Code
         // which sets or gets parameters during operation may need a shorter timeout.
         m_coralMotor.setCANTimeout(250);
-        
+        m_algaeMotor.setCANTimeout(250);
         // Create and apply configuration for roller motor. Voltage compensation help
         // the roller behave the same as the battery
         // voltage dips. The current limit helps prevent breaker trips or burning out
@@ -39,10 +40,11 @@ public class EndEffector extends SubsystemBase {
         config.voltageCompensation(MOTOR_VOLTAGE_COMP);
         config.smartCurrentLimit(MOTOR_CURRENT_LIMIT);
         m_coralMotor.configure(config, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
+        m_algaeMotor.configure(config, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
     }
     
     public void runCoralOut() {
-        System.out.print("command scheduled");
+        // System.out.print("command scheduled");
         m_coralMotor.set(EJECT_VALUE);
     }
     
@@ -50,7 +52,17 @@ public class EndEffector extends SubsystemBase {
         m_coralMotor.set(-EJECT_VALUE);
     }
     
+    public void runAlgaeOut() {
+        // System.out.print("command scheduled");
+        m_algaeMotor.set(EJECT_VALUE);
+    }
+    
+    public void runAlgaeBack() {
+        m_algaeMotor.set(-EJECT_VALUE);
+    }
+
     public void stop() {
         m_coralMotor.stopMotor();
+        m_algaeMotor.stopMotor();
     }
 }
