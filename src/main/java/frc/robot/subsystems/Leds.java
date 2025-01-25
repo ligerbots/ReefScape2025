@@ -15,18 +15,18 @@ import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class Leds extends SubsystemBase {
-    /** Creates a new Leds. */
-    
-    private AddressableLED m_led;
-    private AddressableLEDBuffer m_ledBuffer;
-    
     private final int LED_PWM_PORT = 0;
     
     // Our LED strip has a density of 60 LEDs per meter
-    private static final Distance kLedSpacing = Meters.of(1 / 60.0);
+    private static final Distance LED_SPACING = Meters.of(1 / 60.0);
     
-    LEDPattern m_scrollingPattern;
+    private static final int NUM_LEDS = 60;
+
+    private AddressableLED m_led;
+    private AddressableLEDBuffer m_ledBuffer;
+    private LEDPattern m_scrollingPattern;
     
+    // Creates a new Leds.
     public Leds() {
         
         // PWM port 0
@@ -36,22 +36,24 @@ public class Leds extends SubsystemBase {
         // Reuse buffer
         // Default to a length of 60, start empty output
         // Length is expensive to set, so only set it once, then just update data
-        m_ledBuffer = new AddressableLEDBuffer(60);
+        m_ledBuffer = new AddressableLEDBuffer(NUM_LEDS);
         
         m_led.setLength(m_ledBuffer.getLength());
         
-        // Create an LED pattern that sets the entire strip to solid red
-        LEDPattern pattern = LEDPattern.solid(Color.kBlue);
+        LEDPattern pattern;
+
+        // // Create an LED pattern that sets the entire strip to solid red
+        // LEDPattern pattern = LEDPattern.solid(Color.kBlue);
         
-        // Apply the LED pattern to the data buffer
-        pattern.applyTo(m_ledBuffer);
+        // // Apply the LED pattern to the data buffer
+        // pattern.applyTo(m_ledBuffer);
         
         // all hues at maximum saturation and half brightness
         pattern = LEDPattern.rainbow(255, 128);
         
         // Create a new pattern that scrolls the rainbow pattern across the LED strip, moving at a speed
         // of 1 meter per second.
-        m_scrollingPattern = pattern.scrollAtAbsoluteSpeed(MetersPerSecond.of(1), kLedSpacing);
+        m_scrollingPattern = pattern.scrollAtAbsoluteSpeed(MetersPerSecond.of(1), LED_SPACING);
         
         // Apply the LED pattern to the data buffer
         m_scrollingPattern.applyTo(m_ledBuffer);
