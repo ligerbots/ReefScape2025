@@ -4,10 +4,12 @@
 
 package frc.robot;
 
+import edu.wpi.first.hal.HALUtil;
 import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.livewindow.LiveWindow;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 
@@ -20,6 +22,15 @@ public class Robot extends TimedRobot {
     private Command m_autonomousCommand = null;
     private boolean m_prevIsRedAlliance = true;
     
+    public static final String KITBOT_SERIAL_NUMBER = "123";
+    public static final String COMP_V1_SERIAL_NUMBER = "123";
+
+    public enum RobotType {
+        KITBOT, COMP_V1
+    }
+    // we want this to be static so that it is easy for subsystems to query the robot type
+    private static RobotType m_robotType;
+
     private final RobotContainer m_robotContainer;
     
     /**
@@ -45,9 +56,28 @@ public class Robot extends TimedRobot {
         DataLogManager.start();
         DriverStation.startDataLog(DataLogManager.getLog());
 
+        // Figure out which roboRio this is, so we know which version of the robot
+        //   code to run.
+        String serialNum = HALUtil.getSerialNumber();
+        SmartDashboard.putString("rioSerialNumber", serialNum);
+        if (serialNum == KITBOT_SERIAL_NUMBER) {
+            m_robotType = RobotType.KITBOT;
+        } else {
+            m_robotType = RobotType.COMP_V1;
+        }
+        SmartDashboard.putString("robotType", m_robotType.toString());
+
         // Instantiate our RobotContainer.  This will perform all our button bindings, and put our
         // autonomous chooser on the dashboard.
-        m_robotContainer = new KitbotRobotContainer();
+        if (m_robotType == RobotType.KITBOT) {
+            m_robotContainer = new KitbotRobotContainer();
+        } else {
+            m_robotContainer = new CompRobotContainer();
+        }
+    }
+
+    public static RobotType getRobotType() {
+        return m_robotType;
     }
 
     /**
