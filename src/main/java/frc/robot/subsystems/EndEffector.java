@@ -19,38 +19,38 @@ public class EndEffector extends SubsystemBase {
     static final double MOTOR_VOLTAGE_COMP = 10; //This sets a limit for voltage to 10 so it is repeatable untill the battery dips below 10 volts
     static final double EJECT_VALUE = 1;
     
-    private final SparkMax m_motor;
+    private final SparkMax m_coralMotor;
     
     public EndEffector() {
         // Set up the roller motor as a brushed motor
-        m_motor = new SparkMax(7, MotorType.kBrushless);
+        m_coralMotor = new SparkMax(Constants.END_EFFECTOR_CORAL_INTAKE_ID, MotorType.kBrushless);
         
         // Set can timeout. Because this project only sets parameters once on
         // construction, the timeout can be long without blocking robot operation. Code
         // which sets or gets parameters during operation may need a shorter timeout.
-        m_motor.setCANTimeout(250);
+        m_coralMotor.setCANTimeout(250);
         
         // Create and apply configuration for roller motor. Voltage compensation help
         // the roller behave the same as the battery
         // voltage dips. The current limit helps prevent breaker trips or burning out
         // the motor in the event the roller stalls.
-        SparkMaxConfig rollerConfig = new SparkMaxConfig();
-        rollerConfig.inverted(false);
-        rollerConfig.voltageCompensation(MOTOR_VOLTAGE_COMP);
-        rollerConfig.smartCurrentLimit(MOTOR_CURRENT_LIMIT);
-        m_motor.configure(rollerConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
+        SparkMaxConfig config = new SparkMaxConfig();
+        config.inverted(false);
+        config.voltageCompensation(MOTOR_VOLTAGE_COMP);
+        config.smartCurrentLimit(MOTOR_CURRENT_LIMIT);
+        m_coralMotor.configure(config, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
     }
     
-    public void runRollerOut() {
+    public void runCoralOut() {
         System.out.print("command scheduled");
-        m_motor.set(EJECT_VALUE);
+        m_coralMotor.set(EJECT_VALUE);
     }
     
-    public void runRollerBack() {
-        m_motor.set(-EJECT_VALUE);
+    public void runCoralBack() {
+        m_coralMotor.set(-EJECT_VALUE);
     }
     
     public void stop() {
-        m_motor.stopMotor();
+        m_coralMotor.stopMotor();
     }
 }

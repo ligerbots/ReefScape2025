@@ -33,11 +33,6 @@ public class EndEffectorPivot extends SubsystemBase {
     private static final int CURRENT_LIMIT = 30;
 
     // position constants for commands
-    public static final double STOW_ANGLE_RADIANS = Math.toRadians(59.0);
-    public static final double AMP_SCORE_ANGLE_RADIANS = Math.toRadians(45.0);
-    
-    public static final double CLIMB_ANGLE_RADIANS = Math.toRadians(24);
-    
     private static final double ADJUSTMENT_STEP = Math.toRadians(1.0);
     
     // All units are MKS with angles in Radians
