@@ -5,11 +5,13 @@
 package frc.robot.subsystems;
 import com.revrobotics.spark.SparkBase.PersistMode;
 import com.revrobotics.spark.SparkBase.ResetMode;
+import com.revrobotics.spark.SparkLimitSwitch;
 import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.config.SparkMaxConfig;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 
@@ -21,11 +23,19 @@ public class EndEffector extends SubsystemBase {
     
     private final SparkMax m_coralMotor;
     private final SparkMax m_algaeMotor;
+
+    private final SparkLimitSwitch m_coralLimitSwitch;
+    private final SparkLimitSwitch m_algaeLimitSwitch;
+
     
     public EndEffector() {
         // Set up the coral and algae motor as brushed motors
         m_coralMotor = new SparkMax(Constants.END_EFFECTOR_CORAL_INTAKE_ID, MotorType.kBrushless);
         m_algaeMotor = new SparkMax(Constants.END_EFFECTOR_ALGAE_INTAKE_ID, MotorType.kBrushless);
+
+        m_coralLimitSwitch = m_coralMotor.getReverseLimitSwitch();
+        m_algaeLimitSwitch = m_algaeMotor.getReverseLimitSwitch();
+
         // Set can timeout. Because this project only sets parameters once on
         // construction, the timeout can be long without blocking robot operation. Code
         // which sets or gets parameters during operation may need a shorter timeout.
@@ -43,6 +53,12 @@ public class EndEffector extends SubsystemBase {
         m_algaeMotor.configure(config, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
     }
     
+    @Override
+    public void periodic() {
+        SmartDashboard.putBoolean("endEffector/coralLimitSwitch", m_coralLimitSwitch.isPressed());
+        SmartDashboard.putBoolean("endEffector/algaeLimitSwitch", m_algaeLimitSwitch.isPressed());
+    }
+
     public void runCoralOut() {
         // System.out.print("command scheduled");
         m_coralMotor.set(EJECT_VALUE);
