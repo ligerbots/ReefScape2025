@@ -24,6 +24,7 @@ public class KitbotRobotContainer {
     private final AprilTagVision m_aprilTagVision = new AprilTagVision();
     private final DriveTrain m_driveTrain = new DriveTrain("swerve/kitbot", m_aprilTagVision);
     private final KitbotRoller m_kitbotRoller = new KitbotRoller();
+    private final Leds m_leds = new Leds();
 
     private AutoCommandInterface m_autoCommand;
 
