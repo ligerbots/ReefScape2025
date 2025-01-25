@@ -20,8 +20,7 @@ public class Robot extends TimedRobot {
     private Command m_autonomousCommand = null;
     private boolean m_prevIsRedAlliance = true;
     
-    
-    private final KitbotRobotContainer m_robotContainer;
+    private final RobotContainer m_robotContainer;
     
     /**
     * This function is run when the robot is first started up and should be used for any
