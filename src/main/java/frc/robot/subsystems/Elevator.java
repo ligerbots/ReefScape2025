@@ -44,10 +44,7 @@ public class Elevator extends SubsystemBase {
     
         // PID Constants for the reacher PID controller
         // Since we're using Trapeziodal control, all values will be 0 except for P
-        private static final double K_P = 20.0; 
-        private static final double K_I = 0.0;
-        private static final double K_D = 0.0;
-        private static final double K_FF = 0.0;
+
     
         // constants for various commands
         public static final double STOW_LENGTH = Units.inchesToMeters(0.5);
@@ -137,8 +134,6 @@ public class Elevator extends SubsystemBase {
              position = position/2;//single stage movement 
              position = position/1.432; //pitch diameter 
              return position/12;// gear ration 
-            
-
         }
     
         private static double limitElevatorLength(double length){
