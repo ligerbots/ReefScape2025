@@ -52,6 +52,8 @@ public class KitbotRobotContainer {
         // m_driverController.leftTrigger().whileTrue(new StartEndCommand(m_kitbotRoller::runRollerBack, m_kitbotRoller::stop, m_kitbotRoller));
         m_driverController.rightTrigger().whileTrue(new StartEndCommand(m_endEffector::runCoralOut, m_endEffector::stop, m_endEffector));
         m_driverController.leftTrigger().whileTrue(new StartEndCommand(m_endEffector::runCoralBack, m_endEffector::stop, m_endEffector));
+        m_driverController.rightBumper().whileTrue(new StartEndCommand(m_endEffector::runAlgaeOut, m_endEffector::stop, m_endEffector));
+        m_driverController.leftBumper().whileTrue(new StartEndCommand(m_endEffector::runAlgaeBack, m_endEffector::stop, m_endEffector));
 
     }
     
