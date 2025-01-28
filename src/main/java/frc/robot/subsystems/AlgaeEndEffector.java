@@ -20,9 +20,9 @@ public class AlgaeEndEffector extends SubsystemBase {
     static final double MOTOR_VOLTAGE_COMP = 10; //This sets a limit for voltage to 10 so it is repeatable untill the battery dips below 10 volts
    
     // TODO: Set these to real speeds
-    static final double INTAKE_SPEED = -1;
-    static final double PROCESSOR_SPEED = 1;
-    static final double BARGE_SPEED = 3;
+    static final double INTAKE_SPEED = -0.5;
+    static final double PROCESSOR_SPEED = 0.5;
+    static final double BARGE_SPEED = 0.5;
     static final double HOLD_SPEED = -0.05;
 
     private final SparkMax m_motor;
@@ -52,7 +52,7 @@ public class AlgaeEndEffector extends SubsystemBase {
         // voltage dips. The current limit helps prevent breaker trips or burning out
         // the motor in the event the roller stalls.
         SparkMaxConfig config = new SparkMaxConfig();
-        config.inverted(false);
+        config.inverted(true);
         config.voltageCompensation(MOTOR_VOLTAGE_COMP);
         config.smartCurrentLimit(MOTOR_CURRENT_LIMIT);
         
@@ -61,6 +61,7 @@ public class AlgaeEndEffector extends SubsystemBase {
 
     @Override
     public void periodic() {
+        SmartDashboard.putString("endEffector/algaeMotorState", String.valueOf(m_state));
         SmartDashboard.putBoolean("endEffector/algaeLimitSwitch", m_limitSwitch.isPressed());
         switch(m_state)
         {
@@ -98,8 +99,11 @@ public class AlgaeEndEffector extends SubsystemBase {
     }
 
     public void stop() {
-        m_motor.stopMotor();
-        if (!m_limitSwitch.isPressed()) {
+        if (m_limitSwitch.isPressed()) {
+            m_state = State.HOLD;
+        }
+        else {
+            m_motor.stopMotor();
             m_state = State.IDLE;
         }
     }
