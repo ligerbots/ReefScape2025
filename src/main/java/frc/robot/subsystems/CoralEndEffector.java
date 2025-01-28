@@ -23,9 +23,9 @@ public class CoralEndEffector extends SubsystemBase {
 
     // Speeds
     // TODO: set these to real speeds
-    private static final double INTAKE_SPEED = 1;
-    private static final double OUTTAKE_SPEED = -1;
-    private static final double HOLD_SPEED = 0.1;
+    private static final double INTAKE_SPEED = -1;
+    private static final double OUTTAKE_SPEED = 1;
+    private static final double HOLD_SPEED = -0.1;
 
     // Motor
     private final SparkMax m_motor;
