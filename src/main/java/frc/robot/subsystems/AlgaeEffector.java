@@ -7,7 +7,9 @@ import com.revrobotics.spark.SparkBase.PersistMode;
 import com.revrobotics.spark.SparkBase.ResetMode;
 import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
+import com.revrobotics.spark.config.LimitSwitchConfig;
 import com.revrobotics.spark.config.SparkMaxConfig;
+import com.revrobotics.spark.config.LimitSwitchConfig.Type;
 import com.revrobotics.spark.SparkLimitSwitch;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -16,14 +18,12 @@ import frc.robot.Constants;
 
 
 public class AlgaeEffector extends SubsystemBase {
-    static final int MOTOR_CURRENT_LIMIT = 30;
-    static final double MOTOR_VOLTAGE_COMP = 10; //This sets a limit for voltage to 10 so it is repeatable untill the battery dips below 10 volts
+    static final int MOTOR_CURRENT_LIMIT = 20;
    
-    // TODO: Set these to real speeds
-    static final double INTAKE_SPEED = -0.5;
-    static final double PROCESSOR_SPEED = 0.5;
-    static final double BARGE_SPEED = 0.5;
-    static final double HOLD_SPEED = -0.05;
+    static final double INTAKE_VOLTAGE = -6.0;
+    static final double PROCESSOR_VOLTAGE = 6.0;
+    static final double BARGE_VOLTAGE = 12.0;
+    static final double HOLD_VOLTAGE = -4.0;
 
     private final SparkMax m_motor;
     private final SparkLimitSwitch m_limitSwitch;
@@ -39,50 +39,57 @@ public class AlgaeEffector extends SubsystemBase {
         // Set up the   motor as a brushed motor
         m_motor = new SparkMax(Constants.END_EFFECTOR_ALGAE_INTAKE_ID, MotorType.kBrushless);
 
-        // Set up the limit switch as reversed
-        m_limitSwitch = m_motor.getReverseLimitSwitch();
-
-        // Set can timeout. Because this project only sets parameters once on
-        // construction, the timeout can be long without blocking robot operation. Code
-        // which sets or gets parameters during operation may need a shorter timeout.
-        m_motor.setCANTimeout(250);
-        
-        // Create and apply configuration for roller motor. Voltage compensation help
-        // the roller behave the same as the battery
-        // voltage dips. The current limit helps prevent breaker trips or burning out
-        // the motor in the event the roller stalls.
+        // // Set can timeout. Because this project only sets parameters once on
+        // // construction, the timeout can be long without blocking robot operation. Code
+        // // which sets or gets parameters during operation may need a shorter timeout.
+        // m_motor.setCANTimeout(250);
+                
+        // Configuration for the motor
         SparkMaxConfig config = new SparkMaxConfig();
         config.inverted(true);
-        config.voltageCompensation(MOTOR_VOLTAGE_COMP);
+        // always set a current limit
         config.smartCurrentLimit(MOTOR_CURRENT_LIMIT);
         
+        // include the config of the limit switch, for completeness
+        LimitSwitchConfig lsConfig = new  LimitSwitchConfig();
+        lsConfig.reverseLimitSwitchType(Type.kNormallyOpen);
+        // don't shut off motor when pressed. We will handle that.
+        lsConfig.reverseLimitSwitchEnabled(false);
+        config.apply(lsConfig);
+
         m_motor.configure(config, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
+
+        // Get the reverse limit switch
+        m_limitSwitch = m_motor.getReverseLimitSwitch();
     }
 
     @Override
     public void periodic() {
-        SmartDashboard.putString("endEffector/algaeMotorState", String.valueOf(m_state));
-        SmartDashboard.putBoolean("endEffector/algaeLimitSwitch", m_limitSwitch.isPressed());
-        switch(m_state)
-        {
-            case IDLE:
-                break;
-            case INTAKE:
-                m_motor.set(INTAKE_SPEED);
-                if (m_limitSwitch.isPressed()) {
-                    m_state = State.HOLD;
-                }
-                break;
-            case PROCESSOR:
-                m_motor.set(PROCESSOR_SPEED);
-                break;
-            case BARGE:
-                m_motor.set(BARGE_SPEED);
-                break;
-            case HOLD:
-                m_motor.set(HOLD_SPEED);
-                break;
+        // TODO: we probably want the scoring methods to be click-once (not whileHeld)
+        //  this will mean adding a timer, and turning off the state when it is elapsed
+
+        if (m_state == State.INTAKE) {
+            if (m_limitSwitch.isPressed())
+                m_state = State.HOLD;
+            else
+                m_motor.setVoltage(INTAKE_VOLTAGE);
+        } 
+        else if (m_state == State.PROCESSOR) {
+            m_motor.setVoltage(PROCESSOR_VOLTAGE);
+        } 
+        else if (m_state == State.BARGE) {
+            m_motor.setVoltage(BARGE_VOLTAGE);
         }
+
+        // allow fall-through for HOLD. Speeds up state changes
+        if (m_state == State.HOLD) {
+            m_motor.setVoltage(HOLD_VOLTAGE);
+        }
+
+        SmartDashboard.putString("algaeEffector/state", m_state.toString());
+        SmartDashboard.putBoolean("algaeEffector/limitSwitch", m_limitSwitch.isPressed());
+        SmartDashboard.putNumber("algaeEffector/speed", m_motor.get());
+        SmartDashboard.putNumber("algaeEffector/current", m_motor.getOutputCurrent());
     }
 
     public void runIntake() {
@@ -99,10 +106,7 @@ public class AlgaeEffector extends SubsystemBase {
     }
 
     public void stop() {
-        if (m_limitSwitch.isPressed()) {
-            m_state = State.HOLD;
-        }
-        else {
+        if (m_state != State.HOLD) {
             m_motor.stopMotor();
             m_state = State.IDLE;
         }
