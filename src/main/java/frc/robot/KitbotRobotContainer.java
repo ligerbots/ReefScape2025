@@ -17,7 +17,6 @@ import frc.robot.commands.HelloWorldAuto2;
 import frc.robot.subsystems.*;
 import frc.robot.subsystems.kitbot.KitbotRoller;
 
-
 public class KitbotRobotContainer {
     private static final double JOYSTICK_DEADBAND = 0.05;
 
@@ -26,7 +25,8 @@ public class KitbotRobotContainer {
     private final AprilTagVision m_aprilTagVision = new AprilTagVision();
     private final DriveTrain m_driveTrain = new DriveTrain("swerve/kitbot", m_aprilTagVision);
     private final KitbotRoller m_kitbotRoller = new KitbotRoller();
-    private final CoralEndEffector m_endEffector = new CoralEndEffector(); 
+    private final CoralEffector m_coralEffector = new CoralEffector(); 
+    private final AlgaeEffector m_algaeEffector = new AlgaeEffector(); 
 
     private AutoCommandInterface m_autoCommand;
 
@@ -47,8 +47,12 @@ public class KitbotRobotContainer {
 
         // m_driverController.rightTrigger().whileTrue(new StartEndCommand(m_kitbotRoller::runRollerOut, m_kitbotRoller::stop, m_kitbotRoller));
         // m_driverController.leftTrigger().whileTrue(new StartEndCommand(m_kitbotRoller::runRollerBack, m_kitbotRoller::stop, m_kitbotRoller));
-        m_driverController.rightTrigger().whileTrue(new StartEndCommand(m_endEffector::runOuttake, m_endEffector::stop, m_endEffector));
-        m_driverController.leftTrigger().whileTrue(new StartEndCommand(m_endEffector::runIntake, m_endEffector::stop, m_endEffector));
+
+        m_driverController.rightTrigger().whileTrue(new StartEndCommand(m_coralEffector::runOuttake, m_coralEffector::stop, m_coralEffector));
+        m_driverController.leftTrigger().whileTrue(new StartEndCommand(m_coralEffector::runIntake, m_coralEffector::stop, m_coralEffector));
+        
+        m_driverController.rightBumper().whileTrue(new StartEndCommand(m_algaeEffector::scoreBarge, m_algaeEffector::stop, m_algaeEffector));
+        m_driverController.leftBumper().whileTrue(new StartEndCommand(m_algaeEffector::runIntake, m_coralEffector::stop, m_algaeEffector));
     }
     
     private void configureAutos() {
