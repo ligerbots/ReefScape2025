@@ -17,14 +17,15 @@ import frc.robot.Constants;
 
 public class CoralEndEffector extends SubsystemBase {
     /** Creates a new CoralEndEffector. */
-    private static final int MOTOR_CURRENT_LIMIT = 30;
-    private static final double MOTOR_VOLTAGE_COMP = 10; // This sets a limit for voltage to 10 so it is repeatable
-                                                         // untill the battery dips below 10 volts
+    private static final int MOTOR_CURRENT_LIMIT = 20;
+
+    // This sets a limit for voltage to 10 so it is repeatable
+    // until the battery dips below 10 volts
+    private static final double MOTOR_VOLTAGE_COMP = 10;
 
     // Speeds
-    // TODO: set these to real speeds
-    private static final double INTAKE_SPEED = -1;
-    private static final double OUTTAKE_SPEED = 1;
+    private static final double INTAKE_SPEED = -0.4;
+    private static final double OUTTAKE_SPEED = 0.5;
     private static final double HOLD_SPEED = -0.05;
 
     // Motor
@@ -55,7 +56,7 @@ public class CoralEndEffector extends SubsystemBase {
         // voltage dips. The current limit helps prevent breaker trips or burning out
         // the motor in the event the roller stalls.
         SparkMaxConfig config = new SparkMaxConfig();
-        config.inverted(false);
+        config.inverted(true);
         config.voltageCompensation(MOTOR_VOLTAGE_COMP);
         config.smartCurrentLimit(MOTOR_CURRENT_LIMIT);
 
@@ -64,24 +65,30 @@ public class CoralEndEffector extends SubsystemBase {
 
     @Override
     public void periodic() {
-        SmartDashboard.putBoolean("endEffector/coralLimitSwitch", m_limitSwitch.isPressed());
         switch (m_state) {
             case IDLE:
                 m_motor.set(0);
                 break;
+
             case INTAKE:
                 m_motor.set(INTAKE_SPEED);
                 if (m_limitSwitch.isPressed()) {
                     m_state = State.HOLD;
                 }
                 break;
+
             case OUTTAKE:
                 m_motor.set(OUTTAKE_SPEED);
                 break;
+
             case HOLD:
                 m_motor.set(HOLD_SPEED);
                 break;
         }
+
+        SmartDashboard.putBoolean("coralEffector/limitSwitch", m_limitSwitch.isPressed());
+        SmartDashboard.putString("coralEffector/state", m_state.toString());
+        SmartDashboard.putNumber("coralEffector/voltage", m_motor.getBusVoltage());
     }
 
     public void runIntake() {
@@ -93,6 +100,7 @@ public class CoralEndEffector extends SubsystemBase {
     }
 
     public void stop() {
-        m_state = State.IDLE;
+        if (m_state != State.HOLD)
+            m_state = State.IDLE;
     }
 }
