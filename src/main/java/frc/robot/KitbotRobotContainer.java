@@ -52,7 +52,7 @@ public class KitbotRobotContainer {
         m_driverController.leftTrigger().whileTrue(new StartEndCommand(m_coralEffector::runIntake, m_coralEffector::stop, m_coralEffector));
         
         m_driverController.rightBumper().whileTrue(new StartEndCommand(m_algaeEffector::scoreBarge, m_algaeEffector::stop, m_algaeEffector));
-        m_driverController.leftBumper().whileTrue(new StartEndCommand(m_algaeEffector::runIntake, m_coralEffector::stop, m_algaeEffector));
+        m_driverController.leftBumper().whileTrue(new StartEndCommand(m_algaeEffector::runIntake, m_algaeEffector::stop, m_algaeEffector));
     }
     
     private void configureAutos() {
