@@ -25,8 +25,6 @@ public class KitbotRobotContainer extends RobotContainer {
     private final AprilTagVision m_aprilTagVision = new AprilTagVision();
     private final DriveTrain m_driveTrain = new DriveTrain("swerve/kitbot", m_aprilTagVision);
     private final KitbotRoller m_kitbotRoller = new KitbotRoller();
-    private final CoralEffector m_coralEffector = new CoralEffector(); 
-    private final AlgaeEffector m_algaeEffector = new AlgaeEffector(); 
 
     private AutoCommandInterface m_autoCommand;
 
@@ -45,14 +43,8 @@ public class KitbotRobotContainer extends RobotContainer {
         m_driverController.start().onTrue(new InstantCommand(m_driveTrain::lock, m_driveTrain));
         m_driverController.back().onTrue(new InstantCommand(m_driveTrain::zeroHeading, m_driveTrain));
 
-        // m_driverController.rightTrigger().whileTrue(new StartEndCommand(m_kitbotRoller::runRollerOut, m_kitbotRoller::stop, m_kitbotRoller));
-        // m_driverController.leftTrigger().whileTrue(new StartEndCommand(m_kitbotRoller::runRollerBack, m_kitbotRoller::stop, m_kitbotRoller));
-
-        m_driverController.rightTrigger().whileTrue(new StartEndCommand(m_coralEffector::runOuttake, m_coralEffector::stop, m_coralEffector));
-        m_driverController.leftTrigger().whileTrue(new StartEndCommand(m_coralEffector::runIntake, m_coralEffector::stop, m_coralEffector));
-        
-        m_driverController.rightBumper().whileTrue(new StartEndCommand(m_algaeEffector::scoreBarge, m_algaeEffector::stop, m_algaeEffector));
-        m_driverController.leftBumper().whileTrue(new StartEndCommand(m_algaeEffector::runIntake, m_algaeEffector::stop, m_algaeEffector));
+        m_driverController.rightTrigger().whileTrue(new StartEndCommand(m_kitbotRoller::runRollerOut, m_kitbotRoller::stop, m_kitbotRoller));
+        m_driverController.leftTrigger().whileTrue(new StartEndCommand(m_kitbotRoller::runRollerBack, m_kitbotRoller::stop, m_kitbotRoller));
     }
     
     private void configureAutos() {

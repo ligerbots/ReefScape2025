@@ -23,7 +23,8 @@ public class CompRobotContainer extends RobotContainer {
 
     private final AprilTagVision m_aprilTagVision = new AprilTagVision();
     private final DriveTrain m_driveTrain = new DriveTrain("swerve/kitbot", m_aprilTagVision);
-    private final EndEffector m_endEffector = new EndEffector(); 
+    private final CoralEffector m_coralEffector = new CoralEffector(); 
+    private final AlgaeEffector m_algaeEffector = new AlgaeEffector(); 
 
     private AutoCommandInterface m_autoCommand;
 
@@ -42,13 +43,16 @@ public class CompRobotContainer extends RobotContainer {
         m_driverController.start().onTrue(new InstantCommand(m_driveTrain::lock, m_driveTrain));
         m_driverController.back().onTrue(new InstantCommand(m_driveTrain::zeroHeading, m_driveTrain));
 
-        m_driverController.rightTrigger().whileTrue(new StartEndCommand(m_endEffector::runCoralOut, m_endEffector::stop, m_endEffector));
-        m_driverController.leftTrigger().whileTrue(new StartEndCommand(m_endEffector::runCoralBack, m_endEffector::stop, m_endEffector));
+        m_driverController.rightTrigger().whileTrue(new StartEndCommand(m_coralEffector::runOuttake, m_coralEffector::stop, m_coralEffector));
+        m_driverController.leftTrigger().whileTrue(new StartEndCommand(m_coralEffector::runIntake, m_coralEffector::stop, m_coralEffector));
+        
+        m_driverController.rightBumper().whileTrue(new StartEndCommand(m_algaeEffector::scoreBarge, m_algaeEffector::stop, m_algaeEffector));
+        m_driverController.leftBumper().whileTrue(new StartEndCommand(m_algaeEffector::runIntake, m_algaeEffector::stop, m_algaeEffector));
     }
     
     private void configureAutos() {
         // TODO Auto-generated method stub
-        //m_autoCommand = new HelloWorldAuto2(m_driveTrain);
+        m_autoCommand = null; //new HelloWorldAuto2(m_driveTrain);
     }
 
     public Command getAutonomousCommand() {
@@ -56,6 +60,7 @@ public class CompRobotContainer extends RobotContainer {
     }
 
     public Pose2d getInitialPose() {
+        if (m_autoCommand == null) return new Pose2d();
         return m_autoCommand.getInitialPose();
     }
 
