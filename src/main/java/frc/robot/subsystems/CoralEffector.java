@@ -13,24 +13,22 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 
 
-public class EndEffector extends SubsystemBase {
+public class CoralEffector extends SubsystemBase {
     static final int MOTOR_CURRENT_LIMIT = 30;
-    static final double MOTOR_VOLTAGE_COMP = 10; //This sets a limit for voltage to 10 so it is repeatable untill the battery dips below 10 volts
+    static final double MOTOR_VOLTAGE_COMP = 12; //This sets a limit for voltage to 10 so it is repeatable untill the battery dips below 10 volts
+    static final double INTAKE_VALUE = -0.4;
     static final double EJECT_VALUE = 1;
     
     private final SparkMax m_coralMotor;
-    private final SparkMax m_algaeMotor;
     
-    public EndEffector() {
+    public CoralEffector() {
         // Set up the coral and algae motor as brushed motors
         m_coralMotor = new SparkMax(Constants.END_EFFECTOR_CORAL_INTAKE_ID, MotorType.kBrushless);
-        m_algaeMotor = new SparkMax(Constants.END_EFFECTOR_ALGAE_INTAKE_ID, MotorType.kBrushless);
 
         // Set can timeout. Because this project only sets parameters once on
         // construction, the timeout can be long without blocking robot operation. Code
         // which sets or gets parameters during operation may need a shorter timeout.
         m_coralMotor.setCANTimeout(250);
-        m_algaeMotor.setCANTimeout(250);
         
         // Create and apply configuration for roller motor. Voltage compensation help
         // the roller behave the same as the battery
@@ -42,29 +40,18 @@ public class EndEffector extends SubsystemBase {
         config.smartCurrentLimit(MOTOR_CURRENT_LIMIT);
         
         m_coralMotor.configure(config, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
-        m_algaeMotor.configure(config, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
     }
     
-    public void runCoralOut() {
+    public void ejectCoral() {
         // System.out.print("command scheduled");
         m_coralMotor.set(EJECT_VALUE);
     }
     
-    public void runCoralBack() {
-        m_coralMotor.set(-EJECT_VALUE);
+    public void intakeCoral() {
+        m_coralMotor.set(INTAKE_VALUE);
     }
     
-    public void runAlgaeOut() {
-        // System.out.print("command scheduled");
-        m_algaeMotor.set(EJECT_VALUE);
-    }
-    
-    public void runAlgaeBack() {
-        m_algaeMotor.set(-EJECT_VALUE);
-    }
-
     public void stop() {
         m_coralMotor.stopMotor();
-        m_algaeMotor.stopMotor();
     }
 }
