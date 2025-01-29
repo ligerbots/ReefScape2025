@@ -17,7 +17,7 @@ public class AlgaeEffector extends SubsystemBase {
     static final int MOTOR_CURRENT_LIMIT = 30;
     static final double MOTOR_VOLTAGE_COMP = 12; //This sets a limit for voltage to 10 so it is repeatable untill the battery dips below 10 volts
     static final double EJECT_VALUE = 1;
-    static final double INTAKE_VALUE = 0.5;
+    static final double INTAKE_VALUE = -0.5;
     
     private final SparkMax m_algaeMotor;
     
@@ -50,7 +50,7 @@ public class AlgaeEffector extends SubsystemBase {
     }
     
     public void intakeAlgae() {
-        m_algaeMotor.set(-EJECT_VALUE);
+        m_algaeMotor.set(INTAKE_VALUE);
     }
 
     public void stop() {
