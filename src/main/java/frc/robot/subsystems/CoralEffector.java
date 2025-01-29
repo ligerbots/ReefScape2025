@@ -67,7 +67,7 @@ public class CoralEffector extends SubsystemBase {
     public void periodic() {
         switch (m_state) {
             case IDLE:
-                m_motor.set(0);
+                m_motor.stopMotor();
                 break;
 
             case INTAKE:
@@ -88,7 +88,8 @@ public class CoralEffector extends SubsystemBase {
 
         SmartDashboard.putBoolean("coralEffector/limitSwitch", m_limitSwitch.isPressed());
         SmartDashboard.putString("coralEffector/state", m_state.toString());
-        SmartDashboard.putNumber("coralEffector/voltage", m_motor.getBusVoltage());
+        SmartDashboard.putNumber("coralEffector/speed", m_motor.get());
+        SmartDashboard.putNumber("coralEffector/current", m_motor.getOutputCurrent());
     }
 
     public void runIntake() {

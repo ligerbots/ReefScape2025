@@ -93,7 +93,6 @@ public class AlgaeEffector extends SubsystemBase {
     }
 
     public void runIntake() {
-        // System.out.print("command scheduled");
         m_state = State.INTAKE;
     }
 
