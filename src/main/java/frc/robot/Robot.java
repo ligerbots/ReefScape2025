@@ -12,6 +12,7 @@ import edu.wpi.first.wpilibj.livewindow.LiveWindow;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import frc.robot.subsystems.DriveTrain;
 
 /**
 * The methods in this class are called automatically corresponding to each mode, as described in
@@ -102,16 +103,20 @@ public class Robot extends TimedRobot {
     
     @Override
     public void disabledPeriodic() {
+        // drivetrain might be null when testing code. So check
+        DriveTrain driveTrain = m_robotContainer.getDriveTrain();
+
         if (isSimulation()) {
             // YAGSL bug fix (Nov 2024)
             // The simulation needs to be told the drive speed every loop, even when disabled 
-            m_robotContainer.getDriveTrain().drive(0, 0, 0, false);
+            // might be null during testing
+            if (driveTrain != null) driveTrain.drive(0, 0, 0, false);
         }
         
         boolean isRedAlliance = FieldConstants.isRedAlliance();
         if (m_autonomousCommand == null || isRedAlliance != m_prevIsRedAlliance) {
             m_autonomousCommand = m_robotContainer.getAutonomousCommand();
-            m_robotContainer.getDriveTrain().setPose(m_robotContainer.getInitialPose());
+            if (driveTrain != null) driveTrain.setPose(m_robotContainer.getInitialPose());
             m_prevIsRedAlliance = isRedAlliance;
         }
     }

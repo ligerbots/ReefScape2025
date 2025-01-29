@@ -22,7 +22,7 @@ public class CompRobotContainer extends RobotContainer {
     private final CommandXboxController m_driverController = new CommandXboxController(0);
 
     private final AprilTagVision m_aprilTagVision = new AprilTagVision();
-    private final DriveTrain m_driveTrain = new DriveTrain("swerve/kitbot", m_aprilTagVision);
+    private final DriveTrain m_driveTrain = null; // new DriveTrain("swerve/kitbot", m_aprilTagVision);
     private final CoralEffector m_coralEffector = new CoralEffector(); 
     private final AlgaeEffector m_algaeEffector = new AlgaeEffector(); 
 
@@ -32,7 +32,7 @@ public class CompRobotContainer extends RobotContainer {
         configureBindings();
         configureAutos();
 
-        m_driveTrain.setDefaultCommand(getDriveCommand());
+        // m_driveTrain.setDefaultCommand(getDriveCommand());
     }
             
     private void configureBindings() {
@@ -40,8 +40,8 @@ public class CompRobotContainer extends RobotContainer {
             DriverStation.silenceJoystickConnectionWarning(true);
         }
 
-        m_driverController.start().onTrue(new InstantCommand(m_driveTrain::lock, m_driveTrain));
-        m_driverController.back().onTrue(new InstantCommand(m_driveTrain::zeroHeading, m_driveTrain));
+        // m_driverController.start().onTrue(new InstantCommand(m_driveTrain::lock, m_driveTrain));
+        // m_driverController.back().onTrue(new InstantCommand(m_driveTrain::zeroHeading, m_driveTrain));
 
         m_driverController.rightTrigger().whileTrue(new StartEndCommand(m_coralEffector::runOuttake, m_coralEffector::stop, m_coralEffector));
         m_driverController.leftTrigger().whileTrue(new StartEndCommand(m_coralEffector::runIntake, m_coralEffector::stop, m_coralEffector));
