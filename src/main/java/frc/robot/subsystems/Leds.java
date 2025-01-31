@@ -6,11 +6,13 @@ package frc.robot.subsystems;
 
 import static edu.wpi.first.units.Units.Meters;
 import static edu.wpi.first.units.Units.MetersPerSecond;
+import static edu.wpi.first.units.Units.Seconds;
 
 import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.wpilibj.AddressableLED;
 import edu.wpi.first.wpilibj.AddressableLEDBuffer;
 import edu.wpi.first.wpilibj.LEDPattern;
+import edu.wpi.first.wpilibj.PWM;
 import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
@@ -45,15 +47,21 @@ public class Leds extends SubsystemBase {
     @Override
     public void periodic() {
         // This method will be called once per scheduler run
-        // Update the buffer with the rainbow animation
+
+        // Update the buffer with the pattern
         pattern.applyTo(m_ledBuffer);
 
         // Set the LEDs
         m_led.setData(m_ledBuffer);
     }
 
+    // Colors include Color.kRed, Color.kOrange, Color.kYellow, Color.kGreen
     public void setSolidPattern(Color c) {
         pattern = LEDPattern.solid(c);
+    }
+
+    public void setBlinkPattern(Color c) {
+        pattern = LEDPattern.solid(c).blink(Seconds.of(1.5));
     }
 
     public void setRainbowPattern() {
