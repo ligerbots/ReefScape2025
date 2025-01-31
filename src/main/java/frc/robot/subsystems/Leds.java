@@ -12,7 +12,7 @@ import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.wpilibj.AddressableLED;
 import edu.wpi.first.wpilibj.AddressableLEDBuffer;
 import edu.wpi.first.wpilibj.LEDPattern;
-import edu.wpi.first.wpilibj.PWM;
+// import edu.wpi.first.wpilibj.PWM;
 import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
@@ -72,9 +72,8 @@ public class Leds extends SubsystemBase {
         pattern = LEDPattern.rainbow(255, 128).scrollAtAbsoluteSpeed(MetersPerSecond.of(1), LED_SPACING);
     }
 
-    // Percentage is 0 to 1
-    public void setBarPattern(double percentage, Color c) {
-        pattern = LEDPattern.solid(c);
+    // Percentage is 0 to 1, utilizes last used color
+    public void setBarPattern(double percentage) {
         pattern = LEDPattern.progressMaskLayer(() -> percentage).mask(pattern);
     }
 }
