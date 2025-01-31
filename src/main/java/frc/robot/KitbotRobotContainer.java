@@ -43,16 +43,13 @@ public class KitbotRobotContainer {
             DriverStation.silenceJoystickConnectionWarning(true);
         }
 
-
-
         m_driverController.start().onTrue(new InstantCommand(m_driveTrain::lock, m_driveTrain));
         m_driverController.back().onTrue(new InstantCommand(m_driveTrain::zeroHeading, m_driveTrain));
 
         // m_driverController.rightTrigger().whileTrue(new StartEndCommand(m_kitbotRoller::runRollerOut, m_kitbotRoller::stop, m_kitbotRoller));
         // m_driverController.leftTrigger().whileTrue(new StartEndCommand(m_kitbotRoller::runRollerBack, m_kitbotRoller::stop, m_kitbotRoller));
-        m_driverController.rightTrigger().whileTrue(new StartEndCommand(m_endEffector::runCoralOut, m_endEffector::stop, m_endEffector));
-        m_driverController.leftTrigger().whileTrue(new StartEndCommand(m_endEffector::runCoralBack, m_endEffector::stop, m_endEffector));
-
+        m_driverController.rightTrigger().whileTrue(new StartEndCommand(m_endEffector::runOuttake, m_endEffector::stop, m_endEffector));
+        m_driverController.leftTrigger().whileTrue(new StartEndCommand(m_endEffector::runIntake, m_endEffector::stop, m_endEffector));
     }
     
     private void configureAutos() {
