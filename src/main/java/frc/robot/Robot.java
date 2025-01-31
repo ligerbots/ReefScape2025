@@ -24,10 +24,10 @@ public class Robot extends TimedRobot {
     private boolean m_prevIsRedAlliance = true;
     
     public static final String KITBOT_SERIAL_NUMBER = "123";
-    public static final String COMP_V1_SERIAL_NUMBER = "123";
+    public static final String COMP_V1_SERIAL_NUMBER = "0313bb3a";
 
     public enum RobotType {
-        KITBOT, COMP_V1
+        KITBOT, COMP_V1, TEST
     }
     // we want this to be static so that it is easy for subsystems to query the robot type
     private static RobotType m_robotType;
@@ -61,10 +61,12 @@ public class Robot extends TimedRobot {
         //   code to run.
         String serialNum = HALUtil.getSerialNumber();
         SmartDashboard.putString("rioSerialNumber", serialNum);
-        if (serialNum == KITBOT_SERIAL_NUMBER) {
+        if (serialNum.equals(KITBOT_SERIAL_NUMBER)) {
             m_robotType = RobotType.KITBOT;
-        } else {
+        } else if (serialNum.equals(COMP_V1_SERIAL_NUMBER)) {
             m_robotType = RobotType.COMP_V1;
+        } else {
+            m_robotType = RobotType.TEST;
         }
         SmartDashboard.putString("robotType", m_robotType.toString());
 
