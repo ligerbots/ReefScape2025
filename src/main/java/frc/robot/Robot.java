@@ -72,8 +72,10 @@ public class Robot extends TimedRobot {
         // autonomous chooser on the dashboard.
         if (m_robotType == RobotType.KITBOT) {
             m_robotContainer = new KitbotRobotContainer();
-        } else {
+        } else if (m_robotType == RobotType.COMP_V1) {
             m_robotContainer = new CompRobotContainer();
+        } else {
+            m_robotContainer = new TestRobotContainer();
         }
     }
 
