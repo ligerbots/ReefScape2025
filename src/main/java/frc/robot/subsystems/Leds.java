@@ -73,7 +73,9 @@ public class Leds extends SubsystemBase {
     }
 
     // Percentage is 0 to 1, utilizes last used color
-    public void setBarPattern(double percentage) {
-        pattern = LEDPattern.progressMaskLayer(() -> percentage).mask(pattern);
+    public void setBarPattern(double percentage, Color color) {
+        LEDPattern base = LEDPattern.solid(color);
+        LEDPattern mask = LEDPattern.progressMaskLayer(() -> percentage);
+        pattern = base.mask(mask);
     }
 }
