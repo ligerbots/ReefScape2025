@@ -24,11 +24,11 @@ public class Leds extends SubsystemBase {
 
     private AddressableLED m_led;
     private AddressableLEDBuffer m_ledBuffer;
-    private LEDPattern m_scrollingPattern;
     
+    private LEDPattern pattern = LEDPattern.solid(Color.kBlack);
+
     // Creates a new Leds.
     public Leds() {
-        
         // PWM port 0
         // Must be a PWM header, not MXP or DIO
         m_led = new AddressableLED(LED_PWM_PORT);
@@ -37,29 +37,8 @@ public class Leds extends SubsystemBase {
         // Default to a length of 60, start empty output
         // Length is expensive to set, so only set it once, then just update data
         m_ledBuffer = new AddressableLEDBuffer(NUM_LEDS);
-        
         m_led.setLength(m_ledBuffer.getLength());
         
-        LEDPattern pattern;
-
-        // // Create an LED pattern that sets the entire strip to solid red
-        // LEDPattern pattern = LEDPattern.solid(Color.kBlue);
-        
-        // // Apply the LED pattern to the data buffer
-        // pattern.applyTo(m_ledBuffer);
-        
-        // all hues at maximum saturation and half brightness
-        pattern = LEDPattern.rainbow(255, 128);
-        
-        // Create a new pattern that scrolls the rainbow pattern across the LED strip, moving at a speed
-        // of 1 meter per second.
-        m_scrollingPattern = pattern.scrollAtAbsoluteSpeed(MetersPerSecond.of(1), LED_SPACING);
-        
-        // Apply the LED pattern to the data buffer
-        m_scrollingPattern.applyTo(m_ledBuffer);
-        
-        // Write the data to the LED strip
-        m_led.setData(m_ledBuffer);
         m_led.start();
     }
     
@@ -67,9 +46,26 @@ public class Leds extends SubsystemBase {
     public void periodic() {
         // This method will be called once per scheduler run
         // Update the buffer with the rainbow animation
-        m_scrollingPattern.applyTo(m_ledBuffer);
+        pattern.applyTo(m_ledBuffer);
 
         // Set the LEDs
         m_led.setData(m_ledBuffer);
+    }
+
+    public void setSolidPattern(Color c) {
+        pattern = LEDPattern.solid(c);
+    }
+
+    public void setRainbowPattern() {
+        pattern = LEDPattern.rainbow(255, 128);
+    }
+
+    public void setRainbowScrollingPattern() {
+        pattern = LEDPattern.rainbow(255, 128).scrollAtAbsoluteSpeed(MetersPerSecond.of(1), LED_SPACING);
+    }
+
+    // Percentage is 0 to 1
+    public void setBarPattern(double percentage) {
+        pattern = LEDPattern.progressMaskLayer(() -> percentage);
     }
 }
