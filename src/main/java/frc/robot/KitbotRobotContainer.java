@@ -27,7 +27,8 @@ public class KitbotRobotContainer {
     private final DriveTrain m_driveTrain = new DriveTrain("swerve/kitbot", m_aprilTagVision);
     private final KitbotRoller m_kitbotRoller = new KitbotRoller();
     private final Leds m_leds = new Leds();
-    private final EndEffector m_endEffector = new EndEffector(); 
+    private final CoralEndEffector m_coralEndEffector = new CoralEndEffector();
+    private final AlgaeEndEffector m_algaeEndEffector = new AlgaeEndEffector();
 
     private AutoCommandInterface m_autoCommand;
 
@@ -48,8 +49,10 @@ public class KitbotRobotContainer {
 
         // m_driverController.rightTrigger().whileTrue(new StartEndCommand(m_kitbotRoller::runRollerOut, m_kitbotRoller::stop, m_kitbotRoller));
         // m_driverController.leftTrigger().whileTrue(new StartEndCommand(m_kitbotRoller::runRollerBack, m_kitbotRoller::stop, m_kitbotRoller));
-        m_driverController.rightTrigger().whileTrue(new StartEndCommand(m_endEffector::runOuttake, m_endEffector::stop, m_endEffector));
-        m_driverController.leftTrigger().whileTrue(new StartEndCommand(m_endEffector::runIntake, m_endEffector::stop, m_endEffector));
+        // m_driverController.rightTrigger().whileTrue(new StartEndCommand(m_endEffector::runOuttake, m_endEffector::stop, m_endEffector));
+        // m_driverController.leftTrigger().whileTrue(new StartEndCommand(m_endEffector::runIntake, m_endEffector::stop, m_endEffector));
+        
+        
     }
     
     private void configureAutos() {
