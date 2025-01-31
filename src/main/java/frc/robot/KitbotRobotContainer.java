@@ -7,7 +7,10 @@ package frc.robot;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.StartEndCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
@@ -52,7 +55,10 @@ public class KitbotRobotContainer {
         // m_driverController.rightTrigger().whileTrue(new StartEndCommand(m_endEffector::runOuttake, m_endEffector::stop, m_endEffector));
         // m_driverController.leftTrigger().whileTrue(new StartEndCommand(m_endEffector::runIntake, m_endEffector::stop, m_endEffector));
         
-        
+        m_driverController.a().onTrue(Commands.run(() -> {m_leds.setSolidPattern(Color.kBlue);}));
+        m_driverController.b().onTrue(Commands.run(() -> {m_leds.setRainbowScrollingPattern();}));
+        m_driverController.x().onTrue(Commands.run(() -> {m_leds.setBlinkPattern(Color.kOrange);}));
+        m_driverController.y().onTrue(Commands.run(() -> {m_leds.setBarPattern(SmartDashboard.getNumber("robot/percentage", 0), Color.kGreen);}));
     }
     
     private void configureAutos() {
