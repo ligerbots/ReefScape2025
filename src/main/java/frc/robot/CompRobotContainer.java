@@ -6,6 +6,7 @@ package frc.robot;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
@@ -60,7 +61,7 @@ public class CompRobotContainer extends RobotContainer {
     }
 
     public Pose2d getInitialPose() {
-        if (m_autoCommand == null) return new Pose2d();
+        if (m_autoCommand == null) return new Pose2d(1, 1, Rotation2d.fromDegrees(0));
         return m_autoCommand.getInitialPose();
     }
 
