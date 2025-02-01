@@ -12,6 +12,7 @@ import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.wpilibj.AddressableLED;
 import edu.wpi.first.wpilibj.AddressableLEDBuffer;
 import edu.wpi.first.wpilibj.LEDPattern;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 // import edu.wpi.first.wpilibj.PWM;
 import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -28,6 +29,12 @@ public class Leds extends SubsystemBase {
     private AddressableLEDBuffer m_ledBuffer;
     
     private LEDPattern pattern = LEDPattern.solid(Color.kBlack);
+
+    private enum LEDState {
+        SOLID, BLINK, RAINBOW, RAINBOW_SCROLL, BAR;
+    };
+
+    private LEDState m_ledState = LEDState.SOLID;
 
     // Creates a new Leds.
     public Leds() {
@@ -49,6 +56,7 @@ public class Leds extends SubsystemBase {
         // This method will be called once per scheduler run
 
         // Update the buffer with the pattern
+        SmartDashboard.putString("robot/ledstate", String.valueOf(m_ledState));
         pattern.applyTo(m_ledBuffer);
 
         // Set the LEDs
@@ -58,18 +66,22 @@ public class Leds extends SubsystemBase {
     // Colors include Color.kRed, Color.kOrange, Color.kYellow, Color.kGreen
     public void setSolidPattern(Color c) {
         pattern = LEDPattern.solid(c);
+        m_ledState = LEDState.SOLID;
     }
 
     public void setBlinkPattern(Color c) {
         pattern = LEDPattern.solid(c).blink(Seconds.of(1.5));
+        m_ledState = LEDState.BLINK;
     }
 
     public void setRainbowPattern() {
         pattern = LEDPattern.rainbow(255, 128);
+        m_ledState = LEDState.RAINBOW;
     }
 
     public void setRainbowScrollingPattern() {
         pattern = LEDPattern.rainbow(255, 128).scrollAtAbsoluteSpeed(MetersPerSecond.of(1), LED_SPACING);
+        m_ledState = LEDState.RAINBOW_SCROLL;
     }
 
     // Percentage is 0 to 1, utilizes last used color
