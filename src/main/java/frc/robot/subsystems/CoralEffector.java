@@ -43,7 +43,7 @@ public class CoralEffector extends SubsystemBase {
 
     public CoralEffector() {
         // Set up the coral motor as brushed motors
-        m_motor = new SparkMax(Constants.END_EFFECTOR_CORAL_INTAKE_ID, MotorType.kBrushless);
+        m_motor = new SparkMax(Constants.CORAL_EFFECTOR_INTAKE_ID, MotorType.kBrushless);
         m_limitSwitch = m_motor.getReverseLimitSwitch();
 
         // Set can timeout. Because this project only sets parameters once on

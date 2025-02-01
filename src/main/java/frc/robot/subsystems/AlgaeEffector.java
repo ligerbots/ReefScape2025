@@ -41,7 +41,7 @@ public class AlgaeEffector extends SubsystemBase {
         m_pdp = pdp;
 
         // Set up the   motor as a brushed motor
-        m_motor = new SparkMax(Constants.END_EFFECTOR_ALGAE_INTAKE_ID, MotorType.kBrushless);
+        m_motor = new SparkMax(Constants.ALGAR_EFFECTOR_INTAKE_ID, MotorType.kBrushless);
 
         // // Set can timeout. Because this project only sets parameters once on
         // // construction, the timeout can be long without blocking robot operation. Code
