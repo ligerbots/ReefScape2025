@@ -55,10 +55,10 @@ public class KitbotRobotContainer {
         // m_driverController.rightTrigger().whileTrue(new StartEndCommand(m_endEffector::runOuttake, m_endEffector::stop, m_endEffector));
         // m_driverController.leftTrigger().whileTrue(new StartEndCommand(m_endEffector::runIntake, m_endEffector::stop, m_endEffector));
         
-        m_driverController.a().onTrue(Commands.run(() -> {m_leds.setSolidPattern(Color.kBlue);}));
-        m_driverController.b().onTrue(Commands.run(() -> {m_leds.setRainbowScrollingPattern();}));
-        m_driverController.x().onTrue(Commands.run(() -> {m_leds.setBlinkPattern(Color.kOrange);}));
-        m_driverController.y().onTrue(Commands.run(() -> {m_leds.setBarPattern(SmartDashboard.getNumber("robot/percentage", 0), Color.kGreen);}));
+        m_driverController.a().onTrue(Commands.runOnce(() -> {m_leds.setSolidPattern(Color.kBlue);}));
+        m_driverController.b().onTrue(Commands.runOnce(() -> {m_leds.setRainbowScrollingPattern();}));
+        m_driverController.x().onTrue(Commands.runOnce(() -> {m_leds.setBlinkPattern(Color.kOrange);}));
+        m_driverController.y().onTrue(Commands.runOnce(() -> {m_leds.setBarPattern(SmartDashboard.getNumber("robot/percentage", 0), Color.kGreen);}));
     }
     
     private void configureAutos() {
