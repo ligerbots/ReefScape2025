@@ -8,6 +8,7 @@ import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.StartEndCommand;
@@ -25,7 +26,8 @@ public class CompRobotContainer extends RobotContainer {
     private final AprilTagVision m_aprilTagVision = new AprilTagVision();
     private final DriveTrain m_driveTrain = new DriveTrain("swerve/comp", m_aprilTagVision);
     private final CoralEffector m_coralEffector = new CoralEffector(); 
-    private final AlgaeEffector m_algaeEffector = new AlgaeEffector(); 
+    private final PowerDistribution m_pdh = new PowerDistribution();
+    private final AlgaeEffector m_algaeEffector = new AlgaeEffector(m_pdh); 
 
     private AutoCommandInterface m_autoCommand;
 

@@ -12,6 +12,7 @@ import com.revrobotics.spark.config.SparkMaxConfig;
 import com.revrobotics.spark.config.LimitSwitchConfig.Type;
 import com.revrobotics.spark.SparkLimitSwitch;
 
+import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
@@ -27,6 +28,7 @@ public class AlgaeEffector extends SubsystemBase {
 
     private final SparkMax m_motor;
     private final SparkLimitSwitch m_limitSwitch;
+    private final PowerDistribution m_pdp;
 
     // State
     private enum State {
@@ -35,7 +37,9 @@ public class AlgaeEffector extends SubsystemBase {
 
     private State m_state = State.IDLE;
 
-    public AlgaeEffector() {
+    public AlgaeEffector(PowerDistribution pdp) {
+        m_pdp = pdp;
+
         // Set up the   motor as a brushed motor
         m_motor = new SparkMax(Constants.END_EFFECTOR_ALGAE_INTAKE_ID, MotorType.kBrushless);
 
@@ -90,6 +94,9 @@ public class AlgaeEffector extends SubsystemBase {
         SmartDashboard.putBoolean("algaeEffector/limitSwitch", m_limitSwitch.isPressed());
         SmartDashboard.putNumber("algaeEffector/speed", m_motor.get());
         SmartDashboard.putNumber("algaeEffector/current", m_motor.getOutputCurrent());
+
+        SmartDashboard.putNumber("pdp/current1", m_pdp.getCurrent(1));
+        SmartDashboard.putNumber("pdp/current2", m_pdp.getCurrent(2));
     }
 
     public void runIntake() {
