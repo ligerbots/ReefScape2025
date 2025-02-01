@@ -58,7 +58,7 @@ public class KitbotRobotContainer {
         // m_startLocation.addOption("Away Side (Not Processor)", FieldConstants.ROBOT_START_3);
         // SmartDashboard.putData("Start Location", m_startLocation);
 
-        m_chosenAuto.setDefaultOption("Processor Side Standard", new PrimaryAutoBase(m_driveTrain, m_kitbotRoller, true));
+        m_chosenAuto.setDefaultOption("Processor Side Standard", new ExperimentalAutoBase(m_driveTrain, m_kitbotRoller, true));
         m_chosenAuto.addOption("Processor Side J-Path", new PrimaryAutoBase(m_driveTrain, m_kitbotRoller, true));
 
         m_chosenAuto.addOption("Away Side Standard", new PrimaryAutoBase(m_driveTrain, m_kitbotRoller, false));
