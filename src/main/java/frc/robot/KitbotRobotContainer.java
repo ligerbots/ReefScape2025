@@ -62,8 +62,16 @@ public class KitbotRobotContainer {
         // m_chosenAuto.addOption("Away Side J-Path", new PrimaryAutoBase(m_driveTrain, m_kitbotRoller, false));
 
         Pose2d[] reefPoints = {FieldConstants.REEF_J, FieldConstants.REEF_K, FieldConstants.REEF_L, FieldConstants.REEF_A};
-        m_chosenAuto.addOption("New Away Side Standard via Generic", new GenericAutoBase(FieldConstants.ROBOT_START_3, FieldConstants.SOURCE_2_OUT, 
-                            reefPoints, m_driveTrain, m_kitbotRoller));
+        m_chosenAuto.addOption("New Away Side Standard via Generic", 
+            new GenericAutoBase(FieldConstants.ROBOT_START_3, FieldConstants.SOURCE_2_OUT, reefPoints, m_driveTrain, m_kitbotRoller));
+
+        Pose2d[] reefPoints0 = {FieldConstants.REEF_J, FieldConstants.REEF_A, FieldConstants.REEF_B};
+        m_chosenAuto.addOption("Away Side Shared Far", 
+            new GenericAutoBase(FieldConstants.ROBOT_START_3, FieldConstants.SOURCE_2_IN, reefPoints0, m_driveTrain, m_kitbotRoller));
+    
+        Pose2d[] reefPoints1 = {FieldConstants.REEF_H, FieldConstants.REEF_K, FieldConstants.REEF_L};
+        m_chosenAuto.addOption("Away Side Shared Near", 
+            new GenericAutoBase(FieldConstants.ROBOT_START_2, FieldConstants.SOURCE_2_OUT, reefPoints1, m_driveTrain, m_kitbotRoller));
 
         // m_chosenAuto.addOption("Processor Side J-Path", new PrimaryAutoBase(m_driveTrain, m_kitbotRoller, true));
 

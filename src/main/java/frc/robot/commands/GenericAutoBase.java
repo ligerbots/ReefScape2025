@@ -43,14 +43,15 @@ public class GenericAutoBase extends AutoCommandInterface {
                 addCommands(new WaitCommand(.75));
                 addCommands(m_driveTrain.followPath(PathFactory.getPath(sourcePoint, reefPoints[2])));
 
-                addCommands(new ScoreCommand(roller).withTimeout(.3));
-                
-                addCommands(m_driveTrain.followPath(PathFactory.getPath(reefPoints[2], sourcePoint)));
-
-                addCommands(new WaitCommand(.75));
-                addCommands(m_driveTrain.followPath(PathFactory.getPath(sourcePoint, reefPoints[3])));
-
-                addCommands(new ScoreCommand(roller).withTimeout(.3));
+                addCommands(new ScoreCommand(roller).withTimeout(.3));                
+           
+                if(reefPoints.length >3) {
+                    addCommands(m_driveTrain.followPath(PathFactory.getPath(reefPoints[2], sourcePoint)));
+                    addCommands(new WaitCommand(.75));
+                    addCommands(m_driveTrain.followPath(PathFactory.getPath(sourcePoint, reefPoints[3])));
+    
+                    addCommands(new ScoreCommand(roller).withTimeout(.3));
+                }
 
         } catch (Exception e) {
             DriverStation.reportError("Unable to load PP path Test", true);
