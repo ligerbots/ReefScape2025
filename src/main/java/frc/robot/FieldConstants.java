@@ -32,10 +32,10 @@ public class FieldConstants {
     public static final Pose2d REEF_K = new Pose2d(3.98,5.20, Rotation2d.fromDegrees(-59.9));
     public static final Pose2d REEF_L = new Pose2d(3.70,5.06, Rotation2d.fromDegrees(-59.9));
 
-    public static final Pose2d SOURCE_1_IN = new Pose2d(0.64,1.37, Rotation2d.fromDegrees(-59.9));
-    public static final Pose2d SOURCE_1_OUT = new Pose2d(3.70,5.06, Rotation2d.fromDegrees(-59.9));
-    public static final Pose2d SOURCE_2_IN = new Pose2d(3.70,5.06, Rotation2d.fromDegrees(-59.9));
-    public static final Pose2d SOURCE_2_OUT = new Pose2d(3.70,5.06, Rotation2d.fromDegrees(-59.9));
+    public static final Pose2d SOURCE_1_IN = new Pose2d(0.64,1.37, Rotation2d.fromDegrees(55.6));
+    public static final Pose2d SOURCE_1_OUT = new Pose2d(1.65,0.64, Rotation2d.fromDegrees(55.6));
+    public static final Pose2d SOURCE_2_IN = new Pose2d(0.63,6.68, Rotation2d.fromDegrees(-52.7));
+    public static final Pose2d SOURCE_2_OUT = new Pose2d(1.67,7.41, Rotation2d.fromDegrees(-52.7));
 
     public static boolean isRedAlliance() {
         Optional<Alliance> alliance = DriverStation.getAlliance();

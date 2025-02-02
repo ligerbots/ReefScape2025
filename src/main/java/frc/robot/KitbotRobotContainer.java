@@ -61,7 +61,10 @@ public class KitbotRobotContainer {
         m_chosenAuto.setDefaultOption("Away Side Standard", new PrimaryAutoBase(m_driveTrain, m_kitbotRoller, false));
         // m_chosenAuto.addOption("Away Side J-Path", new PrimaryAutoBase(m_driveTrain, m_kitbotRoller, false));
 
-        m_chosenAuto.addOption("Processor Side Standard", new PrimaryAutoBase(m_driveTrain, m_kitbotRoller, true));
+        Pose2d[] reefPoints = {FieldConstants.REEF_J, FieldConstants.REEF_K, FieldConstants.REEF_L, FieldConstants.REEF_A};
+        m_chosenAuto.addOption("New Away Side Standard via Generic", new GenericAutoBase(FieldConstants.ROBOT_START_3, FieldConstants.SOURCE_2_OUT, 
+                            reefPoints, m_driveTrain, m_kitbotRoller));
+
         // m_chosenAuto.addOption("Processor Side J-Path", new PrimaryAutoBase(m_driveTrain, m_kitbotRoller, true));
 
 

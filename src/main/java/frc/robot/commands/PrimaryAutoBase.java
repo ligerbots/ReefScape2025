@@ -74,18 +74,15 @@ public class PrimaryAutoBase extends AutoCommandInterface {
                 addCommands(m_driveTrain.followPath(PathFactory.getPath(FieldConstants.SOURCE_2_OUT, FieldConstants.REEF_L)));
 
                 addCommands(new ScoreCommand(roller).withTimeout(.3));
-                
+
                 addCommands(m_driveTrain.followPath(PathFactory.getPath(FieldConstants.REEF_L, FieldConstants.SOURCE_2_OUT)));
+                // addCommands(m_driveTrain.followPath(PathPlannerPath.fromPathFile("ReefL to Source2Out")));
 
                 addCommands(new WaitCommand(.75));
                 addCommands(m_driveTrain.followPath(PathFactory.getPath(FieldConstants.SOURCE_2_OUT, FieldConstants.REEF_A)));
 
                 addCommands(new ScoreCommand(roller).withTimeout(.3));
 
-                // addCommands(m_driveTrain.followPath(PathPlannerPath.fromPathFile("ReefA to Source2Out")));
-                // addCommands(new WaitCommand(.75));
-                // addCommands(m_driveTrain.followPath(PathPlannerPath.fromPathFile("Source2Out to ReefA")));
-                // addCommands(new ScoreCommand(roller).withTimeout(.3));
             } 
 
         } catch (Exception e) {
