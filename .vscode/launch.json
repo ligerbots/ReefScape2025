@@ -4,18 +4,26 @@
   // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
   "version": "0.2.0",
   "configurations": [
-
+    {
+      "type": "java",
+      "name": "TestPathMirror",
+      "request": "launch",
+      "mainClass": "frc.robot.TestPathMirror",
+      "projectName": "ReefScape2025",
+      "vmArgs": "-Djava.libray.path='C:\\Users\\Jake Hendrickson\\gitdev\\com.github\\ligerbots\\ReefScape2025\\build\\jni\\release'"
+    
+    },
     {
       "type": "wpilib",
       "name": "WPILib Desktop Debug",
       "request": "launch",
-      "desktop": true,
+      "desktop": true
     },
     {
       "type": "wpilib",
       "name": "WPILib roboRIO Debug",
       "request": "launch",
-      "desktop": false,
+      "desktop": false
     }
   ]
 }

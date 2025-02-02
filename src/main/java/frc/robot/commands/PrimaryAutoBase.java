@@ -11,55 +11,35 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.StartEndCommand;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.FieldConstants;
+import frc.robot.PathFactory;
 import frc.robot.subsystems.DriveTrain;
 import frc.robot.subsystems.kitbot.KitbotRoller;
 
 // NOTE:  Consider using this command inline, rather than writing a subclass.  For more
 // information, see:
 // https://docs.wpilib.org/en/stable/docs/software/commandbased/convenience-features.html
-public class HelloWorldAuto2 extends AutoCommandInterface {
+public class PrimaryAutoBase extends AutoCommandInterface {
     private DriveTrain m_driveTrain;
     private Pose2d m_initPose;
 
     /** Creates a new NoteAuto. */
-    public HelloWorldAuto2(DriveTrain driveTrain, KitbotRoller roller) {
+    public PrimaryAutoBase(DriveTrain driveTrain, KitbotRoller roller, boolean processorSideAuto) {
         m_driveTrain = driveTrain;
 
-        boolean awaySideAuto = false;
         try {
 
-            if(awaySideAuto) {
-                PathPlannerPath startPath = PathPlannerPath.fromPathFile("Start2 to Shot1a");
+            if(processorSideAuto) {
+                PathPlannerPath startPath = PathPlannerPath.fromPathFile("Start1 to ReefF");
                 m_initPose = startPath.getStartingDifferentialPose();
                 
                 addCommands(m_driveTrain.followPath(startPath));
-                addCommands(new StartEndCommand(roller::runRollerOut, roller::stop, roller).withTimeout(.5));
+                addCommands(new ScoreCommand(roller).withTimeout(.3));
 
-                addCommands(m_driveTrain.followPath(PathPlannerPath.fromPathFile("Shot1a to Source2")));
-                addCommands(new WaitCommand(.75));
-                addCommands(m_driveTrain.followPath(PathPlannerPath.fromPathFile("Source2 to Shot2a")));
-                addCommands(new StartEndCommand(roller::runRollerOut, roller::stop, roller).withTimeout(.5));
-
-                addCommands(m_driveTrain.followPath(PathPlannerPath.fromPathFile("Shot2a to Source2")));
-                addCommands(new WaitCommand(.75));
-                addCommands(m_driveTrain.followPath(PathPlannerPath.fromPathFile("Source2 to ReefA")));
-                addCommands(new StartEndCommand(roller::runRollerOut, roller::stop, roller).withTimeout(.5));
-
-                addCommands(m_driveTrain.followPath(PathPlannerPath.fromPathFile("ReefA to Source2")));
-                addCommands(new WaitCommand(.75));
-                addCommands(m_driveTrain.followPath(PathPlannerPath.fromPathFile("Source2 to ReefA")));
-                addCommands(new StartEndCommand(roller::runRollerOut, roller::stop, roller).withTimeout(.5));
-            } else {
-                PathPlannerPath startPath = PathPlannerPath.fromPathFile("Start1 to Shot1");
-                m_initPose = startPath.getStartingDifferentialPose();
-                
-                addCommands(m_driveTrain.followPath(startPath));
-                addCommands(new StartEndCommand(roller::runRollerOut, roller::stop, roller).withTimeout(.3));
-
-                addCommands(m_driveTrain.followPath(PathPlannerPath.fromPathFile("Shot1 to Source1")));
+                addCommands(m_driveTrain.followPath(PathPlannerPath.fromPathFile("ReefF to Source1")));
                 // addCommands(new WaitCommand(.1));
-                addCommands(m_driveTrain.followPath(PathPlannerPath.fromPathFile("Source1 to Shot2")));
-                addCommands(new StartEndCommand(roller::runRollerOut, roller::stop, roller).withTimeout(.3));
+                addCommands(m_driveTrain.followPath(PathPlannerPath.fromPathFile("Source1 to ReefD")));
+                addCommands(new ScoreCommand(roller).withTimeout(.3));
+
                 
                 addCommands(m_driveTrain.followPath(PathPlannerPath.fromPathFile("Shot2 J Path")));
 
@@ -76,7 +56,34 @@ public class HelloWorldAuto2 extends AutoCommandInterface {
                 // // addCommands(new WaitCommand(.1));
                 // addCommands(m_driveTrain.followPath(PathPlannerPath.fromPathFile("Source1 to ReefB")));
                 // addCommands(new StartEndCommand(roller::runRollerOut, roller::stop, roller).withTimeout(.3));
-            }
+            } else {
+                PathPlannerPath startPath = PathFactory.getPath(FieldConstants.ROBOT_START_3, FieldConstants.REEF_J);
+
+                m_initPose = startPath.getStartingDifferentialPose();
+                
+                addCommands(m_driveTrain.followPath(startPath));
+                addCommands(new ScoreCommand(roller).withTimeout(.3));
+
+                addCommands(m_driveTrain.followPath(PathFactory.getPath(FieldConstants.REEF_J, FieldConstants.SOURCE_2_OUT)));
+                addCommands(new WaitCommand(.75));
+                addCommands(m_driveTrain.followPath(PathFactory.getPath(FieldConstants.SOURCE_2_OUT, FieldConstants.REEF_K)));
+                addCommands(new ScoreCommand(roller).withTimeout(.3));
+                addCommands(m_driveTrain.followPath(PathFactory.getPath(FieldConstants.REEF_K, FieldConstants.SOURCE_2_OUT)));
+
+                addCommands(new WaitCommand(.75));
+                addCommands(m_driveTrain.followPath(PathFactory.getPath(FieldConstants.SOURCE_2_OUT, FieldConstants.REEF_L)));
+
+                addCommands(new ScoreCommand(roller).withTimeout(.3));
+
+                addCommands(m_driveTrain.followPath(PathFactory.getPath(FieldConstants.REEF_L, FieldConstants.SOURCE_2_OUT)));
+                // addCommands(m_driveTrain.followPath(PathPlannerPath.fromPathFile("ReefL to Source2Out")));
+
+                addCommands(new WaitCommand(.75));
+                addCommands(m_driveTrain.followPath(PathFactory.getPath(FieldConstants.SOURCE_2_OUT, FieldConstants.REEF_A)));
+
+                addCommands(new ScoreCommand(roller).withTimeout(.3));
+
+            } 
 
         } catch (Exception e) {
             DriverStation.reportError("Unable to load PP path Test", true);
