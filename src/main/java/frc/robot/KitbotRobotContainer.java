@@ -20,8 +20,7 @@ import frc.robot.commands.*;
 import frc.robot.subsystems.*;
 import frc.robot.subsystems.kitbot.KitbotRoller;
 
-
-public class KitbotRobotContainer {
+public class KitbotRobotContainer extends RobotContainer {
     private static final double JOYSTICK_DEADBAND = 0.05;
 
     private final CommandXboxController m_driverController = new CommandXboxController(0);
@@ -29,7 +28,6 @@ public class KitbotRobotContainer {
     private final AprilTagVision m_aprilTagVision = new AprilTagVision();
     private final DriveTrain m_driveTrain = new DriveTrain("swerve/kitbot", m_aprilTagVision);
     private final KitbotRoller m_kitbotRoller = new KitbotRoller();
-    private final CoralEndEffector m_endEffector = new CoralEndEffector(); 
 
     private final SendableChooser<Command> m_chosenAuto = new SendableChooser<>();
     private final SendableChooser<Command> m_fieldSide = new SendableChooser<>();
@@ -51,10 +49,8 @@ public class KitbotRobotContainer {
         m_driverController.start().onTrue(new InstantCommand(m_driveTrain::lock, m_driveTrain));
         m_driverController.back().onTrue(new InstantCommand(m_driveTrain::zeroHeading, m_driveTrain));
 
-        // m_driverController.rightTrigger().whileTrue(new StartEndCommand(m_kitbotRoller::runRollerOut, m_kitbotRoller::stop, m_kitbotRoller));
-        // m_driverController.leftTrigger().whileTrue(new StartEndCommand(m_kitbotRoller::runRollerBack, m_kitbotRoller::stop, m_kitbotRoller));
-        m_driverController.rightTrigger().whileTrue(new StartEndCommand(m_endEffector::runOuttake, m_endEffector::stop, m_endEffector));
-        m_driverController.leftTrigger().whileTrue(new StartEndCommand(m_endEffector::runIntake, m_endEffector::stop, m_endEffector));
+        m_driverController.rightTrigger().whileTrue(new StartEndCommand(m_kitbotRoller::runRollerOut, m_kitbotRoller::stop, m_kitbotRoller));
+        m_driverController.leftTrigger().whileTrue(new StartEndCommand(m_kitbotRoller::runRollerBack, m_kitbotRoller::stop, m_kitbotRoller));
     }
     
     private void configureAutos() {
