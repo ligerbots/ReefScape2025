@@ -13,8 +13,10 @@ package frc.robot;
 * constants are needed, to reduce verbosity.
 */
 public final class Constants {
-    public static final int KITBOT_ROLLER_ID = 5; //TODO: Verify ID
-
+    public static final int KITBOT_ROLLER_ID = 5;
+    public static final int END_EFFECTOR_PIVOT_CAN_ID = 0; // TODO: INITIALIZE ID
+    public static final int END_EFFECTOR_CORAL_INTAKE_ID = 7;
+    public static final int END_EFFECTOR_ALGAE_INTAKE_ID = 8;
 
     public static double MAX_VOLTAGE = 12.0;
     
@@ -24,6 +26,6 @@ public final class Constants {
     // Can turn this off for competition to save a tiny bit of speed
     public static final boolean SIMULATION_SUPPORT = true;
     
-    // if true, burn the settings into the controllers after init
-    public static final boolean SPARKMAX_BURN_FLASH = false;
+    // if true, save the settings into the controllers after init
+    public static final boolean SPARKMAX_PERSIST_PARAMETERS = false;
 }
