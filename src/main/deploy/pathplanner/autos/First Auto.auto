@@ -13,13 +13,13 @@
         {
           "type": "path",
           "data": {
-            "pathName": "ReefF to Source1"
+            "pathName": "ReefF to Source1In"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "Source1 to ReefD"
+            "pathName": "Source1Out to ReefD"
           }
         },
         {
