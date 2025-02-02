@@ -23,32 +23,32 @@ public class GenericAutoBase extends AutoCommandInterface {
     private Pose2d m_initPose;
 
     /** Creates a new NoteAuto. */
-    public GenericAutoBase(Pose2d startPoint, Pose2d sourcePoint, Pose2d[] reefPoints, DriveTrain driveTrain, KitbotRoller roller) {
+    public GenericAutoBase(Pose2d startPoint, Pose2d sourcePoint, Pose2d[] reefPoints, DriveTrain driveTrain, KitbotRoller roller, boolean isProcessorSide) {
         m_driveTrain = driveTrain;
 
         try {
-                PathPlannerPath startPath = PathFactory.getPath(startPoint, reefPoints[0]);
+                PathPlannerPath startPath = PathFactory.getPath(startPoint, reefPoints[0], isProcessorSide);
 
                 m_initPose = startPath.getStartingDifferentialPose();
                 
                 addCommands(m_driveTrain.followPath(startPath));
                 addCommands(new ScoreCommand(roller).withTimeout(.3));
 
-                addCommands(m_driveTrain.followPath(PathFactory.getPath(reefPoints[0], sourcePoint)));
+                addCommands(m_driveTrain.followPath(PathFactory.getPath(reefPoints[0], sourcePoint, isProcessorSide)));
                 addCommands(new WaitCommand(.75));
-                addCommands(m_driveTrain.followPath(PathFactory.getPath(sourcePoint, reefPoints[1])));
+                addCommands(m_driveTrain.followPath(PathFactory.getPath(sourcePoint, reefPoints[1], isProcessorSide)));
                 addCommands(new ScoreCommand(roller).withTimeout(.3));
-                addCommands(m_driveTrain.followPath(PathFactory.getPath(reefPoints[1], sourcePoint)));
+                addCommands(m_driveTrain.followPath(PathFactory.getPath(reefPoints[1], sourcePoint, isProcessorSide)));
 
                 addCommands(new WaitCommand(.75));
-                addCommands(m_driveTrain.followPath(PathFactory.getPath(sourcePoint, reefPoints[2])));
+                addCommands(m_driveTrain.followPath(PathFactory.getPath(sourcePoint, reefPoints[2], isProcessorSide)));
 
                 addCommands(new ScoreCommand(roller).withTimeout(.3));                
            
                 if(reefPoints.length >3) {
-                    addCommands(m_driveTrain.followPath(PathFactory.getPath(reefPoints[2], sourcePoint)));
+                    addCommands(m_driveTrain.followPath(PathFactory.getPath(reefPoints[2], sourcePoint, isProcessorSide)));
                     addCommands(new WaitCommand(.75));
-                    addCommands(m_driveTrain.followPath(PathFactory.getPath(sourcePoint, reefPoints[3])));
+                    addCommands(m_driveTrain.followPath(PathFactory.getPath(sourcePoint, reefPoints[3], isProcessorSide)));
     
                     addCommands(new ScoreCommand(roller).withTimeout(.3));
                 }

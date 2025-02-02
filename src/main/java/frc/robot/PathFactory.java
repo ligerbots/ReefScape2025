@@ -49,14 +49,17 @@ public class PathFactory {
     }
 
     public static PathPlannerPath getPath(Pose2d start, Pose2d end) {
+        return getPath(start, end, false);
+    }
+    
+    public static PathPlannerPath getPath(Pose2d start, Pose2d end, boolean mirrorPath) {
         PathPlannerPath path = null;
         try {
             path = PathPlannerPath.fromPathFile(pathMap.get(Pair.with(start, end)));
         } catch (IOException | ParseException e) {
             e.printStackTrace();
         } 
-        return path;
+        return mirrorPath ? path.mirrorPath() : path;
     }
-
 
 }
