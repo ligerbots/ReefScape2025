@@ -13,11 +13,13 @@ package frc.robot;
 * constants are needed, to reduce verbosity.
 */
 public final class Constants {
+    //1-4 reserved for swerve 
     public static final int KITBOT_ROLLER_ID = 5;
-    public static final int END_EFFECTOR_PIVOT_CAN_ID = 0; // TODO: INITIALIZE ID
-    public static final int END_EFFECTOR_CORAL_INTAKE_ID = 7;
-    public static final int END_EFFECTOR_ALGAE_INTAKE_ID = 8;
-
+    public static final int CLIMBER_ID = 6;
+    public static final int END_EFFECTOR_PIVOT_CAN_ID = 9; 
+    public static final int CORAL_EFFECTOR_INTAKE_ID = 7;
+    public static final int ALGAR_EFFECTOR_INTAKE_ID = 8;
+    
     public static double MAX_VOLTAGE = 12.0;
     
     public static boolean OUTREACH_MODE = false;
