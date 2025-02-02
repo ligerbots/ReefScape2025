@@ -4,12 +4,15 @@
 
 package frc.robot;
 
+import edu.wpi.first.hal.HALUtil;
 import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.livewindow.LiveWindow;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import frc.robot.subsystems.DriveTrain;
 
 /**
 * The methods in this class are called automatically corresponding to each mode, as described in
@@ -20,8 +23,16 @@ public class Robot extends TimedRobot {
     private Command m_autonomousCommand = null;
     private boolean m_prevIsRedAlliance = true;
     
-    
-    private final KitbotRobotContainer m_robotContainer;
+    public static final String KITBOT_SERIAL_NUMBER = "123";
+    public static final String COMP_V1_SERIAL_NUMBER = "0313bb3a";
+
+    public enum RobotType {
+        KITBOT, COMP_V1, TEST
+    }
+    // we want this to be static so that it is easy for subsystems to query the robot type
+    private static RobotType m_robotType;
+
+    private final RobotContainer m_robotContainer;
     
     /**
     * This function is run when the robot is first started up and should be used for any
@@ -46,9 +57,32 @@ public class Robot extends TimedRobot {
         DataLogManager.start();
         DriverStation.startDataLog(DataLogManager.getLog());
 
+        // Figure out which roboRio this is, so we know which version of the robot
+        //   code to run.
+        String serialNum = HALUtil.getSerialNumber();
+        SmartDashboard.putString("rioSerialNumber", serialNum);
+        if (serialNum.equals(KITBOT_SERIAL_NUMBER)) {
+            m_robotType = RobotType.KITBOT;
+        } else if (serialNum.equals(COMP_V1_SERIAL_NUMBER)) {
+            m_robotType = RobotType.COMP_V1;
+        } else {
+            m_robotType = RobotType.TEST;
+        }
+        SmartDashboard.putString("robotType", m_robotType.toString());
+
         // Instantiate our RobotContainer.  This will perform all our button bindings, and put our
         // autonomous chooser on the dashboard.
-        m_robotContainer = new KitbotRobotContainer();
+        if (m_robotType == RobotType.KITBOT) {
+            m_robotContainer = new KitbotRobotContainer();
+        } else if (m_robotType == RobotType.COMP_V1) {
+            m_robotContainer = new CompRobotContainer();
+        } else {
+            m_robotContainer = new TestRobotContainer();
+        }
+    }
+
+    public static RobotType getRobotType() {
+        return m_robotType;
     }
 
     /**
@@ -73,16 +107,20 @@ public class Robot extends TimedRobot {
     
     @Override
     public void disabledPeriodic() {
+        // drivetrain might be null when testing code. So check
+        DriveTrain driveTrain = m_robotContainer.getDriveTrain();
+
         if (isSimulation()) {
             // YAGSL bug fix (Nov 2024)
             // The simulation needs to be told the drive speed every loop, even when disabled 
-            m_robotContainer.getDriveTrain().drive(0, 0, 0, false);
+            // might be null during testing
+            if (driveTrain != null) driveTrain.drive(0, 0, 0, false);
         }
         
         boolean isRedAlliance = FieldConstants.isRedAlliance();
         if (m_autonomousCommand == null || isRedAlliance != m_prevIsRedAlliance) {
             m_autonomousCommand = m_robotContainer.getAutonomousCommand();
-            m_robotContainer.getDriveTrain().setPose(m_robotContainer.getInitialPose());
+            if (driveTrain != null) driveTrain.setPose(m_robotContainer.getInitialPose());
             m_prevIsRedAlliance = isRedAlliance;
         }
     }
