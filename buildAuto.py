@@ -1,5 +1,7 @@
 from sys import argv
 
+# test script to print an outline of auto routine, demonstrating where the parameters fit in the sequence
+# no actual paths are touched, just a POC script
 
 print(argv)
 
