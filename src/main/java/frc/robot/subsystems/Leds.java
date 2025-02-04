@@ -12,6 +12,7 @@ import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.wpilibj.AddressableLED;
 import edu.wpi.first.wpilibj.AddressableLEDBuffer;
 import edu.wpi.first.wpilibj.LEDPattern;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 // import edu.wpi.first.wpilibj.PWM;
 import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -42,6 +43,7 @@ public class Leds extends SubsystemBase {
         m_led.setLength(m_ledBuffer.getLength());
         
         m_led.start();
+        SmartDashboard.putString("ledstate", "NA");
     }
     
     @Override
@@ -58,18 +60,22 @@ public class Leds extends SubsystemBase {
     // Colors include Color.kRed, Color.kOrange, Color.kYellow, Color.kGreen
     public void setSolidPattern(Color c) {
         pattern = LEDPattern.solid(c);
+        SmartDashboard.putString("ledstate", "SOLID");
     }
 
     public void setBlinkPattern(Color c) {
         pattern = LEDPattern.solid(c).blink(Seconds.of(1.5));
+        SmartDashboard.putString("ledstate", "BLINK");
     }
 
     public void setRainbowPattern() {
         pattern = LEDPattern.rainbow(255, 128);
+        SmartDashboard.putString("ledstate", "RAINBOW");
     }
 
     public void setRainbowScrollingPattern() {
         pattern = LEDPattern.rainbow(255, 128).scrollAtAbsoluteSpeed(MetersPerSecond.of(1), LED_SPACING);
+        SmartDashboard.putString("ledstate", "RAINBOW_SCROLL");
     }
 
     // Percentage is 0 to 1, utilizes last used color

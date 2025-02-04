@@ -9,7 +9,10 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.PowerDistribution;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.StartEndCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
@@ -27,7 +30,8 @@ public class CompRobotContainer extends RobotContainer {
     private final DriveTrain m_driveTrain = new DriveTrain("swerve/comp", m_aprilTagVision);
     private final CoralEffector m_coralEffector = new CoralEffector(); 
     private final PowerDistribution m_pdh = new PowerDistribution();
-    private final AlgaeEffector m_algaeEffector = new AlgaeEffector(m_pdh); 
+    private final AlgaeEffector m_algaeEffector = new AlgaeEffector(m_pdh);
+    private final Leds m_leds = new Leds(); 
 
     private AutoCommandInterface m_autoCommand;
 
@@ -36,6 +40,8 @@ public class CompRobotContainer extends RobotContainer {
         configureAutos();
 
         m_driveTrain.setDefaultCommand(getDriveCommand());
+
+        SmartDashboard.putNumber("percentage", 0);
     }
             
     private void configureBindings() {
@@ -51,6 +57,11 @@ public class CompRobotContainer extends RobotContainer {
         
         m_driverController.rightBumper().whileTrue(new StartEndCommand(m_algaeEffector::scoreBarge, m_algaeEffector::stop, m_algaeEffector));
         m_driverController.leftBumper().whileTrue(new StartEndCommand(m_algaeEffector::runIntake, m_algaeEffector::stop, m_algaeEffector));
+
+        m_driverController.a().onTrue(Commands.runOnce(() -> {m_leds.setSolidPattern(Color.kBlue);}));
+        m_driverController.b().onTrue(Commands.runOnce(() -> {m_leds.setRainbowScrollingPattern();}));
+        m_driverController.x().onTrue(Commands.runOnce(() -> {m_leds.setBlinkPattern(Color.kOrange);}));
+        m_driverController.y().onTrue(Commands.runOnce(() -> {m_leds.setBarPattern(SmartDashboard.getNumber("percentage", 0), Color.kGreen);}));
     }
     
     private void configureAutos() {
