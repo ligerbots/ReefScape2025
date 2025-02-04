@@ -32,6 +32,8 @@ public class FieldConstants {
     public static final Pose2d REEF_K = new Pose2d(3.98,5.20, Rotation2d.fromDegrees(-59.9));
     public static final Pose2d REEF_L = new Pose2d(3.70,5.06, Rotation2d.fromDegrees(-59.9));
 
+    public static final Pose2d REEF_PANEL_GH = new Pose2d(5.77,5.58, Rotation2d.fromDegrees(180.0));
+
     public static final Pose2d SOURCE_1_IN = new Pose2d(0.64,1.37, Rotation2d.fromDegrees(55.6));
     public static final Pose2d SOURCE_1_OUT = new Pose2d(1.65,0.64, Rotation2d.fromDegrees(55.6));
     public static final Pose2d SOURCE_2_IN = new Pose2d(0.63,6.68, Rotation2d.fromDegrees(-52.7));

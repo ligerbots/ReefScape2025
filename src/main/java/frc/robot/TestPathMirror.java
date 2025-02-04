@@ -28,6 +28,7 @@ public class TestPathMirror {
             System.out.println(testPath1.equals(testPath2));
 
             testPath1.mirrorPath();
+
         } catch (FileVersionException | IOException | ParseException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
