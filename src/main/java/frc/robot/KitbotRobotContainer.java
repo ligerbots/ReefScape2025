@@ -6,6 +6,7 @@ package frc.robot;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.util.Color;
@@ -14,14 +15,13 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.StartEndCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
-import frc.robot.commands.AutoCommandInterface;
-import frc.robot.commands.HelloWorldAuto2;
+
+import frc.robot.commands.*;
 
 import frc.robot.subsystems.*;
 import frc.robot.subsystems.kitbot.KitbotRoller;
 
-
-public class KitbotRobotContainer {
+public class KitbotRobotContainer extends RobotContainer {
     private static final double JOYSTICK_DEADBAND = 0.05;
 
     private final CommandXboxController m_driverController = new CommandXboxController(0);
@@ -33,6 +33,9 @@ public class KitbotRobotContainer {
     private final CoralEndEffector m_coralEndEffector = new CoralEndEffector();
     private final AlgaeEndEffector m_algaeEndEffector = new AlgaeEndEffector();
 
+    private final SendableChooser<Command> m_chosenAuto = new SendableChooser<>();
+    private final SendableChooser<Command> m_fieldSide = new SendableChooser<>();
+    private final SendableChooser<Pose2d> m_startLocation = new SendableChooser<>();
     private AutoCommandInterface m_autoCommand;
 
     public KitbotRobotContainer() {
@@ -62,16 +65,58 @@ public class KitbotRobotContainer {
     }
     
     private void configureAutos() {
-        // TODO Auto-generated method stub
-        m_autoCommand = new HelloWorldAuto2(m_driveTrain, m_kitbotRoller);
+        // List of start locations
+        // m_startLocation.setDefaultOption("Processor Side", FieldConstants.ROBOT_START_1);
+        // m_startLocation.addOption("Center", FieldConstants.ROBOT_START_2);
+        // m_startLocation.addOption("Away Side (Not Processor)", FieldConstants.ROBOT_START_3);
+        // SmartDashboard.putData("Start Location", m_startLocation);
+
+        // m_chosenAuto.setDefaultOption("Away Side Standard", new PrimaryAutoBase(m_driveTrain, m_kitbotRoller, false));
+        // // m_chosenAuto.addOption("Away Side J-Path", new PrimaryAutoBase(m_driveTrain, m_kitbotRoller, false));
+
+        Pose2d[] reefPoints = {FieldConstants.REEF_J, FieldConstants.REEF_K, FieldConstants.REEF_L, FieldConstants.REEF_A};
+        m_chosenAuto.setDefaultOption("Processor Side Standard via Generic", 
+            new GenericAutoBase(FieldConstants.ROBOT_START_3, FieldConstants.SOURCE_2_OUT, reefPoints, m_driveTrain, m_kitbotRoller, true));
+
+        Pose2d[] reefPoints0 = {FieldConstants.REEF_J, FieldConstants.REEF_A, FieldConstants.REEF_B};
+        m_chosenAuto.addOption("Processor Side Shared Far", 
+            new GenericAutoBase(FieldConstants.ROBOT_START_3, FieldConstants.SOURCE_2_IN, reefPoints0, m_driveTrain, m_kitbotRoller, true));
+    
+        Pose2d[] reefPoints1 = {FieldConstants.REEF_H, FieldConstants.REEF_K, FieldConstants.REEF_L};
+        m_chosenAuto.addOption("Processor Side Shared Near", 
+            new GenericAutoBase(FieldConstants.ROBOT_START_2, FieldConstants.SOURCE_2_OUT, reefPoints1, m_driveTrain, m_kitbotRoller, true));
+
+        m_chosenAuto.addOption("Away Side Standard", 
+            new GenericAutoBase(FieldConstants.ROBOT_START_3, FieldConstants.SOURCE_2_OUT, reefPoints, m_driveTrain, m_kitbotRoller, false));
+
+        m_chosenAuto.addOption("Away Side Shared Far", 
+            new GenericAutoBase(FieldConstants.ROBOT_START_3, FieldConstants.SOURCE_2_IN, reefPoints0, m_driveTrain, m_kitbotRoller, false));
+    
+        m_chosenAuto.addOption("Away Side Shared Near", 
+            new GenericAutoBase(FieldConstants.ROBOT_START_2, FieldConstants.SOURCE_2_OUT, reefPoints1, m_driveTrain, m_kitbotRoller, false));
+
+        // m_chosenAuto.addOption("Drive Single Path", 
+        //     new SinglePathTestAuto(m_driveTrain, m_kitbotRoller, false));
+        // m_chosenAuto.addOption("Drive Single Path- Mirrored", 
+        //     new SinglePathTestAuto(m_driveTrain, m_kitbotRoller, true));
+
+            // m_chosenAuto.addOption("Processor Side J-Path", new PrimaryAutoBase(m_driveTrain, m_kitbotRoller, true));
+
+
+        SmartDashboard.putData("Auto Choice", m_chosenAuto);
+
     }
 
     public Command getAutonomousCommand() {
-        return m_autoCommand;
+        return m_chosenAuto.getSelected();
+        // return m_autoCommand;
     }
 
     public Pose2d getInitialPose() {
-        return m_autoCommand.getInitialPose();
+        // return m_autoCommand.getInitialPose();
+        AutoCommandInterface j = (AutoCommandInterface) m_chosenAuto.getSelected();
+        return j.getInitialPose();
+        // return FieldConstants.flipPose(m_startLocation.getSelected());
     }
 
     public Command getDriveCommand() {

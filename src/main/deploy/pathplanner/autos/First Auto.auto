@@ -7,19 +7,19 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Start1 to Shot1"
+            "pathName": "Start1 to ReefF"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "Shot1 to Source1"
+            "pathName": "ReefF to Source1In"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "Source1 to Shot2"
+            "pathName": "Source1Out to ReefD"
           }
         },
         {
