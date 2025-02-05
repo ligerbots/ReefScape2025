@@ -29,27 +29,21 @@ public class Elevator extends SubsystemBase {
     
     private static final double MAX_LENGTH_METERS = Units.inchesToMeters(40.0); // TODO fix me
     private static final double MIN_LENGTH_METERS = Units.inchesToMeters(0.25);
-    private static int m_lengthAdjustment = 1;
+    // private static int m_lengthAdjustment = 1;
     
     // Tolerance for commands
     private static final double LENGTH_TOLERANCE_METERS = Units.inchesToMeters(0.5);
-    
-    // For initial testing, these should be very slow.
-    // We can update them as we get more confidence.
+
+    // TODO set to good values
     private static final double MAX_VEL_METER_PER_SEC = Units.inchesToMeters(30.0);
-    
-    // private static final double ELEVATOR_MAX_ACC_METER_PER_SEC_SQ = Units.inchesToMeters(50.0);
-    
     private static final double MAX_ACC_METER_PER_SEC_SQ = Units.inchesToMeters(75.0);
+    private static final double MAX_JERK_METER_PER_SEC3 = Units.inchesToMeters(750.0);
     
     private static final int CURRENT_LIMIT = 30;
     
-    // PID Constants for the reacher PID controller
-    // Since we're using Trapeziodal control, all values will be 0 except for P
-    
     private static final double OFFSET_METER = 0.0;
     
-    private static final double ADJUSTMENT_STEP = 1.0;
+    // private static final double ADJUSTMENT_STEP = 1.0;
     
     // // initializing Potentiometer
     // private final int POTENTIOMETER_CHANNEL = 2; //TODO: Update with actual value
@@ -85,9 +79,9 @@ public class Elevator extends SubsystemBase {
         // set Motion Magic settings
         m_magicConfigs = m_talonFXConfigs.MotionMagic;
         
-        m_magicConfigs.MotionMagicCruiseVelocity = heightToRotations(60); // Target cruise velocity of 80 rps //TODO Change values TOTAL GUESSES 
-        m_magicConfigs.MotionMagicAcceleration = heightToRotations(120); // Target acceleration of 160 rps/s (0.5 seconds)
-        m_magicConfigs.MotionMagicJerk = heightToRotations(600); // Target jerk of 1600 rps/s/s (0.1 seconds)
+        m_magicConfigs.MotionMagicCruiseVelocity = heightToRotations(MAX_VEL_METER_PER_SEC); // Target cruise velocity of 80 rps //TODO Change values TOTAL GUESSES 
+        m_magicConfigs.MotionMagicAcceleration = heightToRotations(MAX_ACC_METER_PER_SEC_SQ); // Target acceleration of 160 rps/s (0.5 seconds)
+        m_magicConfigs.MotionMagicJerk = heightToRotations(MAX_JERK_METER_PER_SEC3); // Target jerk of 1600 rps/s/s (0.1 seconds)
         
         CurrentLimitsConfigs currentLimits = new CurrentLimitsConfigs().withSupplyCurrentLimit(CURRENT_LIMIT);
         m_talonFXConfigs.withCurrentLimits(currentLimits);
@@ -104,11 +98,13 @@ public class Elevator extends SubsystemBase {
     public void periodic() {
         SmartDashboard.putNumber("elevator/height", Units.metersToInches(getHeight()));
         SmartDashboard.putBoolean("elevator/onGoal", lengthWithinTolerance());
+        SmartDashboard.putNumber("elevator/currentGoal", 
+            Units.metersToInches(rotationsToHeight(m_motor.getClosedLoopReference().getValueAsDouble())));
     }
     
     // set elevator length in meters
-    public void setHeight(double goal, boolean includeAdjustment) {
-        m_goal = limitElevatorLength(heightToRotations(goal + (includeAdjustment ? 1 : 0) * m_lengthAdjustment));
+    public void setHeight(double goal) {
+        m_goal = limitElevatorLength(heightToRotations(goal));
         
         MotionMagicVoltage m_request = new MotionMagicVoltage(0);        
         m_motor.setControl(m_request.withPosition(m_goal));
@@ -134,11 +130,11 @@ public class Elevator extends SubsystemBase {
     //     m_motor.setPosition(getPotentiometerReadingMeters());
     // }
     
-    public void adjustLength(boolean goUp) {
-        double adjust = (goUp ? 1 : -1) * ADJUSTMENT_STEP;
-        m_lengthAdjustment += adjust;
-        setHeight(getHeight() + adjust, false);
-    }
+    // public void adjustLength(boolean goUp) {
+    //     double adjust = (goUp ? 1 : -1) * ADJUSTMENT_STEP;
+    //     m_lengthAdjustment += adjust;
+    //     setHeight(getHeight() + adjust, false);
+    // }
     
     public boolean lengthWithinTolerance() {
         return Math.abs(getHeight() - m_goal) < LENGTH_TOLERANCE_METERS;
