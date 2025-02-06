@@ -21,7 +21,7 @@ import frc.robot.Constants;
 
 public class Elevator extends SubsystemBase {
     
-    private static final double GEAR_REDUCTION = 12.0;  // 12:1 planetary
+    private static final double GEAR_REDUCTION = 15.0;  // 12:1 planetary
     // diameter of final 18 tooth gear
     private static final double FINAL_GEAR_DIAMETER = Units.inchesToMeters(1.504);  // TODO fix me
     // calibration: (circumference of 18T gear) * (2 for 2nd stage) / (motor gear reduction)
@@ -35,9 +35,9 @@ public class Elevator extends SubsystemBase {
     private static final double LENGTH_TOLERANCE_METERS = Units.inchesToMeters(0.5);
 
     // TODO set to good values
-    private static final double MAX_VEL_METER_PER_SEC = Units.inchesToMeters(30.0);
-    private static final double MAX_ACC_METER_PER_SEC_SQ = Units.inchesToMeters(75.0);
-    private static final double MAX_JERK_METER_PER_SEC3 = Units.inchesToMeters(750.0);
+    private static final double MAX_VEL_METER_PER_SEC = Units.inchesToMeters(10.0);
+    private static final double MAX_ACC_METER_PER_SEC_SQ = Units.inchesToMeters(20.0);
+    private static final double MAX_JERK_METER_PER_SEC3 = Units.inchesToMeters(200.0);
     
     private static final int CURRENT_LIMIT = 30;
     
@@ -68,13 +68,13 @@ public class Elevator extends SubsystemBase {
         // set slot 0 gains
         m_motor = new TalonFX(Constants.ELEVATOR_CAN_ID);
         m_slot0configs = m_talonFXConfigs.Slot0;
-        m_slot0configs.kS = 0.25; // Add 0.25 V output to overcome static friction //TODO Change values 
-        m_slot0configs.kV = 0.12; // A velocity target of 1 rps results in 0.12 V output
-        m_slot0configs.kA = 0.01; // An acceleration of 1 rps/s requires 0.01 V output
+        m_slot0configs.kS = 0.0; // Add 0.25 V output to overcome static friction //TODO Change values 
+        m_slot0configs.kV = 0.0; // A velocity target of 1 rps results in 0.12 V output
+        m_slot0configs.kA = 0.0; // An acceleration of 1 rps/s requires 0.01 V output
         // m_slot0configs.kP = 4.8; // A position error of 2.5 rotations results in 12 V output
         m_slot0configs.kP = 0.5;  // start small!!!
-        m_slot0configs.kI = 0; // no output for integrated error
-        m_slot0configs.kD = 0.1; // A velocity error of 1 rps results in 0.1 V output
+        m_slot0configs.kI = 0.0; // no output for integrated error
+        m_slot0configs.kD = 0.0; // A velocity error of 1 rps results in 0.1 V output
         
         // set Motion Magic settings
         m_magicConfigs = m_talonFXConfigs.MotionMagic;
@@ -100,14 +100,15 @@ public class Elevator extends SubsystemBase {
         SmartDashboard.putBoolean("elevator/onGoal", lengthWithinTolerance());
         SmartDashboard.putNumber("elevator/currentGoal", 
             Units.metersToInches(rotationsToHeight(m_motor.getClosedLoopReference().getValueAsDouble())));
+        SmartDashboard.putNumber("elevator/voltage", m_motor.getMotorVoltage().getValueAsDouble());
     }
     
     // set elevator length in meters
     public void setHeight(double goal) {
-        m_goal = limitElevatorLength(heightToRotations(goal));
+        m_goal = limitElevatorLength(goal);
         
         MotionMagicVoltage m_request = new MotionMagicVoltage(0);        
-        m_motor.setControl(m_request.withPosition(m_goal));
+        m_motor.setControl(m_request.withPosition(heightToRotations(m_goal)));
         
         SmartDashboard.putNumber("elevator/goal", Units.metersToInches(m_goal));
     }

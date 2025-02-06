@@ -19,7 +19,7 @@ public final class Constants {
     public static final int END_EFFECTOR_PIVOT_CAN_ID = 9; 
     public static final int CORAL_EFFECTOR_INTAKE_ID = 7;
     public static final int ALGAR_EFFECTOR_INTAKE_ID = 8;
-    public static final int ELEVATOR_CAN_ID = 7;
+    public static final int ELEVATOR_CAN_ID = 5;  // Fa
     
     public static double MAX_VOLTAGE = 12.0;
     

@@ -32,6 +32,7 @@ public class CompRobotContainer extends RobotContainer {
     private final PowerDistribution m_pdh = new PowerDistribution();
     private final AlgaeEffector m_algaeEffector = new AlgaeEffector(m_pdh);
     private final Leds m_leds = new Leds(); 
+    private final Elevator m_elevator = new Elevator();
 
     private AutoCommandInterface m_autoCommand;
 
@@ -58,10 +59,8 @@ public class CompRobotContainer extends RobotContainer {
         m_driverController.rightBumper().whileTrue(new StartEndCommand(m_algaeEffector::scoreBarge, m_algaeEffector::stop, m_algaeEffector));
         m_driverController.leftBumper().whileTrue(new StartEndCommand(m_algaeEffector::runIntake, m_algaeEffector::stop, m_algaeEffector));
 
-        m_driverController.a().onTrue(Commands.runOnce(() -> {m_leds.setSolidPattern(Color.kBlue);}));
-        m_driverController.b().onTrue(Commands.runOnce(() -> {m_leds.setRainbowScrollingPattern();}));
-        m_driverController.x().onTrue(Commands.runOnce(() -> {m_leds.setBlinkPattern(Color.kOrange);}));
-        m_driverController.y().onTrue(Commands.runOnce(() -> {m_leds.setBarPattern(SmartDashboard.getNumber("percentage", 0), Color.kGreen);}));
+        m_driverController.a().onTrue(new InstantCommand(() -> m_elevator.setHeight(0.5)));
+        m_driverController.b().onTrue(new InstantCommand(() -> m_elevator.setHeight(0.05)));
     }
     
     private void configureAutos() {
