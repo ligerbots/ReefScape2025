@@ -6,7 +6,6 @@ package frc.robot;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -28,11 +27,13 @@ public class KitbotRobotContainer extends RobotContainer {
     private final AprilTagVision m_aprilTagVision = new AprilTagVision();
     private final DriveTrain m_driveTrain = new DriveTrain("swerve/kitbot", m_aprilTagVision);
     private final KitbotRoller m_kitbotRoller = new KitbotRoller();
+    // private final Leds m_leds = new Leds();
+    // private final CoralEffector m_coralEndEffector = new CoralEffector();
+    // private final AlgaeEffector m_algaeEndEffector = new AlgaeEffector();
 
     private final SendableChooser<Command> m_chosenAuto = new SendableChooser<>();
     private final SendableChooser<Command> m_fieldSide = new SendableChooser<>();
     private final SendableChooser<Pose2d> m_startLocation = new SendableChooser<>();
-    private AutoCommandInterface m_autoCommand;
 
     public KitbotRobotContainer() {
         configureBindings();
