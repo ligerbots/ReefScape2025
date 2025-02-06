@@ -32,25 +32,25 @@ public class GenericAutoBase extends AutoCommandInterface {
                 m_initPose = startPath.getStartingDifferentialPose();
                 
                 addCommands(m_driveTrain.followPath(startPath));
-                addCommands(new ScoreCommand(roller).withTimeout(.3));
+                addCommands(new ScoreCommandKitBot(roller).withTimeout(.3));
 
                 addCommands(m_driveTrain.followPath(PathFactory.getPath(reefPoints[0], sourcePoint, isProcessorSide)));
                 addCommands(new WaitCommand(.75));
                 addCommands(m_driveTrain.followPath(PathFactory.getPath(sourcePoint, reefPoints[1], isProcessorSide)));
-                addCommands(new ScoreCommand(roller).withTimeout(.3));
+                addCommands(new ScoreCommandKitBot(roller).withTimeout(.3));
                 addCommands(m_driveTrain.followPath(PathFactory.getPath(reefPoints[1], sourcePoint, isProcessorSide)));
 
                 addCommands(new WaitCommand(.75));
                 addCommands(m_driveTrain.followPath(PathFactory.getPath(sourcePoint, reefPoints[2], isProcessorSide)));
 
-                addCommands(new ScoreCommand(roller).withTimeout(.3));                
+                addCommands(new ScoreCommandKitBot(roller).withTimeout(.3));                
            
                 if(reefPoints.length >3) {
                     addCommands(m_driveTrain.followPath(PathFactory.getPath(reefPoints[2], sourcePoint, isProcessorSide)));
                     addCommands(new WaitCommand(.75));
                     addCommands(m_driveTrain.followPath(PathFactory.getPath(sourcePoint, reefPoints[3], isProcessorSide)));
     
-                    addCommands(new ScoreCommand(roller).withTimeout(.3));
+                    addCommands(new ScoreCommandKitBot(roller).withTimeout(.3));
                 }
 
         } catch (Exception e) {

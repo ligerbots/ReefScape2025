@@ -33,12 +33,12 @@ public class PrimaryAutoBase extends AutoCommandInterface {
                 m_initPose = startPath.getStartingDifferentialPose();
                 
                 addCommands(m_driveTrain.followPath(startPath));
-                addCommands(new ScoreCommand(roller).withTimeout(.3));
+                addCommands(new ScoreCommandKitBot(roller).withTimeout(.3));
 
                 addCommands(m_driveTrain.followPath(PathPlannerPath.fromPathFile("ReefF to Source1")));
                 // addCommands(new WaitCommand(.1));
                 addCommands(m_driveTrain.followPath(PathPlannerPath.fromPathFile("Source1 to ReefD")));
-                addCommands(new ScoreCommand(roller).withTimeout(.3));
+                addCommands(new ScoreCommandKitBot(roller).withTimeout(.3));
 
                 
                 addCommands(m_driveTrain.followPath(PathPlannerPath.fromPathFile("Shot2 J Path")));
@@ -62,18 +62,18 @@ public class PrimaryAutoBase extends AutoCommandInterface {
                 m_initPose = startPath.getStartingDifferentialPose();
                 
                 addCommands(m_driveTrain.followPath(startPath));
-                addCommands(new ScoreCommand(roller).withTimeout(.3));
+                addCommands(new ScoreCommandKitBot(roller).withTimeout(.3));
 
                 addCommands(m_driveTrain.followPath(PathFactory.getPath(FieldConstants.REEF_J, FieldConstants.SOURCE_2_OUT)));
                 addCommands(new WaitCommand(.75));
                 addCommands(m_driveTrain.followPath(PathFactory.getPath(FieldConstants.SOURCE_2_OUT, FieldConstants.REEF_K)));
-                addCommands(new ScoreCommand(roller).withTimeout(.3));
+                addCommands(new ScoreCommandKitBot(roller).withTimeout(.3));
                 addCommands(m_driveTrain.followPath(PathFactory.getPath(FieldConstants.REEF_K, FieldConstants.SOURCE_2_OUT)));
 
                 addCommands(new WaitCommand(.75));
                 addCommands(m_driveTrain.followPath(PathFactory.getPath(FieldConstants.SOURCE_2_OUT, FieldConstants.REEF_L)));
 
-                addCommands(new ScoreCommand(roller).withTimeout(.3));
+                addCommands(new ScoreCommandKitBot(roller).withTimeout(.3));
 
                 addCommands(m_driveTrain.followPath(PathFactory.getPath(FieldConstants.REEF_L, FieldConstants.SOURCE_2_OUT)));
                 // addCommands(m_driveTrain.followPath(PathPlannerPath.fromPathFile("ReefL to Source2Out")));
@@ -81,7 +81,7 @@ public class PrimaryAutoBase extends AutoCommandInterface {
                 addCommands(new WaitCommand(.75));
                 addCommands(m_driveTrain.followPath(PathFactory.getPath(FieldConstants.SOURCE_2_OUT, FieldConstants.REEF_A)));
 
-                addCommands(new ScoreCommand(roller).withTimeout(.3));
+                addCommands(new ScoreCommandKitBot(roller).withTimeout(.3));
 
             } 
 
