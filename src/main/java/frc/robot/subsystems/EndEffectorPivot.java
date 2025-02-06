@@ -127,7 +127,7 @@ public class EndEffectorPivot extends SubsystemBase {
     public void periodic() {
         // Display current values on the SmartDashboard
         // This also gets logged to the log file on the Rio and aids in replaying a match
-        SmartDashboard.putNumber("pivot/absoluteEncoder", getPosition().getDegrees());
+        SmartDashboard.putNumber("pivot/absoluteEncoder", getAngle().getDegrees());
         SmartDashboard.putNumber("pivot/current", m_motor.getOutputCurrent());
         SmartDashboard.putBoolean("pivot/onGoal", angleWithinTolerance());
 
@@ -135,7 +135,7 @@ public class EndEffectorPivot extends SubsystemBase {
     }
 
     // get the current pivot angle
-    public Rotation2d getPosition() {
+    public Rotation2d getAngle() {
         return Rotation2d.fromRotations(m_absoluteEncoder.getPosition());
     }
 
@@ -163,7 +163,7 @@ public class EndEffectorPivot extends SubsystemBase {
 
     public boolean angleWithinTolerance() {
         //TODO does MAXMotion provide this?
-        return Math.abs(m_goal.minus(getPosition()).getDegrees()) < ANGLE_TOLERANCE_DEG;
+        return Math.abs(m_goal.minus(getAngle()).getDegrees()) < ANGLE_TOLERANCE_DEG;
     }
 
     // public void adjustAngle(boolean goUp) {
@@ -173,7 +173,7 @@ public class EndEffectorPivot extends SubsystemBase {
     // }
 
     public void resetGoal() {
-        setAngle(getPosition());
+        setAngle(getAngle());
     }
 
     public void setCoastMode() {

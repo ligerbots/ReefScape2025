@@ -10,16 +10,13 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.StartEndCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 
 import frc.robot.commands.*;
 import frc.robot.subsystems.*;
-
 
 public class CompRobotContainer extends RobotContainer {
     private static final double JOYSTICK_DEADBAND = 0.05;
@@ -33,6 +30,7 @@ public class CompRobotContainer extends RobotContainer {
     private final AlgaeEffector m_algaeEffector = new AlgaeEffector(m_pdh);
     private final Leds m_leds = new Leds(); 
     private final Elevator m_elevator = new Elevator();
+    private final EndEffectorPivot m_pivot = new EndEffectorPivot();
 
     private AutoCommandInterface m_autoCommand;
 
@@ -60,7 +58,8 @@ public class CompRobotContainer extends RobotContainer {
         m_driverController.leftBumper().whileTrue(new StartEndCommand(m_algaeEffector::runIntake, m_algaeEffector::stop, m_algaeEffector));
 
         m_driverController.a().onTrue(new InstantCommand(() -> m_elevator.setHeight(SmartDashboard.getNumber("elevator/testGoal", 0))));
-        // m_driverController.b().onTrue(new InstantCommand(() -> m_elevator.setHeight(0.05)));
+
+        m_driverController.b().onTrue(new InstantCommand(() -> m_pivot.setAngle(Rotation2d.fromDegrees(SmartDashboard.getNumber("pivot/testAngle", 0.0)))));
     }
     
     private void configureAutos() {
