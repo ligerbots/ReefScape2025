@@ -7,8 +7,6 @@ package frc.robot.subsystems;
 import com.revrobotics.spark.config.*;
 import com.revrobotics.spark.config.ClosedLoopConfig.FeedbackSensor;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
-import com.revrobotics.AbsoluteEncoder;
-import com.revrobotics.RelativeEncoder;
 import com.revrobotics.sim.SparkAbsoluteEncoderSim;
 import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.SparkAbsoluteEncoder;
@@ -22,6 +20,7 @@ import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+
 import frc.robot.Constants;
 
 public class EndEffectorPivot extends SubsystemBase {
@@ -44,25 +43,20 @@ public class EndEffectorPivot extends SubsystemBase {
       
     // Constants to limit the shooterPivot rotation speed
     // max vel: 1 rotation = 10 seconds  and then gear_ratio
-    // "60" because they want RPM
     private static final double MAX_VEL_ROT_PER_SEC = 0.1 * GEAR_RATIO;
     private static final double MAX_ACC_ROT_PER_SEC2 = 0.2 * GEAR_RATIO;
     // units??? rotations?
     private static final double ALLOWED_ERROR = 2.0/360.0 * GEAR_RATIO;
 
-    private static final double POSITION_OFFSET = 238.8/360.0; 
-    // private static final double OFFSET_RADIAN = POSITION_OFFSET * 2 * Math.PI;
+    // Zero point of the absolute encoder
+    private static final double ABS_ENCODER_ZERO_OFFSET = 238.8/360.0; 
 
-    // Constants for the shooterPivot PID controller
+    // Constants for the pivot PID controller
     private static final double K_P = 1.0;
     private static final double K_I = 0.0;
     private static final double K_D = 0.0;
     private static final double K_FF = 0.0;
 
-    // Used in conversion factor
-    // private static final double RADIANS_PER_MOTOR_ROTATION = 2 * Math.PI * GEAR_RATIO;
-
-    // private final DutyCycleEncoder m_absoluteEncoder = new DutyCycleEncoder(0);  
     private final SparkMax m_motor;
     // private final RelativeEncoder m_encoder;
     private final SparkAbsoluteEncoder m_absoluteEncoder;
@@ -81,12 +75,13 @@ public class EndEffectorPivot extends SubsystemBase {
 
         SparkMaxConfig config = new SparkMaxConfig();
         config.inverted(true);
+        config.idleMode(IdleMode.kBrake);
         config.smartCurrentLimit(CURRENT_LIMIT);
     
-        AbsoluteEncoderConfig absConfig = new AbsoluteEncoderConfig();
-        absConfig.velocityConversionFactor(1/60.0);   // convert rpm to rps
-        absConfig.zeroOffset(POSITION_OFFSET);
-        config.apply(absConfig);
+        AbsoluteEncoderConfig absEncConfig = new AbsoluteEncoderConfig();
+        absEncConfig.velocityConversionFactor(1/60.0);   // convert rpm to rps
+        absEncConfig.zeroOffset(ABS_ENCODER_ZERO_OFFSET);
+        config.apply(absEncConfig);
         
         // set up the PID for MAX Motion
         config.closedLoop.pidf(K_P, K_I, K_D, K_FF);
@@ -109,7 +104,7 @@ public class EndEffectorPivot extends SubsystemBase {
 
         m_absoluteEncoder = m_motor.getAbsoluteEncoder();
         m_absoluteEncoderSim = new SparkAbsoluteEncoderSim(m_motor);
-        m_absoluteEncoderSim.setZeroOffset(POSITION_OFFSET);
+        m_absoluteEncoderSim.setZeroOffset(ABS_ENCODER_ZERO_OFFSET);
 
         // controller for MAX Motion
         m_controller = m_motor.getClosedLoopController();
@@ -128,7 +123,8 @@ public class EndEffectorPivot extends SubsystemBase {
         // Display current values on the SmartDashboard
         // This also gets logged to the log file on the Rio and aids in replaying a match
         SmartDashboard.putNumber("pivot/absoluteEncoder", getAngle().getDegrees());
-        SmartDashboard.putNumber("pivot/current", m_motor.getOutputCurrent());
+        SmartDashboard.putNumber("pivot/outputCurrent", m_motor.getOutputCurrent());
+        SmartDashboard.putNumber("pivot/busVoltage", m_motor.getBusVoltage());
         SmartDashboard.putBoolean("pivot/onGoal", angleWithinTolerance());
 
         setCoastMode();

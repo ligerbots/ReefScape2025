@@ -39,8 +39,6 @@ public class CompRobotContainer extends RobotContainer {
         configureAutos();
 
         m_driveTrain.setDefaultCommand(getDriveCommand());
-
-        SmartDashboard.putNumber("percentage", 0);
     }
             
     private void configureBindings() {

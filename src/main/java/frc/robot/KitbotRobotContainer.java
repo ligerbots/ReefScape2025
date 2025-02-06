@@ -6,13 +6,10 @@ package frc.robot;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.StartEndCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
@@ -30,14 +27,13 @@ public class KitbotRobotContainer extends RobotContainer {
     private final AprilTagVision m_aprilTagVision = new AprilTagVision();
     private final DriveTrain m_driveTrain = new DriveTrain("swerve/kitbot", m_aprilTagVision);
     private final KitbotRoller m_kitbotRoller = new KitbotRoller();
-    private final Leds m_leds = new Leds();
+    // private final Leds m_leds = new Leds();
     // private final CoralEffector m_coralEndEffector = new CoralEffector();
     // private final AlgaeEffector m_algaeEndEffector = new AlgaeEffector();
 
     private final SendableChooser<Command> m_chosenAuto = new SendableChooser<>();
     private final SendableChooser<Command> m_fieldSide = new SendableChooser<>();
     private final SendableChooser<Pose2d> m_startLocation = new SendableChooser<>();
-    private AutoCommandInterface m_autoCommand;
 
     public KitbotRobotContainer() {
         configureBindings();
@@ -54,15 +50,8 @@ public class KitbotRobotContainer extends RobotContainer {
         m_driverController.start().onTrue(new InstantCommand(m_driveTrain::lock, m_driveTrain));
         m_driverController.back().onTrue(new InstantCommand(m_driveTrain::zeroHeading, m_driveTrain));
 
-        // m_driverController.rightTrigger().whileTrue(new StartEndCommand(m_kitbotRoller::runRollerOut, m_kitbotRoller::stop, m_kitbotRoller));
-        // m_driverController.leftTrigger().whileTrue(new StartEndCommand(m_kitbotRoller::runRollerBack, m_kitbotRoller::stop, m_kitbotRoller));
-        // m_driverController.rightTrigger().whileTrue(new StartEndCommand(m_endEffector::runOuttake, m_endEffector::stop, m_endEffector));
-        // m_driverController.leftTrigger().whileTrue(new StartEndCommand(m_endEffector::runIntake, m_endEffector::stop, m_endEffector));
-        
-        m_driverController.a().onTrue(Commands.runOnce(() -> {m_leds.setSolidPattern(Color.kBlue);}));
-        m_driverController.b().onTrue(Commands.runOnce(() -> {m_leds.setRainbowScrollingPattern();}));
-        m_driverController.x().onTrue(Commands.runOnce(() -> {m_leds.setBlinkPattern(Color.kOrange);}));
-        m_driverController.y().onTrue(Commands.runOnce(() -> {m_leds.setBarPattern(SmartDashboard.getNumber("robot/percentage", 0), Color.kGreen);}));
+        m_driverController.rightTrigger().whileTrue(new StartEndCommand(m_kitbotRoller::runRollerOut, m_kitbotRoller::stop, m_kitbotRoller));
+        m_driverController.leftTrigger().whileTrue(new StartEndCommand(m_kitbotRoller::runRollerBack, m_kitbotRoller::stop, m_kitbotRoller));
     }
     
     private void configureAutos() {

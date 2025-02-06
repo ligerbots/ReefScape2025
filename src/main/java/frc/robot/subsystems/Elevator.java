@@ -21,7 +21,7 @@ import frc.robot.Constants;
 
 public class Elevator extends SubsystemBase {
     
-    private static final double GEAR_REDUCTION = 15.0;  // 12:1 planetary
+    private static final double GEAR_REDUCTION = 15.0;  // 15:1 planetary
     // diameter of final 18 tooth gear
     private static final double FINAL_GEAR_DIAMETER = Units.inchesToMeters(1.504);  // TODO fix me
     // calibration: (circumference of 18T gear) * (2 for 2nd stage) / (motor gear reduction)
@@ -52,9 +52,6 @@ public class Elevator extends SubsystemBase {
     
     // Define the motor and encoders
     private final TalonFX m_motor;
-    private final TalonFXConfiguration m_talonFXConfigs;
-    private final MotionMagicConfigs m_magicConfigs;
-    private final Slot0Configs m_slot0configs;
 
     // private final AnalogPotentiometer m_stringPotentiometer;
     
@@ -63,30 +60,31 @@ public class Elevator extends SubsystemBase {
     
     /** Creates a new Elevator. */
     public Elevator() {
-        m_talonFXConfigs = new TalonFXConfiguration();
+        m_motor = new TalonFX(Constants.ELEVATOR_CAN_ID);
+
+        TalonFXConfiguration talonFXConfigs = new TalonFXConfiguration();
         
         // set slot 0 gains
-        m_motor = new TalonFX(Constants.ELEVATOR_CAN_ID);
-        m_slot0configs = m_talonFXConfigs.Slot0;
-        m_slot0configs.kS = 0.0; // Add 0.25 V output to overcome static friction //TODO Change values 
-        m_slot0configs.kV = 0.0; // A velocity target of 1 rps results in 0.12 V output
-        m_slot0configs.kA = 0.0; // An acceleration of 1 rps/s requires 0.01 V output
+        Slot0Configs slot0configs = talonFXConfigs.Slot0;
+        slot0configs.kS = 0.0; // Add 0.25 V output to overcome static friction //TODO Change values 
+        slot0configs.kV = 0.0; // A velocity target of 1 rps results in 0.12 V output
+        slot0configs.kA = 0.0; // An acceleration of 1 rps/s requires 0.01 V output
         // m_slot0configs.kP = 4.8; // A position error of 2.5 rotations results in 12 V output
-        m_slot0configs.kP = 0.5;  // start small!!!
-        m_slot0configs.kI = 0.0; // no output for integrated error
-        m_slot0configs.kD = 0.0; // A velocity error of 1 rps results in 0.1 V output
+        slot0configs.kP = 0.5;  // start small!!!
+        slot0configs.kI = 0.0; // no output for integrated error
+        slot0configs.kD = 0.0; // A velocity error of 1 rps results in 0.1 V output
         
         // set Motion Magic settings
-        m_magicConfigs = m_talonFXConfigs.MotionMagic;
+        MotionMagicConfigs magicConfigs = talonFXConfigs.MotionMagic;
         
-        m_magicConfigs.MotionMagicCruiseVelocity = heightToRotations(MAX_VEL_METER_PER_SEC); // Target cruise velocity of 80 rps //TODO Change values TOTAL GUESSES 
-        m_magicConfigs.MotionMagicAcceleration = heightToRotations(MAX_ACC_METER_PER_SEC_SQ); // Target acceleration of 160 rps/s (0.5 seconds)
-        m_magicConfigs.MotionMagicJerk = heightToRotations(MAX_JERK_METER_PER_SEC3); // Target jerk of 1600 rps/s/s (0.1 seconds)
+        magicConfigs.MotionMagicCruiseVelocity = heightToRotations(MAX_VEL_METER_PER_SEC); // Target cruise velocity of 80 rps //TODO Change values TOTAL GUESSES 
+        magicConfigs.MotionMagicAcceleration = heightToRotations(MAX_ACC_METER_PER_SEC_SQ); // Target acceleration of 160 rps/s (0.5 seconds)
+        magicConfigs.MotionMagicJerk = heightToRotations(MAX_JERK_METER_PER_SEC3); // Target jerk of 1600 rps/s/s (0.1 seconds)
         
         CurrentLimitsConfigs currentLimits = new CurrentLimitsConfigs().withSupplyCurrentLimit(CURRENT_LIMIT);
-        m_talonFXConfigs.withCurrentLimits(currentLimits);
+        talonFXConfigs.withCurrentLimits(currentLimits);
         
-        m_motor.getConfigurator().apply(m_talonFXConfigs);
+        m_motor.getConfigurator().apply(talonFXConfigs);
         
         // No potentiometer at this time
         // m_stringPotentiometer = new AnalogPotentiometer(POTENTIOMETER_CHANNEL, POTENTIOMETER_RANGE_METERS, POTENTIOMETER_OFFSET);
