@@ -59,8 +59,8 @@ public class CompRobotContainer extends RobotContainer {
         m_driverController.rightBumper().whileTrue(new StartEndCommand(m_algaeEffector::scoreBarge, m_algaeEffector::stop, m_algaeEffector));
         m_driverController.leftBumper().whileTrue(new StartEndCommand(m_algaeEffector::runIntake, m_algaeEffector::stop, m_algaeEffector));
 
-        m_driverController.a().onTrue(new InstantCommand(() -> m_elevator.setHeight(0.5)));
-        m_driverController.b().onTrue(new InstantCommand(() -> m_elevator.setHeight(0.05)));
+        m_driverController.a().onTrue(new InstantCommand(() -> m_elevator.setHeight(SmartDashboard.getNumber("elevator/testGoal", 0))));
+        // m_driverController.b().onTrue(new InstantCommand(() -> m_elevator.setHeight(0.05)));
     }
     
     private void configureAutos() {

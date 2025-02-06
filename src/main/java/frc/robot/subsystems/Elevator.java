@@ -27,7 +27,7 @@ public class Elevator extends SubsystemBase {
     // calibration: (circumference of 18T gear) * (2 for 2nd stage) / (motor gear reduction)
     private static final double METER_PER_REVOLUTION = Math.PI * FINAL_GEAR_DIAMETER * 2.0 / GEAR_REDUCTION;
     
-    private static final double MAX_LENGTH_METERS = Units.inchesToMeters(40.0); // TODO fix me
+    private static final double MAX_LENGTH_METERS = Units.inchesToMeters(63.0); // TODO fix me
     private static final double MIN_LENGTH_METERS = Units.inchesToMeters(0.25);
     // private static int m_lengthAdjustment = 1;
     
@@ -35,9 +35,9 @@ public class Elevator extends SubsystemBase {
     private static final double LENGTH_TOLERANCE_METERS = Units.inchesToMeters(0.5);
 
     // TODO set to good values
-    private static final double MAX_VEL_METER_PER_SEC = Units.inchesToMeters(10.0);
-    private static final double MAX_ACC_METER_PER_SEC_SQ = Units.inchesToMeters(20.0);
-    private static final double MAX_JERK_METER_PER_SEC3 = Units.inchesToMeters(200.0);
+    private static final double MAX_VEL_METER_PER_SEC = Units.inchesToMeters(70.0);
+    private static final double MAX_ACC_METER_PER_SEC_SQ = Units.inchesToMeters(100.0);
+    private static final double MAX_JERK_METER_PER_SEC3 = Units.inchesToMeters(1000.0);
     
     private static final int CURRENT_LIMIT = 30;
     
@@ -59,7 +59,7 @@ public class Elevator extends SubsystemBase {
     // private final AnalogPotentiometer m_stringPotentiometer;
     
     // height goal in meters
-    private double m_goal = 0;
+    private double m_goalMeters = 0;
     
     /** Creates a new Elevator. */
     public Elevator() {
@@ -91,6 +91,7 @@ public class Elevator extends SubsystemBase {
         // No potentiometer at this time
         // m_stringPotentiometer = new AnalogPotentiometer(POTENTIOMETER_CHANNEL, POTENTIOMETER_RANGE_METERS, POTENTIOMETER_OFFSET);
 
+        SmartDashboard.putNumber("elevator/testGoal", 0);
         zeroElevator();
     }
     
@@ -101,16 +102,18 @@ public class Elevator extends SubsystemBase {
         SmartDashboard.putNumber("elevator/currentGoal", 
             Units.metersToInches(rotationsToHeight(m_motor.getClosedLoopReference().getValueAsDouble())));
         SmartDashboard.putNumber("elevator/voltage", m_motor.getMotorVoltage().getValueAsDouble());
+        SmartDashboard.putNumber("elevator/supplyCurrent", m_motor.getSupplyCurrent().getValueAsDouble());
+        SmartDashboard.putNumber("elevator/statorCurrent", m_motor.getStatorCurrent().getValueAsDouble());
     }
     
     // set elevator length in meters
     public void setHeight(double goal) {
-        m_goal = limitElevatorLength(goal);
+        m_goalMeters = limitElevatorLength(goal);
         
         MotionMagicVoltage m_request = new MotionMagicVoltage(0);        
-        m_motor.setControl(m_request.withPosition(heightToRotations(m_goal)));
+        m_motor.setControl(m_request.withPosition(heightToRotations(m_goalMeters)));
         
-        SmartDashboard.putNumber("elevator/goal", Units.metersToInches(m_goal));
+        SmartDashboard.putNumber("elevator/goal", Units.metersToInches(m_goalMeters));
     }
     
     public double getHeight() {
@@ -138,7 +141,7 @@ public class Elevator extends SubsystemBase {
     // }
     
     public boolean lengthWithinTolerance() {
-        return Math.abs(getHeight() - m_goal) < LENGTH_TOLERANCE_METERS;
+        return Math.abs(getHeight() - m_goalMeters) < LENGTH_TOLERANCE_METERS;
     }
     
     private static double heightToRotations(double position) {

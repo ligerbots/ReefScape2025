@@ -8,10 +8,13 @@ import com.revrobotics.spark.config.*;
 import com.revrobotics.spark.config.ClosedLoopConfig.FeedbackSensor;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.revrobotics.AbsoluteEncoder;
+import com.revrobotics.RelativeEncoder;
 import com.revrobotics.sim.SparkAbsoluteEncoderSim;
 import com.revrobotics.spark.SparkMax;
+import com.revrobotics.spark.SparkBase;
 import com.revrobotics.spark.SparkBase.PersistMode;
 import com.revrobotics.spark.SparkBase.ResetMode;
+import com.revrobotics.spark.SparkClosedLoopController;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 
 import edu.wpi.first.math.MathUtil;
@@ -33,22 +36,24 @@ public class EndEffectorPivot extends SubsystemBase {
     private static final int CURRENT_LIMIT = 30;
 
     // position constants for commands
-    private static final double ADJUSTMENT_STEP = Math.toRadians(1.0);
+    // private static final double ADJUSTMENT_STEP = Math.toRadians(1.0);
     
-    // All units are MKS with angles in Radians
+    // 15:1 planetary plus 48:32 sprockets
+    private static final double GEAR_RATIO = 25.0 * (42.0 / 18.0);
       
     // Constants to limit the shooterPivot rotation speed
-    // private static final double MAX_VEL_RADIAN_PER_SEC = Units.degreesToRadians(80);
-    // private static final double MAX_ACC_RADIAN_PER_SEC_SQ = Units.degreesToRadians(80);
+    // max vel: 1 rotation = 10 seconds  and then gear_ratio
+    // "60" because they want RPM
+    private static final double MAX_VEL_RPM = 60.0 * 0.1 * GEAR_RATIO;
+    private static final double MAX_ACC_RPM_PER_SEC = 60.0 * 0.2 * GEAR_RATIO;
+    // units??? rotations?
+    private static final double ALLOWED_ERROR = 2.0/360.0 * GEAR_RATIO;
 
     private static final double POSITION_OFFSET = 238.8/360.0; 
     // private static final double OFFSET_RADIAN = POSITION_OFFSET * 2 * Math.PI;
 
-    // 15:1 planetary plus 48:32 sprockets
-    // private static final double GEAR_RATIO = (1.0 / 15.0) * (32.0 / 48.0);
-
     // Constants for the shooterPivot PID controller
-    private static final double K_P = 4.0;
+    private static final double K_P = 1.0;
     private static final double K_I = 0.0;
     private static final double K_D = 0.0;
     private static final double K_FF = 0.0;
@@ -58,15 +63,16 @@ public class EndEffectorPivot extends SubsystemBase {
 
     // private final DutyCycleEncoder m_absoluteEncoder = new DutyCycleEncoder(0);  
     private final SparkMax m_motor;
-    // private final RelativeEncoder m_encoder;
+    private final RelativeEncoder m_encoder;
     private final AbsoluteEncoder m_absoluteEncoder;
     private final SparkAbsoluteEncoderSim m_absoluteEncoderSim;
-    
+    private final SparkClosedLoopController m_controller;
+
     // Used for checking if on goal
     private double m_goalRadians = 0;
 
     // adjustment offset. Starts at 0, but retained throughout a match
-    private double m_angleAdjustment = Math.toRadians(0.0);
+    // private double m_angleAdjustment = Math.toRadians(0.0);
 
     // Construct a new shooterPivot subsystem
     public EndEffectorPivot() {
@@ -88,6 +94,13 @@ public class EndEffectorPivot extends SubsystemBase {
 
         m_absoluteEncoderSim.setZeroOffset(POSITION_OFFSET);
 
+        // m_absoluteEncoder.setPositionConversionFactor(2 * Math.PI);
+        // m_absoluteEncoder.setPositionOffset(POSITION_OFFSET);
+
+       // motor encoder - set calibration and offset to match absolute encoder
+        m_encoder = m_motor.getEncoder();
+        // m_encoder.
+
         config.closedLoop.pidf(K_P, K_I, K_D, K_FF);
 
         config.closedLoop.outputRange(-1, 1);
@@ -95,21 +108,23 @@ public class EndEffectorPivot extends SubsystemBase {
         config.closedLoop.positionWrappingEnabled(true);
         config.closedLoop.positionWrappingInputRange(0,1.0);
 
-        // Absolute encoder - work in rotations
-        // m_absoluteEncoder.setDistancePerRotation(2 * Math.PI);
-        // m_absoluteEncoder.setPositionOffset(POSITION_OFFSET);
+        // Set Smart Motion and Smart Velocity parameters.
+        config.closedLoop.maxMotion
+                .maxVelocity(MAX_VEL_RPM)
+                .maxAcceleration(MAX_ACC_RPM_PER_SEC)
+                .allowedClosedLoopError(ALLOWED_ERROR);
 
-        // motor encoder - set calibration and offset to match absolute encoder
-        // m_encoder = m_motor.getEncoder();
-        // // m_encoder.setPositionConversionFactor(RADIANS_PER_MOTOR_ROTATION);
-        // m_encoder.setPositionConversionFactor(GEAR_RATIO);
+        m_motor.configure(config, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
+
+        m_controller = m_motor.getClosedLoopController();
+
         // updateMotorEncoderOffset();
         // resetGoal();
 
-        SmartDashboard.putBoolean("shooterPivot/coastMode", false);
+        SmartDashboard.putBoolean("pivot/coastMode", false);
         setCoastMode();
 
-        SmartDashboard.putNumber("shooterPivot/testAngle", 0);
+        SmartDashboard.putNumber("pivot/testAngle", 0);
 
     }
 
@@ -117,16 +132,13 @@ public class EndEffectorPivot extends SubsystemBase {
     public void periodic() {
         // Display current values on the SmartDashboard
         // This also gets logged to the log file on the Rio and aids in replaying a match
-        SmartDashboard.putNumber("shooterPivot/encoder", Math.toDegrees(getAngleRadians()));
+        SmartDashboard.putNumber("pivot/encoder", Math.toDegrees(getAngleRadians()));
         // SmartDashboard.putNumber("shooterPivot/absoluteEncoder", Math.toDegrees(getAbsEncoderAngleRadians()));
-        SmartDashboard.putNumber("shooterPivot/current", m_motor.getOutputCurrent());
-        SmartDashboard.putBoolean("shooterPivot/onGoal", angleWithinTolerance());
-        SmartDashboard.putNumber("shooterPivot/adjustment", Math.toDegrees(m_angleAdjustment));
+        SmartDashboard.putNumber("pivot/current", m_motor.getOutputCurrent());
+        SmartDashboard.putBoolean("pivot/onGoal", angleWithinTolerance());
+        // SmartDashboard.putNumber("pivot/adjustment", Math.toDegrees(m_angleAdjustment));
 
         setCoastMode();
-
-        // Execute the super class periodic method
-        super.periodic();
     }
 
     // get the current pivot angle in radians
@@ -151,23 +163,24 @@ public class EndEffectorPivot extends SubsystemBase {
     }
 
     // set shooterPivot angle in radians
-    public void setAngle(double angle, boolean includeAdjustment) {
-        m_goalRadians = limitPivotAngle(angle + (includeAdjustment ? 1 : 0) * m_angleAdjustment);
-        SmartDashboard.putNumber("shooterPivot/goal", Math.toDegrees(m_goalRadians));
+    public void setAngle(double angle) {
+        m_goalRadians = limitPivotAngle(angle);
+        m_controller.setReference(m_goalRadians, SparkBase.ControlType.kMAXMotionPositionControl);
+        SmartDashboard.putNumber("pivot/goal", Math.toDegrees(m_goalRadians));
     }
 
     public boolean angleWithinTolerance() {
         return Math.abs(m_goalRadians - getAngleRadians()) < ANGLE_TOLERANCE_RADIAN;
     }
 
-    public void adjustAngle(boolean goUp) {
-        double adjust = (goUp ? 1 : -1) * ADJUSTMENT_STEP;
-        m_angleAdjustment += adjust;
-        setAngle(m_goalRadians + adjust, false);
-    }
+    // public void adjustAngle(boolean goUp) {
+    //     double adjust = (goUp ? 1 : -1) * ADJUSTMENT_STEP;
+    //     m_angleAdjustment += adjust;
+    //     setAngle(m_goalRadians + adjust, false);
+    // }
 
     public void resetGoal() {
-        setAngle(getAngleRadians(), false);
+        setAngle(getAngleRadians());
     }
 
     public void setCoastMode() {
