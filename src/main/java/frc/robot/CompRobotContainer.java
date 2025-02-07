@@ -89,16 +89,9 @@ public class CompRobotContainer extends RobotContainer {
 
         POVButton dpadUp = new POVButton(m_driverController.getHID(), 0);
         dpadUp.onTrue(new MoveEndEffector(m_elevator, m_pivot, Constants.Position.L2).andThen().finallyDo(()->m_coralMode = true));
-
-
-
-
-
-            
     
-        m_driverController.a().onTrue(new InstantCommand(() -> m_elevator.setHeight(SmartDashboard.getNumber("elevator/testGoal", 0))));
-
-        m_driverController.b().onTrue(new InstantCommand(() -> m_pivot.setAngle(Rotation2d.fromDegrees(SmartDashboard.getNumber("pivot/testAngle", 0.0)))));
+        // m_driverController.a().onTrue(new InstantCommand(() -> m_elevator.setHeight(SmartDashboard.getNumber("elevator/testGoal", 0))));
+        // m_driverController.b().onTrue(new InstantCommand(() -> m_pivot.setAngle(Rotation2d.fromDegrees(SmartDashboard.getNumber("pivot/testAngle", 0.0)))));
     }
 
     private void configureAutos() {
