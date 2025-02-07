@@ -26,8 +26,8 @@ public class AlgaeIntake extends SubsystemBase {
   private final double ROLLER_HOLD_SPEED = 0.1; // TODO
 
   private Timer m_timer = new Timer();
-  private final double INTAKE_SECONDS = 3; // TODO
-  private final double OUTTAKE_SECONDS = 3; // TODO
+  // private final double INTAKE_SECONDS = 3; // TODO
+  // private final double OUTTAKE_SECONDS = 3; // TODO
 
   private enum Task {
     INTAKE, OUTTAKE, IDLE;
@@ -96,13 +96,6 @@ public class AlgaeIntake extends SubsystemBase {
         if ((m_task == Task.INTAKE && m_timer.hasElapsed(INTAKE_SECONDS)) ||
             (m_task == Task.OUTTAKE && m_timer.hasElapsed(OUTTAKE_SECONDS))) {
           m_deployState = DeployState.DEPLOY_IN;
-
-          // stop spinning roller
-          if (m_task == Task.INTAKE) {
-            m_rollerState = RollerState.HOLD;
-          } else if (m_task == Task.OUTTAKE) {
-            m_rollerState = RollerState.IDLE;
-          }
         }
         break;
       case IDLE:
@@ -110,22 +103,8 @@ public class AlgaeIntake extends SubsystemBase {
         break;
     }
 
-    // Roller state machine
-    switch (m_rollerState) {
-      case INTAKE:
-        rollerIntake();
-        break;
-      case OUTTAKE:
-        rollerOuttake();
-        break;
-      case HOLD:
-        rollerHold();
-      case IDLE:
-        stopRoller();
-        break;
-    }
   }
-
+  
   private void deployPivotOut() {
     m_deployPivot.set(DEPLOY_PIVOT_OUT_SPEED);
   }
@@ -133,13 +112,13 @@ public class AlgaeIntake extends SubsystemBase {
     m_deployPivot.set(DEPLOY_PIVOT_IN_SPEED);
   }
   private void rollerIntake() {
-    m_deployPivot.set(ROLLER_INTAKE_SPEED);
+    m_roller.set(ROLLER_INTAKE_SPEED);
   }
   private void rollerOuttake() {
-    m_deployPivot.set(ROLLER_OUTAKE_SPEED);
+    m_roller.set(ROLLER_OUTAKE_SPEED);
   }
   private void rollerHold() {
-    m_deployPivot.set(ROLLER_HOLD_SPEED);
+    m_roller.set(ROLLER_HOLD_SPEED);
   }
   private void stopDeployPivot() {
     m_deployPivot.set(0);
