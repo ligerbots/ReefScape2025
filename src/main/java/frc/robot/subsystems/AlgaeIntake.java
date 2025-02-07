@@ -26,8 +26,8 @@ public class AlgaeIntake extends SubsystemBase {
   private final double ROLLER_HOLD_SPEED = 0.1; // TODO
 
   private Timer m_timer = new Timer();
-  // private final double INTAKE_SECONDS = 3; // TODO
-  // private final double OUTTAKE_SECONDS = 3; // TODO
+  private final double INTAKE_SECONDS = 3; // TODO
+  private final double OUTTAKE_SECONDS = 3; // TODO
 
   private enum Task {
     INTAKE, OUTTAKE, IDLE;
@@ -39,12 +39,7 @@ public class AlgaeIntake extends SubsystemBase {
     DEPLOY_OUT, DEPLOY_IN, WAIT, IDLE;
   }
 
-  private enum RollerState {
-    INTAKE, OUTTAKE, HOLD, IDLE;
-  }
-
   private DeployState m_deployState = DeployState.IDLE;
-  private RollerState m_rollerState = RollerState.IDLE;
 
   /** Creates a new AlgaeIntake. */
   public AlgaeIntake() {
@@ -72,13 +67,6 @@ public class AlgaeIntake extends SubsystemBase {
         if (deployPosition >= DEPLOY_PIVOT_END_POSITION) {
           m_deployState = DeployState.WAIT;
 
-          // check if we are intaking out outtaking
-          if (m_task == Task.INTAKE) {
-            m_rollerState = RollerState.INTAKE;
-          } else if (m_task == Task.OUTTAKE) {
-            m_rollerState = RollerState.OUTTAKE;
-          }
-
           // start wait timer
           m_timer.reset();
           m_timer.start();
@@ -102,7 +90,6 @@ public class AlgaeIntake extends SubsystemBase {
         stopDeployPivot();
         break;
     }
-
   }
   
   private void deployPivotOut() {
@@ -110,6 +97,9 @@ public class AlgaeIntake extends SubsystemBase {
   }
   private void deployPivotIn() {
     m_deployPivot.set(DEPLOY_PIVOT_IN_SPEED);
+  }
+  private void stopDeployPivot() {
+    m_deployPivot.set(0);
   }
   private void rollerIntake() {
     m_roller.set(ROLLER_INTAKE_SPEED);
@@ -119,9 +109,6 @@ public class AlgaeIntake extends SubsystemBase {
   }
   private void rollerHold() {
     m_roller.set(ROLLER_HOLD_SPEED);
-  }
-  private void stopDeployPivot() {
-    m_deployPivot.set(0);
   }
   private void stopRoller() {
     m_roller.set(0);
