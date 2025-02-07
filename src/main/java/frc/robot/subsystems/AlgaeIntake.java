@@ -56,9 +56,11 @@ public class AlgaeIntake extends SubsystemBase {
   public void periodic() {
     // This method will be called once per scheduler run
 
-    // TODO put stuff into SmartDashboard
-
     double deployPosition = m_deployPivotEncoder.getPosition();
+
+    SmartDashboard.putString("algaeIntake/deployState", m_deployState.toString());
+    SmartDashboard.putString("algaeIntake/task", m_task.toString());
+    SmartDashboard.putNumber("algaeIntake/deployPosition", deployPosition);
 
     // Deploy pivot state machine
     switch (m_deployState) {
