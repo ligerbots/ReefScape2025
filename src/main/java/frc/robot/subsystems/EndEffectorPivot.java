@@ -35,6 +35,7 @@ public class EndEffectorPivot extends SubsystemBase {
 
     private static final int CURRENT_LIMIT = 30;
 
+
     // position constants for commands
     // private static final double ADJUSTMENT_STEP = Math.toRadians(1.0);
     
