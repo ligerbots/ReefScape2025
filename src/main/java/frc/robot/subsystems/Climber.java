@@ -11,8 +11,6 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 
-import edu.wpi.first.math.MathUtil;
-
 public class Climber extends SubsystemBase {
     
     private final SparkMax m_climberMotor;
@@ -54,11 +52,7 @@ public class Climber extends SubsystemBase {
     private enum ClimberState {IDLE, DEPLOYING, WAITING, CLIMBING, HOLDING};
     private ClimberState m_climberState = ClimberState.IDLE;
     
-    private final DriveTrain m_driveTrain;
-    
-    public Climber(DriveTrain drivetrain) {
-        m_driveTrain = drivetrain;
-        
+    public Climber() {
         m_climberMotor = new SparkMax(Constants.CLIMBER_ID, MotorType.kBrushless);
         
         SparkMaxConfig config = new SparkMaxConfig();
@@ -84,7 +78,6 @@ public class Climber extends SubsystemBase {
         SmartDashboard.putNumber("climber/Speed", m_climberMotor.get());
         SmartDashboard.putNumber("climber/Position", position);
         SmartDashboard.putNumber("climber/Current", climberCurrrent);
-        SmartDashboard.putNumber("climber/pitch", m_driveTrain.getPitch().getDegrees());
         SmartDashboard.putString("climber/state", m_climberState.toString());
         
         // While idle, we want a small voltage applied to hold the hooks in place.
