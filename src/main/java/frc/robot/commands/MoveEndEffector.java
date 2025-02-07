@@ -15,7 +15,7 @@ import frc.robot.subsystems.Elevator;
 import frc.robot.subsystems.EndEffectorPivot;
 
 /* You should consider using the more terse Command factories API instead https://docs.wpilib.org/en/stable/docs/software/commandbased/organizing-command-based.html#defining-commands */
-public class Score extends Command {
+public class MoveEndEffector extends Command {
   /** Creates a new Score. */
   EndEffectorPivot m_pivot;
   Elevator m_elevator;
@@ -71,7 +71,7 @@ public class Score extends Command {
     }
   };
 
-  public Score(Elevator elevator, EndEffectorPivot pivot, Constants.Position position) {
+  public MoveEndEffector(Elevator elevator, EndEffectorPivot pivot, Constants.Position position) {
     // Use addRequirements() here to declare subsystem dependencies.
     m_pivot = pivot;
     m_elevator = elevator;
