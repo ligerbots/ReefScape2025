@@ -23,6 +23,15 @@ public final class Constants {
     
     public static double MAX_VOLTAGE = 12.0;
     
+    public enum Position {
+        L1, L2, L3, L4, 
+        BARGE,
+        FRONT_INTAKE, BACK_INTAKE, L1_ALGAE, L2_ALGAE, 
+        STOW
+         
+
+    }
+    
     public static boolean OUTREACH_MODE = false;
     
     // Feature flag: enable simulation in the classes

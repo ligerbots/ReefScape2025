@@ -100,6 +100,10 @@ public class CoralEffector extends SubsystemBase {
         m_state = State.OUTTAKE;
     }
 
+     public void setHold(){
+        m_state = State.HOLD;
+    }
+    
     public void stop() {
         if (m_state != State.HOLD)
             m_state = State.IDLE;

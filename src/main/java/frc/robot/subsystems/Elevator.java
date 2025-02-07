@@ -42,10 +42,9 @@ public class Elevator extends SubsystemBase {
     private static final int CURRENT_LIMIT = 30;
     
     private static final double OFFSET_METER = 0.0;
-    
-    // private static final double ADJUSTMENT_STEP = 1.0;
-    
-    // // initializing Potentiometer
+
+
+  
     // private final int POTENTIOMETER_CHANNEL = 2; //TODO: Update with actual value
     // private final double POTENTIOMETER_RANGE_METERS = -2.625; // meters, the string potentiometer on takes in range in integers TODO: update to correct value
     // private final double POTENTIOMETER_OFFSET = 2.51; //TODO: Find inital value and update

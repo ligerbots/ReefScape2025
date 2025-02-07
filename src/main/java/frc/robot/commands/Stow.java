@@ -6,6 +6,7 @@ package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
+import frc.robot.Constants;
 import frc.robot.subsystems.AlgaeEffector;
 import frc.robot.subsystems.CoralEffector;
 import frc.robot.subsystems.Elevator;
@@ -18,10 +19,9 @@ public class Stow extends ParallelCommandGroup {
   /** Creates a new Stow. */
   public Stow(CoralEffector coralEffector, AlgaeEffector algaeEffector, EndEffectorPivot pivot, Elevator elevator) {
     addCommands(
-    new SetElevatorLength(elevator, Elevator.STOW_HEIGHT),
+    new Score(elevator, pivot, Constants.Position.STOW),
     new InstantCommand(coralEffector::setHold),
-    new InstantCommand(algaeEffector::setHold),
-    new SetPivotAngle(pivot, EndEffectorPivot.STOW_ANGLE)
+    new InstantCommand(algaeEffector::setHold)
     );
   }
 }
