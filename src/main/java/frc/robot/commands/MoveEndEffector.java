@@ -9,6 +9,7 @@ import java.util.HashMap;
 import edu.wpi.first.math.Pair;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Constants;
 import frc.robot.Constants.Position;
@@ -23,6 +24,9 @@ public class MoveEndEffector extends Command {
     Rotation2d m_desiredAngle;
     double m_desiredHeight;
     Constants.Position m_position;
+    Timer m_timer;
+
+    private static final double TIMEOUT = 2.0;
     
     public static final double L1_ANGLE = 180.0;
     public static final double L1_HEIGHT = Units.inchesToMeters(0.0);
@@ -80,6 +84,7 @@ public class MoveEndEffector extends Command {
     public void initialize() {
         m_elevator.setHeight(m_desiredHeight);
         m_pivot.setAngle(m_desiredAngle);
+        m_timer.reset();
     }
     
     // Called every time the scheduler runs while the command is scheduled.
@@ -93,6 +98,7 @@ public class MoveEndEffector extends Command {
     // Returns true when the command should end.
     @Override
     public boolean isFinished() {
-        return m_elevator.lengthWithinTolerance() && m_pivot.angleWithinTolerance();
+        return (m_elevator.lengthWithinTolerance() && m_pivot.angleWithinTolerance())
+            || m_timer.hasElapsed(TIMEOUT);
     }
 }
