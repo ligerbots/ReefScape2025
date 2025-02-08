@@ -7,6 +7,9 @@ package frc.robot.subsystems;
 import com.revrobotics.spark.config.*;
 import com.revrobotics.spark.config.ClosedLoopConfig.FeedbackSensor;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
+
+import java.util.function.DoubleSupplier;
+
 import com.revrobotics.sim.SparkAbsoluteEncoderSim;
 import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.SparkAbsoluteEncoder;
@@ -18,6 +21,7 @@ import com.revrobotics.spark.SparkLowLevel.MotorType;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
@@ -25,8 +29,13 @@ import frc.robot.Constants;
 
 public class EndEffectorPivot extends SubsystemBase {
     
-    public static final double MIN_ANGLE_DEG = 140.0;
-    public static final double MAX_ANGLE_DEG = 295.0;
+    private static final double MIN_ANGLE_LOW_DEG = 140.0;
+    private static final double MAX_ANGLE_LOW_DEG = 295.0;
+
+    private static final double MIN_ANGLE_HIGH_DEG = 140.0;
+    private static final double MAX_ANGLE_HIGH_DEG = 295.0;
+    private static final double ELEVATOR_HEIGHT_LOW_RANGE = Units.inchesToMeters(5.0);
+
     // NOTE: All constants were taken from the 2023 arm 
     // Note: Current values for limits are refrenced with the shooter being flat
     // facing fowards as zero.
@@ -70,8 +79,12 @@ public class EndEffectorPivot extends SubsystemBase {
     // adjustment offset. Starts at 0, but retained throughout a match
     // private double m_angleAdjustment = Math.toRadians(0.0);
 
+    private final DoubleSupplier m_elevatorHeight;
+
     // Construct a new shooterPivot subsystem
-    public EndEffectorPivot() {
+    public EndEffectorPivot(DoubleSupplier elevatorHeight) {
+        m_elevatorHeight = elevatorHeight;
+        
         m_motor = new SparkMax(Constants.END_EFFECTOR_PIVOT_CAN_ID, MotorType.kBrushless);
 
         SparkMaxConfig config = new SparkMaxConfig();
@@ -157,8 +170,14 @@ public class EndEffectorPivot extends SubsystemBase {
     // }
 
     // needs to be public so that commands can get the restricted angle
-    public static Rotation2d limitPivotAngle(Rotation2d angle) {
-        return Rotation2d.fromDegrees(MathUtil.clamp(angle.getDegrees(), MIN_ANGLE_DEG, MAX_ANGLE_DEG));
+    public Rotation2d limitPivotAngle(Rotation2d angle) {
+        double angleClamped;
+        if (m_elevatorHeight.getAsDouble() <= ELEVATOR_HEIGHT_LOW_RANGE)
+            angleClamped = MathUtil.clamp(angle.getDegrees(), MIN_ANGLE_LOW_DEG, MAX_ANGLE_LOW_DEG);
+        else
+            angleClamped = MathUtil.clamp(angle.getDegrees(), MIN_ANGLE_HIGH_DEG, MAX_ANGLE_HIGH_DEG);
+
+        return Rotation2d.fromDegrees(angleClamped);
     }
 
     public boolean angleWithinTolerance() {
