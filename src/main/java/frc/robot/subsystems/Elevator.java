@@ -52,7 +52,7 @@ public class Elevator extends SubsystemBase {
     
     private static final double OFFSET_METER = 0.0;
 
-
+    private static final double STATIC_VOLTAGE = 0.6;
   
     // private final int POTENTIOMETER_CHANNEL = 2; //TODO: Update with actual value
     // private final double POTENTIOMETER_RANGE_METERS = -2.625; // meters, the string potentiometer on takes in range in integers TODO: update to correct value
@@ -79,7 +79,7 @@ public class Elevator extends SubsystemBase {
         
         // set slot 0 gains
         Slot0Configs slot0configs = talonFXConfigs.Slot0;
-        slot0configs.kS = 0.0; // Add 0.25 V output to overcome static friction //TODO Change values 
+        slot0configs.kS = STATIC_VOLTAGE;  // overcome gravity
         slot0configs.kV = 0.0; // A velocity target of 1 rps results in 0.12 V output
         slot0configs.kA = 0.0; // An acceleration of 1 rps/s requires 0.01 V output
         // m_slot0configs.kP = 4.8; // A position error of 2.5 rotations results in 12 V output
