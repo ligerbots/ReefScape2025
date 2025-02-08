@@ -66,24 +66,24 @@ public class KitbotRobotContainer extends RobotContainer {
 
         Pose2d[] reefPoints = {FieldConstants.REEF_J, FieldConstants.REEF_K, FieldConstants.REEF_L, FieldConstants.REEF_A};
         m_chosenAuto.setDefaultOption("Processor Side Standard via Generic", 
-            new GenericAutoBase(FieldConstants.ROBOT_START_3, FieldConstants.SOURCE_2_OUT, reefPoints, m_driveTrain, m_kitbotRoller, true));
+            new KitBotGenericAutoBase(FieldConstants.ROBOT_START_3, FieldConstants.SOURCE_2_OUT, reefPoints, m_driveTrain, m_kitbotRoller, true));
 
         Pose2d[] reefPoints0 = {FieldConstants.REEF_J, FieldConstants.REEF_A, FieldConstants.REEF_B};
         m_chosenAuto.addOption("Processor Side Shared Far", 
-            new GenericAutoBase(FieldConstants.ROBOT_START_3, FieldConstants.SOURCE_2_IN, reefPoints0, m_driveTrain, m_kitbotRoller, true));
+            new KitBotGenericAutoBase(FieldConstants.ROBOT_START_3, FieldConstants.SOURCE_2_IN, reefPoints0, m_driveTrain, m_kitbotRoller, true));
     
         Pose2d[] reefPoints1 = {FieldConstants.REEF_H, FieldConstants.REEF_K, FieldConstants.REEF_L};
         m_chosenAuto.addOption("Processor Side Shared Near", 
-            new GenericAutoBase(FieldConstants.ROBOT_START_2, FieldConstants.SOURCE_2_OUT, reefPoints1, m_driveTrain, m_kitbotRoller, true));
+            new KitBotGenericAutoBase(FieldConstants.ROBOT_START_2, FieldConstants.SOURCE_2_OUT, reefPoints1, m_driveTrain, m_kitbotRoller, true));
 
         m_chosenAuto.addOption("Away Side Standard", 
-            new GenericAutoBase(FieldConstants.ROBOT_START_3, FieldConstants.SOURCE_2_OUT, reefPoints, m_driveTrain, m_kitbotRoller, false));
+            new KitBotGenericAutoBase(FieldConstants.ROBOT_START_3, FieldConstants.SOURCE_2_OUT, reefPoints, m_driveTrain, m_kitbotRoller, false));
 
         m_chosenAuto.addOption("Away Side Shared Far", 
-            new GenericAutoBase(FieldConstants.ROBOT_START_3, FieldConstants.SOURCE_2_IN, reefPoints0, m_driveTrain, m_kitbotRoller, false));
+            new KitBotGenericAutoBase(FieldConstants.ROBOT_START_3, FieldConstants.SOURCE_2_IN, reefPoints0, m_driveTrain, m_kitbotRoller, false));
     
         m_chosenAuto.addOption("Away Side Shared Near", 
-            new GenericAutoBase(FieldConstants.ROBOT_START_2, FieldConstants.SOURCE_2_OUT, reefPoints1, m_driveTrain, m_kitbotRoller, false));
+            new KitBotGenericAutoBase(FieldConstants.ROBOT_START_2, FieldConstants.SOURCE_2_OUT, reefPoints1, m_driveTrain, m_kitbotRoller, false));
 
         // m_chosenAuto.addOption("Drive Single Path", 
         //     new SinglePathTestAuto(m_driveTrain, m_kitbotRoller, false));
