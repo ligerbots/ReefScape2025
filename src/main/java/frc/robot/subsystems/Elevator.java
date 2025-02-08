@@ -9,7 +9,9 @@ import com.ctre.phoenix6.configs.MotionMagicConfigs;
 import com.ctre.phoenix6.configs.Slot0Configs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.MotionMagicVoltage;
+import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.TalonFX;
+import com.ctre.phoenix6.signals.NeutralModeValue;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.util.Units;
@@ -33,6 +35,8 @@ public class Elevator extends SubsystemBase {
     
     // Tolerance for commands
     private static final double LENGTH_TOLERANCE_METERS = Units.inchesToMeters(0.5);
+
+    private static final double MIN_HEIGHT_TURN_OFF = Units.inchesToMeters(1.0);
 
     // TODO set to good values
     private static final double MAX_VEL_METER_PER_SEC = Units.inchesToMeters(70.0);
@@ -63,6 +67,9 @@ public class Elevator extends SubsystemBase {
 
         TalonFXConfiguration talonFXConfigs = new TalonFXConfiguration();
         
+        // enable brake mode
+        m_motor.setNeutralMode(NeutralModeValue.Brake);
+
         // set slot 0 gains
         Slot0Configs slot0configs = talonFXConfigs.Slot0;
         slot0configs.kS = 0.0; // Add 0.25 V output to overcome static friction //TODO Change values 
@@ -94,7 +101,12 @@ public class Elevator extends SubsystemBase {
     
     @Override
     public void periodic() {
-        SmartDashboard.putNumber("elevator/height", Units.metersToInches(getHeight()));
+        double height = Units.metersToInches(getHeight());
+        if (m_goalMeters < MIN_HEIGHT_TURN_OFF && height < MIN_HEIGHT_TURN_OFF) {
+            m_motor.setControl(new VoltageOut(0));
+        }
+
+        SmartDashboard.putNumber("elevator/height", height);
         SmartDashboard.putBoolean("elevator/onGoal", lengthWithinTolerance());
         SmartDashboard.putNumber("elevator/currentGoal", 
             Units.metersToInches(rotationsToHeight(m_motor.getClosedLoopReference().getValueAsDouble())));
