@@ -9,6 +9,7 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.PowerDistribution;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.ConditionalCommand;
@@ -37,6 +38,7 @@ public class CompRobotContainer extends RobotContainer {
 
     private boolean m_coralMode = true;
 
+    private final SendableChooser<Command> m_chosenAuto = new SendableChooser<>();
     private AutoCommandInterface m_autoCommand;
 
     public CompRobotContainer() {
@@ -99,18 +101,26 @@ public class CompRobotContainer extends RobotContainer {
     private void configureAutos() {
         // TODO Auto-generated method stub
         Pose2d[] reefPoints = {FieldConstants.REEF_J, FieldConstants.REEF_K, FieldConstants.REEF_L, FieldConstants.REEF_A};
-        m_autoCommand = new CompBotGenericAutoBase(FieldConstants.ROBOT_START_3, FieldConstants.SOURCE_2_OUT, reefPoints, m_driveTrain, m_elevator, m_coralEffector, m_pivot, true);
+        m_chosenAuto.setDefaultOption("Processor Side Standard", 
+        new CompBotGenericAutoBase(FieldConstants.ROBOT_START_3, FieldConstants.SOURCE_2_OUT, reefPoints, m_driveTrain, m_elevator, m_coralEffector, m_pivot, true));
+        m_chosenAuto.addOption("Away Side Standard", 
+        new CompBotGenericAutoBase(FieldConstants.ROBOT_START_3, FieldConstants.SOURCE_2_OUT, reefPoints, m_driveTrain, m_elevator, m_coralEffector, m_pivot, false));
+    
+        SmartDashboard.putData("Auto Choice", m_chosenAuto);
     }
 
-    
+
     public Command getAutonomousCommand() {
-        return m_autoCommand;
+        return m_chosenAuto.getSelected();
     }
 
     public Pose2d getInitialPose() {
-        if (m_autoCommand == null)
-            return new Pose2d(1, 1, Rotation2d.fromDegrees(0));
-        return m_autoCommand.getInitialPose();
+        // if (m_autoCommand == null)
+        //     return new Pose2d(1, 1, Rotation2d.fromDegrees(0));
+        // return m_autoCommand.getInitialPose();
+
+        AutoCommandInterface j = (AutoCommandInterface) m_chosenAuto.getSelected();
+        return j.getInitialPose();
     }
 
     public Command getDriveCommand() {
