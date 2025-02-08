@@ -71,8 +71,8 @@ public class CompRobotContainer extends RobotContainer {
 
         m_driverController.rightBumper().onTrue(new MoveEndEffector(Constants.Position.STOW, m_elevator, m_pivot).andThen().finallyDo(()->m_coralMode = true));
 
-        m_driverController.a().onTrue(new MoveEndEffector(Constants.Position.L2_ALGAE, m_elevator, m_pivot).finallyDo(()->m_coralMode = false));
-        m_driverController.b().onTrue(new MoveEndEffector(Constants.Position.L3_ALGAE, m_elevator, m_pivot).finallyDo(()->m_coralMode = false));
+        // m_driverController.a().onTrue(new MoveEndEffector(Constants.Position.L2_ALGAE, m_elevator, m_pivot).finallyDo(()->m_coralMode = false));
+        // m_driverController.b().onTrue(new MoveEndEffector(Constants.Position.L3_ALGAE, m_elevator, m_pivot).finallyDo(()->m_coralMode = false));
         m_driverController.x().onTrue(new MoveEndEffector(Constants.Position.BARGE, m_elevator, m_pivot).finallyDo(()->m_coralMode = false));
 
         POVButton dpadLeft = new POVButton(m_driverController.getHID(), 270);
@@ -88,7 +88,9 @@ public class CompRobotContainer extends RobotContainer {
         dpadUp.onTrue(new MoveEndEffector(Constants.Position.L2, m_elevator, m_pivot).andThen().finallyDo(()->m_coralMode = true));
     
         // m_driverController.a().onTrue(new InstantCommand(() -> m_elevator.setHeight(SmartDashboard.getNumber("elevator/testGoal", 0))));
-        // m_driverController.b().onTrue(new InstantCommand(() -> m_pivot.setAngle(Rotation2d.fromDegrees(SmartDashboard.getNumber("pivot/testAngle", 0.0)))));
+        m_driverController.y().onTrue(new InstantCommand(() -> m_pivot.setAngle(Rotation2d.fromDegrees(SmartDashboard.getNumber("pivot/testAngle", 0.0)))));
+        m_driverController.a().whileTrue(new StartEndCommand(() -> m_pivot.run(0.1), () -> m_pivot.run(0), m_pivot));
+        m_driverController.b().whileTrue(new StartEndCommand(() -> m_pivot.run(-0.1), () -> m_pivot.run(0), m_pivot));
 
         // m_driverController.x().whileTrue(new StartEndCommand(() -> m_climber.run(0.2), m_climber::hold, m_climber));
         // m_driverController.y().whileTrue(new StartEndCommand(() -> m_climber.run(-0.2), m_climber::hold, m_climber));

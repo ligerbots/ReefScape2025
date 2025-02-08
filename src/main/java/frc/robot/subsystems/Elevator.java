@@ -76,7 +76,7 @@ public class Elevator extends SubsystemBase {
         
         // enable brake mode
         m_motor.setNeutralMode(NeutralModeValue.Brake);
-
+        
         // set slot 0 gains
         Slot0Configs slot0configs = talonFXConfigs.Slot0;
         slot0configs.kS = 0.0; // Add 0.25 V output to overcome static friction //TODO Change values 
@@ -115,9 +115,9 @@ public class Elevator extends SubsystemBase {
         double height = Units.metersToInches(getHeight());
 
         // cross check that pivot is in a good place to go low
-        if (height <= HEIGHT_LOW_RANGE && m_pivotOutsideLowRange.getAsBoolean()) {
-            setHeight(HEIGHT_LOW_RANGE);
-        }
+        // if (height <= HEIGHT_LOW_RANGE && m_pivotOutsideLowRange.getAsBoolean()) {
+        //     setHeight(HEIGHT_LOW_RANGE);
+        // }
 
         // if basically at the bottom, turn off the motor
         if (m_goalMeters < MIN_HEIGHT_TURN_OFF && height < MIN_HEIGHT_TURN_OFF) {
