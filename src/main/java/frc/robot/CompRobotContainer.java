@@ -54,8 +54,8 @@ public class CompRobotContainer extends RobotContainer {
             DriverStation.silenceJoystickConnectionWarning(true);
         }
         //these are reserved for climbing 
-        m_driverController.start().onTrue(new InstantCommand(m_driveTrain::lock, m_driveTrain));
-        m_driverController.back().onTrue(new InstantCommand(m_driveTrain::zeroHeading, m_driveTrain));
+        // m_driverController.start().onTrue(new InstantCommand(m_driveTrain::lock, m_driveTrain));
+        // m_driverController.back().onTrue(new InstantCommand(m_driveTrain::zeroHeading, m_driveTrain));
 
         
         m_driverController.leftTrigger().whileTrue(
@@ -96,8 +96,8 @@ public class CompRobotContainer extends RobotContainer {
         // m_driverController.a().whileTrue(new StartEndCommand(() -> m_pivot.run(0.1), () -> m_pivot.run(0), m_pivot));
         // m_driverController.b().whileTrue(new StartEndCommand(() -> m_pivot.run(-0.1), () -> m_pivot.run(0), m_pivot));
 
-        // m_driverController.x().whileTrue(new StartEndCommand(() -> m_climber.run(0.2), m_climber::hold, m_climber));
-        // m_driverController.y().whileTrue(new StartEndCommand(() -> m_climber.run(-0.2), m_climber::hold, m_climber));
+        m_driverController.start().whileTrue(new StartEndCommand(() -> m_climber.run(0.2), m_climber::hold, m_climber));
+        m_driverController.back().whileTrue(new StartEndCommand(() -> m_climber.run(-0.2), m_climber::hold, m_climber));
     }
 
     private void configureAutos() {
