@@ -1,8 +1,10 @@
 package frc.robot.subsystems;
 
 import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
+import com.ctre.phoenix6.configs.MotorOutputConfigs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.hardware.TalonFX;
+import com.ctre.phoenix6.signals.NeutralModeValue;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -49,6 +51,10 @@ public class Climber extends SubsystemBase {
         m_climberMotor = new TalonFX(Constants.CLIMBER_ID);
 
         TalonFXConfiguration talonFXConfigs = new TalonFXConfiguration();
+        MotorOutputConfigs mco = new MotorOutputConfigs();
+        mco.NeutralMode = NeutralModeValue.Brake;
+        talonFXConfigs.withMotorOutput(mco);
+
         CurrentLimitsConfigs currentLimits = new CurrentLimitsConfigs().withSupplyCurrentLimit(CURRENT_LIMIT);
         talonFXConfigs.withCurrentLimits(currentLimits);
         

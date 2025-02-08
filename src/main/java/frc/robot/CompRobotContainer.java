@@ -60,8 +60,8 @@ public class CompRobotContainer extends RobotContainer {
 
         m_driverController.b().onTrue(new InstantCommand(() -> m_pivot.setAngle(Rotation2d.fromDegrees(SmartDashboard.getNumber("pivot/testAngle", 0.0)))));
 
-        m_driverController.x().whileTrue(new StartEndCommand(() -> m_climber.run(0.5), m_climber::hold, m_climber));
-        m_driverController.y().whileTrue(new StartEndCommand(() -> m_climber.run(-0.5), m_climber::hold, m_climber));
+        m_driverController.x().whileTrue(new StartEndCommand(() -> m_climber.run(0.2), m_climber::hold, m_climber));
+        m_driverController.y().whileTrue(new StartEndCommand(() -> m_climber.run(-0.2), m_climber::hold, m_climber));
     }
     
     private void configureAutos() {
