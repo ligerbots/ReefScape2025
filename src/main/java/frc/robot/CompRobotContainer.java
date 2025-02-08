@@ -96,9 +96,11 @@ public class CompRobotContainer extends RobotContainer {
 
     private void configureAutos() {
         // TODO Auto-generated method stub
-        m_autoCommand = null; // new HelloWorldAuto2(m_driveTrain);
+        Pose2d[] reefPoints = {FieldConstants.REEF_J, FieldConstants.REEF_K, FieldConstants.REEF_L, FieldConstants.REEF_A};
+        m_autoCommand = new CompBotGenericAutoBase(FieldConstants.ROBOT_START_3, FieldConstants.SOURCE_2_OUT, reefPoints, m_driveTrain, m_elevator, m_coralEffector, m_pivot, true);
     }
 
+    
     public Command getAutonomousCommand() {
         return m_autoCommand;
     }
