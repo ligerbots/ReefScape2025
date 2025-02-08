@@ -108,4 +108,8 @@ public class CoralEffector extends SubsystemBase {
         if (m_state != State.HOLD)
             m_state = State.IDLE;
     }
+
+    public boolean hasCoral() {
+        return m_limitSwitch.isPressed();
+    }
 }
