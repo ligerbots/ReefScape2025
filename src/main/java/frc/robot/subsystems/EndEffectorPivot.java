@@ -106,7 +106,7 @@ public class EndEffectorPivot extends SubsystemBase {
 
         config.closedLoop.outputRange(-1, 1);
         config.closedLoop.feedbackSensor(FeedbackSensor.kAbsoluteEncoder);
-        // config.closedLoop.positionWrappingEnabled(true);
+        config.closedLoop.positionWrappingEnabled(false);  // don't treat it as a circle
         // config.closedLoop.positionWrappingInputRange(0,1.0);
 
         // Set Smart Motion and Smart Velocity parameters.
