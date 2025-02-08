@@ -6,6 +6,7 @@ package frc.robot.subsystems;
 
 import com.revrobotics.spark.config.*;
 import com.revrobotics.spark.config.ClosedLoopConfig.FeedbackSensor;
+import com.revrobotics.spark.config.MAXMotionConfig.MAXMotionPositionMode;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 
 import java.util.function.DoubleSupplier;
@@ -113,7 +114,14 @@ public class EndEffectorPivot extends SubsystemBase {
                 .maxVelocity(MAX_VEL_ROT_PER_SEC)
                 .maxAcceleration(MAX_ACC_ROT_PER_SEC2)
                 .allowedClosedLoopError(ALLOWED_ERROR);
-
+               
+        // MAXMotionConfig mmConfig = new MAXMotionConfig();
+        // mmConfig.maxVelocity(MAX_VEL_ROT_PER_SEC)
+        //             .maxAcceleration(MAX_ACC_ROT_PER_SEC2)
+        //             .allowedClosedLoopError(ALLOWED_ERROR)
+        //             .positionMode(MAXMotionPositionMode.kMAXMotionTrapezoidal);
+        // config.apply(mmConfig);
+                        
         m_motor.configure(config, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
 
         // motor encoder - set calibration and offset to match absolute encoder
