@@ -25,8 +25,8 @@ import frc.robot.Constants;
 
 public class EndEffectorPivot extends SubsystemBase {
     
-    public static final double MIN_ANGLE_DEG = Math.toRadians(0.0);
-    public static final double MAX_ANGLE_DEG = Math.toRadians(60.0);
+    public static final double MIN_ANGLE_DEG = 140.0;
+    public static final double MAX_ANGLE_DEG = 295.0;
     // NOTE: All constants were taken from the 2023 arm 
     // Note: Current values for limits are refrenced with the shooter being flat
     // facing fowards as zero.
@@ -50,7 +50,7 @@ public class EndEffectorPivot extends SubsystemBase {
     private static final double ALLOWED_ERROR = 2.0/360.0 * GEAR_RATIO;
 
     // Zero point of the absolute encoder
-    private static final double ABS_ENCODER_ZERO_OFFSET = 238.8/360.0; 
+    private static final double ABS_ENCODER_ZERO_OFFSET = (135.2+180)/360.0; 
 
     // Constants for the pivot PID controller
     private static final double K_P = 1.0;
@@ -78,10 +78,12 @@ public class EndEffectorPivot extends SubsystemBase {
         config.inverted(true);
         config.idleMode(IdleMode.kBrake);
         config.smartCurrentLimit(CURRENT_LIMIT);
-    
+
         AbsoluteEncoderConfig absEncConfig = new AbsoluteEncoderConfig();
         absEncConfig.velocityConversionFactor(1/60.0);   // convert rpm to rps
         absEncConfig.zeroOffset(ABS_ENCODER_ZERO_OFFSET);
+        absEncConfig.inverted(false);
+        absEncConfig.setSparkMaxDataPortConfig();
         config.apply(absEncConfig);
         
         // set up the PID for MAX Motion
@@ -127,6 +129,7 @@ public class EndEffectorPivot extends SubsystemBase {
         SmartDashboard.putNumber("pivot/outputCurrent", m_motor.getOutputCurrent());
         SmartDashboard.putNumber("pivot/busVoltage", m_motor.getBusVoltage());
         SmartDashboard.putBoolean("pivot/onGoal", angleWithinTolerance());
+        // SmartDashboard.putNumber("pivot/rawAbsEncoder", m_absoluteEncoder.getPosition());
 
         setCoastMode();
     }
