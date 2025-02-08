@@ -87,7 +87,7 @@ public class EndEffectorPivot extends SubsystemBase {
         m_motor = new SparkMax(Constants.END_EFFECTOR_PIVOT_CAN_ID, MotorType.kBrushless);
 
         SparkMaxConfig config = new SparkMaxConfig();
-        config.inverted(true);
+        config.inverted(false);
         config.idleMode(IdleMode.kBrake);
         config.smartCurrentLimit(CURRENT_LIMIT);
 
@@ -95,7 +95,7 @@ public class EndEffectorPivot extends SubsystemBase {
         absEncConfig.velocityConversionFactor(1/60.0);   // convert rpm to rps
         absEncConfig.zeroOffset(ABS_ENCODER_ZERO_OFFSET);
         absEncConfig.inverted(false);
-        absEncConfig.setSparkMaxDataPortConfig();
+        // absEncConfig.setSparkMaxDataPortConfig();
         config.apply(absEncConfig);
         
         // set up the PID for MAX Motion
@@ -103,8 +103,8 @@ public class EndEffectorPivot extends SubsystemBase {
 
         config.closedLoop.outputRange(-1, 1);
         config.closedLoop.feedbackSensor(FeedbackSensor.kAbsoluteEncoder);
-        config.closedLoop.positionWrappingEnabled(true);
-        config.closedLoop.positionWrappingInputRange(0,1.0);
+        // config.closedLoop.positionWrappingEnabled(true);
+        // config.closedLoop.positionWrappingInputRange(0,1.0);
 
         // Set Smart Motion and Smart Velocity parameters.
         config.closedLoop.maxMotion
@@ -137,18 +137,25 @@ public class EndEffectorPivot extends SubsystemBase {
     public void periodic() {
         // Display current values on the SmartDashboard
         // This also gets logged to the log file on the Rio and aids in replaying a match
+        SmartDashboard.putNumber("pivot/goal", m_goal.getDegrees());
         SmartDashboard.putNumber("pivot/absoluteEncoder", getAngle().getDegrees());
         SmartDashboard.putNumber("pivot/outputCurrent", m_motor.getOutputCurrent());
         SmartDashboard.putNumber("pivot/busVoltage", m_motor.getBusVoltage());
         SmartDashboard.putBoolean("pivot/onGoal", angleWithinTolerance());
+        SmartDashboard.putNumber("pivot/appliedOutput", m_motor.getAppliedOutput());
+        // SmartDashboard.
         // SmartDashboard.putNumber("pivot/rawAbsEncoder", m_absoluteEncoder.getPosition());
 
-        setCoastMode();
+        // setCoastMode();
     }
 
     // get the current pivot angle
     public Rotation2d getAngle() {
         return Rotation2d.fromRotations(m_absoluteEncoder.getPosition());
+    }
+
+    public void run(double speed) {
+        m_motor.set(speed);
     }
 
     // set shooterPivot angle
@@ -172,14 +179,14 @@ public class EndEffectorPivot extends SubsystemBase {
         double angle = getAngle().getDegrees();
         return angle <= MIN_ANGLE_LOW_DEG || angle >= MAX_ANGLE_LOW_DEG;
     }
-    
+
     // needs to be public so that commands can get the restricted angle
     public Rotation2d limitPivotAngle(Rotation2d angle) {
         double angleClamped;
-        if (m_elevatorHeight.getAsDouble() <= Elevator.HEIGHT_LOW_RANGE)
+        // if (m_elevatorHeight.getAsDouble() <= Elevator.HEIGHT_LOW_RANGE)
             angleClamped = MathUtil.clamp(angle.getDegrees(), MIN_ANGLE_LOW_DEG, MAX_ANGLE_LOW_DEG);
-        else
-            angleClamped = MathUtil.clamp(angle.getDegrees(), MIN_ANGLE_HIGH_DEG, MAX_ANGLE_HIGH_DEG);
+        // else
+        //     angleClamped = MathUtil.clamp(angle.getDegrees(), MIN_ANGLE_HIGH_DEG, MAX_ANGLE_HIGH_DEG);
 
         return Rotation2d.fromDegrees(angleClamped);
     }
