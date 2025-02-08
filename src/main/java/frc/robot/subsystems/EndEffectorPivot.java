@@ -61,7 +61,7 @@ public class EndEffectorPivot extends SubsystemBase {
     private static final double ABS_ENCODER_ZERO_OFFSET = (135.2+180)/360.0; 
 
     // Constants for the pivot PID controller
-    private static final double K_P = 1.0;
+    private static final double K_P = 2.5;
     private static final double K_I = 0.0;
     private static final double K_D = 0.0;
     private static final double K_FF = 0.0;
@@ -87,7 +87,7 @@ public class EndEffectorPivot extends SubsystemBase {
         m_motor = new SparkMax(Constants.END_EFFECTOR_PIVOT_CAN_ID, MotorType.kBrushless);
 
         SparkMaxConfig config = new SparkMaxConfig();
-        config.inverted(false);
+        config.inverted(true);
         config.idleMode(IdleMode.kBrake);
         config.smartCurrentLimit(CURRENT_LIMIT);
 
@@ -99,7 +99,9 @@ public class EndEffectorPivot extends SubsystemBase {
         config.apply(absEncConfig);
         
         // set up the PID for MAX Motion
-        config.closedLoop.pidf(K_P, K_I, K_D, K_FF);
+        // config.closedLoop.pidf(K_P, K_I, K_D, K_FF);
+        config.closedLoop.p(K_P).i(K_I).d(K_D);
+        //  K_FF);
 
         config.closedLoop.outputRange(-1, 1);
         config.closedLoop.feedbackSensor(FeedbackSensor.kAbsoluteEncoder);
@@ -143,7 +145,6 @@ public class EndEffectorPivot extends SubsystemBase {
         SmartDashboard.putNumber("pivot/busVoltage", m_motor.getBusVoltage());
         SmartDashboard.putBoolean("pivot/onGoal", angleWithinTolerance());
         SmartDashboard.putNumber("pivot/appliedOutput", m_motor.getAppliedOutput());
-        // SmartDashboard.
         // SmartDashboard.putNumber("pivot/rawAbsEncoder", m_absoluteEncoder.getPosition());
 
         // setCoastMode();
@@ -161,7 +162,8 @@ public class EndEffectorPivot extends SubsystemBase {
     // set shooterPivot angle
     public void setAngle(Rotation2d angle) {
         m_goal = limitPivotAngle(angle);
-        m_controller.setReference(m_goal.getRotations(), SparkBase.ControlType.kMAXMotionPositionControl);
+        // m_controller.setReference(m_goal.getRotations(), SparkBase.ControlType.kMAXMotionPositionControl);
+        m_controller.setReference(m_goal.getRotations(), SparkBase.ControlType.kPosition);
         SmartDashboard.putNumber("pivot/goal", m_goal.getDegrees());
     }
     
