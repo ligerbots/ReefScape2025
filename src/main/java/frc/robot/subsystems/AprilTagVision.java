@@ -118,16 +118,30 @@ public class AprilTagVision extends SubsystemBase {
         // initialize cameras
         m_cameras = new Camera[2];
 
-        m_cameras[Cam.FRONT.idx] = new Camera("ArducamFront", new Transform3d(
-            new Translation3d(Units.inchesToMeters(14.5), 0, Units.inchesToMeters(11.75)),
-            new Rotation3d(0.0, Math.toRadians(0.0), 0.0)
+        // Kitbot
+        // m_cameras[Cam.FRONT.idx] = new Camera("ArducamFront", new Transform3d(
+        //     new Translation3d(Units.inchesToMeters(14.5), 0, Units.inchesToMeters(11.75)),
+        //     new Rotation3d(0.0, Math.toRadians(0.0), 0.0)
+        // ));
+
+        // m_cameras[Cam.BACK.idx] = new Camera("ArducamBack", new Transform3d(
+        //     new Translation3d(Units.inchesToMeters(-(27.5/2 - 1.0)), 0, Units.inchesToMeters(17.0)),
+        //     new Rotation3d(0.0, Math.toRadians(0.0), Math.toRadians(180.0))
+        // ));
+        
+        // Comp Feb 8
+        m_cameras[Cam.FRONT.idx] = new Camera("ArducamBack", new Transform3d(
+            new Translation3d(Units.inchesToMeters(10.1), -11.2, Units.inchesToMeters(9.5)),
+            new Rotation3d(0.0, Math.toRadians(-28.0), 0)
+                .rotateBy(new Rotation3d(0, 0, Math.toRadians(-63.8)))
         ));
 
-        m_cameras[Cam.BACK.idx] = new Camera("ArducamBack", new Transform3d(
-            new Translation3d(Units.inchesToMeters(-(27.5/2 - 1.0)), 0, Units.inchesToMeters(17.0)),
-            new Rotation3d(0.0, Math.toRadians(0.0), Math.toRadians(180.0))
-        ));
-        
+        m_cameras[Cam.BACK.idx] = new Camera("ArducamFront", new Transform3d(
+            new Translation3d(Units.inchesToMeters(-11.2), 10.1, Units.inchesToMeters(9.5)),
+            new Rotation3d(0.0, Math.toRadians(-28.0), 0)
+                .rotateBy(new Rotation3d(0, 0, Math.toRadians(180-63.8)))
+            ));
+
         if (Constants.SIMULATION_SUPPORT) {
             // initialize a simulated camera. Must be done after creating the tag layout
             initializeSimulation();
