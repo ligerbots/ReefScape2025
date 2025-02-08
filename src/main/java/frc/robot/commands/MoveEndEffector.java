@@ -64,7 +64,7 @@ public class MoveEndEffector extends Command {
         }
     };
     
-    public MoveEndEffector(Elevator elevator, EndEffectorPivot pivot, Constants.Position position) {
+    public MoveEndEffector(Constants.Position position, Elevator elevator, EndEffectorPivot pivot) {
         m_pivot = pivot;
         m_elevator = elevator;
         m_position = position;

@@ -72,23 +72,23 @@ public class CompRobotContainer extends RobotContainer {
                 new StartEndCommand(m_algaeEffector::scoreBarge, m_algaeEffector::stop, m_algaeEffector), 
                 ()->m_coralMode));
 
-        m_driverController.rightBumper().onTrue(new MoveEndEffector(m_elevator, m_pivot, Constants.Position.STOW).andThen().finallyDo(()->m_coralMode = true));
+        m_driverController.rightBumper().onTrue(new MoveEndEffector(Constants.Position.STOW, m_elevator, m_pivot).andThen().finallyDo(()->m_coralMode = true));
 
-        m_driverController.a().onTrue(new MoveEndEffector(m_elevator, m_pivot, Constants.Position.L2_ALGAE).finallyDo(()->m_coralMode = false));
-        m_driverController.b().onTrue(new MoveEndEffector(m_elevator, m_pivot, Constants.Position.L3_ALGAE).finallyDo(()->m_coralMode = false));
-        m_driverController.x().onTrue(new MoveEndEffector(m_elevator, m_pivot, Constants.Position.BARGE).finallyDo(()->m_coralMode = false));
+        m_driverController.a().onTrue(new MoveEndEffector(Constants.Position.L2_ALGAE, m_elevator, m_pivot).finallyDo(()->m_coralMode = false));
+        m_driverController.b().onTrue(new MoveEndEffector(Constants.Position.L3_ALGAE, m_elevator, m_pivot).finallyDo(()->m_coralMode = false));
+        m_driverController.x().onTrue(new MoveEndEffector(Constants.Position.BARGE, m_elevator, m_pivot).finallyDo(()->m_coralMode = false));
 
         POVButton dpadLeft = new POVButton(m_driverController.getHID(), 270);
-        dpadLeft.onTrue(new MoveEndEffector(m_elevator, m_pivot, Constants.Position.L4).finallyDo(()->m_coralMode = true));
+        dpadLeft.onTrue(new MoveEndEffector(Constants.Position.L4, m_elevator, m_pivot).finallyDo(()->m_coralMode = true));
         
         POVButton dpadRight = new POVButton(m_driverController.getHID(), 90);
-        dpadRight.onTrue(new MoveEndEffector(m_elevator, m_pivot, Constants.Position.BACK_INTAKE).finallyDo(()->m_coralMode = true));
+        dpadRight.onTrue(new MoveEndEffector(Constants.Position.BACK_INTAKE, m_elevator, m_pivot).finallyDo(()->m_coralMode = true));
 
         POVButton dpadDown = new POVButton(m_driverController.getHID(), 180);
-        dpadDown.onTrue(new MoveEndEffector(m_elevator, m_pivot, Constants.Position.L3).finallyDo(()->m_coralMode = true));
+        dpadDown.onTrue(new MoveEndEffector(Constants.Position.L3, m_elevator, m_pivot).finallyDo(()->m_coralMode = true));
 
         POVButton dpadUp = new POVButton(m_driverController.getHID(), 0);
-        dpadUp.onTrue(new MoveEndEffector(m_elevator, m_pivot, Constants.Position.L2).andThen().finallyDo(()->m_coralMode = true));
+        dpadUp.onTrue(new MoveEndEffector(Constants.Position.L2, m_elevator, m_pivot).andThen().finallyDo(()->m_coralMode = true));
     
         // m_driverController.a().onTrue(new InstantCommand(() -> m_elevator.setHeight(SmartDashboard.getNumber("elevator/testGoal", 0))));
         // m_driverController.b().onTrue(new InstantCommand(() -> m_pivot.setAngle(Rotation2d.fromDegrees(SmartDashboard.getNumber("pivot/testAngle", 0.0)))));
