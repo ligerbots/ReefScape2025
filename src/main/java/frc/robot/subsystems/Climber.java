@@ -49,7 +49,8 @@ public class Climber extends SubsystemBase {
     
     public Climber() {
         m_climberMotor = new TalonFX(Constants.CLIMBER_ID);
-
+        m_climberMotor.setInverted(true);
+        
         TalonFXConfiguration talonFXConfigs = new TalonFXConfiguration();
         MotorOutputConfigs mco = new MotorOutputConfigs();
         mco.NeutralMode = NeutralModeValue.Brake;
