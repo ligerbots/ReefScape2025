@@ -72,8 +72,8 @@ public class CompRobotContainer extends RobotContainer {
 
         m_driverController.rightBumper().onTrue(new MoveEndEffector(Constants.Position.STOW, m_elevator, m_pivot).andThen().finallyDo(()->m_coralMode = true));
 
-        // m_driverController.a().onTrue(new MoveEndEffector(Constants.Position.L2_ALGAE, m_elevator, m_pivot).finallyDo(()->m_coralMode = false));
-        // m_driverController.b().onTrue(new MoveEndEffector(Constants.Position.L3_ALGAE, m_elevator, m_pivot).finallyDo(()->m_coralMode = false));
+        m_driverController.a().onTrue(new MoveEndEffector(Constants.Position.L2_ALGAE, m_elevator, m_pivot).finallyDo(()->m_coralMode = false));
+        m_driverController.b().onTrue(new MoveEndEffector(Constants.Position.L3_ALGAE, m_elevator, m_pivot).finallyDo(()->m_coralMode = false));
         m_driverController.x().onTrue(new MoveEndEffector(Constants.Position.BARGE, m_elevator, m_pivot).withTimeout(2).finallyDo(()->m_coralMode = false));
 
         POVButton dpadLeft = new POVButton(m_driverController.getHID(), 270);
@@ -88,8 +88,8 @@ public class CompRobotContainer extends RobotContainer {
         POVButton dpadUp = new POVButton(m_driverController.getHID(), 0);
         dpadUp.onTrue(new MoveEndEffector(Constants.Position.L2, m_elevator, m_pivot).withTimeout(2).andThen().finallyDo(()->m_coralMode = true));
     
-        m_driverController.a().onTrue(new InstantCommand(() -> m_elevator.setHeight(Units.inchesToMeters(SmartDashboard.getNumber("elevator/testGoal", 0)))));
-        m_driverController.b().onTrue(new InstantCommand(() -> m_pivot.setAngle(Rotation2d.fromDegrees(SmartDashboard.getNumber("pivot/testAngle", 0.0)))));
+        // m_driverController.a().onTrue(new InstantCommand(() -> m_elevator.setHeight(Units.inchesToMeters(SmartDashboard.getNumber("elevator/testGoal", 0)))));
+        // m_driverController.b().onTrue(new InstantCommand(() -> m_pivot.setAngle(Rotation2d.fromDegrees(SmartDashboard.getNumber("pivot/testAngle", 0.0)))));
         
         m_driverController.leftBumper().onTrue(new InstantCommand(()-> m_coralMode = ! m_coralMode));
 

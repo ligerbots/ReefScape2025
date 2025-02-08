@@ -29,7 +29,7 @@ import frc.robot.Constants;
 
 public class EndEffectorPivot extends SubsystemBase {
     
-    private static final double MIN_ANGLE_LOW_DEG = 140.0;
+    private static final double MIN_ANGLE_LOW_DEG = 130.0;
     private static final double MAX_ANGLE_LOW_DEG = 325.0;
 
     private static final double MIN_ANGLE_HIGH_DEG = 140.0;

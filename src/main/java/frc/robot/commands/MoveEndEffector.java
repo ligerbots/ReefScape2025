@@ -8,6 +8,7 @@ import java.util.HashMap;
 
 import edu.wpi.first.math.Pair;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Constants;
 import frc.robot.Constants.Position;
@@ -24,29 +25,29 @@ public class MoveEndEffector extends Command {
     Constants.Position m_position;
     
     public static final double L1_ANGLE = 180.0;
-    public static final double L1_HEIGHT = 0.0;
-    public static final double L2_ANGLE = 305.0;
-    public static final double L2_HEIGHT = 12.0;
-    public static final double L3_ANGLE = 305.0;
-    public static final double L3_HEIGHT = 28.0;
-    public static final double L4_ANGLE = 310.0;
-    public static final double L4_HEIGHT = 59.0;
+    public static final double L1_HEIGHT = Units.inchesToMeters(0.0);
+    public static final double L2_ANGLE = 275;
+    public static final double L2_HEIGHT = Units.inchesToMeters(0);
+    public static final double L3_ANGLE = 275;
+    public static final double L3_HEIGHT = Units.inchesToMeters(16.0);
+    public static final double L4_ANGLE = 315.0;
+    public static final double L4_HEIGHT = Units.inchesToMeters(58.0);
     
     public static final double STOW_ANGLE = 138.0;
     public static final double STOW_HEIGHT = 0.0;
     
-    public static final double BARGE_HEIGHT = 60.0;
-    public static final double BARGE_ANGLE = 310.0;
+    public static final double BARGE_HEIGHT = Units.inchesToMeters(62.0);
+    public static final double BARGE_ANGLE = 300.0;
     
-    public static final double FRONT_INTAKE_HEIGHT = 0.0;
-    public static final double FRONT_INTAKE_ANGLE = 180.0;
-    public static final double BACK_INTAKE_HEIGHT = 0.0;
-    public static final double BACK_INTAKE_ANGLE = 180.0;
+    public static final double FRONT_INTAKE_HEIGHT = 0;
+    public static final double FRONT_INTAKE_ANGLE = 250;
+    public static final double BACK_INTAKE_HEIGHT = Units.inchesToMeters(4);
+    public static final double BACK_INTAKE_ANGLE = 125.0;
     
-    public static final double L2_ALGAE_HEIGHT= 0.0;
-    public static final double L2_ALGAE_ANGLE = 180.0;
+    public static final double L2_ALGAE_HEIGHT= Units.inchesToMeters(0);
+    public static final double L2_ALGAE_ANGLE = 325.0;
     
-    public static final double L3_ALGAE_HEIGHT= 21.0;
+    public static final double L3_ALGAE_HEIGHT= Units.inchesToMeters(21.0);
     public static final double L3_ALGAE_ANGLE = 325.0;    
     
     private static final HashMap<Position, Pair<Double, Double>> POSITIONS = new HashMap<Position, Pair<Double, Double>>(){
