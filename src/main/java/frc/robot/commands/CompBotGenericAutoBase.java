@@ -40,7 +40,7 @@ public class CompBotGenericAutoBase extends AutoCommandInterface {
                 addCommands(new WaitCommand(.2)); // wait a beat to finish scoring before driving away
 
                 addCommands(m_driveTrain.followPath(PathFactory.getPath(reefPoints[0], sourcePoint, isProcessorSide)));
-                addCommands(new InstantCommand(coralEffector::runIntake));
+                addCommands(new InstantCommand(coralEffector::runIntake).until(coralEffector::hasCoral));
                 addCommands(new WaitCommand(.75));
                 
                 addCommands(m_driveTrain.followPath(PathFactory.getPath(sourcePoint, reefPoints[1], isProcessorSide)));
