@@ -24,30 +24,30 @@ public class MoveEndEffector extends Command {
     Constants.Position m_position;
     
     public static final double L1_ANGLE = 180.0;
-    public static final double L1_HEIGHT = 1.0;
-    public static final double L2_ANGLE = 180.0;
-    public static final double L2_HEIGHT = 1.0;
-    public static final double L3_ANGLE = 180.0;
-    public static final double L3_HEIGHT = 1.0;
-    public static final double L4_ANGLE = 180.0;
-    public static final double L4_HEIGHT = 1.0;
+    public static final double L1_HEIGHT = 0.0;
+    public static final double L2_ANGLE = 305.0;
+    public static final double L2_HEIGHT = 12.0;
+    public static final double L3_ANGLE = 305.0;
+    public static final double L3_HEIGHT = 28.0;
+    public static final double L4_ANGLE = 310.0;
+    public static final double L4_HEIGHT = 59.0;
     
-    public static final double STOW_ANGLE = 180.0;
-    public static final double STOW_HEIGHT = 1.0;
+    public static final double STOW_ANGLE = 138.0;
+    public static final double STOW_HEIGHT = 0.0;
     
-    public static final double BARGE_HEIGHT = 1.0;
-    public static final double BARGE_ANGLE = 180.0;
+    public static final double BARGE_HEIGHT = 60.0;
+    public static final double BARGE_ANGLE = 310.0;
     
-    public static final double FRONT_INTAKE_HEIGHT = 1.0;
+    public static final double FRONT_INTAKE_HEIGHT = 0.0;
     public static final double FRONT_INTAKE_ANGLE = 180.0;
-    public static final double BACK_INTAKE_HEIGHT = 1.0;
+    public static final double BACK_INTAKE_HEIGHT = 0.0;
     public static final double BACK_INTAKE_ANGLE = 180.0;
     
-    public static final double L2_ALGAE_HEIGHT= 1.0;
+    public static final double L2_ALGAE_HEIGHT= 0.0;
     public static final double L2_ALGAE_ANGLE = 180.0;
     
-    public static final double L3_ALGAE_HEIGHT= 1.0;
-    public static final double L3_ALGAE_ANGLE = 180.0;    
+    public static final double L3_ALGAE_HEIGHT= 21.0;
+    public static final double L3_ALGAE_ANGLE = 325.0;    
     
     private static final HashMap<Position, Pair<Double, Double>> POSITIONS = new HashMap<Position, Pair<Double, Double>>(){
         {
