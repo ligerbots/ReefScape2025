@@ -4,6 +4,10 @@
 
 package frc.robot.subsystems;
 
+import java.util.function.BooleanSupplier;
+import java.util.function.DoubleSupplier;
+import java.util.function.Supplier;
+
 import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
 import com.ctre.phoenix6.configs.MotionMagicConfigs;
 import com.ctre.phoenix6.configs.Slot0Configs;
@@ -22,7 +26,8 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 
 public class Elevator extends SubsystemBase {
-    
+    public static final double HEIGHT_LOW_RANGE = Units.inchesToMeters(5.0);
+
     private static final double GEAR_REDUCTION = 15.0;  // 15:1 planetary
     // diameter of final 18 tooth gear
     private static final double FINAL_GEAR_DIAMETER = Units.inchesToMeters(1.504);  // TODO fix me
@@ -61,6 +66,8 @@ public class Elevator extends SubsystemBase {
     // height goal in meters
     private double m_goalMeters = 0;
     
+    private BooleanSupplier m_pivotOutsideLowRange = null;
+
     /** Creates a new Elevator. */
     public Elevator() {
         m_motor = new TalonFX(Constants.ELEVATOR_CAN_ID);
@@ -99,9 +106,20 @@ public class Elevator extends SubsystemBase {
         zeroElevator();
     }
     
+    public void setPivotCheckSupplier(BooleanSupplier pa) {
+        m_pivotOutsideLowRange = pa;
+    }
+
     @Override
     public void periodic() {
         double height = Units.metersToInches(getHeight());
+
+        // cross check that pivot is in a good place to go low
+        if (height <= HEIGHT_LOW_RANGE && m_pivotOutsideLowRange.getAsBoolean()) {
+            setHeight(HEIGHT_LOW_RANGE);
+        }
+
+        // if basically at the bottom, turn off the motor
         if (m_goalMeters < MIN_HEIGHT_TURN_OFF && height < MIN_HEIGHT_TURN_OFF) {
             m_motor.setControl(new VoltageOut(0));
         }
