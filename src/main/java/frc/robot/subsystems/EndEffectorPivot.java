@@ -86,7 +86,7 @@ public class EndEffectorPivot extends SubsystemBase {
         m_elevatorHeight = elevatorHeight;
         
         m_motor = new SparkMax(Constants.END_EFFECTOR_PIVOT_CAN_ID, MotorType.kBrushless);
-
+        
         SparkMaxConfig config = new SparkMaxConfig();
         config.inverted(true);
         config.idleMode(IdleMode.kBrake);
@@ -100,27 +100,17 @@ public class EndEffectorPivot extends SubsystemBase {
         config.apply(absEncConfig);
         
         // set up the PID for MAX Motion
-        // config.closedLoop.pidf(K_P, K_I, K_D, K_FF);
-        config.closedLoop.p(K_P).i(K_I).d(K_D);
-        //  K_FF);
-
+        config.closedLoop.pidf(K_P, K_I, K_D, K_FF);
         config.closedLoop.outputRange(-1, 1);
         config.closedLoop.feedbackSensor(FeedbackSensor.kAbsoluteEncoder);
         config.closedLoop.positionWrappingEnabled(false);  // don't treat it as a circle
-        // config.closedLoop.positionWrappingInputRange(0,1.0);
 
-        // Set Smart Motion and Smart Velocity parameters.
+        // Set MAXMotion parameters
         config.closedLoop.maxMotion
                 .maxVelocity(MAX_VEL_ROT_PER_SEC)
                 .maxAcceleration(MAX_ACC_ROT_PER_SEC2)
-                .allowedClosedLoopError(ALLOWED_ERROR);
-               
-        // MAXMotionConfig mmConfig = new MAXMotionConfig();
-        // mmConfig.maxVelocity(MAX_VEL_ROT_PER_SEC)
-        //             .maxAcceleration(MAX_ACC_ROT_PER_SEC2)
-        //             .allowedClosedLoopError(ALLOWED_ERROR)
-        //             .positionMode(MAXMotionPositionMode.kMAXMotionTrapezoidal);
-        // config.apply(mmConfig);
+                .allowedClosedLoopError(ALLOWED_ERROR)
+                .positionMode(MAXMotionPositionMode.kMAXMotionTrapezoidal);
                         
         m_motor.configure(config, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
 
@@ -153,9 +143,6 @@ public class EndEffectorPivot extends SubsystemBase {
         SmartDashboard.putNumber("pivot/busVoltage", m_motor.getBusVoltage());
         SmartDashboard.putBoolean("pivot/onGoal", angleWithinTolerance());
         SmartDashboard.putNumber("pivot/appliedOutput", m_motor.getAppliedOutput());
-        // SmartDashboard.putNumber("pivot/rawAbsEncoder", m_absoluteEncoder.getPosition());
-
-        // setCoastMode();
     }
 
     // get the current pivot angle
@@ -170,8 +157,8 @@ public class EndEffectorPivot extends SubsystemBase {
     // set shooterPivot angle
     public void setAngle(Rotation2d angle) {
         m_goal = limitPivotAngle(angle);
-        // m_controller.setReference(m_goal.getRotations(), SparkBase.ControlType.kMAXMotionPositionControl);
-        m_controller.setReference(m_goal.getRotations(), SparkBase.ControlType.kPosition);
+        m_controller.setReference(m_goal.getRotations(), SparkBase.ControlType.kMAXMotionPositionControl);
+        // m_controller.setReference(m_goal.getRotations(), SparkBase.ControlType.kPosition);
         SmartDashboard.putNumber("pivot/goal", m_goal.getDegrees());
     }
     
