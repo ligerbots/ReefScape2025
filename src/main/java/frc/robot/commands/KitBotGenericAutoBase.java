@@ -8,16 +8,12 @@ import com.pathplanner.lib.path.PathPlannerPath;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj2.command.StartEndCommand;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.FieldConstants;
 import frc.robot.PathFactory;
 import frc.robot.subsystems.DriveTrain;
 import frc.robot.subsystems.kitbot.KitbotRoller;
 
-// NOTE:  Consider using this command inline, rather than writing a subclass.  For more
-// information, see:
-// https://docs.wpilib.org/en/stable/docs/software/commandbased/convenience-features.html
 public class KitBotGenericAutoBase extends AutoCommandInterface {
     private DriveTrain m_driveTrain;
     private Pose2d m_initPose;
