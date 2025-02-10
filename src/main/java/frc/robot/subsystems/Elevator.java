@@ -4,12 +4,18 @@
 
 package frc.robot.subsystems;
 
+import java.util.function.BooleanSupplier;
+import java.util.function.DoubleSupplier;
+import java.util.function.Supplier;
+
 import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
 import com.ctre.phoenix6.configs.MotionMagicConfigs;
 import com.ctre.phoenix6.configs.Slot0Configs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.MotionMagicVoltage;
+import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.TalonFX;
+import com.ctre.phoenix6.signals.NeutralModeValue;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.util.Units;
@@ -20,7 +26,8 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 
 public class Elevator extends SubsystemBase {
-    
+    public static final double HEIGHT_LOW_RANGE = Units.inchesToMeters(5.0);
+
     private static final double GEAR_REDUCTION = 15.0;  // 15:1 planetary
     // diameter of final 18 tooth gear
     private static final double FINAL_GEAR_DIAMETER = Units.inchesToMeters(1.504);  // TODO fix me
@@ -34,18 +41,19 @@ public class Elevator extends SubsystemBase {
     // Tolerance for commands
     private static final double LENGTH_TOLERANCE_METERS = Units.inchesToMeters(0.5);
 
+    private static final double MIN_HEIGHT_TURN_OFF = Units.inchesToMeters(1.0);
+
     // TODO set to good values
-    private static final double MAX_VEL_METER_PER_SEC = Units.inchesToMeters(70.0);
-    private static final double MAX_ACC_METER_PER_SEC_SQ = Units.inchesToMeters(100.0);
+    private static final double MAX_VEL_METER_PER_SEC = Units.inchesToMeters(90.0);
+    private static final double MAX_ACC_METER_PER_SEC_SQ = Units.inchesToMeters(110.0);
     private static final double MAX_JERK_METER_PER_SEC3 = Units.inchesToMeters(1000.0);
     
     private static final int CURRENT_LIMIT = 30;
     
     private static final double OFFSET_METER = 0.0;
-    
-    // private static final double ADJUSTMENT_STEP = 1.0;
-    
-    // // initializing Potentiometer
+
+    private static final double STATIC_VOLTAGE = 0.6;
+  
     // private final int POTENTIOMETER_CHANNEL = 2; //TODO: Update with actual value
     // private final double POTENTIOMETER_RANGE_METERS = -2.625; // meters, the string potentiometer on takes in range in integers TODO: update to correct value
     // private final double POTENTIOMETER_OFFSET = 2.51; //TODO: Find inital value and update
@@ -58,15 +66,20 @@ public class Elevator extends SubsystemBase {
     // height goal in meters
     private double m_goalMeters = 0;
     
+    private BooleanSupplier m_pivotOutsideLowRange = null;
+
     /** Creates a new Elevator. */
     public Elevator() {
         m_motor = new TalonFX(Constants.ELEVATOR_CAN_ID);
 
         TalonFXConfiguration talonFXConfigs = new TalonFXConfiguration();
         
+        // enable brake mode
+        m_motor.setNeutralMode(NeutralModeValue.Brake);
+        
         // set slot 0 gains
         Slot0Configs slot0configs = talonFXConfigs.Slot0;
-        slot0configs.kS = 0.0; // Add 0.25 V output to overcome static friction //TODO Change values 
+        slot0configs.kS = STATIC_VOLTAGE;  // overcome gravity
         slot0configs.kV = 0.0; // A velocity target of 1 rps results in 0.12 V output
         slot0configs.kA = 0.0; // An acceleration of 1 rps/s requires 0.01 V output
         // m_slot0configs.kP = 4.8; // A position error of 2.5 rotations results in 12 V output
@@ -93,9 +106,25 @@ public class Elevator extends SubsystemBase {
         zeroElevator();
     }
     
+    public void setPivotCheckSupplier(BooleanSupplier pa) {
+        m_pivotOutsideLowRange = pa;
+    }
+
     @Override
     public void periodic() {
-        SmartDashboard.putNumber("elevator/height", Units.metersToInches(getHeight()));
+        double height = Units.metersToInches(getHeight());
+
+        // cross check that pivot is in a good place to go low
+        // if (height <= HEIGHT_LOW_RANGE && m_pivotOutsideLowRange.getAsBoolean()) {
+        //     setHeight(HEIGHT_LOW_RANGE);
+        // }
+
+        // if basically at the bottom, turn off the motor
+        if (m_goalMeters < MIN_HEIGHT_TURN_OFF && height < MIN_HEIGHT_TURN_OFF) {
+            m_motor.setControl(new VoltageOut(0));
+        }
+
+        SmartDashboard.putNumber("elevator/height", height);
         SmartDashboard.putBoolean("elevator/onGoal", lengthWithinTolerance());
         SmartDashboard.putNumber("elevator/currentGoal", 
             Units.metersToInches(rotationsToHeight(m_motor.getClosedLoopReference().getValueAsDouble())));

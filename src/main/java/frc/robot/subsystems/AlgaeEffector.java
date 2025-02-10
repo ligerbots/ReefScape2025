@@ -107,6 +107,10 @@ public class AlgaeEffector extends SubsystemBase {
         m_state = State.BARGE;
     }
 
+    public void setHold(){
+        m_state = State.HOLD;
+    }
+
     public void scoreProcessor() {
         m_state = State.PROCESSOR;
     }

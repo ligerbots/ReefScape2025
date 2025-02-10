@@ -6,7 +6,11 @@ package frc.robot.subsystems;
 
 import com.revrobotics.spark.config.*;
 import com.revrobotics.spark.config.ClosedLoopConfig.FeedbackSensor;
+import com.revrobotics.spark.config.MAXMotionConfig.MAXMotionPositionMode;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
+
+import java.util.function.DoubleSupplier;
+
 import com.revrobotics.sim.SparkAbsoluteEncoderSim;
 import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.SparkAbsoluteEncoder;
@@ -18,6 +22,7 @@ import com.revrobotics.spark.SparkLowLevel.MotorType;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
@@ -25,8 +30,12 @@ import frc.robot.Constants;
 
 public class EndEffectorPivot extends SubsystemBase {
     
-    public static final double MIN_ANGLE_DEG = Math.toRadians(0.0);
-    public static final double MAX_ANGLE_DEG = Math.toRadians(60.0);
+    private static final double MIN_ANGLE_LOW_DEG = 130.0;
+    private static final double MAX_ANGLE_LOW_DEG = 325.0;
+
+    private static final double MIN_ANGLE_HIGH_DEG = 140.0;
+    private static final double MAX_ANGLE_HIGH_DEG = 295.0;
+
     // NOTE: All constants were taken from the 2023 arm 
     // Note: Current values for limits are refrenced with the shooter being flat
     // facing fowards as zero.
@@ -34,6 +43,7 @@ public class EndEffectorPivot extends SubsystemBase {
     public static final double ANGLE_TOLERANCE_DEG = 1.0;
 
     private static final int CURRENT_LIMIT = 30;
+
 
     // position constants for commands
     // private static final double ADJUSTMENT_STEP = Math.toRadians(1.0);
@@ -49,10 +59,10 @@ public class EndEffectorPivot extends SubsystemBase {
     private static final double ALLOWED_ERROR = 2.0/360.0 * GEAR_RATIO;
 
     // Zero point of the absolute encoder
-    private static final double ABS_ENCODER_ZERO_OFFSET = 238.8/360.0; 
+    private static final double ABS_ENCODER_ZERO_OFFSET = (135.2+180)/360.0; 
 
     // Constants for the pivot PID controller
-    private static final double K_P = 1.0;
+    private static final double K_P = 2.5;
     private static final double K_I = 0.0;
     private static final double K_D = 0.0;
     private static final double K_FF = 0.0;
@@ -69,34 +79,49 @@ public class EndEffectorPivot extends SubsystemBase {
     // adjustment offset. Starts at 0, but retained throughout a match
     // private double m_angleAdjustment = Math.toRadians(0.0);
 
+    private final DoubleSupplier m_elevatorHeight;
+
     // Construct a new shooterPivot subsystem
-    public EndEffectorPivot() {
+    public EndEffectorPivot(DoubleSupplier elevatorHeight) {
+        m_elevatorHeight = elevatorHeight;
+        
         m_motor = new SparkMax(Constants.END_EFFECTOR_PIVOT_CAN_ID, MotorType.kBrushless);
 
         SparkMaxConfig config = new SparkMaxConfig();
         config.inverted(true);
         config.idleMode(IdleMode.kBrake);
         config.smartCurrentLimit(CURRENT_LIMIT);
-    
+
         AbsoluteEncoderConfig absEncConfig = new AbsoluteEncoderConfig();
         absEncConfig.velocityConversionFactor(1/60.0);   // convert rpm to rps
         absEncConfig.zeroOffset(ABS_ENCODER_ZERO_OFFSET);
+        absEncConfig.inverted(false);
+        // absEncConfig.setSparkMaxDataPortConfig();
         config.apply(absEncConfig);
         
         // set up the PID for MAX Motion
-        config.closedLoop.pidf(K_P, K_I, K_D, K_FF);
+        // config.closedLoop.pidf(K_P, K_I, K_D, K_FF);
+        config.closedLoop.p(K_P).i(K_I).d(K_D);
+        //  K_FF);
 
         config.closedLoop.outputRange(-1, 1);
         config.closedLoop.feedbackSensor(FeedbackSensor.kAbsoluteEncoder);
-        config.closedLoop.positionWrappingEnabled(true);
-        config.closedLoop.positionWrappingInputRange(0,1.0);
+        config.closedLoop.positionWrappingEnabled(false);  // don't treat it as a circle
+        // config.closedLoop.positionWrappingInputRange(0,1.0);
 
         // Set Smart Motion and Smart Velocity parameters.
         config.closedLoop.maxMotion
                 .maxVelocity(MAX_VEL_ROT_PER_SEC)
                 .maxAcceleration(MAX_ACC_ROT_PER_SEC2)
                 .allowedClosedLoopError(ALLOWED_ERROR);
-
+               
+        // MAXMotionConfig mmConfig = new MAXMotionConfig();
+        // mmConfig.maxVelocity(MAX_VEL_ROT_PER_SEC)
+        //             .maxAcceleration(MAX_ACC_ROT_PER_SEC2)
+        //             .allowedClosedLoopError(ALLOWED_ERROR)
+        //             .positionMode(MAXMotionPositionMode.kMAXMotionTrapezoidal);
+        // config.apply(mmConfig);
+                        
         m_motor.configure(config, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
 
         // motor encoder - set calibration and offset to match absolute encoder
@@ -122,12 +147,15 @@ public class EndEffectorPivot extends SubsystemBase {
     public void periodic() {
         // Display current values on the SmartDashboard
         // This also gets logged to the log file on the Rio and aids in replaying a match
+        SmartDashboard.putNumber("pivot/goal", m_goal.getDegrees());
         SmartDashboard.putNumber("pivot/absoluteEncoder", getAngle().getDegrees());
         SmartDashboard.putNumber("pivot/outputCurrent", m_motor.getOutputCurrent());
         SmartDashboard.putNumber("pivot/busVoltage", m_motor.getBusVoltage());
         SmartDashboard.putBoolean("pivot/onGoal", angleWithinTolerance());
+        SmartDashboard.putNumber("pivot/appliedOutput", m_motor.getAppliedOutput());
+        // SmartDashboard.putNumber("pivot/rawAbsEncoder", m_absoluteEncoder.getPosition());
 
-        setCoastMode();
+        // setCoastMode();
     }
 
     // get the current pivot angle
@@ -135,10 +163,15 @@ public class EndEffectorPivot extends SubsystemBase {
         return Rotation2d.fromRotations(m_absoluteEncoder.getPosition());
     }
 
+    public void run(double speed) {
+        m_motor.set(speed);
+    }
+
     // set shooterPivot angle
     public void setAngle(Rotation2d angle) {
         m_goal = limitPivotAngle(angle);
-        m_controller.setReference(m_goal.getRotations(), SparkBase.ControlType.kMAXMotionPositionControl);
+        // m_controller.setReference(m_goal.getRotations(), SparkBase.ControlType.kMAXMotionPositionControl);
+        m_controller.setReference(m_goal.getRotations(), SparkBase.ControlType.kPosition);
         SmartDashboard.putNumber("pivot/goal", m_goal.getDegrees());
     }
     
@@ -152,9 +185,20 @@ public class EndEffectorPivot extends SubsystemBase {
     //     m_encoder.setPosition(m_absoluteEncoder.getDistance());
     // }
 
+    public boolean isOutsideLowRange() {
+        double angle = getAngle().getDegrees();
+        return angle <= MIN_ANGLE_LOW_DEG || angle >= MAX_ANGLE_LOW_DEG;
+    }
+
     // needs to be public so that commands can get the restricted angle
-    public static Rotation2d limitPivotAngle(Rotation2d angle) {
-        return Rotation2d.fromDegrees(MathUtil.clamp(angle.getDegrees(), MIN_ANGLE_DEG, MAX_ANGLE_DEG));
+    public Rotation2d limitPivotAngle(Rotation2d angle) {
+        double angleClamped;
+        // if (m_elevatorHeight.getAsDouble() <= Elevator.HEIGHT_LOW_RANGE)
+            angleClamped = MathUtil.clamp(angle.getDegrees(), MIN_ANGLE_LOW_DEG, MAX_ANGLE_LOW_DEG);
+        // else
+        //     angleClamped = MathUtil.clamp(angle.getDegrees(), MIN_ANGLE_HIGH_DEG, MAX_ANGLE_HIGH_DEG);
+
+        return Rotation2d.fromDegrees(angleClamped);
     }
 
     public boolean angleWithinTolerance() {

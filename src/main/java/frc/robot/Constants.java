@@ -15,13 +15,20 @@ package frc.robot;
 public final class Constants {
     //1-4 reserved for swerve 
     public static final int KITBOT_ROLLER_ID = 5;
-    public static final int CLIMBER_ID = 6;
+    public static final int CLIMBER_ID = 6;  // Falcon500
     public static final int END_EFFECTOR_PIVOT_CAN_ID = 9; 
     public static final int CORAL_EFFECTOR_INTAKE_ID = 7;
     public static final int ALGAR_EFFECTOR_INTAKE_ID = 8;
     public static final int ELEVATOR_CAN_ID = 5;  // Falcon500
     
     public static double MAX_VOLTAGE = 12.0;
+    
+    public enum Position {
+        L1, L2, L3, L4, 
+        BARGE,
+        FRONT_INTAKE, BACK_INTAKE, L2_ALGAE, L3_ALGAE, 
+        STOW
+    }
     
     public static boolean OUTREACH_MODE = false;
     
