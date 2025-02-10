@@ -13,6 +13,7 @@ import java.util.function.DoubleSupplier;
 
 import com.revrobotics.sim.SparkAbsoluteEncoderSim;
 import com.revrobotics.spark.SparkMax;
+import com.revrobotics.spark.ClosedLoopSlot;
 import com.revrobotics.spark.SparkAbsoluteEncoder;
 import com.revrobotics.spark.SparkBase;
 import com.revrobotics.spark.SparkBase.PersistMode;
@@ -67,6 +68,9 @@ public class EndEffectorPivot extends SubsystemBase {
     private static final double K_D = 0.0;
     private static final double K_FF = 0.0;
 
+    private static final ClosedLoopSlot SLOT_0 = ClosedLoopSlot.kSlot0;
+    private static final ClosedLoopSlot SLOT_1 = ClosedLoopSlot.kSlot1;
+
     private final SparkMax m_motor;
     // private final RelativeEncoder m_encoder;
     private final SparkAbsoluteEncoder m_absoluteEncoder;
@@ -87,32 +91,38 @@ public class EndEffectorPivot extends SubsystemBase {
         
         m_motor = new SparkMax(Constants.END_EFFECTOR_PIVOT_CAN_ID, MotorType.kBrushless);
         
-        SparkMaxConfig config = new SparkMaxConfig();
-        config.inverted(true);
-        config.idleMode(IdleMode.kBrake);
-        config.smartCurrentLimit(CURRENT_LIMIT);
+        SparkMaxConfig config0 = new SparkMaxConfig();
+        config0.inverted(true);
+        config0.idleMode(IdleMode.kBrake);
+        config0.smartCurrentLimit(CURRENT_LIMIT);
 
         AbsoluteEncoderConfig absEncConfig = new AbsoluteEncoderConfig();
         absEncConfig.velocityConversionFactor(1/60.0);   // convert rpm to rps
         absEncConfig.zeroOffset(ABS_ENCODER_ZERO_OFFSET);
         absEncConfig.inverted(false);
         // absEncConfig.setSparkMaxDataPortConfig();
-        config.apply(absEncConfig);
+        config0.apply(absEncConfig);
         
         // set up the PID for MAX Motion
-        config.closedLoop.pidf(K_P, K_I, K_D, K_FF);
-        config.closedLoop.outputRange(-1, 1);
-        config.closedLoop.feedbackSensor(FeedbackSensor.kAbsoluteEncoder);
-        config.closedLoop.positionWrappingEnabled(false);  // don't treat it as a circle
+        config0.closedLoop.pidf(K_P, K_I, K_D, K_FF, SLOT_0);
+        config0.closedLoop.outputRange(-1, 1, SLOT_0);
+        config0.closedLoop.feedbackSensor(FeedbackSensor.kAbsoluteEncoder);
+        config0.closedLoop.positionWrappingEnabled(false);  // don't treat it as a circle
 
         // Set MAXMotion parameters
-        config.closedLoop.maxMotion
-                .maxVelocity(MAX_VEL_ROT_PER_SEC)
-                .maxAcceleration(MAX_ACC_ROT_PER_SEC2)
-                .allowedClosedLoopError(ALLOWED_ERROR)
-                .positionMode(MAXMotionPositionMode.kMAXMotionTrapezoidal);
+        config0.closedLoop.maxMotion
+                .maxVelocity(MAX_VEL_ROT_PER_SEC, SLOT_0)
+                .maxAcceleration(MAX_ACC_ROT_PER_SEC2, SLOT_0)
+                .allowedClosedLoopError(ALLOWED_ERROR, SLOT_0)
+                .positionMode(MAXMotionPositionMode.kMAXMotionTrapezoidal, SLOT_0);
+
+        // Test setting another config
+        SparkMaxConfig config1 = new SparkMaxConfig();
+        config1.apply(config0);
+        config1.closedLoop.pidf(K_P, K_I, K_D, K_FF, SLOT_1);
                         
-        m_motor.configure(config, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
+        m_motor.configure(config0, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
+        m_motor.configure(config1, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
 
         // motor encoder - set calibration and offset to match absolute encoder
         // m_encoder = m_motor.getEncoder();
