@@ -118,7 +118,9 @@ public class EndEffectorPivot extends SubsystemBase {
 
         // Test setting another config
         SparkMaxConfig config1 = new SparkMaxConfig();
+        // Copy config0 to config1
         config1.apply(config0);
+        // We could use the floowing line to set PIDF parameters for Slot 1
         config1.closedLoop.pidf(K_P, K_I, K_D, K_FF, SLOT_1);
                         
         m_motor.configure(config0, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
@@ -167,7 +169,8 @@ public class EndEffectorPivot extends SubsystemBase {
     // set shooterPivot angle
     public void setAngle(Rotation2d angle) {
         m_goal = limitPivotAngle(angle);
-        m_controller.setReference(m_goal.getRotations(), SparkBase.ControlType.kMAXMotionPositionControl);
+        // This explicitly sets the reference via Slot 0
+        m_controller.setReference(m_goal.getRotations(), SparkBase.ControlType.kMAXMotionPositionControl, SLOT_0);
         // m_controller.setReference(m_goal.getRotations(), SparkBase.ControlType.kPosition);
         SmartDashboard.putNumber("pivot/goal", m_goal.getDegrees());
     }
