@@ -68,6 +68,7 @@ public class EndEffectorPivot extends SubsystemBase {
     private static final double K_D = 0.0;
     private static final double K_FF = 0.0;
 
+    // aliases names for the slots, so it is easier to remember
     private static final ClosedLoopSlot SLOT_FAST = ClosedLoopSlot.kSlot0;
     private static final ClosedLoopSlot SLOT_SLOW = ClosedLoopSlot.kSlot1;
 
