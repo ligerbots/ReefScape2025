@@ -6,51 +6,70 @@ package frc.robot;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.StartEndCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
-
-//import frc.robot.commands.*;
-import frc.robot.subsystems.*;
+import frc.robot.commands.AutoCommandInterface;
+import frc.robot.commands.HelloWorldAuto2;
+import frc.robot.subsystems.AprilTagVision;
+import frc.robot.subsystems.CoralEffector;
+import frc.robot.subsystems.DriveTrain;
+import frc.robot.subsystems.AlgaeEffector;
 import frc.robot.subsystems.kitbot.KitbotRoller;
+
 
 public class KitbotRobotContainer {
     private static final double JOYSTICK_DEADBAND = 0.05;
-
-    // Need to know where the robot starts on the field
-    // For this simulation, just make it fixed
-    // Location: x = 2 meters, y = 1/2 of field, angle is forward
-    private static final Pose2d START_LOCATION = new Pose2d(2, 5, Rotation2d.fromDegrees(0));
 
     private final CommandXboxController m_driverController = new CommandXboxController(0);
 
     private final AprilTagVision m_aprilTagVision = new AprilTagVision();
     private final DriveTrain m_driveTrain = new DriveTrain("swerve/kitbot", m_aprilTagVision);
     private final KitbotRoller m_kitbotRoller = new KitbotRoller();
+    private final AlgaeEffector m_algaeEffector = new AlgaeEffector(); 
+    private final CoralEffector m_coralEffector = new CoralEffector();
+
+    private AutoCommandInterface m_autoCommand;
 
     public KitbotRobotContainer() {
         configureBindings();
+        configureAutos();
 
         m_driveTrain.setDefaultCommand(getDriveCommand());
     }
-    
+            
     private void configureBindings() {
         if (Robot.isSimulation()) {
             DriverStation.silenceJoystickConnectionWarning(true);
         }
 
-        m_driverController.leftBumper().whileTrue(new StartEndCommand(m_kitbotRoller::runRollerOut, m_kitbotRoller::stopRoller, m_kitbotRoller));
+
+
+        m_driverController.start().onTrue(new InstantCommand(m_driveTrain::lock, m_driveTrain));
+        m_driverController.back().onTrue(new InstantCommand(m_driveTrain::zeroHeading, m_driveTrain));
+
+        // m_driverController.rightTrigger().whileTrue(new StartEndCommand(m_kitbotRoller::runRollerOut, m_kitbotRoller::stop, m_kitbotRoller));
+        // m_driverController.leftTrigger().whileTrue(new StartEndCommand(m_kitbotRoller::runRollerBack, m_kitbotRoller::stop, m_kitbotRoller));
+        m_driverController.rightTrigger().whileTrue(new StartEndCommand(m_coralEffector::ejectCoral, m_coralEffector::stop, m_coralEffector));
+        m_driverController.leftTrigger().whileTrue(new StartEndCommand(m_coralEffector::intakeCoral, m_coralEffector::stop, m_coralEffector));
+        m_driverController.rightBumper().whileTrue(new StartEndCommand(m_algaeEffector::ejectAlgae, m_algaeEffector::stop, m_algaeEffector));
+        m_driverController.leftBumper().whileTrue(new StartEndCommand(m_algaeEffector::intakeAlgae, m_algaeEffector::stop, m_algaeEffector));
+
     }
     
+    private void configureAutos() {
+        // TODO Auto-generated method stub
+        m_autoCommand = new HelloWorldAuto2(m_driveTrain, m_kitbotRoller);
+    }
+
     public Command getAutonomousCommand() {
-        // TODO add an auto
-        return null;
+        return m_autoCommand;
     }
 
     public Pose2d getInitialPose() {
-        return FieldConstants.flipPose(START_LOCATION);
+        return m_autoCommand.getInitialPose();
     }
 
     public Command getDriveCommand() {

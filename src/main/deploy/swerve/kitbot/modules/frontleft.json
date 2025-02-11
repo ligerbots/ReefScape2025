@@ -1,9 +1,9 @@
 {
   "location": {
-    "front": 10.875,
-    "left": 8.875
+    "front": 11.125,
+    "left": 11.125
   },
-  "absoluteEncoderOffset": 205.0,
+  "absoluteEncoderOffset": 331.3,
   "drive": {
     "type": "talonfx",
     "id": 1,
