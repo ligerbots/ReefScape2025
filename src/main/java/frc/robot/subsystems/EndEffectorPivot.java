@@ -15,7 +15,7 @@ import com.revrobotics.sim.SparkAbsoluteEncoderSim;
 import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.ClosedLoopSlot;
 import com.revrobotics.spark.SparkAbsoluteEncoder;
-import com.revrobotics.spark.SparkBase;
+import com.revrobotics.spark.SparkBase.ControlType;
 import com.revrobotics.spark.SparkBase.PersistMode;
 import com.revrobotics.spark.SparkBase.ResetMode;
 import com.revrobotics.spark.SparkClosedLoopController;
@@ -23,7 +23,6 @@ import com.revrobotics.spark.SparkLowLevel.MotorType;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
@@ -57,7 +56,9 @@ public class EndEffectorPivot extends SubsystemBase {
     // units??? rotations?
     private static final double ALLOWED_ERROR = ANGLE_TOLERANCE_DEG/360.0 * GEAR_RATIO;
 
-    private static final double SLOW_MOTION_SCALE = 0.5;
+    // lower max vel and acceleration for when the elevator is high
+    private static final double MAX_VEL_SLOW_ROT_PER_SEC = 0.5 * MAX_VEL_ROT_PER_SEC;
+    private static final double MAX_ACC_SLOW_ROT_PER_SEC2 = 0.5 * MAX_ACC_ROT_PER_SEC2;
 
     // Zero point of the absolute encoder
     private static final double ABS_ENCODER_ZERO_OFFSET = (135.2+180)/360.0; 
@@ -73,18 +74,18 @@ public class EndEffectorPivot extends SubsystemBase {
     private static final ClosedLoopSlot SLOT_SLOW = ClosedLoopSlot.kSlot1;
 
     private final SparkMax m_motor;
-    // private final RelativeEncoder m_encoder;
     private final SparkAbsoluteEncoder m_absoluteEncoder;
     private final SparkAbsoluteEncoderSim m_absoluteEncoderSim;
     private final SparkClosedLoopController m_controller;
 
     // Used for checking if on goal
-    private Rotation2d m_goalClipped = Rotation2d.fromDegrees(0);
+    // m_goal is the commanded goal
+    // m_goalClipped is the goal taking into account any restrictions
     private Rotation2d m_goal = Rotation2d.fromDegrees(0);
+    private Rotation2d m_goalClipped = Rotation2d.fromDegrees(0);
 
-    // adjustment offset. Starts at 0, but retained throughout a match
-    // private double m_angleAdjustment = Math.toRadians(0.0);
-
+    // supplier to get the Elevator height
+    // needed to check on range limits and motion speed
     private final DoubleSupplier m_elevatorHeight;
 
     // Construct a new shooterPivot subsystem
@@ -102,27 +103,31 @@ public class EndEffectorPivot extends SubsystemBase {
         absEncConfig.velocityConversionFactor(1/60.0);   // convert rpm to rps
         absEncConfig.zeroOffset(ABS_ENCODER_ZERO_OFFSET);
         absEncConfig.inverted(false);
-        // absEncConfig.setSparkMaxDataPortConfig();
         config.apply(absEncConfig);
-        
-        // set up the PID for MAX Motion
-        config.closedLoop.pidf(K_P, K_I, K_D, K_FF, SLOT_FAST);
-        config.closedLoop.outputRange(-1, 1, SLOT_FAST);
-        config.closedLoop.feedbackSensor(FeedbackSensor.kAbsoluteEncoder);
-        config.closedLoop.positionWrappingEnabled(false);  // don't treat it as a circle
 
-        // Set MAXMotion parameters
+        // General parameters for the cloed loop/MAXMotion control
+        config.closedLoop
+                .feedbackSensor(FeedbackSensor.kAbsoluteEncoder)
+                .positionWrappingEnabled(false); // don't treat it as a circle
+        
+        // Set up the "fast" slot for typical control (when the elevator is not high)
+        config.closedLoop
+                .pidf(K_P, K_I, K_D, K_FF, SLOT_FAST)
+                .outputRange(-1, 1, SLOT_FAST);
+        // MAXMotion parameters
         config.closedLoop.maxMotion
                 .maxVelocity(MAX_VEL_ROT_PER_SEC, SLOT_FAST)
                 .maxAcceleration(MAX_ACC_ROT_PER_SEC2, SLOT_FAST)
                 .allowedClosedLoopError(ALLOWED_ERROR, SLOT_FAST)
                 .positionMode(MAXMotionPositionMode.kMAXMotionTrapezoidal, SLOT_FAST);
 
-        // We could use the floowing line to set PIDF parameters for Slot 1
-        config.closedLoop.pidf(K_P, K_I, K_D, K_FF, SLOT_SLOW);
+        // Set up the "slow" slot; used when the elevator is high
+        config.closedLoop
+                .pidf(K_P, K_I, K_D, K_FF, SLOT_SLOW)
+                .outputRange(-1, 1, SLOT_SLOW);
         config.closedLoop.maxMotion
-                .maxVelocity(SLOW_MOTION_SCALE * MAX_VEL_ROT_PER_SEC, SLOT_SLOW)
-                .maxAcceleration(SLOW_MOTION_SCALE * MAX_ACC_ROT_PER_SEC2, SLOT_SLOW)
+                .maxVelocity(MAX_VEL_SLOW_ROT_PER_SEC, SLOT_SLOW)
+                .maxAcceleration(MAX_ACC_SLOW_ROT_PER_SEC2, SLOT_SLOW)
                 .allowedClosedLoopError(ALLOWED_ERROR, SLOT_SLOW)
                 .positionMode(MAXMotionPositionMode.kMAXMotionTrapezoidal, SLOT_SLOW);
                         
@@ -135,13 +140,13 @@ public class EndEffectorPivot extends SubsystemBase {
         // controller for MAX Motion
         m_controller = m_motor.getClosedLoopController();
 
-        // updateMotorEncoderOffset();
+        // set the goal to the current sensor value; should prevent sudden motion when enabling
         resetGoal();
 
         SmartDashboard.putBoolean("pivot/coastMode", false);
         setCoastMode();
 
-        SmartDashboard.putNumber("pivot/testAngle", 0);
+        SmartDashboard.putNumber("pivot/testAngle", getAngle().getDegrees());
     }
 
     @Override
@@ -150,11 +155,11 @@ public class EndEffectorPivot extends SubsystemBase {
         m_goalClipped = limitPivotAngle(m_goal, elevHeight);
 
         // Pick the slow to use based on Elevator height
-        m_controller.setReference(m_goalClipped.getRotations(), SparkBase.ControlType.kMAXMotionPositionControl, 
+        m_controller.setReference(m_goalClipped.getRotations(), ControlType.kMAXMotionPositionControl, 
                     elevHeight >= Elevator.SLOW_PIVOT_MIN_HEIGHT ? SLOT_SLOW : SLOT_FAST);
 
         // Display current values on the SmartDashboard
-        // This also gets logged to the log file on the Rio and aids in replaying a match
+        // These also get logged to the log file on the Rio and aid in replaying a match
         SmartDashboard.putNumber("pivot/goalClipped", m_goalClipped.getDegrees());
         SmartDashboard.putNumber("pivot/absoluteEncoder", getAngle().getDegrees());
         SmartDashboard.putNumber("pivot/outputCurrent", m_motor.getOutputCurrent());
@@ -223,9 +228,9 @@ public class EndEffectorPivot extends SubsystemBase {
     public void setCoastMode() {
         boolean coastMode = SmartDashboard.getBoolean("shooterPivot/coastMode", false);
         if (coastMode) {
-            m_motor.configure(new SparkMaxConfig().idleMode(IdleMode.kCoast), ResetMode.kNoResetSafeParameters, PersistMode.kNoPersistParameters);
             m_motor.stopMotor();
+            m_motor.configure(new SparkMaxConfig().idleMode(IdleMode.kCoast), ResetMode.kNoResetSafeParameters, PersistMode.kNoPersistParameters);
         } else
-        m_motor.configure(new SparkMaxConfig().idleMode(IdleMode.kBrake), ResetMode.kNoResetSafeParameters, PersistMode.kNoPersistParameters);
+            m_motor.configure(new SparkMaxConfig().idleMode(IdleMode.kBrake), ResetMode.kNoResetSafeParameters, PersistMode.kNoPersistParameters);
     }
 }
