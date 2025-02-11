@@ -26,6 +26,7 @@ import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.commands.PathfindingCommand;
 import com.pathplanner.lib.config.RobotConfig;
 import com.pathplanner.lib.controllers.PPHolonomicDriveController;
+import com.pathplanner.lib.path.PathConstraints;
 import com.pathplanner.lib.path.PathPlannerPath;
 import com.pathplanner.lib.config.PIDConstants;
 
@@ -274,6 +275,11 @@ public class DriveTrain extends SubsystemBase {
     public Command followPath(PathPlannerPath path) {
         // Create a path following command using AutoBuilder. This will also trigger event markers.
         return AutoBuilder.followPath(path);
+    }
+
+    public Command pathFindToPose(Pose2d targetPose, PathConstraints constraints) {
+        
+        return AutoBuilder.pathfindToPose(targetPose, constraints);
     }
 
     public static PathPlannerPath loadPath(String pathName) {
