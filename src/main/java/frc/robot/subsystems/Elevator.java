@@ -26,7 +26,8 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 
 public class Elevator extends SubsystemBase {
-    public static final double HEIGHT_LOW_RANGE = Units.inchesToMeters(5.0);
+    public static final double NARROW_PIVOT_MAX_HEIGHT = Units.inchesToMeters(5.0);
+    public static final double SLOW_PIVOT_MIN_HEIGHT = Units.inchesToMeters(48.0);
 
     private static final double GEAR_REDUCTION = 15.0;  // 15:1 planetary
     // diameter of final 18 tooth gear
