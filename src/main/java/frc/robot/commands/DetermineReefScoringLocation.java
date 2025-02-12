@@ -17,7 +17,6 @@ import frc.robot.FieldConstants;
 public class DetermineReefScoringLocation extends Command {
   /** Creates a new DetermineReefQuadrent. */
   final Supplier<Pose2d> m_pose;
-  final Pose2d REEF = new Pose2d(0,0, Rotation2d.fromDegrees(0)); //TODO: Replace with real pose
 
   public DetermineReefScoringLocation(Supplier<Pose2d> pose) {
     // Use addRequirements() here to declare subsystem dependencies.
@@ -105,7 +104,7 @@ public class DetermineReefScoringLocation extends Command {
   }
 
   Translation2d getMidpointForCurrentQuadrent(Pose2d currentFlippedPose) {
-    final Pose2d relitivePose = currentFlippedPose.relativeTo(REEF); //Relitive pose relitive to the center of the reef
+    final Pose2d relitivePose = currentFlippedPose.relativeTo(FieldConstants.REEF_CENTER); //Relitive pose relitive to the center of the reef
     final double angleFromReef = Math.atan2(relitivePose.getY(), relitivePose.getX()); //Angle from center of reef
 
     if (angleFromReef > (11*Math.PI)/6 || angleFromReef < Math.PI/6) {

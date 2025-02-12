@@ -19,7 +19,7 @@ public class FieldConstants {
     public static final Pose2d ROBOT_START_2 = new Pose2d(7.23, 4.20, Rotation2d.fromDegrees(180));
     public static final Pose2d ROBOT_START_3 = new Pose2d(7.29,6.75, Rotation2d.fromDegrees(-149.9));  
 
-    public static final Pose2d REEF_CENTER = new Pose2d(4.5,4.5, Rotation2d.fromDegrees(0)); //TODO: Replace with real pose
+    public static final Pose2d REEF_CENTER = new Pose2d(4.84505,4.0259, Rotation2d.fromDegrees(0)); //FIXME: Verify location
 
     //These are the positions the robot need to be in to score on the branches
     public static final Pose2d REEF_A = new Pose2d(3.19,4.25, Rotation2d.fromDegrees(0));
