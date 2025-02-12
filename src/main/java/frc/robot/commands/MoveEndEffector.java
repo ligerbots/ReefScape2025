@@ -25,8 +25,9 @@ public class MoveEndEffector extends Command {
     double m_desiredHeight;
     Constants.Position m_position;
     Timer m_timer;
-    
-    private static final double TIMEOUT = 2.0;
+    double m_timeoutDelay;
+
+    private static final double DEFAULT_TIMEOUT = 2.0;
     
     public static final double L1_ANGLE = 180.0;
     public static final double L1_HEIGHT = Units.inchesToMeters(0.0);
@@ -70,11 +71,16 @@ public class MoveEndEffector extends Command {
     };
     
     public MoveEndEffector(Constants.Position position, Elevator elevator, EndEffectorPivot pivot) {
+        this(position, elevator, pivot, DEFAULT_TIMEOUT);
+    }
+
+    public MoveEndEffector(Constants.Position position, Elevator elevator, EndEffectorPivot pivot, double timeout) {
         m_pivot = pivot;
         m_elevator = elevator;
         m_position = position;
         m_timer = new Timer();
-        
+        m_timeoutDelay = timeout;
+
         Pair<Double, Double> desiredPos = POSITIONS.get(position);
         m_desiredHeight = desiredPos.getFirst();
         m_desiredAngle = Rotation2d.fromDegrees(desiredPos.getSecond());
@@ -103,6 +109,6 @@ public class MoveEndEffector extends Command {
     @Override
     public boolean isFinished() {
         return (m_elevator.lengthWithinTolerance() && m_pivot.angleWithinTolerance())
-        || m_timer.hasElapsed(TIMEOUT);
+        || m_timer.hasElapsed(m_timeoutDelay);
     }
 }

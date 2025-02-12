@@ -37,27 +37,27 @@ public class CompBotGenericAutoBase extends AutoCommandInterface {
             m_initPose = startPath.getStartingDifferentialPose();
             
             addCommands(m_driveTrain.followPath(startPath));
-            addCommands(new MoveEndEffector(Constants.Position.L4, elevator, pivot).withTimeout(RAISE_ELEVATOR_WAIT_TIME));
+            addCommands(new MoveEndEffector(Constants.Position.L4, elevator, pivot, RAISE_ELEVATOR_WAIT_TIME));
             addCommands(new StartEndCommand(coralEffector::runOuttake, coralEffector::stop, coralEffector).withTimeout(CORAL_SCORE_WAIT_TIME));                
-            addCommands(new MoveEndEffector(Constants.Position.FRONT_INTAKE, elevator, pivot).withTimeout(LOWER_ELEVATOR_WAIT_TIME));
+            addCommands(new MoveEndEffector(Constants.Position.FRONT_INTAKE, elevator, pivot, LOWER_ELEVATOR_WAIT_TIME));
 
             addCommands(m_driveTrain.followPath(PathFactory.getPath(reefPoints[0], sourcePoint, isProcessorSide)));
             addCommands(new InstantCommand(coralEffector::runIntake).until(coralEffector::hasCoral));
             // addCommands(new WaitCommand(.5));
             
             addCommands(m_driveTrain.followPath(PathFactory.getPath(sourcePoint, reefPoints[1], isProcessorSide)));
-            addCommands(new MoveEndEffector(Constants.Position.L4, elevator, pivot).withTimeout(RAISE_ELEVATOR_WAIT_TIME));
+            addCommands(new MoveEndEffector(Constants.Position.L4, elevator, pivot, RAISE_ELEVATOR_WAIT_TIME));
             addCommands(new StartEndCommand(coralEffector::runOuttake, coralEffector::stop, coralEffector).withTimeout(CORAL_SCORE_WAIT_TIME));                
-            addCommands(new MoveEndEffector(Constants.Position.FRONT_INTAKE, elevator, pivot).withTimeout(LOWER_ELEVATOR_WAIT_TIME));
+            addCommands(new MoveEndEffector(Constants.Position.FRONT_INTAKE, elevator, pivot, LOWER_ELEVATOR_WAIT_TIME));
             
             addCommands(m_driveTrain.followPath(PathFactory.getPath(reefPoints[1], sourcePoint, isProcessorSide)));
             addCommands(new InstantCommand(coralEffector::runIntake));
             // addCommands(new WaitCommand(.5));
             
             addCommands(m_driveTrain.followPath(PathFactory.getPath(sourcePoint, reefPoints[2], isProcessorSide)));
-            addCommands(new MoveEndEffector(Constants.Position.L4, elevator, pivot).withTimeout(RAISE_ELEVATOR_WAIT_TIME));
+            addCommands(new MoveEndEffector(Constants.Position.L4, elevator, pivot, RAISE_ELEVATOR_WAIT_TIME));
             addCommands(new StartEndCommand(coralEffector::runOuttake, coralEffector::stop, coralEffector).withTimeout(CORAL_SCORE_WAIT_TIME));                
-            addCommands(new MoveEndEffector(Constants.Position.FRONT_INTAKE, elevator, pivot).withTimeout(LOWER_ELEVATOR_WAIT_TIME));
+            addCommands(new MoveEndEffector(Constants.Position.FRONT_INTAKE, elevator, pivot, LOWER_ELEVATOR_WAIT_TIME));
             
             if (reefPoints.length > 3) {
                 addCommands(m_driveTrain.followPath(PathFactory.getPath(reefPoints[2], sourcePoint, isProcessorSide)));
@@ -65,9 +65,9 @@ public class CompBotGenericAutoBase extends AutoCommandInterface {
                 // addCommands(new WaitCommand(.75));
                 
                 addCommands(m_driveTrain.followPath(PathFactory.getPath(sourcePoint, reefPoints[3], isProcessorSide)));
-                addCommands(new MoveEndEffector(Constants.Position.L4, elevator, pivot).withTimeout(RAISE_ELEVATOR_WAIT_TIME));
+                addCommands(new MoveEndEffector(Constants.Position.L4, elevator, pivot, RAISE_ELEVATOR_WAIT_TIME));
                 addCommands(new StartEndCommand(coralEffector::runOuttake, coralEffector::stop, coralEffector).withTimeout(CORAL_SCORE_WAIT_TIME));                
-                addCommands(new MoveEndEffector(Constants.Position.FRONT_INTAKE, elevator, pivot).withTimeout(LOWER_ELEVATOR_WAIT_TIME));
+                addCommands(new MoveEndEffector(Constants.Position.FRONT_INTAKE, elevator, pivot, LOWER_ELEVATOR_WAIT_TIME));
             }
             
         } catch (Exception e) {
