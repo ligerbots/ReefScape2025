@@ -9,7 +9,7 @@ import com.pathplanner.lib.path.PathPlannerPath;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
-import edu.wpi.first.wpilibj2.command.WaitCommand;
+import edu.wpi.first.wpilibj2.command.StartEndCommand;
 import frc.robot.Constants;
 import frc.robot.FieldConstants;
 import frc.robot.PathFactory;
@@ -20,6 +20,10 @@ import frc.robot.subsystems.Elevator;
 import frc.robot.subsystems.EndEffectorPivot;
 
 public class CompBotGenericAutoBase extends AutoCommandInterface {
+    private static final double CORAL_SCORE_WAIT_TIME = 0.2;
+    private static final double RAISE_ELEVATOR_WAIT_TIME = 0.5;
+    private static final double LOWER_ELEVATOR_WAIT_TIME = 0.5;  // maybe can be lower
+
     private DriveTrain m_driveTrain;
     private Pose2d m_initPose;
     
@@ -33,41 +37,37 @@ public class CompBotGenericAutoBase extends AutoCommandInterface {
             m_initPose = startPath.getStartingDifferentialPose();
             
             addCommands(m_driveTrain.followPath(startPath));
-            addCommands(new MoveEndEffector(Constants.Position.L4, elevator, pivot).withTimeout(.5));
-            addCommands(new InstantCommand(coralEffector::runOuttake));                
-            addCommands(new WaitCommand(.2)); // wait a beat to finish scoring before driving away
-            addCommands(new MoveEndEffector(Constants.Position.FRONT_INTAKE, elevator, pivot).withTimeout(.5));
+            addCommands(new MoveEndEffector(Constants.Position.L4, elevator, pivot).withTimeout(RAISE_ELEVATOR_WAIT_TIME));
+            addCommands(new StartEndCommand(coralEffector::runOuttake, coralEffector::stop, coralEffector).withTimeout(CORAL_SCORE_WAIT_TIME));                
+            addCommands(new MoveEndEffector(Constants.Position.FRONT_INTAKE, elevator, pivot).withTimeout(LOWER_ELEVATOR_WAIT_TIME));
 
             addCommands(m_driveTrain.followPath(PathFactory.getPath(reefPoints[0], sourcePoint, isProcessorSide)));
             addCommands(new InstantCommand(coralEffector::runIntake).until(coralEffector::hasCoral));
-            addCommands(new WaitCommand(.5));
+            // addCommands(new WaitCommand(.5));
             
             addCommands(m_driveTrain.followPath(PathFactory.getPath(sourcePoint, reefPoints[1], isProcessorSide)));
-            addCommands(new MoveEndEffector(Constants.Position.L4, elevator, pivot).withTimeout(.5));
-            addCommands(new InstantCommand(coralEffector::runOuttake));                
-            addCommands(new WaitCommand(.2)); // wait a beat to finish scoring before driving away
-            addCommands(new MoveEndEffector(Constants.Position.FRONT_INTAKE, elevator, pivot).withTimeout(.5));
+            addCommands(new MoveEndEffector(Constants.Position.L4, elevator, pivot).withTimeout(RAISE_ELEVATOR_WAIT_TIME));
+            addCommands(new StartEndCommand(coralEffector::runOuttake, coralEffector::stop, coralEffector).withTimeout(CORAL_SCORE_WAIT_TIME));                
+            addCommands(new MoveEndEffector(Constants.Position.FRONT_INTAKE, elevator, pivot).withTimeout(LOWER_ELEVATOR_WAIT_TIME));
             
             addCommands(m_driveTrain.followPath(PathFactory.getPath(reefPoints[1], sourcePoint, isProcessorSide)));
             addCommands(new InstantCommand(coralEffector::runIntake));
-            addCommands(new WaitCommand(.5));
+            // addCommands(new WaitCommand(.5));
             
             addCommands(m_driveTrain.followPath(PathFactory.getPath(sourcePoint, reefPoints[2], isProcessorSide)));
-            addCommands(new MoveEndEffector(Constants.Position.L4, elevator, pivot).withTimeout(.5));
-            addCommands(new InstantCommand(coralEffector::runOuttake));                
-            addCommands(new WaitCommand(.2)); // wait a beat to finish scoring before driving away
-            addCommands(new MoveEndEffector(Constants.Position.FRONT_INTAKE, elevator, pivot).withTimeout(.5));
+            addCommands(new MoveEndEffector(Constants.Position.L4, elevator, pivot).withTimeout(RAISE_ELEVATOR_WAIT_TIME));
+            addCommands(new StartEndCommand(coralEffector::runOuttake, coralEffector::stop, coralEffector).withTimeout(CORAL_SCORE_WAIT_TIME));                
+            addCommands(new MoveEndEffector(Constants.Position.FRONT_INTAKE, elevator, pivot).withTimeout(LOWER_ELEVATOR_WAIT_TIME));
             
-            if(reefPoints.length >3) {
+            if (reefPoints.length > 3) {
                 addCommands(m_driveTrain.followPath(PathFactory.getPath(reefPoints[2], sourcePoint, isProcessorSide)));
                 addCommands(new InstantCommand(coralEffector::runIntake));
-                addCommands(new WaitCommand(.75));
+                // addCommands(new WaitCommand(.75));
                 
                 addCommands(m_driveTrain.followPath(PathFactory.getPath(sourcePoint, reefPoints[3], isProcessorSide)));
-                addCommands(new MoveEndEffector(Constants.Position.L4, elevator, pivot).withTimeout(.5));
-                addCommands(new InstantCommand(coralEffector::runOuttake));                
-                addCommands(new WaitCommand(.2)); // wait a beat to finish scoring before driving away
-                addCommands(new MoveEndEffector(Constants.Position.FRONT_INTAKE, elevator, pivot).withTimeout(.5));
+                addCommands(new MoveEndEffector(Constants.Position.L4, elevator, pivot).withTimeout(RAISE_ELEVATOR_WAIT_TIME));
+                addCommands(new StartEndCommand(coralEffector::runOuttake, coralEffector::stop, coralEffector).withTimeout(CORAL_SCORE_WAIT_TIME));                
+                addCommands(new MoveEndEffector(Constants.Position.FRONT_INTAKE, elevator, pivot).withTimeout(LOWER_ELEVATOR_WAIT_TIME));
             }
             
         } catch (Exception e) {

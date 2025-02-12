@@ -15,7 +15,7 @@ import edu.wpi.first.wpilibj2.command.StartEndCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 
 import frc.robot.commands.*;
-
+import frc.robot.commands.kitbot.KitBotGenericAutoBase;
 import frc.robot.subsystems.*;
 import frc.robot.subsystems.kitbot.KitbotRoller;
 
