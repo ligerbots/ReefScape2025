@@ -499,4 +499,117 @@ public class DriveTrain extends SubsystemBase {
                         this, m_swerveDrive),
                 3.0, 5.0, 3.0);
     }
+
+    /**
+     * Method to determine the most likely scoring position based on the current position and heading of the robot.
+     *
+     * @return Pose2d the robot need to be in in order to score
+     */
+    public static Pose2d getLikelyScoringPosition(Pose2d currentFlippedPose) {
+        Translation2d quadrentMidpoint = getMidpointForCurrentQuadrent(currentFlippedPose);
+        // FIXME: Current converting to pose2d is a hack
+        final boolean isLeftOfMidpoint = isLeftOfPoint(
+                new Pose2d(quadrentMidpoint.getX(), quadrentMidpoint.getY(), new Rotation2d()), currentFlippedPose);
+        if (quadrentMidpoint == FieldConstants.REEF_TAG_GH) {
+            if (isLeftOfMidpoint) {
+                // return "G";
+                return FieldConstants.REEF_G;
+            } else {
+                // return "H";
+                return FieldConstants.REEF_H;
+            }
+        } else if (quadrentMidpoint == FieldConstants.REEF_TAG_IJ) {
+            if (isLeftOfMidpoint) {
+                // return "I";
+                return FieldConstants.REEF_I;
+            } else {
+                // return "J";
+                return FieldConstants.REEF_J;
+            }
+        } else if (quadrentMidpoint == FieldConstants.REEF_TAG_KL) {
+            if (isLeftOfMidpoint) {
+                // return "K";
+                return FieldConstants.REEF_K;
+            } else {
+                // return "L";
+                return FieldConstants.REEF_L;
+            }
+        } else if (quadrentMidpoint == FieldConstants.REEF_TAG_AB) {
+            if (isLeftOfMidpoint) {
+                // return "A";
+                return FieldConstants.REEF_A;
+            } else {
+                // return "B";
+                return FieldConstants.REEF_B;
+            }
+        } else if (quadrentMidpoint == FieldConstants.REEF_TAG_CD) {
+            if (isLeftOfMidpoint) {
+                // return "C";
+                return FieldConstants.REEF_C;
+            } else {
+                // return "D";
+                return FieldConstants.REEF_D;
+            }
+        } else if (quadrentMidpoint == FieldConstants.REEF_TAG_EF) {
+            if (isLeftOfMidpoint) {
+                // return "E";
+                return FieldConstants.REEF_E;
+            } else {
+                // return "F";
+                return FieldConstants.REEF_F;
+            }
+        } else {
+            // Should never happen
+            throw new IllegalArgumentException("Midpoint not in any pre-set quadrent");
+        }
+    }
+
+    /**
+     * For the current 6th of the field we are in (imagine reef projecting out lines to devide the field into 6ths), return the positon of the corospoding april tag
+     *
+     * @return Translation2d the XY position of the april tag which is also in the center of the side of the 6th of the reef
+     */
+    private static Translation2d getMidpointForCurrentQuadrent(Pose2d currentFlippedPose) {
+        final Pose2d relitivePose = currentFlippedPose.relativeTo(FieldConstants.REEF_CENTER); // Relitive pose relitive to the center of the reef
+        final double angleFromReef = Math.atan2(relitivePose.getY(), relitivePose.getX()); // Angle from center of reef
+
+        if (angleFromReef > (11 * Math.PI) / 6 || angleFromReef < Math.PI / 6) {
+            return FieldConstants.REEF_TAG_GH;
+        } else if (angleFromReef > (Math.PI) / 6 || angleFromReef < Math.PI / 2) {
+            return FieldConstants.REEF_TAG_IJ;
+        } else if (angleFromReef > (Math.PI) / 2 || angleFromReef < (5 * Math.PI) / 6) {
+            return FieldConstants.REEF_TAG_KL;
+        } else if (angleFromReef > (5 * Math.PI) / 6 || angleFromReef < (7 * Math.PI) / 6) {
+            return FieldConstants.REEF_TAG_AB;
+        } else if (angleFromReef > (7 * Math.PI) / 6 || angleFromReef < (3 * Math.PI) / 2) {
+            return FieldConstants.REEF_TAG_CD;
+        } else if (angleFromReef > (3 * Math.PI) / 2 || angleFromReef < (11 * Math.PI) / 6) {
+            return FieldConstants.REEF_TAG_EF;
+        } else {
+            // Should never happen
+            throw new IllegalArgumentException("Angle not in any quadrent");
+        }
+    }
+
+    /**
+     * Determine if the target point is to the left of heading of the robot
+     *
+     * @param targetPoint      the point to check if it is to the left of the robot
+     * @param currentFlippedPose the current pose of the robot
+     * @return boolean if the target point is to the left of the robot
+     */
+    private static boolean isLeftOfPoint(Pose2d targetPoint, Pose2d currentFlippedPose) {
+        final Pose2d relitivePose = targetPoint.relativeTo(currentFlippedPose);
+        final double angleFromPoint = Math.atan2(relitivePose.getY(), relitivePose.getX());
+
+        // Normilise angle to be relitve to robot heading turning it into a 0-2PI range
+        // with the robot heading being 0
+        final double normilisedAngle = (angleFromPoint - currentFlippedPose.getRotation().getRadians()) % (2 * Math.PI);
+
+        if (normilisedAngle < Math.PI) {
+            return true;
+        } else {
+            return false;
+        }
+    }
 }
