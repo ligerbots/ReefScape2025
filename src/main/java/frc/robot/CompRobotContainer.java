@@ -43,7 +43,7 @@ public class CompRobotContainer extends RobotContainer {
     private boolean m_coralMode = true;
     
     // private AutoCommandInterface m_autoCommand;
-    private final SendableChooser<Command> m_chosenAuto = new SendableChooser<>();
+    private final SendableChooser<AutoCommandInterface> m_chosenAuto = new SendableChooser<>();
 
     
     public CompRobotContainer() {
@@ -126,8 +126,7 @@ public class CompRobotContainer extends RobotContainer {
     }
     
     public Pose2d getInitialPose() {
-        AutoCommandInterface j = (AutoCommandInterface) m_chosenAuto.getSelected();
-        return j.getInitialPose();
+        return m_chosenAuto.getSelected().getInitialPose();
     }
     
     public Command getDriveCommand() {
