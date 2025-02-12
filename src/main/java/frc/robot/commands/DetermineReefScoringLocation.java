@@ -45,7 +45,8 @@ public class DetermineReefScoringLocation extends Command {
   }
 
   //Returns the most likely scoring position based on the current robot position & heading
-  String getLikelyScoringPosition(Pose2d currentFlippedPose) {
+  //TODO: Decide if calculation functions should go in field constants
+  public String getLikelyScoringPosition(Pose2d currentFlippedPose) {
     Translation2d quadrentMidpoint = getMidpointForCurrentQuadrent(currentFlippedPose);
     //FIXME: Current converting to pose2d is a hack
     final boolean isLeftOfMidpoint = isLeftOfPoint(new Pose2d(quadrentMidpoint.getX(), quadrentMidpoint.getY(), new Rotation2d()), currentFlippedPose);
