@@ -13,6 +13,8 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.subsystems.DriveTrain;
+import frc.robot.subsystems.Elevator;
+import frc.robot.subsystems.EndEffectorPivot;
 
 /**
 * The methods in this class are called automatically corresponding to each mode, as described in
@@ -22,6 +24,9 @@ import frc.robot.subsystems.DriveTrain;
 public class Robot extends TimedRobot {
     private Command m_autonomousCommand = null;
     private boolean m_prevIsRedAlliance = true;
+    private final Elevator m_elevator = new Elevator();
+    private final EndEffectorPivot m_pivot = new EndEffectorPivot(() -> m_elevator.getHeight());
+
     
     public static final String KITBOT_SERIAL_NUMBER = "123";
     public static final String COMP_V1_SERIAL_NUMBER = "0313bb3a";
@@ -123,6 +128,9 @@ public class Robot extends TimedRobot {
             if (driveTrain != null) driveTrain.setPose(m_robotContainer.getInitialPose());
             m_prevIsRedAlliance = isRedAlliance;
         }
+        
+        m_elevator.setHeight(m_elevator.getHeight());
+        m_pivot.setAngle(m_pivot.getAngle());
     }
     
     /** This autonomous runs the autonomous command selected by your {@link KitbotRobotContainer} class. */
