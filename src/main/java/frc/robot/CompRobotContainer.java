@@ -4,15 +4,19 @@
 
 package frc.robot;
 
+import java.util.Set;
+
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.PowerDistribution;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.ConditionalCommand;
+import edu.wpi.first.wpilibj2.command.DeferredCommand;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.StartEndCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
@@ -38,7 +42,9 @@ public class CompRobotContainer extends RobotContainer {
     
     private boolean m_coralMode = true;
     
-    private AutoCommandInterface m_autoCommand;
+    // private AutoCommandInterface m_autoCommand;
+    private final SendableChooser<AutoCommandInterface> m_chosenAuto = new SendableChooser<>();
+
     
     public CompRobotContainer() {
         m_elevator.setPivotCheckSupplier(() -> m_pivot.isOutsideLowRange());
@@ -78,6 +84,8 @@ public class CompRobotContainer extends RobotContainer {
         // m_driverController.a().onTrue(new MoveEndEffector(Constants.Position.L2_ALGAE, m_elevator, m_pivot).finallyDo(() -> m_coralMode = false));
         // m_driverController.b().onTrue(new MoveEndEffector(Constants.Position.L3_ALGAE, m_elevator, m_pivot).finallyDo(() -> m_coralMode = false));
         m_driverController.x().onTrue(new MoveEndEffector(Constants.Position.BARGE, m_elevator, m_pivot).finallyDo(() -> m_coralMode = false));
+
+        m_driverController.y().onTrue(new DeferredCommand(new ReefTractorBeam(m_driveTrain), Set.of(m_driveTrain)));
         
         POVButton dpadLeft = new POVButton(m_driverController.getHID(), 270);
         dpadLeft.onTrue(new MoveEndEffector(Constants.Position.L4, m_elevator, m_pivot).finallyDo(() -> m_coralMode = true));
@@ -104,18 +112,21 @@ public class CompRobotContainer extends RobotContainer {
     }
     
     private void configureAutos() {
-        // TODO Auto-generated method stub
-        m_autoCommand = null; // new HelloWorldAuto2(m_driveTrain);
-    }
+        Pose2d[] reefPoints = {FieldConstants.REEF_J, FieldConstants.REEF_K, FieldConstants.REEF_L, FieldConstants.REEF_A};
+        m_chosenAuto.setDefaultOption("Processor Side Standard", 
+            new CompBotGenericAutoBase(FieldConstants.ROBOT_START_3, FieldConstants.SOURCE_2_CENTER, reefPoints, m_driveTrain, m_elevator, m_coralEffector, m_pivot, true));
+        m_chosenAuto.addOption("Away Side Standard", 
+            new CompBotGenericAutoBase(FieldConstants.ROBOT_START_3, FieldConstants.SOURCE_2_CENTER, reefPoints, m_driveTrain, m_elevator, m_coralEffector, m_pivot, false));
+
+            SmartDashboard.putData("Auto Choice", m_chosenAuto);
+        }
     
     public Command getAutonomousCommand() {
-        return m_autoCommand;
+        return m_chosenAuto.getSelected();
     }
     
     public Pose2d getInitialPose() {
-        if (m_autoCommand == null)
-        return new Pose2d(1, 1, Rotation2d.fromDegrees(0));
-        return m_autoCommand.getInitialPose();
+        return m_chosenAuto.getSelected().getInitialPose();
     }
     
     public Command getDriveCommand() {
