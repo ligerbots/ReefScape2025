@@ -32,11 +32,11 @@ public class EndEffectorPivot extends SubsystemBase {
     
     // When the elevator is low, the angle range needs to be restricted
     // Remember that the midpoint is roughly 180 (not 0).
-    private static final double MIN_ANGLE_LOW_DEG = 140.0;
-    private static final double MAX_ANGLE_LOW_DEG = 295.0;
+    private static final double MIN_ANGLE_LOW_DEG = 139.0;
+    private static final double MAX_ANGLE_LOW_DEG = 298.0;
 
-    private static final double MIN_ANGLE_HIGH_DEG = 130.0;
-    private static final double MAX_ANGLE_HIGH_DEG = 325.0;
+    private static final double MIN_ANGLE_HIGH_DEG = 110.0;
+    private static final double MAX_ANGLE_HIGH_DEG = 350.0;
 
     // NOTE: All constants were taken from the 2023 arm 
     // Note: Current values for limits are refrenced with the shooter being flat
@@ -64,7 +64,7 @@ public class EndEffectorPivot extends SubsystemBase {
     private static final double ABS_ENCODER_ZERO_OFFSET = (135.2+180)/360.0; 
 
     // Constants for the pivot PID controller
-    private static final double K_P = 2.5;
+    private static final double K_P = 2.0;
     private static final double K_I = 0.0;
     private static final double K_D = 0.0;
     private static final double K_FF = 0.0;
