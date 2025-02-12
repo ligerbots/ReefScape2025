@@ -23,13 +23,20 @@ public class PathFactory {
             pathMap.put(Pair.with(FieldConstants.REEF_B, FieldConstants.SOURCE_1_IN), "ReefB to Source1In");
             pathMap.put(Pair.with(FieldConstants.REEF_E, FieldConstants.SOURCE_1_IN), "ReefE to Source1In");
             pathMap.put(Pair.with(FieldConstants.REEF_F, FieldConstants.SOURCE_1_IN), "ReefF to Source1In");
+
+            pathMap.put(Pair.with(FieldConstants.REEF_H, FieldConstants.SOURCE_2_CENTER), "ReefH to Source2Center");
             pathMap.put(Pair.with(FieldConstants.REEF_H, FieldConstants.SOURCE_2_OUT), "ReefH to Source2Out");
             pathMap.put(Pair.with(FieldConstants.REEF_J, FieldConstants.SOURCE_2_IN), "ReefJ to Source2In");
             pathMap.put(Pair.with(FieldConstants.REEF_J, FieldConstants.SOURCE_2_OUT), "ReefJ to Source2Out");
+            pathMap.put(Pair.with(FieldConstants.REEF_J, FieldConstants.SOURCE_2_CENTER), "ReefJ to Source2Center");
             pathMap.put(Pair.with(FieldConstants.REEF_K, FieldConstants.SOURCE_2_IN), "ReefK to Source2In");
             pathMap.put(Pair.with(FieldConstants.REEF_K, FieldConstants.SOURCE_2_OUT), "ReefK to Source2Out");
+            pathMap.put(Pair.with(FieldConstants.REEF_K, FieldConstants.SOURCE_2_CENTER), "ReefK to Source2Center");
+
             pathMap.put(Pair.with(FieldConstants.REEF_L, FieldConstants.SOURCE_2_IN), "ReefL to Source2In");
             pathMap.put(Pair.with(FieldConstants.REEF_L, FieldConstants.SOURCE_2_OUT), "ReefL to Source2Out");
+            pathMap.put(Pair.with(FieldConstants.REEF_L, FieldConstants.SOURCE_2_CENTER), "ReefL to Source2Center");
+
 
             pathMap.put(Pair.with(FieldConstants.SOURCE_1_IN, FieldConstants.REEF_B), "Source1In to ReefB");
             pathMap.put(Pair.with(FieldConstants.SOURCE_1_IN, FieldConstants.REEF_C), "Source1In to ReefC");
@@ -39,6 +46,10 @@ public class PathFactory {
             pathMap.put(Pair.with(FieldConstants.SOURCE_2_IN, FieldConstants.REEF_B), "Source2In to ReefB");
             pathMap.put(Pair.with(FieldConstants.SOURCE_2_IN, FieldConstants.REEF_K), "Source2In to ReefK");
             pathMap.put(Pair.with(FieldConstants.SOURCE_2_IN, FieldConstants.REEF_L), "Source2In to ReefL");
+
+            pathMap.put(Pair.with(FieldConstants.SOURCE_2_CENTER, FieldConstants.REEF_A), "Source2Center to ReefA");
+            pathMap.put(Pair.with(FieldConstants.SOURCE_2_CENTER, FieldConstants.REEF_K), "Source2Center to ReefK");
+            pathMap.put(Pair.with(FieldConstants.SOURCE_2_CENTER, FieldConstants.REEF_L), "Source2Center to ReefL");
 
             pathMap.put(Pair.with(FieldConstants.SOURCE_2_OUT, FieldConstants.REEF_A), "Source2Out to ReefA");
             pathMap.put(Pair.with(FieldConstants.SOURCE_2_OUT, FieldConstants.REEF_K), "Source2Out to ReefK");

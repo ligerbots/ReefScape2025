@@ -73,6 +73,7 @@ public class MoveEndEffector extends Command {
         m_pivot = pivot;
         m_elevator = elevator;
         m_position = position;
+        m_timer = new Timer();
         
         Pair<Double, Double> desiredPos = POSITIONS.get(position);
         m_desiredHeight = desiredPos.getFirst();

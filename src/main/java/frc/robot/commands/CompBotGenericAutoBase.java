@@ -36,25 +36,27 @@ public class CompBotGenericAutoBase extends AutoCommandInterface {
             addCommands(new MoveEndEffector(Constants.Position.L4, elevator, pivot).withTimeout(.5));
             addCommands(new InstantCommand(coralEffector::runOuttake));                
             addCommands(new WaitCommand(.2)); // wait a beat to finish scoring before driving away
-            
+            addCommands(new MoveEndEffector(Constants.Position.FRONT_INTAKE, elevator, pivot).withTimeout(.5));
+
             addCommands(m_driveTrain.followPath(PathFactory.getPath(reefPoints[0], sourcePoint, isProcessorSide)));
             addCommands(new InstantCommand(coralEffector::runIntake).until(coralEffector::hasCoral));
-            addCommands(new WaitCommand(.75));
+            addCommands(new WaitCommand(.5));
             
             addCommands(m_driveTrain.followPath(PathFactory.getPath(sourcePoint, reefPoints[1], isProcessorSide)));
             addCommands(new MoveEndEffector(Constants.Position.L4, elevator, pivot).withTimeout(.5));
             addCommands(new InstantCommand(coralEffector::runOuttake));                
             addCommands(new WaitCommand(.2)); // wait a beat to finish scoring before driving away
-            
+            addCommands(new MoveEndEffector(Constants.Position.FRONT_INTAKE, elevator, pivot).withTimeout(.5));
             
             addCommands(m_driveTrain.followPath(PathFactory.getPath(reefPoints[1], sourcePoint, isProcessorSide)));
             addCommands(new InstantCommand(coralEffector::runIntake));
-            addCommands(new WaitCommand(.75));
+            addCommands(new WaitCommand(.5));
             
             addCommands(m_driveTrain.followPath(PathFactory.getPath(sourcePoint, reefPoints[2], isProcessorSide)));
             addCommands(new MoveEndEffector(Constants.Position.L4, elevator, pivot).withTimeout(.5));
             addCommands(new InstantCommand(coralEffector::runOuttake));                
             addCommands(new WaitCommand(.2)); // wait a beat to finish scoring before driving away
+            addCommands(new MoveEndEffector(Constants.Position.FRONT_INTAKE, elevator, pivot).withTimeout(.5));
             
             if(reefPoints.length >3) {
                 addCommands(m_driveTrain.followPath(PathFactory.getPath(reefPoints[2], sourcePoint, isProcessorSide)));
@@ -65,6 +67,7 @@ public class CompBotGenericAutoBase extends AutoCommandInterface {
                 addCommands(new MoveEndEffector(Constants.Position.L4, elevator, pivot).withTimeout(.5));
                 addCommands(new InstantCommand(coralEffector::runOuttake));                
                 addCommands(new WaitCommand(.2)); // wait a beat to finish scoring before driving away
+                addCommands(new MoveEndEffector(Constants.Position.FRONT_INTAKE, elevator, pivot).withTimeout(.5));
             }
             
         } catch (Exception e) {
