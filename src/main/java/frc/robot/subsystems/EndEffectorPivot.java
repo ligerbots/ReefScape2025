@@ -69,6 +69,12 @@ public class EndEffectorPivot extends SubsystemBase {
     private static final double K_D = 0.0;
     private static final double K_FF = 0.0;
 
+    // feedforward terms to balance gravity
+    // TODO: find good values
+    private static final Rotation2d BALANCE_ANGLE = Rotation2d.fromDegrees(160);
+    // FF scale. Units are Volts (probably negative)
+    private static final double K_GRAVITY = 0;
+
     // aliases names for the slots, so it is easier to remember
     private static final ClosedLoopSlot SLOT_FAST = ClosedLoopSlot.kSlot0;
     private static final ClosedLoopSlot SLOT_SLOW = ClosedLoopSlot.kSlot1;
@@ -156,7 +162,8 @@ public class EndEffectorPivot extends SubsystemBase {
 
         // Pick the slow to use based on Elevator height
         m_controller.setReference(m_goalClipped.getRotations(), ControlType.kMAXMotionPositionControl, 
-                    elevHeight >= Elevator.SLOW_PIVOT_MIN_HEIGHT ? SLOT_SLOW : SLOT_FAST);
+                    elevHeight >= Elevator.SLOW_PIVOT_MIN_HEIGHT ? SLOT_SLOW : SLOT_FAST,
+                    feedforward());
 
         // Display current values on the SmartDashboard
         // These also get logged to the log file on the Rio and aid in replaying a match
@@ -213,6 +220,11 @@ public class EndEffectorPivot extends SubsystemBase {
     public boolean angleWithinTolerance() {
         //TODO does MAXMotion provide this?
         return Math.abs(m_goalClipped.minus(getAngle()).getDegrees()) < ANGLE_TOLERANCE_DEG;
+    }
+
+    private double feedforward() {
+        Rotation2d angle = getAngle().minus(BALANCE_ANGLE);
+        return K_GRAVITY * angle.getSin();
     }
 
     // public void adjustAngle(boolean goUp) {
