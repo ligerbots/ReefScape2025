@@ -6,7 +6,6 @@ package frc.robot.subsystems;
 
 import java.util.function.BooleanSupplier;
 import java.util.function.DoubleSupplier;
-import java.util.function.Supplier;
 
 import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
 import com.ctre.phoenix6.configs.MotionMagicConfigs;
@@ -22,7 +21,6 @@ import edu.wpi.first.math.util.Units;
 // import edu.wpi.first.wpilibj.AnalogPotentiometer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-
 import frc.robot.Constants;
 
 public class Elevator extends SubsystemBase {
@@ -66,121 +64,133 @@ public class Elevator extends SubsystemBase {
     
     // height goal in meters
     private double m_goalMeters = 0;
-    
+    private double m_goalMetersClipped = 0;
     private BooleanSupplier m_pivotOutsideLowRange = null;
-
-    /** Creates a new Elevator. */
-    public Elevator() {
-        m_motor = new TalonFX(Constants.ELEVATOR_CAN_ID);
-
-        TalonFXConfiguration talonFXConfigs = new TalonFXConfiguration();
-        
-        // enable brake mode
-        m_motor.setNeutralMode(NeutralModeValue.Brake);
-        
-        // set slot 0 gains
-        Slot0Configs slot0configs = talonFXConfigs.Slot0;
-        slot0configs.kS = STATIC_VOLTAGE;  // overcome gravity
-        slot0configs.kV = 0.0; // A velocity target of 1 rps results in 0.12 V output
-        slot0configs.kA = 0.0; // An acceleration of 1 rps/s requires 0.01 V output
-        // m_slot0configs.kP = 4.8; // A position error of 2.5 rotations results in 12 V output
-        slot0configs.kP = 0.5;  // start small!!!
-        slot0configs.kI = 0.0; // no output for integrated error
-        slot0configs.kD = 0.0; // A velocity error of 1 rps results in 0.1 V output
-        
-        // set Motion Magic settings
-        MotionMagicConfigs magicConfigs = talonFXConfigs.MotionMagic;
-        
-        magicConfigs.MotionMagicCruiseVelocity = heightToRotations(MAX_VEL_METER_PER_SEC); // Target cruise velocity of 80 rps //TODO Change values TOTAL GUESSES 
-        magicConfigs.MotionMagicAcceleration = heightToRotations(MAX_ACC_METER_PER_SEC_SQ); // Target acceleration of 160 rps/s (0.5 seconds)
-        magicConfigs.MotionMagicJerk = heightToRotations(MAX_JERK_METER_PER_SEC3); // Target jerk of 1600 rps/s/s (0.1 seconds)
-        
-        CurrentLimitsConfigs currentLimits = new CurrentLimitsConfigs().withSupplyCurrentLimit(CURRENT_LIMIT);
-        talonFXConfigs.withCurrentLimits(currentLimits);
-        
-        m_motor.getConfigurator().apply(talonFXConfigs);
-        
-        // No potentiometer at this time
-        // m_stringPotentiometer = new AnalogPotentiometer(POTENTIOMETER_CHANNEL, POTENTIOMETER_RANGE_METERS, POTENTIOMETER_OFFSET);
-
-        SmartDashboard.putNumber("elevator/testGoal", 0);
-        zeroElevator();
-    }
     
-    public void setPivotCheckSupplier(BooleanSupplier pa) {
-        m_pivotOutsideLowRange = pa;
-    }
-
-    @Override
-    public void periodic() {
-        double height = Units.metersToInches(getHeight());
-
-        // cross check that pivot is in a good place to go low
-        // if (height <= HEIGHT_LOW_RANGE && m_pivotOutsideLowRange.getAsBoolean()) {
-        //     setHeight(HEIGHT_LOW_RANGE);
-        // }
-
-        // if basically at the bottom, turn off the motor
-        if (m_goalMeters < MIN_HEIGHT_TURN_OFF && height < MIN_HEIGHT_TURN_OFF) {
-            m_motor.setControl(new VoltageOut(0));
+        /** Creates a new Elevator. */
+        public Elevator() {
+            m_motor = new TalonFX(Constants.ELEVATOR_CAN_ID);
+            m_pivotOutsideLowRange = null; 
+    
+            TalonFXConfiguration talonFXConfigs = new TalonFXConfiguration();
+            
+            // enable brake mode
+            m_motor.setNeutralMode(NeutralModeValue.Brake);
+            
+            // set slot 0 gains
+            Slot0Configs slot0configs = talonFXConfigs.Slot0;
+            slot0configs.kS = STATIC_VOLTAGE;  // overcome gravity
+            slot0configs.kV = 0.0; // A velocity target of 1 rps results in 0.12 V output
+            slot0configs.kA = 0.0; // An acceleration of 1 rps/s requires 0.01 V output
+            // m_slot0configs.kP = 4.8; // A position error of 2.5 rotations results in 12 V output
+            slot0configs.kP = 0.5;  // start small!!!
+            slot0configs.kI = 0.0; // no output for integrated error
+            slot0configs.kD = 0.0; // A velocity error of 1 rps results in 0.1 V output
+            
+            // set Motion Magic settings
+            MotionMagicConfigs magicConfigs = talonFXConfigs.MotionMagic;
+            
+            magicConfigs.MotionMagicCruiseVelocity = heightToRotations(MAX_VEL_METER_PER_SEC); // Target cruise velocity of 80 rps //TODO Change values TOTAL GUESSES 
+            magicConfigs.MotionMagicAcceleration = heightToRotations(MAX_ACC_METER_PER_SEC_SQ); // Target acceleration of 160 rps/s (0.5 seconds)
+            magicConfigs.MotionMagicJerk = heightToRotations(MAX_JERK_METER_PER_SEC3); // Target jerk of 1600 rps/s/s (0.1 seconds)
+            
+            CurrentLimitsConfigs currentLimits = new CurrentLimitsConfigs().withSupplyCurrentLimit(CURRENT_LIMIT);
+            talonFXConfigs.withCurrentLimits(currentLimits);
+            
+            m_motor.getConfigurator().apply(talonFXConfigs);
+            
+            // No potentiometer at this time
+            // m_stringPotentiometer = new AnalogPotentiometer(POTENTIOMETER_CHANNEL, POTENTIOMETER_RANGE_METERS, POTENTIOMETER_OFFSET);
+    
+            SmartDashboard.putNumber("elevator/testGoal", 0);
+            zeroElevator();
         }
-
-        SmartDashboard.putNumber("elevator/height", height);
-        SmartDashboard.putBoolean("elevator/onGoal", lengthWithinTolerance());
-        SmartDashboard.putNumber("elevator/currentGoal", 
+    
+        @Override
+        public void periodic() {
+            double height = Units.metersToInches(getHeight());
+            // cross check that pivot is in a good place to go low
+            // if (height <= HEIGHT_LOW_RANGE && m_pivotOutsideLowRange.getAsBoolean()) {
+            //     setHeight(HEIGHT_LOW_RANGE);
+            // }
+    
+            // if basically at the bottom, turn off the motor
+            if (m_goalMeters < MIN_HEIGHT_TURN_OFF && height < MIN_HEIGHT_TURN_OFF) {
+                m_motor.setControl(new VoltageOut(0));
+            }
+    
+            m_goalMetersClipped = limitElevatorLength(m_goalMeters, m_pivotOutsideLowRange.getAsBoolean());
+            
+            setHeight(m_goalMetersClipped);
+    
+            SmartDashboard.putNumber("elevator/height", height);
+            SmartDashboard.putBoolean("elevator/onGoal", lengthWithinTolerance());
+            SmartDashboard.putNumber("elevator/currentGoal", 
             Units.metersToInches(rotationsToHeight(m_motor.getClosedLoopReference().getValueAsDouble())));
-        SmartDashboard.putNumber("elevator/voltage", m_motor.getMotorVoltage().getValueAsDouble());
-        SmartDashboard.putNumber("elevator/supplyCurrent", m_motor.getSupplyCurrent().getValueAsDouble());
-        SmartDashboard.putNumber("elevator/statorCurrent", m_motor.getStatorCurrent().getValueAsDouble());
-    }
-    
-    // set elevator length in meters
-    public void setHeight(double goal) {
-        m_goalMeters = limitElevatorLength(goal);
+            SmartDashboard.putNumber("elevator/voltage", m_motor.getMotorVoltage().getValueAsDouble());
+            SmartDashboard.putNumber("elevator/supplyCurrent", m_motor.getSupplyCurrent().getValueAsDouble());
+            SmartDashboard.putNumber("elevator/statorCurrent", m_motor.getStatorCurrent().getValueAsDouble());
+        }
         
-        MotionMagicVoltage m_request = new MotionMagicVoltage(0);        
-        m_motor.setControl(m_request.withPosition(heightToRotations(m_goalMeters)));
+        // set elevator length in meters
+        public void setHeight(double goal) {
+            m_goalMeters = goal;
+            
+            MotionMagicVoltage m_request = new MotionMagicVoltage(0);        
+            m_motor.setControl(m_request.withPosition(heightToRotations(m_goalMeters)));
+            
+            SmartDashboard.putNumber("elevator/goal", Units.metersToInches(m_goalMeters));
+        }
         
-        SmartDashboard.putNumber("elevator/goal", Units.metersToInches(m_goalMeters));
+        public double getHeight() {
+            return rotationsToHeight(m_motor.getPosition().getValueAsDouble());
+            // return m_stringPotentiometer.get();  
+        }
+        
+        public void zeroElevator() {
+            m_motor.setPosition(heightToRotations(OFFSET_METER));
+            // updateMotorEncoderOffset();
+        }
+        
+        // public double getPotentiometerReadingMeters(){
+        //     return m_stringPotentiometer.get();
+        // }
+        
+        // public void updateMotorEncoderOffset() {
+        //     m_motor.setPosition(getPotentiometerReadingMeters());
+        // }
+        
+        // public void adjustLength(boolean goUp) {
+        //     double adjust = (goUp ? 1 : -1) * ADJUSTMENT_STEP;
+        //     m_lengthAdjustment += adjust;
+        //     setHeight(getHeight() + adjust, false);
+        // }
+        
+        public boolean lengthWithinTolerance() {
+            return Math.abs(getHeight() - m_goalMeters) < LENGTH_TOLERANCE_METERS;
+        }
+        
+        private static double heightToRotations(double position) {
+            return position / METER_PER_REVOLUTION;
+        }
+        
+        private static double rotationsToHeight(double rotations) {
+            return rotations * METER_PER_REVOLUTION;
+        }
+    
+        public void setPivotCheckSupplier(BooleanSupplier supplier){
+            m_pivotOutsideLowRange = supplier;
+
     }
     
-    public double getHeight() {
-        return rotationsToHeight(m_motor.getPosition().getValueAsDouble());
-        // return m_stringPotentiometer.get();  
-    }
-    
-    public void zeroElevator() {
-        m_motor.setPosition(heightToRotations(OFFSET_METER));
-        // updateMotorEncoderOffset();
-    }
-    
-    // public double getPotentiometerReadingMeters(){
-    //     return m_stringPotentiometer.get();
-    // }
-    
-    // public void updateMotorEncoderOffset() {
-    //     m_motor.setPosition(getPotentiometerReadingMeters());
-    // }
-    
-    // public void adjustLength(boolean goUp) {
-    //     double adjust = (goUp ? 1 : -1) * ADJUSTMENT_STEP;
-    //     m_lengthAdjustment += adjust;
-    //     setHeight(getHeight() + adjust, false);
-    // }
-    
-    public boolean lengthWithinTolerance() {
-        return Math.abs(getHeight() - m_goalMeters) < LENGTH_TOLERANCE_METERS;
-    }
-    
-    private static double heightToRotations(double position) {
-        return position / METER_PER_REVOLUTION;
-    }
-    
-    private static double rotationsToHeight(double rotations) {
-        return rotations * METER_PER_REVOLUTION;
-    }
-    
-    private static double limitElevatorLength(double length) {
-        return MathUtil.clamp(length, MIN_LENGTH_METERS, MAX_LENGTH_METERS);
+    private static double limitElevatorLength(double length, boolean pivotOutsideLowRange) {
+        double clampedHeight;
+        if (pivotOutsideLowRange = false) {
+            clampedHeight =   MathUtil.clamp(length, MIN_LENGTH_METERS, NARROW_PIVOT_MAX_HEIGHT);
+        }
+        else{
+            clampedHeight = MathUtil.clamp(length, NARROW_PIVOT_MAX_HEIGHT, MAX_LENGTH_METERS);
+        };
+        return  clampedHeight; 
     }
 }
