@@ -19,6 +19,9 @@ public class FieldConstants {
     public static final Pose2d ROBOT_START_2 = new Pose2d(7.23, 4.20, Rotation2d.fromDegrees(180));
     public static final Pose2d ROBOT_START_3 = new Pose2d(7.29,6.75, Rotation2d.fromDegrees(-149.9));  
 
+    public static final Pose2d REEF_CENTER = new Pose2d(4.5,4.5, Rotation2d.fromDegrees(0)); //TODO: Replace with real pose
+
+    //These are the positions the robot need to be in to score on the branches
     public static final Pose2d REEF_A = new Pose2d(3.19,4.25, Rotation2d.fromDegrees(0));
     public static final Pose2d REEF_B = new Pose2d(3.19,3.86, Rotation2d.fromDegrees(0));
     public static final Pose2d REEF_C = new Pose2d(3.71,3.00, Rotation2d.fromDegrees(58.4));
@@ -31,6 +34,15 @@ public class FieldConstants {
     public static final Pose2d REEF_J = new Pose2d(4.98,5.21, Rotation2d.fromDegrees(-119.9));
     public static final Pose2d REEF_K = new Pose2d(3.98,5.20, Rotation2d.fromDegrees(-59.9));
     public static final Pose2d REEF_L = new Pose2d(3.70,5.06, Rotation2d.fromDegrees(-59.9));
+
+    //These are the XY locations of the center of the april tags on the blue side
+    public static final Translation2d REEF_TAG_AB = new Translation2d(inchesToMeters(144), inchesToMeters(158.50));
+    public static final Translation2d REEF_TAG_CD = new Translation2d(inchesToMeters(160.39), inchesToMeters(130.17));
+    public static final Translation2d REEF_TAG_EF = new Translation2d(inchesToMeters(193.10), inchesToMeters(130.17));
+    public static final Translation2d REEF_TAG_GH = new Translation2d(inchesToMeters(209.49), inchesToMeters(158.50));
+    public static final Translation2d REEF_TAG_IJ = new Translation2d(inchesToMeters(193.10), inchesToMeters(186.83));
+    public static final Translation2d REEF_TAG_KL = new Translation2d(inchesToMeters(160.39), inchesToMeters(186.83));
+
 
     public static final Pose2d SOURCE_1_IN = new Pose2d(0.64,1.37, Rotation2d.fromDegrees(55.6));
     public static final Pose2d SOURCE_1_OUT = new Pose2d(1.65,0.64, Rotation2d.fromDegrees(55.6));
@@ -60,5 +72,9 @@ public class FieldConstants {
 
         // Blue or we don't know; return the original position
         return position;
+    }
+
+    private static double inchesToMeters(double inches) {
+        return inches * 0.0254;
     }
 }
