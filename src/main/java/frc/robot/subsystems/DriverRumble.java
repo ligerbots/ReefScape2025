@@ -36,7 +36,9 @@ public class DriverRumble extends SubsystemBase {
     if (isWithinFeetToTrigger(m_positionToAlignSupplier.get(), m_robotPositionSupplier.get())) {
       if (signedRummbleValue > 0) {
         m_xbox.setRumble(RumbleType.kLeftRumble, 1);
+        System.out.println("Rumble Left");
       } else if (signedRummbleValue < 0) {
+        System.out.println("Rumble Right");
         m_xbox.setRumble(RumbleType.kRightRumble, 1);
       } else {
         m_xbox.setRumble(RumbleType.kBothRumble, 0);
@@ -48,7 +50,9 @@ public class DriverRumble extends SubsystemBase {
 
   boolean isWithinFeetToTrigger(Pose2d positionToAlignTo, Pose2d currentPose) {
     Pose2d relitivePose = positionToAlignTo.relativeTo(currentPose);
-    return (Math.sqrt(Math.pow(relitivePose.getX(),2)+Math.pow(relitivePose.getY(),2))) < METER_TO_TRIGGER;
+    double distance = (Math.sqrt(Math.pow(relitivePose.getX(),2)+Math.pow(relitivePose.getY(),2)));
+    System.out.println("Distance: " + distance);
+    return distance < METER_TO_TRIGGER;
   }
 
   double getAngleOffFromPoint(Pose2d targetPoint, Pose2d currentPose) {
