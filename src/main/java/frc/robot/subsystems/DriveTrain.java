@@ -509,10 +509,9 @@ public class DriveTrain extends SubsystemBase {
      * Method to determine the most likely scoring position based on the current position and heading of the robot.
      *
      * @param currentPose      the current pose of the robot
-     * @param usePredictingLogic Set to false unless you know what you are doing. Predicting logic determines the most likely scoring position based on the current position and heading of the robot.
      * @return Pose2d the robot need to be in in order to score
      */
-    public static Pose2d getLikelyScoringPosition(Pose2d currentPose, boolean usePredictingLogic) {
+    public static Pose2d getLikelyScoringPosition(Pose2d currentPose) {
         Pose2d currentFlippedPose = FieldConstants.flipPose(currentPose);
         Translation2d quadrentMidpoint = getMidpointForCurrentQuadrent(currentFlippedPose);
         // FIXME: Current converting to pose2d is a hack

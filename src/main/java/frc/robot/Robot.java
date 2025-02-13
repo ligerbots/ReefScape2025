@@ -68,6 +68,7 @@ public class Robot extends TimedRobot {
         } else {
             m_robotType = RobotType.TEST;
         }
+        m_robotType = RobotType.COMP_V1; //FIXEME: Remove this line before PR'ing
         SmartDashboard.putString("robotType", m_robotType.toString());
 
         // Instantiate our RobotContainer.  This will perform all our button bindings, and put our
