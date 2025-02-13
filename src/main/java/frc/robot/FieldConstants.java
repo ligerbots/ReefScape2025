@@ -28,9 +28,9 @@ public class FieldConstants {
     public static final Pose2d REEF_D = new Pose2d(3.98,2.85, Rotation2d.fromDegrees(58.4));
     public static final Pose2d REEF_E = new Pose2d(4.99,2.85, Rotation2d.fromDegrees(120.9));
     public static final Pose2d REEF_F = new Pose2d(5.25,3.00, Rotation2d.fromDegrees(120.9));
-    public static final Pose2d REEF_G = new Pose2d(5.77,6.95, Rotation2d.fromDegrees(180.0));
+    public static final Pose2d REEF_G = new Pose2d(5.77,3.87, Rotation2d.fromDegrees(180.0));
     public static final Pose2d REEF_H = new Pose2d(5.77,4.20, Rotation2d.fromDegrees(180.0));
-    public static final Pose2d REEF_I = new Pose2d(1.25,6.95, Rotation2d.fromDegrees(-119.9));
+    public static final Pose2d REEF_I = new Pose2d(5.23,5.08, Rotation2d.fromDegrees(-119.9));
     public static final Pose2d REEF_J = new Pose2d(4.98,5.21, Rotation2d.fromDegrees(-119.9));
     public static final Pose2d REEF_K = new Pose2d(3.98,5.20, Rotation2d.fromDegrees(-59.9));
     public static final Pose2d REEF_L = new Pose2d(3.70,5.06, Rotation2d.fromDegrees(-59.9));
@@ -46,8 +46,12 @@ public class FieldConstants {
 
     public static final Pose2d SOURCE_1_IN = new Pose2d(0.64,1.37, Rotation2d.fromDegrees(55.6));
     public static final Pose2d SOURCE_1_OUT = new Pose2d(1.65,0.64, Rotation2d.fromDegrees(55.6));
+    public static final Pose2d SOURCE_1_CENTER = new Pose2d(1.65,0.64, Rotation2d.fromDegrees(55.6));
+
     public static final Pose2d SOURCE_2_IN = new Pose2d(0.63,6.68, Rotation2d.fromDegrees(-52.7));
+    public static final Pose2d SOURCE_2_CENTER = new Pose2d(1.17,7.07, Rotation2d.fromDegrees(-52.7));
     public static final Pose2d SOURCE_2_OUT = new Pose2d(1.67,7.41, Rotation2d.fromDegrees(-52.7));
+    
 
     public static boolean isRedAlliance() {
         Optional<Alliance> alliance = DriverStation.getAlliance();
