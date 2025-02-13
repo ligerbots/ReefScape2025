@@ -33,7 +33,9 @@ public class DriverRumble extends SubsystemBase {
   public void periodic() {
     // This method will be called once per scheduler run
     final double signedRummbleValue = getRumble(getAngleOffFromPoint(m_positionToAlignSupplier.get(), m_robotPositionSupplier.get()));
+    System.out.println("Rumble Value: " + signedRummbleValue);
     if (isWithinFeetToTrigger(m_positionToAlignSupplier.get(), m_robotPositionSupplier.get())) {
+      System.out.println("Going to rumble as in range");
       if (signedRummbleValue > 0) {
         m_xbox.setRumble(RumbleType.kLeftRumble, 1);
         System.out.println("Rumble Left");
@@ -51,7 +53,9 @@ public class DriverRumble extends SubsystemBase {
   boolean isWithinFeetToTrigger(Pose2d positionToAlignTo, Pose2d currentPose) {
     Pose2d relitivePose = positionToAlignTo.relativeTo(currentPose);
     double distance = (Math.sqrt(Math.pow(relitivePose.getX(),2)+Math.pow(relitivePose.getY(),2)));
-    System.out.println("Distance: " + distance);
+    // System.out.println("Distance: " + distance);
+    // System.out.println("Pose to go to: " + positionToAlignTo);
+    // System.out.println("Current Pose: " + currentPose);
     return distance < METER_TO_TRIGGER;
   }
 

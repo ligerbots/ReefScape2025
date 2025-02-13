@@ -518,7 +518,7 @@ public class DriveTrain extends SubsystemBase {
         FieldConstants.REEF_D, FieldConstants.REEF_E, FieldConstants.REEF_F, 
         FieldConstants.REEF_G, FieldConstants.REEF_H, FieldConstants.REEF_I, 
         FieldConstants.REEF_J, FieldConstants.REEF_K, FieldConstants.REEF_L);
-        Pose2d nearestPole = FieldConstants.flipPose(currentPose.nearest(REEF_POLES));
+        Pose2d nearestPole = FieldConstants.flipPose(FieldConstants.flipPose(currentPose).nearest(REEF_POLES));
         return nearestPole;
 
         // // Evan & Gil's prediction atempt code. Currently buggy and above works fine
