@@ -5,6 +5,7 @@
 package frc.robot.subsystems;
 
 import java.io.File;
+import java.util.List;
 import java.util.function.BooleanSupplier;
 import java.util.function.DoubleSupplier;
 
@@ -511,64 +512,73 @@ public class DriveTrain extends SubsystemBase {
      * @param currentPose      the current pose of the robot
      * @return Pose2d the robot need to be in in order to score
      */
-    public static Pose2d getLikelyScoringPosition(Pose2d currentPose) {
-        Pose2d currentFlippedPose = FieldConstants.flipPose(currentPose);
-        Translation2d quadrentMidpoint = getMidpointForCurrentQuadrent(currentFlippedPose);
-        // FIXME: Current converting to pose2d is a hack
-        final boolean isLeftOfMidpoint = isLeftOfPoint(
-                new Pose2d(quadrentMidpoint.getX(), quadrentMidpoint.getY(), new Rotation2d()), currentFlippedPose);
-        if (quadrentMidpoint == FieldConstants.REEF_TAG_GH) {
-            if (isLeftOfMidpoint) {
-                // return "G";
-                return FieldConstants.flipPose(FieldConstants.REEF_G);
-            } else {
-                // return "H";
-                return FieldConstants.flipPose(FieldConstants.REEF_H);
-            }
-        } else if (quadrentMidpoint == FieldConstants.REEF_TAG_IJ) {
-            if (isLeftOfMidpoint) {
-                // return "I";
-                return FieldConstants.flipPose(FieldConstants.REEF_I);
-            } else {
-                // return "J";
-                return FieldConstants.flipPose(FieldConstants.REEF_J);
-            }
-        } else if (quadrentMidpoint == FieldConstants.REEF_TAG_KL) {
-            if (isLeftOfMidpoint) {
-                // return "K";
-                return FieldConstants.flipPose(FieldConstants.REEF_K);
-            } else {
-                // return "L";
-                return FieldConstants.flipPose(FieldConstants.REEF_L);
-            }
-        } else if (quadrentMidpoint == FieldConstants.REEF_TAG_AB) {
-            if (isLeftOfMidpoint) {
-                // return "A";
-                return FieldConstants.flipPose(FieldConstants.REEF_A);
-            } else {
-                // return "B";
-                return FieldConstants.flipPose(FieldConstants.REEF_B);
-            }
-        } else if (quadrentMidpoint == FieldConstants.REEF_TAG_CD) {
-            if (isLeftOfMidpoint) {
-                // return "C";
-                return FieldConstants.flipPose(FieldConstants.REEF_C);
-            } else {
-                // return "D";
-                return FieldConstants.flipPose(FieldConstants.REEF_D);
-            }
-        } else if (quadrentMidpoint == FieldConstants.REEF_TAG_EF) {
-            if (isLeftOfMidpoint) {
-                // return "E";
-                return FieldConstants.flipPose(FieldConstants.REEF_E);
-            } else {
-                // return "F";
-                return FieldConstants.flipPose(FieldConstants.REEF_F);
-            }
-        } else {
-            // Should never happen
-            throw new IllegalArgumentException("Midpoint not in any pre-set quadrent");
-        }
+    public Pose2d getLikelyScoringPosition() {
+        final Pose2d currentPose = getPose();
+        final List<Pose2d> REEF_POLES = List.of( FieldConstants.REEF_A, FieldConstants.REEF_B, FieldConstants.REEF_C, 
+        FieldConstants.REEF_D, FieldConstants.REEF_E, FieldConstants.REEF_F, 
+        FieldConstants.REEF_G, FieldConstants.REEF_H, FieldConstants.REEF_I, 
+        FieldConstants.REEF_J, FieldConstants.REEF_K, FieldConstants.REEF_L);
+        Pose2d nearestPole = FieldConstants.flipPose(currentPose.nearest(REEF_POLES));
+        return nearestPole;
+
+        // // Evan & Gil's prediction atempt code. Currently buggy and above works fine
+        // Pose2d currentFlippedPose = FieldConstants.flipPose(currentPose);
+        // Translation2d quadrentMidpoint = getMidpointForCurrentQuadrent(currentFlippedPose);
+        // // FIXME: Current converting to pose2d is a hack
+        // final boolean isLeftOfMidpoint = isLeftOfPoint(
+        //         new Pose2d(quadrentMidpoint.getX(), quadrentMidpoint.getY(), new Rotation2d()), currentFlippedPose);
+        // if (quadrentMidpoint == FieldConstants.REEF_TAG_GH) {
+        //     if (isLeftOfMidpoint) {
+        //         // return "G";
+        //         return FieldConstants.flipPose(FieldConstants.REEF_G);
+        //     } else {
+        //         // return "H";
+        //         return FieldConstants.flipPose(FieldConstants.REEF_H);
+        //     }
+        // } else if (quadrentMidpoint == FieldConstants.REEF_TAG_IJ) {
+        //     if (isLeftOfMidpoint) {
+        //         // return "I";
+        //         return FieldConstants.flipPose(FieldConstants.REEF_I);
+        //     } else {
+        //         // return "J";
+        //         return FieldConstants.flipPose(FieldConstants.REEF_J);
+        //     }
+        // } else if (quadrentMidpoint == FieldConstants.REEF_TAG_KL) {
+        //     if (isLeftOfMidpoint) {
+        //         // return "K";
+        //         return FieldConstants.flipPose(FieldConstants.REEF_K);
+        //     } else {
+        //         // return "L";
+        //         return FieldConstants.flipPose(FieldConstants.REEF_L);
+        //     }
+        // } else if (quadrentMidpoint == FieldConstants.REEF_TAG_AB) {
+        //     if (isLeftOfMidpoint) {
+        //         // return "A";
+        //         return FieldConstants.flipPose(FieldConstants.REEF_A);
+        //     } else {
+        //         // return "B";
+        //         return FieldConstants.flipPose(FieldConstants.REEF_B);
+        //     }
+        // } else if (quadrentMidpoint == FieldConstants.REEF_TAG_CD) {
+        //     if (isLeftOfMidpoint) {
+        //         // return "C";
+        //         return FieldConstants.flipPose(FieldConstants.REEF_C);
+        //     } else {
+        //         // return "D";
+        //         return FieldConstants.flipPose(FieldConstants.REEF_D);
+        //     }
+        // } else if (quadrentMidpoint == FieldConstants.REEF_TAG_EF) {
+        //     if (isLeftOfMidpoint) {
+        //         // return "E";
+        //         return FieldConstants.flipPose(FieldConstants.REEF_E);
+        //     } else {
+        //         // return "F";
+        //         return FieldConstants.flipPose(FieldConstants.REEF_F);
+        //     }
+        // } else {
+        //     // Should never happen
+        //     throw new IllegalArgumentException("Midpoint not in any pre-set quadrent");
+        // }
     }
 
     /**
