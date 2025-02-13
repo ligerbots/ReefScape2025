@@ -4,6 +4,19 @@
 
 package frc.robot.subsystems;
 
+import java.io.File;
+import java.util.function.BooleanSupplier;
+import java.util.function.DoubleSupplier;
+
+import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
+import com.ctre.phoenix6.hardware.TalonFX;
+import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.commands.PathfindingCommand;
+import com.pathplanner.lib.config.PIDConstants;
+import com.pathplanner.lib.config.RobotConfig;
+import com.pathplanner.lib.controllers.PPHolonomicDriveController;
+import com.pathplanner.lib.path.PathPlannerPath;
+
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
@@ -15,20 +28,8 @@ import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Config;
-
-import java.io.File;
-import java.util.function.BooleanSupplier;
-import java.util.function.DoubleSupplier;
-
-import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
-import com.ctre.phoenix6.hardware.TalonFX;
-import com.pathplanner.lib.auto.AutoBuilder;
-import com.pathplanner.lib.commands.PathfindingCommand;
-import com.pathplanner.lib.config.RobotConfig;
-import com.pathplanner.lib.controllers.PPHolonomicDriveController;
-import com.pathplanner.lib.path.PathPlannerPath;
-import com.pathplanner.lib.config.PIDConstants;
-
+import frc.robot.Constants;
+import frc.robot.FieldConstants;
 import swervelib.SwerveController;
 import swervelib.SwerveDrive;
 import swervelib.SwerveDriveTest;
@@ -38,9 +39,6 @@ import swervelib.parser.SwerveDriveConfiguration;
 import swervelib.parser.SwerveParser;
 import swervelib.telemetry.SwerveDriveTelemetry;
 import swervelib.telemetry.SwerveDriveTelemetry.TelemetryVerbosity;
-
-import frc.robot.Constants;
-import frc.robot.FieldConstants;
 
 public class DriveTrain extends SubsystemBase {
 
@@ -503,9 +501,12 @@ public class DriveTrain extends SubsystemBase {
     /**
      * Method to determine the most likely scoring position based on the current position and heading of the robot.
      *
+     * @param currentPose      the current pose of the robot
+     * @param usePredictingLogic Set to false unless you know what you are doing. Predicting logic determines the most likely scoring position based on the current position and heading of the robot.
      * @return Pose2d the robot need to be in in order to score
      */
-    public static Pose2d getLikelyScoringPosition(Pose2d currentFlippedPose) {
+    public static Pose2d getLikelyScoringPosition(Pose2d currentPose, boolean usePredictingLogic) {
+        Pose2d currentFlippedPose = FieldConstants.flipPose(currentPose);
         Translation2d quadrentMidpoint = getMidpointForCurrentQuadrent(currentFlippedPose);
         // FIXME: Current converting to pose2d is a hack
         final boolean isLeftOfMidpoint = isLeftOfPoint(
@@ -513,50 +514,50 @@ public class DriveTrain extends SubsystemBase {
         if (quadrentMidpoint == FieldConstants.REEF_TAG_GH) {
             if (isLeftOfMidpoint) {
                 // return "G";
-                return FieldConstants.REEF_G;
+                return FieldConstants.flipPose(FieldConstants.REEF_G);
             } else {
                 // return "H";
-                return FieldConstants.REEF_H;
+                return FieldConstants.flipPose(FieldConstants.REEF_H);
             }
         } else if (quadrentMidpoint == FieldConstants.REEF_TAG_IJ) {
             if (isLeftOfMidpoint) {
                 // return "I";
-                return FieldConstants.REEF_I;
+                return FieldConstants.flipPose(FieldConstants.REEF_I);
             } else {
                 // return "J";
-                return FieldConstants.REEF_J;
+                return FieldConstants.flipPose(FieldConstants.REEF_J);
             }
         } else if (quadrentMidpoint == FieldConstants.REEF_TAG_KL) {
             if (isLeftOfMidpoint) {
                 // return "K";
-                return FieldConstants.REEF_K;
+                return FieldConstants.flipPose(FieldConstants.REEF_K);
             } else {
                 // return "L";
-                return FieldConstants.REEF_L;
+                return FieldConstants.flipPose(FieldConstants.REEF_L);
             }
         } else if (quadrentMidpoint == FieldConstants.REEF_TAG_AB) {
             if (isLeftOfMidpoint) {
                 // return "A";
-                return FieldConstants.REEF_A;
+                return FieldConstants.flipPose(FieldConstants.REEF_A);
             } else {
                 // return "B";
-                return FieldConstants.REEF_B;
+                return FieldConstants.flipPose(FieldConstants.REEF_B);
             }
         } else if (quadrentMidpoint == FieldConstants.REEF_TAG_CD) {
             if (isLeftOfMidpoint) {
                 // return "C";
-                return FieldConstants.REEF_C;
+                return FieldConstants.flipPose(FieldConstants.REEF_C);
             } else {
                 // return "D";
-                return FieldConstants.REEF_D;
+                return FieldConstants.flipPose(FieldConstants.REEF_D);
             }
         } else if (quadrentMidpoint == FieldConstants.REEF_TAG_EF) {
             if (isLeftOfMidpoint) {
                 // return "E";
-                return FieldConstants.REEF_E;
+                return FieldConstants.flipPose(FieldConstants.REEF_E);
             } else {
                 // return "F";
-                return FieldConstants.REEF_F;
+                return FieldConstants.flipPose(FieldConstants.REEF_F);
             }
         } else {
             // Should never happen
