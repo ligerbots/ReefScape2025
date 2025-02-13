@@ -95,6 +95,7 @@ public class MoveEndEffector extends Command {
         m_elevator.setHeight(m_desiredHeight);
         m_pivot.setAngle(m_desiredAngle);
         m_timer.reset();
+        m_timer.start();
     }
     
     // Called every time the scheduler runs while the command is scheduled.
@@ -109,6 +110,6 @@ public class MoveEndEffector extends Command {
     @Override
     public boolean isFinished() {
         return (m_elevator.lengthWithinTolerance() && m_pivot.angleWithinTolerance())
-        || m_timer.hasElapsed(m_timeoutDelay);
+                || m_timer.hasElapsed(m_timeoutDelay);
     }
 }
