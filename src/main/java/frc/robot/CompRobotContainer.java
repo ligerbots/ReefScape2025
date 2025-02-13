@@ -47,7 +47,7 @@ public class CompRobotContainer extends RobotContainer {
 
     
     public CompRobotContainer() {
-        m_elevator.setPivotCheckSupplier(() -> m_pivot.isOutsideLowRange());
+        m_elevator.setPivotCheckSupplier(() -> m_pivot.isOutsideLowHeightRange());
         
         configureBindings();
         configureAutos();

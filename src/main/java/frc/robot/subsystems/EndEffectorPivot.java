@@ -201,9 +201,9 @@ public class EndEffectorPivot extends SubsystemBase {
     //     m_encoder.setPosition(m_absoluteEncoder.getDistance());
     // }
 
-    public boolean isOutsideLowRange() {
+    public boolean isOutsideLowHeightRange() {
         double angle = getAngle().getDegrees();
-        return angle <= MIN_ANGLE_LOW_DEG || angle >= MAX_ANGLE_LOW_DEG;
+        return angle < MIN_ANGLE_LOW_DEG || angle > MAX_ANGLE_LOW_DEG;
     }
 
     // needs to be public so that commands can get the restricted angle
