@@ -51,10 +51,11 @@ public class CompRobotContainer extends RobotContainer {
     private boolean m_coralMode = true;
     
     // private AutoCommandInterface m_autoCommand;
-    private final SendableChooser<AutoCommandInterface> m_chosenAuto = new SendableChooser<>();
+    // private final SendableChooser<AutoCommandInterface> m_chosenAuto = new SendableChooser<>();
 
     private final SendableChooser<String> m_chosenFieldSide = new SendableChooser<>();
     private final SendableChooser<Pose2d> m_chosenSourcePickup = new SendableChooser<>();
+    private final SendableChooser<Pose2d[]> m_chosenReefPoints = new SendableChooser<>();
 
     
     public CompRobotContainer() {
@@ -125,51 +126,33 @@ public class CompRobotContainer extends RobotContainer {
     
     private void configureAutos() {
         Pose2d[] reefPoints = {FieldConstants.REEF_I, FieldConstants.REEF_J, FieldConstants.REEF_K, FieldConstants.REEF_L};
-        // Pose2d[] reefPoints = {FieldConstants.REEF_J, FieldConstants.REEF_K, FieldConstants.REEF_L, FieldConstants.REEF_A};
-        m_chosenAuto.setDefaultOption("Processor Side Standard IJK", 
-            new CompBotGenericAutoBase(FieldConstants.ROBOT_START_3, FieldConstants.SOURCE_2_CENTER, reefPoints, m_driveTrain, m_elevator, m_coralEffector, m_pivot, true));
-        m_chosenAuto.addOption("Away Side Standard FED", 
-            new CompBotGenericAutoBase(FieldConstants.ROBOT_START_3, FieldConstants.SOURCE_2_CENTER, reefPoints, m_driveTrain, m_elevator, m_coralEffector, m_pivot, false));
+
+        m_chosenReefPoints.setDefaultOption("IJKL  (aka FEDC)", reefPoints);
 
         Pose2d[] reefPoints2 = {FieldConstants.REEF_J, FieldConstants.REEF_K, FieldConstants.REEF_L, FieldConstants.REEF_A};
-        m_chosenAuto.addOption("Processor Side JKL", 
-            new CompBotGenericAutoBase(FieldConstants.ROBOT_START_3, FieldConstants.SOURCE_2_CENTER, reefPoints2, m_driveTrain, m_elevator, m_coralEffector, m_pivot, true));
-        m_chosenAuto.addOption("Away Side EDC", 
-            new CompBotGenericAutoBase(FieldConstants.ROBOT_START_3, FieldConstants.SOURCE_2_CENTER, reefPoints2, m_driveTrain, m_elevator, m_coralEffector, m_pivot, false));
+        m_chosenReefPoints.addOption("JKLA  (aka EDCB)", reefPoints2);
  
-        Pose2d[] reefPoints3 = {FieldConstants.REEF_H};
-        m_chosenAuto.addOption("Processor Side Center", 
-            new CompBotGenericAutoBase(FieldConstants.ROBOT_START_3, FieldConstants.SOURCE_2_CENTER, reefPoints3, m_driveTrain, m_elevator, m_coralEffector, m_pivot, true));
-            m_chosenAuto.addOption("Away Side Center", 
-            new CompBotGenericAutoBase(FieldConstants.ROBOT_START_3, FieldConstants.SOURCE_2_CENTER, reefPoints3, m_driveTrain, m_elevator, m_coralEffector, m_pivot, false));
-            
-            m_chosenFieldSide.setDefaultOption("Processor Side", "Processor Side");
-            m_chosenFieldSide.addOption("Barge Side", "Barge Side");
+        Pose2d[] reefPoints3 = { FieldConstants.REEF_H };
+        m_chosenReefPoints.addOption("H only  (aka I only) Center auto", reefPoints3);
 
-            m_chosenSourcePickup.setDefaultOption("Center", FieldConstants.SOURCE_2_CENTER);
-            m_chosenSourcePickup.addOption("Inside", FieldConstants.SOURCE_2_IN);
-            m_chosenSourcePickup.addOption("Outside", FieldConstants.SOURCE_2_OUT);
+        m_chosenFieldSide.setDefaultOption("Processor Side", "Processor Side");
+        m_chosenFieldSide.addOption("Barge Side", "Barge Side");
 
-            SmartDashboard.putData("Field Side", m_chosenFieldSide);
-            SmartDashboard.putData("Source Pickup slot", m_chosenSourcePickup);
-            SmartDashboard.putData("Auto Choice", m_chosenAuto);
+        m_chosenSourcePickup.setDefaultOption("Center", FieldConstants.SOURCE_2_CENTER);
+        m_chosenSourcePickup.addOption("Inside", FieldConstants.SOURCE_2_IN);
+        m_chosenSourcePickup.addOption("Outside", FieldConstants.SOURCE_2_OUT);
+
+        SmartDashboard.putData("Field Side", m_chosenFieldSide);
+        SmartDashboard.putData("Source Pickup slot", m_chosenSourcePickup);
+        SmartDashboard.putData("Reef Points", m_chosenReefPoints);
+        // SmartDashboard.putData("Auto Choice", m_chosenAuto);
         }
     
     public Command getAutonomousCommand() {
         // return m_chosenAuto.getSelected();
         boolean isProcessorSide = m_chosenFieldSide.getSelected().equals("Processor Side");
-
-        Pose2d[] reefPoints = {FieldConstants.REEF_I, FieldConstants.REEF_J, FieldConstants.REEF_K, FieldConstants.REEF_L};
-        return new CompBotGenericAutoBase(FieldConstants.ROBOT_START_3, m_chosenSourcePickup.getSelected(), reefPoints, 
+        return new CompBotGenericAutoBase(FieldConstants.ROBOT_START_3, m_chosenSourcePickup.getSelected(), m_chosenReefPoints.getSelected(), 
         m_driveTrain, m_elevator, m_coralEffector, m_pivot, isProcessorSide);
-
-        //             return new GetMultiNoteGeneric(
-        //                     new Translation2d[] { 
-        //                         m_firstNoteChosen.getSelected(), 
-        //                         m_secondNoteChosen.getSelected(),
-        //                         m_thirdNoteChosen.getSelected() },
-        //                     m_driveTrain, m_noteVision, m_shooter, m_shooterPivot, m_intake, m_elevator);
-        // // return m_overrideCommand.getSelected();
 
     }
     
