@@ -34,7 +34,7 @@ public class CompBotGenericAutoBase extends AutoCommandInterface {
         try {
             PathPlannerPath startPath = PathFactory.getPath(startPoint, reefPoints[0], isProcessorSide);
             
-            m_initPose = startPath.getStartingDifferentialPose();
+            m_initPose = isProcessorSide ? startPath.mirrorPath().getStartingDifferentialPose() : startPath.getStartingDifferentialPose();
             
             addCommands(m_driveTrain.followPath(startPath));
             addCommands(new MoveEndEffector(Constants.Position.L4, elevator, pivot, RAISE_ELEVATOR_WAIT_TIME));

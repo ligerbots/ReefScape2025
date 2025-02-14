@@ -112,7 +112,7 @@ public class CompRobotContainer extends RobotContainer {
     }
     
     private void configureAutos() {
-        Pose2d[] reefPoints = {FieldConstants.REEF_J, FieldConstants.REEF_K, FieldConstants.REEF_L, FieldConstants.REEF_A};
+        Pose2d[] reefPoints = {FieldConstants.REEF_I, FieldConstants.REEF_J, FieldConstants.REEF_K, FieldConstants.REEF_L};
         m_chosenAuto.setDefaultOption("Processor Side Standard", 
             new CompBotGenericAutoBase(FieldConstants.ROBOT_START_3, FieldConstants.SOURCE_2_CENTER, reefPoints, m_driveTrain, m_elevator, m_coralEffector, m_pivot, true));
         m_chosenAuto.addOption("Away Side Standard", 
