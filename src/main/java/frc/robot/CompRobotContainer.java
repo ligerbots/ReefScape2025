@@ -8,6 +8,7 @@ import java.util.Set;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
@@ -51,6 +52,9 @@ public class CompRobotContainer extends RobotContainer {
     
     // private AutoCommandInterface m_autoCommand;
     private final SendableChooser<AutoCommandInterface> m_chosenAuto = new SendableChooser<>();
+
+    private final SendableChooser<String> m_chosenFieldSide = new SendableChooser<>();
+    private final SendableChooser<Pose2d> m_chosenSourcePickup = new SendableChooser<>();
 
     
     public CompRobotContainer() {
@@ -139,16 +143,39 @@ public class CompRobotContainer extends RobotContainer {
             m_chosenAuto.addOption("Away Side Center", 
             new CompBotGenericAutoBase(FieldConstants.ROBOT_START_3, FieldConstants.SOURCE_2_CENTER, reefPoints3, m_driveTrain, m_elevator, m_coralEffector, m_pivot, false));
             
-            
+            m_chosenFieldSide.setDefaultOption("Processor Side", "Processor Side");
+            m_chosenFieldSide.addOption("Barge Side", "Barge Side");
+
+            m_chosenSourcePickup.setDefaultOption("Center", FieldConstants.SOURCE_2_CENTER);
+            m_chosenSourcePickup.addOption("Inside", FieldConstants.SOURCE_2_IN);
+            m_chosenSourcePickup.addOption("Outside", FieldConstants.SOURCE_2_OUT);
+
+            SmartDashboard.putData("Field Side", m_chosenFieldSide);
+            SmartDashboard.putData("Source Pickup slot", m_chosenSourcePickup);
             SmartDashboard.putData("Auto Choice", m_chosenAuto);
         }
     
     public Command getAutonomousCommand() {
-        return m_chosenAuto.getSelected();
+        // return m_chosenAuto.getSelected();
+        boolean isProcessorSide = m_chosenFieldSide.getSelected().equals("Processor Side");
+
+        Pose2d[] reefPoints = {FieldConstants.REEF_I, FieldConstants.REEF_J, FieldConstants.REEF_K, FieldConstants.REEF_L};
+        return new CompBotGenericAutoBase(FieldConstants.ROBOT_START_3, m_chosenSourcePickup.getSelected(), reefPoints, 
+        m_driveTrain, m_elevator, m_coralEffector, m_pivot, isProcessorSide);
+
+        //             return new GetMultiNoteGeneric(
+        //                     new Translation2d[] { 
+        //                         m_firstNoteChosen.getSelected(), 
+        //                         m_secondNoteChosen.getSelected(),
+        //                         m_thirdNoteChosen.getSelected() },
+        //                     m_driveTrain, m_noteVision, m_shooter, m_shooterPivot, m_intake, m_elevator);
+        // // return m_overrideCommand.getSelected();
+
     }
     
+
     public Pose2d getInitialPose() {
-        return m_chosenAuto.getSelected().getInitialPose();
+        return ((AutoCommandInterface) getAutonomousCommand()).getInitialPose();
     }
     
     public Command getDriveCommand() {
