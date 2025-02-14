@@ -45,7 +45,7 @@ import frc.robot.FieldConstants;
 
 public class DriveTrain extends SubsystemBase {
 
-    public static final double MAX_SPEED = Units.feetToMeters(14.5);
+    public static final double MAX_SPEED = Units.feetToMeters(15);
     
     public static final double ANGLE_TOLERANCE_RADIANS = Math.toRadians(2.0);
 
