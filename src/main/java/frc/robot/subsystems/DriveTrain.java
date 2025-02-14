@@ -520,113 +520,14 @@ public class DriveTrain extends SubsystemBase {
         FieldConstants.REEF_J, FieldConstants.REEF_K, FieldConstants.REEF_L);
         Pose2d nearestPole = FieldConstants.flipPose(FieldConstants.flipPose(currentPose).nearest(REEF_POLES));
         return nearestPole;
-
-        // // Evan & Gil's prediction atempt code. Currently buggy and above works fine
-        // Pose2d currentFlippedPose = FieldConstants.flipPose(currentPose);
-        // Translation2d quadrentMidpoint = getMidpointForCurrentQuadrent(currentFlippedPose);
-        // // FIXME: Current converting to pose2d is a hack
-        // final boolean isLeftOfMidpoint = isLeftOfPoint(
-        //         new Pose2d(quadrentMidpoint.getX(), quadrentMidpoint.getY(), new Rotation2d()), currentFlippedPose);
-        // if (quadrentMidpoint == FieldConstants.REEF_TAG_GH) {
-        //     if (isLeftOfMidpoint) {
-        //         // return "G";
-        //         return FieldConstants.flipPose(FieldConstants.REEF_G);
-        //     } else {
-        //         // return "H";
-        //         return FieldConstants.flipPose(FieldConstants.REEF_H);
-        //     }
-        // } else if (quadrentMidpoint == FieldConstants.REEF_TAG_IJ) {
-        //     if (isLeftOfMidpoint) {
-        //         // return "I";
-        //         return FieldConstants.flipPose(FieldConstants.REEF_I);
-        //     } else {
-        //         // return "J";
-        //         return FieldConstants.flipPose(FieldConstants.REEF_J);
-        //     }
-        // } else if (quadrentMidpoint == FieldConstants.REEF_TAG_KL) {
-        //     if (isLeftOfMidpoint) {
-        //         // return "K";
-        //         return FieldConstants.flipPose(FieldConstants.REEF_K);
-        //     } else {
-        //         // return "L";
-        //         return FieldConstants.flipPose(FieldConstants.REEF_L);
-        //     }
-        // } else if (quadrentMidpoint == FieldConstants.REEF_TAG_AB) {
-        //     if (isLeftOfMidpoint) {
-        //         // return "A";
-        //         return FieldConstants.flipPose(FieldConstants.REEF_A);
-        //     } else {
-        //         // return "B";
-        //         return FieldConstants.flipPose(FieldConstants.REEF_B);
-        //     }
-        // } else if (quadrentMidpoint == FieldConstants.REEF_TAG_CD) {
-        //     if (isLeftOfMidpoint) {
-        //         // return "C";
-        //         return FieldConstants.flipPose(FieldConstants.REEF_C);
-        //     } else {
-        //         // return "D";
-        //         return FieldConstants.flipPose(FieldConstants.REEF_D);
-        //     }
-        // } else if (quadrentMidpoint == FieldConstants.REEF_TAG_EF) {
-        //     if (isLeftOfMidpoint) {
-        //         // return "E";
-        //         return FieldConstants.flipPose(FieldConstants.REEF_E);
-        //     } else {
-        //         // return "F";
-        //         return FieldConstants.flipPose(FieldConstants.REEF_F);
-        //     }
-        // } else {
-        //     // Should never happen
-        //     throw new IllegalArgumentException("Midpoint not in any pre-set quadrent");
-        // }
     }
 
-    /**
-     * For the current 6th of the field we are in (imagine reef projecting out lines to devide the field into 6ths), return the positon of the corospoding april tag
-     *
-     * @return Translation2d the XY position of the april tag which is also in the center of the side of the 6th of the reef
-     */
-    private static Translation2d getMidpointForCurrentQuadrent(Pose2d currentFlippedPose) {
-        final Pose2d relitivePose = currentFlippedPose.relativeTo(FieldConstants.REEF_CENTER); // Relitive pose relitive to the center of the reef
-        final double angleFromReef = Math.atan2(relitivePose.getY(), relitivePose.getX()); // Angle from center of reef
-
-        if (angleFromReef > (11 * Math.PI) / 6 || angleFromReef < Math.PI / 6) {
-            return FieldConstants.REEF_TAG_GH;
-        } else if (angleFromReef > (Math.PI) / 6 || angleFromReef < Math.PI / 2) {
-            return FieldConstants.REEF_TAG_IJ;
-        } else if (angleFromReef > (Math.PI) / 2 || angleFromReef < (5 * Math.PI) / 6) {
-            return FieldConstants.REEF_TAG_KL;
-        } else if (angleFromReef > (5 * Math.PI) / 6 || angleFromReef < (7 * Math.PI) / 6) {
-            return FieldConstants.REEF_TAG_AB;
-        } else if (angleFromReef > (7 * Math.PI) / 6 || angleFromReef < (3 * Math.PI) / 2) {
-            return FieldConstants.REEF_TAG_CD;
-        } else if (angleFromReef > (3 * Math.PI) / 2 || angleFromReef < (11 * Math.PI) / 6) {
-            return FieldConstants.REEF_TAG_EF;
-        } else {
-            // Should never happen
-            throw new IllegalArgumentException("Angle not in any quadrent");
-        }
-    }
-
-    /**
-     * Determine if the target point is to the left of heading of the robot
-     *
-     * @param targetPoint      the point to check if it is to the left of the robot
-     * @param currentFlippedPose the current pose of the robot
-     * @return boolean if the target point is to the left of the robot
-     */
-    private static boolean isLeftOfPoint(Pose2d targetPoint, Pose2d currentFlippedPose) {
-        final Pose2d relitivePose = targetPoint.relativeTo(currentFlippedPose);
-        final double angleFromPoint = Math.atan2(relitivePose.getY(), relitivePose.getX());
-
-        // Normilise angle to be relitve to robot heading turning it into a 0-2PI range
-        // with the robot heading being 0
-        final double normilisedAngle = (angleFromPoint - currentFlippedPose.getRotation().getRadians()) % (2 * Math.PI);
-
-        if (normilisedAngle < Math.PI) {
-            return true;
-        } else {
-            return false;
-        }
+    public Pose2d getLikelyPickupLocation() {
+        final Pose2d currentPose = getPose();
+        final List<Pose2d> PICKUP_POLES = List.of(
+            FieldConstants.SOURCE_1_IN, FieldConstants.SOURCE_1_CENTER, FieldConstants.SOURCE_1_OUT, 
+            FieldConstants.SOURCE_2_IN, FieldConstants.SOURCE_2_CENTER, FieldConstants.SOURCE_2_OUT);
+        Pose2d nearestPole = FieldConstants.flipPose(FieldConstants.flipPose(currentPose).nearest(PICKUP_POLES));
+        return nearestPole;
     }
 }

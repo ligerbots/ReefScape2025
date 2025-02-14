@@ -44,6 +44,7 @@ public class FieldConstants {
     public static final Translation2d REEF_TAG_KL = new Translation2d(inchesToMeters(160.39), inchesToMeters(186.83));
 
 
+    //TODO: Verify these are robot scoring locations
     public static final Pose2d SOURCE_1_IN = new Pose2d(0.64,1.37, Rotation2d.fromDegrees(55.6));
     public static final Pose2d SOURCE_1_OUT = new Pose2d(1.65,0.64, Rotation2d.fromDegrees(55.6));
     public static final Pose2d SOURCE_1_CENTER = new Pose2d(1.65,0.64, Rotation2d.fromDegrees(55.6));
