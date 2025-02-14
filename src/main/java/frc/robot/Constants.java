@@ -27,7 +27,8 @@ public final class Constants {
         L1, L2, L3, L4, 
         BARGE,
         FRONT_INTAKE, BACK_INTAKE, L2_ALGAE, L3_ALGAE, 
-        STOW
+        STOW,
+        PROCESSOR
     }
     
     public static boolean OUTREACH_MODE = false;
