@@ -18,11 +18,11 @@ public class DriverRumble extends SubsystemBase {
   private final double ANGLE_OFF_TOLERANCE_RAD = Math.toRadians(1); //TODO: Tune this value
   private final double METER_TO_TRIGGER;
   
-  private final CommandXboxController m_xbox;
+  private final XboxController m_xbox;
   private final Supplier<Pose2d> m_positionToAlignSupplier;
   private final Supplier<Pose2d> m_robotPositionSupplier;
 
-  public DriverRumble(Supplier<Pose2d> positionSupplier, Supplier<Pose2d> positionToAlignSupplier, CommandXboxController xbox, double meterToTrigger) {
+  public DriverRumble(Supplier<Pose2d> positionSupplier, Supplier<Pose2d> positionToAlignSupplier, XboxController xbox, double meterToTrigger) {
     m_positionToAlignSupplier = positionToAlignSupplier;
     m_xbox = xbox;
     m_robotPositionSupplier = positionSupplier;
