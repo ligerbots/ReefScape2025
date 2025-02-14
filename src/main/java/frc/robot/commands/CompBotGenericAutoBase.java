@@ -28,13 +28,14 @@ public class CompBotGenericAutoBase extends AutoCommandInterface {
     private Pose2d m_initPose;
     
     /** Creates a new NoteAuto. */
-    public CompBotGenericAutoBase(Pose2d startPoint, Pose2d sourcePoint, Pose2d[] reefPoints, DriveTrain driveTrain, Elevator elevator, CoralEffector coralEffector, EndEffectorPivot pivot, boolean isProcessorSide) {
+    public CompBotGenericAutoBase(Pose2d startPoint, Pose2d sourcePoint, Pose2d[] reefPoints, DriveTrain driveTrain, 
+    Elevator elevator, CoralEffector coralEffector, EndEffectorPivot pivot, boolean isProcessorSide) {
         m_driveTrain = driveTrain;
         
         try {
             PathPlannerPath startPath = PathFactory.getPath(startPoint, reefPoints[0], isProcessorSide);
             
-            m_initPose = isProcessorSide ? startPath.mirrorPath().getStartingDifferentialPose() : startPath.getStartingDifferentialPose();
+            m_initPose = startPath.getStartingDifferentialPose();
             
             addCommands(m_driveTrain.followPath(startPath));
             addCommands(new MoveEndEffector(Constants.Position.L4, elevator, pivot, RAISE_ELEVATOR_WAIT_TIME));
