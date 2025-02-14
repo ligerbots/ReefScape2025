@@ -215,7 +215,8 @@ public class AprilTagVision extends SubsystemBase {
                         if (estPose.isPresent()) {
                             // Update the main poseEstimator with the vision result
                             // Make sure to use the timestamp of this result
-                            swerve.addVisionMeasurement(estPose.get().estimatedPose.toPose2d(), pipeRes.getTimestampSeconds(), estimateStdDev(robotPose, pipeRes.targets));
+                            // swerve.addVisionMeasurement(estPose.get().estimatedPose.toPose2d(), pipeRes.getTimestampSeconds(), estimateStdDev(robotPose, pipeRes.targets));
+                            swerve.addVisionMeasurement(estPose.get().estimatedPose.toPose2d(), pipeRes.getTimestampSeconds());
                         }
                     }
                 }
