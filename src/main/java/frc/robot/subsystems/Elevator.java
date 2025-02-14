@@ -107,7 +107,8 @@ public class Elevator extends SubsystemBase {
     @Override
     public void periodic() {
         double height = getHeight();  // meters
-        m_goalMetersClipped = limitElevatorLength(m_goalMeters, m_pivotOutsideLowRange.getAsBoolean());
+        boolean pivotRange = m_pivotOutsideLowRange == null ? false : m_pivotOutsideLowRange.getAsBoolean();
+        m_goalMetersClipped = limitElevatorLength(m_goalMeters, pivotRange);
 
         // if basically at the bottom, turn off the motor
         if (m_goalMetersClipped < MIN_HEIGHT_TURN_OFF && height < MIN_HEIGHT_TURN_OFF) {
