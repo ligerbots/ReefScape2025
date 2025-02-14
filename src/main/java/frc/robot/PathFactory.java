@@ -17,6 +17,7 @@ public class PathFactory {
         pathMap = new HashMap<>();
             pathMap.put(Pair.with(FieldConstants.ROBOT_START_1, FieldConstants.REEF_F), "Start1 to ReefF");
             pathMap.put(Pair.with(FieldConstants.ROBOT_START_2, FieldConstants.REEF_H), "Start2 to ReefH");
+            pathMap.put(Pair.with(FieldConstants.ROBOT_START_3, FieldConstants.REEF_H), "Start3 to ReefH");
             pathMap.put(Pair.with(FieldConstants.ROBOT_START_3, FieldConstants.REEF_I), "Start3 to ReefI");
             pathMap.put(Pair.with(FieldConstants.ROBOT_START_3, FieldConstants.REEF_J), "Start3 to ReefJ");
       
@@ -73,6 +74,7 @@ public class PathFactory {
         try {
             path = PathPlannerPath.fromPathFile(pathMap.get(Pair.with(start, end)));
         } catch (IOException | ParseException e) {
+            System.out.println(Pair.with(start, end));
             e.printStackTrace();
         } 
         return mirrorPath ? path.mirrorPath() : path;

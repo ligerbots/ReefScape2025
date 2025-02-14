@@ -121,11 +121,25 @@ public class CompRobotContainer extends RobotContainer {
     
     private void configureAutos() {
         Pose2d[] reefPoints = {FieldConstants.REEF_I, FieldConstants.REEF_J, FieldConstants.REEF_K, FieldConstants.REEF_L};
-        m_chosenAuto.setDefaultOption("Processor Side Standard", 
+        // Pose2d[] reefPoints = {FieldConstants.REEF_J, FieldConstants.REEF_K, FieldConstants.REEF_L, FieldConstants.REEF_A};
+        m_chosenAuto.setDefaultOption("Processor Side Standard IJK", 
             new CompBotGenericAutoBase(FieldConstants.ROBOT_START_3, FieldConstants.SOURCE_2_CENTER, reefPoints, m_driveTrain, m_elevator, m_coralEffector, m_pivot, true));
-        m_chosenAuto.addOption("Away Side Standard", 
+        m_chosenAuto.addOption("Away Side Standard FED", 
             new CompBotGenericAutoBase(FieldConstants.ROBOT_START_3, FieldConstants.SOURCE_2_CENTER, reefPoints, m_driveTrain, m_elevator, m_coralEffector, m_pivot, false));
 
+        Pose2d[] reefPoints2 = {FieldConstants.REEF_J, FieldConstants.REEF_K, FieldConstants.REEF_L, FieldConstants.REEF_A};
+        m_chosenAuto.addOption("Processor Side JKL", 
+            new CompBotGenericAutoBase(FieldConstants.ROBOT_START_3, FieldConstants.SOURCE_2_CENTER, reefPoints2, m_driveTrain, m_elevator, m_coralEffector, m_pivot, true));
+        m_chosenAuto.addOption("Away Side EDC", 
+            new CompBotGenericAutoBase(FieldConstants.ROBOT_START_3, FieldConstants.SOURCE_2_CENTER, reefPoints2, m_driveTrain, m_elevator, m_coralEffector, m_pivot, false));
+ 
+        Pose2d[] reefPoints3 = {FieldConstants.REEF_H};
+        m_chosenAuto.addOption("Processor Side Center", 
+            new CompBotGenericAutoBase(FieldConstants.ROBOT_START_3, FieldConstants.SOURCE_2_CENTER, reefPoints3, m_driveTrain, m_elevator, m_coralEffector, m_pivot, true));
+            m_chosenAuto.addOption("Away Side Center", 
+            new CompBotGenericAutoBase(FieldConstants.ROBOT_START_3, FieldConstants.SOURCE_2_CENTER, reefPoints3, m_driveTrain, m_elevator, m_coralEffector, m_pivot, false));
+            
+            
             SmartDashboard.putData("Auto Choice", m_chosenAuto);
         }
     
