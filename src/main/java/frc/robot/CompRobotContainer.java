@@ -8,8 +8,6 @@ import java.util.Set;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
@@ -21,9 +19,18 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.StartEndCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.POVButton;
-
-import frc.robot.commands.*;
-import frc.robot.subsystems.*;
+import frc.robot.commands.AutoCommandInterface;
+import frc.robot.commands.CompBotGenericAutoBase;
+import frc.robot.commands.MoveEndEffector;
+import frc.robot.commands.ReefTractorBeam;
+import frc.robot.subsystems.AlgaeEffector;
+import frc.robot.subsystems.AprilTagVision;
+import frc.robot.subsystems.Climber;
+import frc.robot.subsystems.CoralEffector;
+import frc.robot.subsystems.DriveTrain;
+import frc.robot.subsystems.Elevator;
+import frc.robot.subsystems.EndEffectorPivot;
+import frc.robot.subsystems.Leds;
 
 public class CompRobotContainer extends RobotContainer {
     private static final double JOYSTICK_DEADBAND = 0.05;
@@ -84,6 +91,7 @@ public class CompRobotContainer extends RobotContainer {
         m_driverController.a().onTrue(new MoveEndEffector(Constants.Position.L2_ALGAE, m_elevator, m_pivot).finallyDo(() -> m_coralMode = false));
         m_driverController.b().onTrue(new MoveEndEffector(Constants.Position.L3_ALGAE, m_elevator, m_pivot).finallyDo(() -> m_coralMode = false));
         m_driverController.x().onTrue(new MoveEndEffector(Constants.Position.BARGE, m_elevator, m_pivot).finallyDo(() -> m_coralMode = false));
+        m_driverController.y().onTrue(new MoveEndEffector(Constants.Position.PROCESSOR, m_elevator, m_pivot).finallyDo(() -> m_coralMode = false));
 
         m_driverController.y().onTrue(new DeferredCommand(new ReefTractorBeam(m_driveTrain), Set.of(m_driveTrain)));
         

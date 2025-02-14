@@ -54,6 +54,10 @@ public class MoveEndEffector extends Command {
     
     public static final double L3_ALGAE_HEIGHT= Units.inchesToMeters(21.0);
     public static final double L3_ALGAE_ANGLE = 325.0;    
+
+    public static final double PROCESSOR_HEIGHT = Units.inchesToMeters(0);
+    public static final double PROCESSOR_ANGLE = 140;
+
     
     private static final HashMap<Position, Pair<Double, Double>> POSITIONS = new HashMap<Position, Pair<Double, Double>>(){
         {
@@ -67,6 +71,7 @@ public class MoveEndEffector extends Command {
             put(Position.L2_ALGAE, new Pair<>(L2_ALGAE_HEIGHT, L2_ALGAE_ANGLE));
             put(Position.L3_ALGAE, new Pair<>(L3_ALGAE_HEIGHT, L3_ALGAE_ANGLE));
             put(Position.STOW, new Pair<>(STOW_HEIGHT, STOW_ANGLE));
+            put(Position.PROCESSOR, new Pair<>(PROCESSOR_HEIGHT, PROCESSOR_ANGLE));
         }
     };
     
