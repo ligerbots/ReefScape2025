@@ -54,6 +54,7 @@ public class CompRobotContainer extends RobotContainer {
     // private final SendableChooser<AutoCommandInterface> m_chosenAuto = new SendableChooser<>();
 
     private final SendableChooser<String> m_chosenFieldSide = new SendableChooser<>();
+    
     private final SendableChooser<Pose2d> m_chosenSourcePickup = new SendableChooser<>();
     private final SendableChooser<Pose2d[]> m_chosenReefPoints = new SendableChooser<>();
 
@@ -150,9 +151,8 @@ public class CompRobotContainer extends RobotContainer {
     
     public Command getAutonomousCommand() {
         // return m_chosenAuto.getSelected();
-        boolean isProcessorSide = m_chosenFieldSide.getSelected().equals("Processor Side");
         return new CompBotGenericAutoBase(FieldConstants.ROBOT_START_3, m_chosenSourcePickup.getSelected(), m_chosenReefPoints.getSelected(), 
-        m_driveTrain, m_elevator, m_coralEffector, m_pivot, isProcessorSide);
+        m_driveTrain, m_elevator, m_coralEffector, m_pivot, m_chosenFieldSide.getSelected().equals("Processor Side"));
 
     }
     
