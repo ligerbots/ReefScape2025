@@ -17,7 +17,7 @@ import frc.robot.Constants;
 
 public class CoralEffector extends SubsystemBase {
     /** Creates a new CoralEndEffector. */
-    private static final int MOTOR_CURRENT_LIMIT = 20;
+    private static final int MOTOR_CURRENT_LIMIT = 30;
 
     // This sets a limit for voltage to 10 so it is repeatable
     // until the battery dips below 10 volts
@@ -26,7 +26,7 @@ public class CoralEffector extends SubsystemBase {
     // Speeds
     private static final double INTAKE_SPEED = -0.4;
     private static final double OUTTAKE_SPEED = 0.5;
-    private static final double HOLD_SPEED = -0.1;
+    private static final double HOLD_SPEED = -0.05;
 
     // Motor
     private final SparkMax m_motor;
@@ -61,6 +61,8 @@ public class CoralEffector extends SubsystemBase {
         config.smartCurrentLimit(MOTOR_CURRENT_LIMIT);
 
         m_motor.configure(config, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
+
+        if (m_limitSwitch.isPressed()) m_state = State.HOLD;
     }
 
     @Override
