@@ -129,9 +129,9 @@ public class CompRobotContainer extends RobotContainer {
     }
     
     private void configureAutos() {
-        NamedCommands.registerCommand("raiseElevatorBeforeReef", 
+        // NamedCommands.registerCommand("raiseElevatorBeforeReef", 
             
-        new MoveEndEffector(Constants.Position.L4, m_elevator, m_pivot, CompBotGenericAutoBase.RAISE_ELEVATOR_WAIT_TIME));
+        // new MoveEndEffector(Constants.Position.L4, m_elevator, m_pivot, CompBotGenericAutoBase.RAISE_ELEVATOR_WAIT_TIME));
         
         Pose2d[] reefPoints = {FieldConstants.REEF_I, FieldConstants.REEF_J, FieldConstants.REEF_J};
 
