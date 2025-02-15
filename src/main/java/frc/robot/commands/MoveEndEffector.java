@@ -34,9 +34,9 @@ public class MoveEndEffector extends Command {
     public static final double L2_ANGLE = 275;
     public static final double L2_HEIGHT = Units.inchesToMeters(2);
     public static final double L3_ANGLE = 275;
-    public static final double L3_HEIGHT = Units.inchesToMeters(18.0);
-    public static final double L4_ANGLE = 315.0;
-    public static final double L4_HEIGHT = Units.inchesToMeters(58.0);
+    public static final double L3_HEIGHT = Units.inchesToMeters(20.0);
+    public static final double L4_ANGLE = 325.0;
+    public static final double L4_HEIGHT = Units.inchesToMeters(55.0);
     
     public static final double STOW_ANGLE = 138.0;
     public static final double STOW_HEIGHT = 0.0;
@@ -52,7 +52,7 @@ public class MoveEndEffector extends Command {
     public static final double L2_ALGAE_HEIGHT= Units.inchesToMeters(3);
     public static final double L2_ALGAE_ANGLE = 335.0;
     
-    public static final double L3_ALGAE_HEIGHT= Units.inchesToMeters(24);
+    public static final double L3_ALGAE_HEIGHT= Units.inchesToMeters(16);
     public static final double L3_ALGAE_ANGLE = 335.0;    
 
     public static final double PROCESSOR_HEIGHT = Units.inchesToMeters(0);
