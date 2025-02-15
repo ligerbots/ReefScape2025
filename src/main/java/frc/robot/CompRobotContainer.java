@@ -54,6 +54,7 @@ public class CompRobotContainer extends RobotContainer {
     // private final SendableChooser<AutoCommandInterface> m_chosenAuto = new SendableChooser<>();
 
     private final SendableChooser<String> m_chosenFieldSide = new SendableChooser<>();
+    
     private final SendableChooser<Pose2d> m_chosenSourcePickup = new SendableChooser<>();
     private final SendableChooser<Pose2d[]> m_chosenReefPoints = new SendableChooser<>();
 
@@ -126,11 +127,11 @@ public class CompRobotContainer extends RobotContainer {
     }
     
     private void configureAutos() {
-        Pose2d[] reefPoints = {FieldConstants.REEF_I, FieldConstants.REEF_J, FieldConstants.REEF_K, FieldConstants.REEF_L};
+        Pose2d[] reefPoints = {FieldConstants.REEF_I, FieldConstants.REEF_J, FieldConstants.REEF_J};
 
-        m_chosenReefPoints.setDefaultOption("IJKL  (aka FEDC)", reefPoints);
+        m_chosenReefPoints.setDefaultOption("IJJ  (aka FEE)", reefPoints);
 
-        Pose2d[] reefPoints2 = {FieldConstants.REEF_J, FieldConstants.REEF_K, FieldConstants.REEF_L, FieldConstants.REEF_A};
+        Pose2d[] reefPoints2 = {FieldConstants.REEF_J, FieldConstants.REEF_K, FieldConstants.REEF_L};
         m_chosenReefPoints.addOption("JKLA  (aka EDCB)", reefPoints2);
  
         Pose2d[] reefPoints3 = { FieldConstants.REEF_H };
@@ -151,9 +152,8 @@ public class CompRobotContainer extends RobotContainer {
     
     public Command getAutonomousCommand() {
         // return m_chosenAuto.getSelected();
-        boolean isProcessorSide = m_chosenFieldSide.getSelected().equals("Processor Side");
         return new CompBotGenericAutoBase(FieldConstants.ROBOT_START_3, m_chosenSourcePickup.getSelected(), m_chosenReefPoints.getSelected(), 
-        m_driveTrain, m_elevator, m_coralEffector, m_pivot, isProcessorSide);
+        m_driveTrain, m_elevator, m_coralEffector, m_pivot, m_chosenFieldSide.getSelected().equals("Processor Side"));
 
     }
     

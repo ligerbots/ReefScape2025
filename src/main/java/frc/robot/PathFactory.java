@@ -60,4 +60,8 @@ public class PathFactory {
         return mirrorPath ? path.mirrorPath() : path;
     }
 
+    public static void main(String[] args) {
+        Pose2d start = FieldConstants.ROBOT_START_3;
+        System.out.println(start);
+    }
 }
