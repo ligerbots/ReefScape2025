@@ -99,7 +99,7 @@ public class CompRobotContainer extends RobotContainer {
         m_driverController.x().onTrue(new MoveEndEffector(Constants.Position.BARGE, m_elevator, m_pivot).finallyDo(() -> m_coralMode = false));
         m_driverController.y().onTrue(new MoveEndEffector(Constants.Position.PROCESSOR, m_elevator, m_pivot).finallyDo(() -> m_coralMode = false));
 
-        m_driverController.y().onTrue(new DeferredCommand(new ReefTractorBeam(m_driveTrain), Set.of(m_driveTrain)));
+        // m_driverController.y().onTrue(new DeferredCommand(new ReefTractorBeam(m_driveTrain), Set.of(m_driveTrain)));
         
         POVButton dpadLeft = new POVButton(m_driverController.getHID(), 270);
         dpadLeft.onTrue(new MoveEndEffector(Constants.Position.L4, m_elevator, m_pivot).finallyDo(() -> m_coralMode = true));
@@ -123,6 +123,7 @@ public class CompRobotContainer extends RobotContainer {
         
         m_driverController.start().whileTrue(new StartEndCommand(() -> m_climber.run(0.2), m_climber::hold, m_climber));
         m_driverController.back().whileTrue(new StartEndCommand(() -> m_climber.run(-0.2), m_climber::hold, m_climber));
+        m_driverController.back().onTrue(new MoveEndEffector(Constants.Position.CLIMB, m_elevator, m_pivot, 0));
     }
     
     private void configureAutos() {

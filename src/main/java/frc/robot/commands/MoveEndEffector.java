@@ -32,11 +32,11 @@ public class MoveEndEffector extends Command {
     public static final double L1_ANGLE = 180.0;
     public static final double L1_HEIGHT = Units.inchesToMeters(0.0);
     public static final double L2_ANGLE = 275;
-    public static final double L2_HEIGHT = Units.inchesToMeters(0);
+    public static final double L2_HEIGHT = Units.inchesToMeters(2);
     public static final double L3_ANGLE = 275;
-    public static final double L3_HEIGHT = Units.inchesToMeters(16.0);
-    public static final double L4_ANGLE = 315.0;
-    public static final double L4_HEIGHT = Units.inchesToMeters(58.0);
+    public static final double L3_HEIGHT = Units.inchesToMeters(20.0);
+    public static final double L4_ANGLE = 325.0;
+    public static final double L4_HEIGHT = Units.inchesToMeters(55.0);
     
     public static final double STOW_ANGLE = 138.0;
     public static final double STOW_HEIGHT = 0.0;
@@ -49,14 +49,19 @@ public class MoveEndEffector extends Command {
     public static final double BACK_INTAKE_HEIGHT = Units.inchesToMeters(4);
     public static final double BACK_INTAKE_ANGLE = 125.0;
     
-    public static final double L2_ALGAE_HEIGHT= Units.inchesToMeters(0);
-    public static final double L2_ALGAE_ANGLE = 325.0;
+    public static final double L2_ALGAE_HEIGHT= Units.inchesToMeters(3);
+    public static final double L2_ALGAE_ANGLE = 335.0;
     
-    public static final double L3_ALGAE_HEIGHT= Units.inchesToMeters(21.0);
-    public static final double L3_ALGAE_ANGLE = 325.0;    
+    public static final double L3_ALGAE_HEIGHT= Units.inchesToMeters(16);
+    public static final double L3_ALGAE_ANGLE = 335.0;    
 
     public static final double PROCESSOR_HEIGHT = Units.inchesToMeters(0);
     public static final double PROCESSOR_ANGLE = 140;
+
+    public static final double CLIMB_ANGLE = 296.0;
+    public static final double CLIMB_HEIGHT = 0.0;
+
+    
 
     
     private static final HashMap<Position, Pair<Double, Double>> POSITIONS = new HashMap<Position, Pair<Double, Double>>(){
@@ -72,6 +77,7 @@ public class MoveEndEffector extends Command {
             put(Position.L3_ALGAE, new Pair<>(L3_ALGAE_HEIGHT, L3_ALGAE_ANGLE));
             put(Position.STOW, new Pair<>(STOW_HEIGHT, STOW_ANGLE));
             put(Position.PROCESSOR, new Pair<>(PROCESSOR_HEIGHT, PROCESSOR_ANGLE));
+            put(Position.CLIMB, new Pair<Double,Double>(CLIMB_HEIGHT, CLIMB_ANGLE));
         }
     };
     
