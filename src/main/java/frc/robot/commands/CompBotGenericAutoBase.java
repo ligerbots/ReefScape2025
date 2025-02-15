@@ -13,7 +13,7 @@ import edu.wpi.first.wpilibj2.command.StartEndCommand;
 import frc.robot.Constants;
 import frc.robot.FieldConstants;
 import frc.robot.PathFactory;
-
+import frc.robot.Robot;
 import frc.robot.subsystems.CoralEffector;
 import frc.robot.subsystems.DriveTrain;
 import frc.robot.subsystems.Elevator;
@@ -22,7 +22,7 @@ import frc.robot.subsystems.EndEffectorPivot;
 public class CompBotGenericAutoBase extends AutoCommandInterface {
     private static final double CORAL_SCORE_WAIT_TIME = 0.2;
     private static final double CORAL_PICKUP_WAIT_TIME = 0.5;
-    private static final double RAISE_ELEVATOR_WAIT_TIME = 2.0;
+    public static final double RAISE_ELEVATOR_WAIT_TIME = 2.0;
     private static final double LOWER_ELEVATOR_WAIT_TIME = 0.5;  // maybe can be lower
 
     private DriveTrain m_driveTrain;
@@ -39,13 +39,17 @@ public class CompBotGenericAutoBase extends AutoCommandInterface {
             m_initPose = startPath.getStartingDifferentialPose();
             
             addCommands(m_driveTrain.followPath(startPath));
-            addCommands(new MoveEndEffector(Constants.Position.L4, elevator, pivot, RAISE_ELEVATOR_WAIT_TIME));
+            // addCommands(new MoveEndEffector(Constants.Position.L4, elevator, pivot, RAISE_ELEVATOR_WAIT_TIME));
             addCommands(new StartEndCommand(coralEffector::runOuttake, coralEffector::stop, coralEffector).withTimeout(CORAL_SCORE_WAIT_TIME));                
             addCommands(new MoveEndEffector(Constants.Position.BACK_INTAKE, elevator, pivot, LOWER_ELEVATOR_WAIT_TIME));
 
             if (reefPoints.length > 1) {
                 addCommands(m_driveTrain.followPath(PathFactory.getPath(reefPoints[0], sourcePoint, isProcessorSide)));
-                addCommands(new StartEndCommand(coralEffector::runIntake, coralEffector::stop, coralEffector).until(coralEffector::hasCoral));
+                if (Robot.isSimulation()) {
+                    addCommands(new StartEndCommand(coralEffector::runIntake, coralEffector::stop, coralEffector).until(coralEffector::hasCoral).withTimeout(CORAL_PICKUP_WAIT_TIME));
+                } else {
+                    addCommands(new StartEndCommand(coralEffector::runIntake, coralEffector::stop, coralEffector).until(coralEffector::hasCoral));
+                }
                 
                 // addCommands(new WaitCommand(.5));
                 
@@ -55,7 +59,11 @@ public class CompBotGenericAutoBase extends AutoCommandInterface {
                 addCommands(new MoveEndEffector(Constants.Position.BACK_INTAKE, elevator, pivot, LOWER_ELEVATOR_WAIT_TIME));
                 
                 addCommands(m_driveTrain.followPath(PathFactory.getPath(reefPoints[1], sourcePoint, isProcessorSide)));
-                addCommands(new StartEndCommand(coralEffector::runIntake, coralEffector::stop, coralEffector).until(coralEffector::hasCoral));
+                if (Robot.isSimulation()) {
+                    addCommands(new StartEndCommand(coralEffector::runIntake, coralEffector::stop, coralEffector).until(coralEffector::hasCoral).withTimeout(CORAL_PICKUP_WAIT_TIME));
+                } else {
+                    addCommands(new StartEndCommand(coralEffector::runIntake, coralEffector::stop, coralEffector).until(coralEffector::hasCoral));
+                }
                 // addCommands(new WaitCommand(.5));
                 
                 addCommands(m_driveTrain.followPath(PathFactory.getPath(sourcePoint, reefPoints[2], isProcessorSide)));
@@ -65,7 +73,11 @@ public class CompBotGenericAutoBase extends AutoCommandInterface {
                 
                 if (reefPoints.length > 3) {
                     addCommands(m_driveTrain.followPath(PathFactory.getPath(reefPoints[2], sourcePoint, isProcessorSide)));
-                    addCommands(new StartEndCommand(coralEffector::runIntake, coralEffector::stop, coralEffector).until(coralEffector::hasCoral));
+                    if (Robot.isSimulation()) {
+                        addCommands(new StartEndCommand(coralEffector::runIntake, coralEffector::stop, coralEffector).until(coralEffector::hasCoral).withTimeout(CORAL_PICKUP_WAIT_TIME));
+                    } else {
+                        addCommands(new StartEndCommand(coralEffector::runIntake, coralEffector::stop, coralEffector).until(coralEffector::hasCoral));
+                    }
                     // addCommands(new WaitCommand(.75));
                     
                     addCommands(m_driveTrain.followPath(PathFactory.getPath(sourcePoint, reefPoints[3], isProcessorSide)));
