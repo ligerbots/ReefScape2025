@@ -127,11 +127,11 @@ public class CompRobotContainer extends RobotContainer {
     }
     
     private void configureAutos() {
-        Pose2d[] reefPoints = {FieldConstants.REEF_I, FieldConstants.REEF_J, FieldConstants.REEF_K, FieldConstants.REEF_L};
+        Pose2d[] reefPoints = {FieldConstants.REEF_I, FieldConstants.REEF_J, FieldConstants.REEF_J};
 
-        m_chosenReefPoints.setDefaultOption("IJKL  (aka FEDC)", reefPoints);
+        m_chosenReefPoints.setDefaultOption("IJJ  (aka FEE)", reefPoints);
 
-        Pose2d[] reefPoints2 = {FieldConstants.REEF_J, FieldConstants.REEF_K, FieldConstants.REEF_L, FieldConstants.REEF_A};
+        Pose2d[] reefPoints2 = {FieldConstants.REEF_J, FieldConstants.REEF_K, FieldConstants.REEF_L};
         m_chosenReefPoints.addOption("JKLA  (aka EDCB)", reefPoints2);
  
         Pose2d[] reefPoints3 = { FieldConstants.REEF_H };
