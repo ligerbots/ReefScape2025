@@ -75,6 +75,7 @@ public class EndEffectorPivot extends SubsystemBase {
 
     // Used for checking if on goal
     private Rotation2d m_goal = Rotation2d.fromDegrees(0);
+    private Rotation2d m_goalClipped = Rotation2d.fromDegrees(0);
 
     // adjustment offset. Starts at 0, but retained throughout a match
     // private double m_angleAdjustment = Math.toRadians(0.0);
@@ -135,7 +136,7 @@ public class EndEffectorPivot extends SubsystemBase {
         m_controller = m_motor.getClosedLoopController();
 
         // updateMotorEncoderOffset();
-        // resetGoal();
+        resetGoal();
 
         SmartDashboard.putBoolean("pivot/coastMode", false);
         setCoastMode();
@@ -145,9 +146,14 @@ public class EndEffectorPivot extends SubsystemBase {
 
     @Override
     public void periodic() {
+        double elevHeight = m_elevatorHeight.getAsDouble();
+        m_goalClipped = limitPivotAngle(m_goal, elevHeight);
+
+        m_controller.setReference(m_goalClipped.getRotations(), SparkBase.ControlType.kPosition);
+
         // Display current values on the SmartDashboard
         // This also gets logged to the log file on the Rio and aids in replaying a match
-        SmartDashboard.putNumber("pivot/goal", m_goal.getDegrees());
+        SmartDashboard.putNumber("pivot/goalClipped", m_goalClipped.getDegrees());
         SmartDashboard.putNumber("pivot/absoluteEncoder", getAngle().getDegrees());
         SmartDashboard.putNumber("pivot/outputCurrent", m_motor.getOutputCurrent());
         SmartDashboard.putNumber("pivot/busVoltage", m_motor.getBusVoltage());
@@ -169,9 +175,7 @@ public class EndEffectorPivot extends SubsystemBase {
 
     // set shooterPivot angle
     public void setAngle(Rotation2d angle) {
-        m_goal = limitPivotAngle(angle);
-        // m_controller.setReference(m_goal.getRotations(), SparkBase.ControlType.kMAXMotionPositionControl);
-        m_controller.setReference(m_goal.getRotations(), SparkBase.ControlType.kPosition);
+        m_goal = angle;
         SmartDashboard.putNumber("pivot/goal", m_goal.getDegrees());
     }
     
@@ -191,19 +195,19 @@ public class EndEffectorPivot extends SubsystemBase {
     }
 
     // needs to be public so that commands can get the restricted angle
-    public Rotation2d limitPivotAngle(Rotation2d angle) {
+    public Rotation2d limitPivotAngle(Rotation2d angle, double elevHeight) {
         double angleClamped;
-        // if (m_elevatorHeight.getAsDouble() <= Elevator.HEIGHT_LOW_RANGE)
+        if (elevHeight <= Elevator.HEIGHT_LOW_RANGE)
             angleClamped = MathUtil.clamp(angle.getDegrees(), MIN_ANGLE_LOW_DEG, MAX_ANGLE_LOW_DEG);
-        // else
-        //     angleClamped = MathUtil.clamp(angle.getDegrees(), MIN_ANGLE_HIGH_DEG, MAX_ANGLE_HIGH_DEG);
+        else
+            angleClamped = MathUtil.clamp(angle.getDegrees(), MIN_ANGLE_HIGH_DEG, MAX_ANGLE_HIGH_DEG);
 
         return Rotation2d.fromDegrees(angleClamped);
     }
 
     public boolean angleWithinTolerance() {
         //TODO does MAXMotion provide this?
-        return Math.abs(m_goal.minus(getAngle()).getDegrees()) < ANGLE_TOLERANCE_DEG;
+        return Math.abs(m_goalClipped.minus(getAngle()).getDegrees()) < ANGLE_TOLERANCE_DEG;
     }
 
     // public void adjustAngle(boolean goUp) {
