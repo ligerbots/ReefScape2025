@@ -131,13 +131,13 @@ public class AprilTagVision extends SubsystemBase {
         
         // Comp Feb 8
         m_cameras[Cam.FRONT.idx] = new Camera("ArducamBack", new Transform3d(
-            new Translation3d(Units.inchesToMeters(9.82), Units.inchesToMeters(-10.22), Units.inchesToMeters(10.53)),
+            new Translation3d(Units.inchesToMeters(9.82), Units.inchesToMeters(-10.0), Units.inchesToMeters(10.53)),
             new Rotation3d(0.0, Math.toRadians(10), 0)
                 .rotateBy(new Rotation3d(0, 0, Math.toRadians(12.5)))
         ));
 
         m_cameras[Cam.BACK.idx] = new Camera("ArducamFront", new Transform3d(
-            new Translation3d(Units.inchesToMeters(9.82), Units.inchesToMeters(10.22), Units.inchesToMeters(10.53)),
+            new Translation3d(Units.inchesToMeters(9.82), Units.inchesToMeters(10.0), Units.inchesToMeters(10.53)),
             new Rotation3d(0.0, Math.toRadians(10), 0)
                 .rotateBy(new Rotation3d(0, 0, Math.toRadians(-12.5)))
             ));
