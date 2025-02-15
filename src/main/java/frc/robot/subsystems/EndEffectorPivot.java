@@ -32,7 +32,7 @@ public class EndEffectorPivot extends SubsystemBase {
     
     // When the elevator is low, the angle range needs to be restricted
     // Remember that the midpoint is roughly 180 (not 0).
-    private static final double MIN_ANGLE_LOW_DEG = 139.0;
+    private static final double MIN_ANGLE_LOW_DEG = 137.0;
     private static final double MAX_ANGLE_LOW_DEG = 298.0;
 
     private static final double MIN_ANGLE_HIGH_DEG = 110.0;
@@ -64,7 +64,7 @@ public class EndEffectorPivot extends SubsystemBase {
     private static final double ABS_ENCODER_ZERO_OFFSET = (135.2+180)/360.0; 
 
     // Constants for the pivot PID controller
-    private static final double K_P = 2.0;
+    private static final double K_P = 20.0;
     private static final double K_I = 0.0;
     private static final double K_D = 0.0;
     private static final double K_FF = 0.0;
