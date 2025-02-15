@@ -74,9 +74,6 @@ public class Elevator extends SubsystemBase {
 
         TalonFXConfiguration talonFXConfigs = new TalonFXConfiguration();
         
-        // enable brake mode
-        m_motor.setNeutralMode(NeutralModeValue.Brake);
-        
         // set slot 0 gains
         Slot0Configs slot0configs = talonFXConfigs.Slot0;
         slot0configs.kS = STATIC_VOLTAGE;  // overcome gravity
@@ -98,6 +95,9 @@ public class Elevator extends SubsystemBase {
         talonFXConfigs.withCurrentLimits(currentLimits);
         
         m_motor.getConfigurator().apply(talonFXConfigs);
+        
+        // enable brake mode (after main config)
+        m_motor.setNeutralMode(NeutralModeValue.Brake);
         
         // No potentiometer at this time
         // m_stringPotentiometer = new AnalogPotentiometer(POTENTIOMETER_CHANNEL, POTENTIOMETER_RANGE_METERS, POTENTIOMETER_OFFSET);
