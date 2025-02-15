@@ -30,11 +30,11 @@ import frc.robot.Constants;
 
 public class EndEffectorPivot extends SubsystemBase {
     
-    private static final double MIN_ANGLE_LOW_DEG = 130.0;
-    private static final double MAX_ANGLE_LOW_DEG = 325.0;
+    private static final double MIN_ANGLE_LOW_DEG = 139.0;
+    private static final double MAX_ANGLE_LOW_DEG = 298.0;
 
-    private static final double MIN_ANGLE_HIGH_DEG = 140.0;
-    private static final double MAX_ANGLE_HIGH_DEG = 295.0;
+    private static final double MIN_ANGLE_HIGH_DEG = 110.0;
+    private static final double MAX_ANGLE_HIGH_DEG = 350.0;
 
     // NOTE: All constants were taken from the 2023 arm 
     // Note: Current values for limits are refrenced with the shooter being flat
