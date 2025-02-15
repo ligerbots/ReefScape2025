@@ -6,6 +6,8 @@ package frc.robot;
 
 import java.util.Set;
 
+import com.pathplanner.lib.auto.NamedCommands;
+
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Translation2d;
@@ -127,6 +129,10 @@ public class CompRobotContainer extends RobotContainer {
     }
     
     private void configureAutos() {
+        NamedCommands.registerCommand("raiseElevatorBeforeReef", 
+            
+        new MoveEndEffector(Constants.Position.L4, m_elevator, m_pivot, CompBotGenericAutoBase.RAISE_ELEVATOR_WAIT_TIME));
+        
         Pose2d[] reefPoints = {FieldConstants.REEF_I, FieldConstants.REEF_J, FieldConstants.REEF_J};
 
         m_chosenReefPoints.setDefaultOption("IJJ  (aka FEE)", reefPoints);
