@@ -4,36 +4,21 @@
 
 package frc.robot;
 
-import java.util.Set;
-
-import com.pathplanner.lib.auto.NamedCommands;
-
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.ConditionalCommand;
-import edu.wpi.first.wpilibj2.command.DeferredCommand;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.StartEndCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.POVButton;
-import frc.robot.commands.AutoCommandInterface;
-import frc.robot.commands.CompBotGenericAutoBase;
-import frc.robot.commands.MoveEndEffector;
-import frc.robot.commands.ReefTractorBeam;
-import frc.robot.subsystems.AlgaeEffector;
-import frc.robot.subsystems.AprilTagVision;
-import frc.robot.subsystems.Climber;
-import frc.robot.subsystems.CoralEffector;
-import frc.robot.subsystems.DriveTrain;
-import frc.robot.subsystems.Elevator;
-import frc.robot.subsystems.EndEffectorPivot;
-import frc.robot.subsystems.Leds;
+
+import frc.robot.commands.*;
+import frc.robot.subsystems.*;
 
 public class CompRobotContainer extends RobotContainer {
     private static final double JOYSTICK_DEADBAND = 0.05;
@@ -52,14 +37,9 @@ public class CompRobotContainer extends RobotContainer {
     
     private boolean m_coralMode = true;
     
-    // private AutoCommandInterface m_autoCommand;
-    // private final SendableChooser<AutoCommandInterface> m_chosenAuto = new SendableChooser<>();
-
-    private final SendableChooser<String> m_chosenFieldSide = new SendableChooser<>();
-    
+    private final SendableChooser<String> m_chosenFieldSide = new SendableChooser<>();    
     private final SendableChooser<Pose2d> m_chosenSourcePickup = new SendableChooser<>();
     private final SendableChooser<Pose2d[]> m_chosenReefPoints = new SendableChooser<>();
-
     
     public CompRobotContainer() {
         m_elevator.setPivotCheckSupplier(() -> m_pivot.isOutsideLowRange());
@@ -153,14 +133,11 @@ public class CompRobotContainer extends RobotContainer {
         SmartDashboard.putData("Field Side", m_chosenFieldSide);
         SmartDashboard.putData("Source Pickup slot", m_chosenSourcePickup);
         SmartDashboard.putData("Reef Points", m_chosenReefPoints);
-        // SmartDashboard.putData("Auto Choice", m_chosenAuto);
-        }
+    }
     
     public Command getAutonomousCommand() {
-        // return m_chosenAuto.getSelected();
         return new CompBotGenericAutoBase(FieldConstants.ROBOT_START_3, m_chosenSourcePickup.getSelected(), m_chosenReefPoints.getSelected(), 
         m_driveTrain, m_elevator, m_coralEffector, m_pivot, m_chosenFieldSide.getSelected().equals("Processor Side"));
-
     }
     
 
