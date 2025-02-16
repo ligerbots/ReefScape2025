@@ -4,19 +4,14 @@
 
 package frc.robot;
 
-import java.util.Set;
-
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.ConditionalCommand;
-import edu.wpi.first.wpilibj2.command.DeferredCommand;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.StartEndCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
@@ -42,9 +37,9 @@ public class CompRobotContainer extends RobotContainer {
     
     private boolean m_coralMode = true;
     
-    // private AutoCommandInterface m_autoCommand;
-    private final SendableChooser<AutoCommandInterface> m_chosenAuto = new SendableChooser<>();
-
+    private final SendableChooser<String> m_chosenFieldSide = new SendableChooser<>();    
+    private final SendableChooser<Pose2d> m_chosenSourcePickup = new SendableChooser<>();
+    private final SendableChooser<Pose2d[]> m_chosenReefPoints = new SendableChooser<>();
     
     public CompRobotContainer() {
         m_elevator.setPivotCheckSupplier(() -> m_pivot.isOutsideLowRange());
@@ -84,8 +79,9 @@ public class CompRobotContainer extends RobotContainer {
         m_driverController.a().onTrue(new MoveEndEffector(Constants.Position.L2_ALGAE, m_elevator, m_pivot).finallyDo(() -> m_coralMode = false));
         m_driverController.b().onTrue(new MoveEndEffector(Constants.Position.L3_ALGAE, m_elevator, m_pivot).finallyDo(() -> m_coralMode = false));
         m_driverController.x().onTrue(new MoveEndEffector(Constants.Position.BARGE, m_elevator, m_pivot).finallyDo(() -> m_coralMode = false));
+        m_driverController.y().onTrue(new MoveEndEffector(Constants.Position.PROCESSOR, m_elevator, m_pivot).finallyDo(() -> m_coralMode = false));
 
-        m_driverController.y().onTrue(new DeferredCommand(new ReefTractorBeam(m_driveTrain), Set.of(m_driveTrain)));
+        // m_driverController.y().onTrue(new DeferredCommand(new ReefTractorBeam(m_driveTrain), Set.of(m_driveTrain)));
         
         POVButton dpadLeft = new POVButton(m_driverController.getHID(), 270);
         dpadLeft.onTrue(new MoveEndEffector(Constants.Position.L4, m_elevator, m_pivot).finallyDo(() -> m_coralMode = true));
@@ -107,26 +103,46 @@ public class CompRobotContainer extends RobotContainer {
         // m_driverController.a().whileTrue(new StartEndCommand(() -> m_pivot.run(0.1), () -> m_pivot.run(0), m_pivot));
         // m_driverController.b().whileTrue(new StartEndCommand(() -> m_pivot.run(-0.1), () -> m_pivot.run(0), m_pivot));
         
-        m_driverController.start().whileTrue(new StartEndCommand(() -> m_climber.run(0.2), m_climber::hold, m_climber));
-        m_driverController.back().whileTrue(new StartEndCommand(() -> m_climber.run(-0.2), m_climber::hold, m_climber));
+        m_driverController.start().whileTrue(new StartEndCommand(() -> m_climber.run(0.4), m_climber::hold, m_climber));
+        m_driverController.back().whileTrue(new StartEndCommand(() -> m_climber.run(-0.4), m_climber::hold, m_climber));
+        m_driverController.back().onTrue(new MoveEndEffector(Constants.Position.CLIMB, m_elevator, m_pivot, 0));
     }
     
     private void configureAutos() {
-        Pose2d[] reefPoints = {FieldConstants.REEF_J, FieldConstants.REEF_K, FieldConstants.REEF_L, FieldConstants.REEF_A};
-        m_chosenAuto.setDefaultOption("Processor Side Standard", 
-            new CompBotGenericAutoBase(FieldConstants.ROBOT_START_3, FieldConstants.SOURCE_2_CENTER, reefPoints, m_driveTrain, m_elevator, m_coralEffector, m_pivot, true));
-        m_chosenAuto.addOption("Away Side Standard", 
-            new CompBotGenericAutoBase(FieldConstants.ROBOT_START_3, FieldConstants.SOURCE_2_CENTER, reefPoints, m_driveTrain, m_elevator, m_coralEffector, m_pivot, false));
+        // NamedCommands.registerCommand("raiseElevatorBeforeReef", 
+            
+        // new MoveEndEffector(Constants.Position.L4, m_elevator, m_pivot, CompBotGenericAutoBase.RAISE_ELEVATOR_WAIT_TIME));
+        
+        Pose2d[] reefPoints = {FieldConstants.REEF_I, FieldConstants.REEF_J, FieldConstants.REEF_J};
 
-            SmartDashboard.putData("Auto Choice", m_chosenAuto);
-        }
-    
-    public Command getAutonomousCommand() {
-        return m_chosenAuto.getSelected();
+        m_chosenReefPoints.setDefaultOption("IJJ  (aka FEE)", reefPoints);
+
+        Pose2d[] reefPoints2 = {FieldConstants.REEF_J, FieldConstants.REEF_K, FieldConstants.REEF_L};
+        m_chosenReefPoints.addOption("JKLA  (aka EDCB)", reefPoints2);
+ 
+        Pose2d[] reefPoints3 = { FieldConstants.REEF_H };
+        m_chosenReefPoints.addOption("H only  (aka I only) Center auto", reefPoints3);
+
+        m_chosenFieldSide.setDefaultOption("Processor Side", "Processor Side");
+        m_chosenFieldSide.addOption("Barge Side", "Barge Side");
+
+        m_chosenSourcePickup.setDefaultOption("Center", FieldConstants.SOURCE_2_CENTER);
+        m_chosenSourcePickup.addOption("Inside", FieldConstants.SOURCE_2_IN);
+        m_chosenSourcePickup.addOption("Outside", FieldConstants.SOURCE_2_OUT);
+
+        SmartDashboard.putData("Field Side", m_chosenFieldSide);
+        SmartDashboard.putData("Source Pickup slot", m_chosenSourcePickup);
+        SmartDashboard.putData("Reef Points", m_chosenReefPoints);
     }
     
+    public Command getAutonomousCommand() {
+        return new CompBotGenericAutoBase(FieldConstants.ROBOT_START_3, m_chosenSourcePickup.getSelected(), m_chosenReefPoints.getSelected(), 
+        m_driveTrain, m_elevator, m_coralEffector, m_pivot, m_chosenFieldSide.getSelected().equals("Processor Side"));
+    }
+    
+
     public Pose2d getInitialPose() {
-        return m_chosenAuto.getSelected().getInitialPose();
+        return ((AutoCommandInterface) getAutonomousCommand()).getInitialPose();
     }
     
     public Command getDriveCommand() {

@@ -3,13 +3,13 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 7.293256578947368,
-        "y": 6.747944078947367
+        "x": 7.197,
+        "y": 5.055
       },
       "prevControl": null,
       "nextControl": {
-        "x": 6.366196720696308,
-        "y": 6.210109723664676
+        "x": 6.1252230761474555,
+        "y": 5.055
       },
       "isLocked": false,
       "linkedName": null
@@ -31,7 +31,14 @@
   "rotationTargets": [],
   "constraintZones": [],
   "pointTowardsZones": [],
-  "eventMarkers": [],
+  "eventMarkers": [
+    {
+      "name": "raiseElevatorBeforeReef",
+      "waypointRelativePos": 0,
+      "endWaypointRelativePos": null,
+      "command": null
+    }
+  ],
   "globalConstraints": {
     "maxVelocity": 4.5,
     "maxAcceleration": 4.0,
@@ -48,7 +55,7 @@
   "folder": null,
   "idealStartingState": {
     "velocity": 0,
-    "rotation": -150.8025139539358
+    "rotation": 180.0
   },
   "useDefaultConstraints": true
 }

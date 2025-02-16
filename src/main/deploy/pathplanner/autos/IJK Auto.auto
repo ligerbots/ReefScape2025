@@ -7,25 +7,37 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Start1 to ReefF"
+            "pathName": "Start3 to ReefI"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "ReefF to Source1In"
+            "pathName": "ReefI to Source2Center"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "Source1Out to ReefD"
+            "pathName": "Source2Center to ReefJ"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "Shot2 to Source1"
+            "pathName": "ReefJ to Source2Center"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Source2Center to ReefK"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "ReefK to Source2Center"
           }
         }
       ]
