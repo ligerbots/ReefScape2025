@@ -106,6 +106,7 @@ public class EndEffectorPivot extends SubsystemBase {
         config.smartCurrentLimit(CURRENT_LIMIT);
 
         AbsoluteEncoderConfig absEncConfig = new AbsoluteEncoderConfig();
+        absEncConfig.setSparkMaxDataPortConfig(); // might be redundant, but can't hurt.
         absEncConfig.velocityConversionFactor(1/60.0);   // convert rpm to rps
         absEncConfig.zeroOffset(ABS_ENCODER_ZERO_OFFSET);
         absEncConfig.inverted(false);
