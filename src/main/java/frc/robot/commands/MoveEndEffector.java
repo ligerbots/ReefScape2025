@@ -62,9 +62,7 @@ public class MoveEndEffector extends Command {
     public static final double CLIMB_HEIGHT = 0.0;
 
     
-
-    
-    private static final HashMap<Position, Pair<Double, Double>> POSITIONS = new HashMap<Position, Pair<Double, Double>>(){
+    private static final HashMap<Position, Pair<Double, Double>> POSITIONS = new HashMap<Position, Pair<Double, Double>>() {
         {
             put(Position.L1, new Pair<>(L1_HEIGHT, L1_ANGLE));
             put(Position.L2, new Pair<>(L2_HEIGHT, L2_ANGLE));
@@ -109,13 +107,13 @@ public class MoveEndEffector extends Command {
         m_timer.start();
     }
     
-    // Called every time the scheduler runs while the command is scheduled.
-    @Override
-    public void execute() {}
+    // // Called every time the scheduler runs while the command is scheduled.
+    // @Override
+    // public void execute() {}
     
-    // Called once the command ends or is interrupted.
-    @Override
-    public void end(boolean interrupted) {}
+    // // Called once the command ends or is interrupted.
+    // @Override
+    // public void end(boolean interrupted) {}
     
     // Returns true when the command should end.
     @Override

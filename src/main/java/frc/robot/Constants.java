@@ -26,7 +26,8 @@ public final class Constants {
     public enum Position {
         L1, L2, L3, L4, 
         BARGE,
-        FRONT_INTAKE, BACK_INTAKE, L2_ALGAE, L3_ALGAE, 
+        FRONT_INTAKE, BACK_INTAKE, 
+        L2_ALGAE, L3_ALGAE, 
         STOW,
         PROCESSOR,
         CLIMB
