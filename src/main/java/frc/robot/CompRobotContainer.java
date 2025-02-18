@@ -169,4 +169,9 @@ public class CompRobotContainer extends RobotContainer {
     public DriveTrain getDriveTrain() {
         return m_driveTrain;
     }
+        
+    @Override
+    public CoralEffector getCoralEffector() {
+        return m_coralEffector;
+    }
 }
