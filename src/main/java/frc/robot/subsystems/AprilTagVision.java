@@ -61,8 +61,8 @@ public class AprilTagVision extends SubsystemBase {
     static final double SHED_TAG_SUBSTATION_YOFFSET = 1.19;
 
     // Base standard deviations for vision results
-    static final Matrix<N3, N1> SINGLE_TAG_BASE_STDDEV = VecBuilder.fill(4, 4, 8);
-    static final Matrix<N3, N1> MULTI_TAG_BASE_STDDEV = VecBuilder.fill(0.5, 0.5, 1);
+    static final Matrix<N3, N1> SINGLE_TAG_BASE_STDDEV = VecBuilder.fill(0.9, 0.9, 0.9);
+    static final Matrix<N3, N1> MULTI_TAG_BASE_STDDEV = VecBuilder.fill(0.45, 0.45, 0.45);
     static final Matrix<N3, N1> INFINITE_STDDEV = VecBuilder.fill(Double.MAX_VALUE, Double.MAX_VALUE, Double.MAX_VALUE);
 
     private enum Cam {
@@ -216,8 +216,8 @@ public class AprilTagVision extends SubsystemBase {
                         if (estPose.isPresent()) {
                             // Update the main poseEstimator with the vision result
                             // Make sure to use the timestamp of this result
-                            // swerve.addVisionMeasurement(estPose.get().estimatedPose.toPose2d(), pipeRes.getTimestampSeconds(), estimateStdDev(robotPose, pipeRes.targets));
-                            swerve.addVisionMeasurement(estPose.get().estimatedPose.toPose2d(), pipeRes.getTimestampSeconds());
+                            swerve.addVisionMeasurement(estPose.get().estimatedPose.toPose2d(), pipeRes.getTimestampSeconds(), estimateStdDev(pipeRes.targets));
+                            // swerve.addVisionMeasurement(estPose.get().estimatedPose.toPose2d(), pipeRes.getTimestampSeconds());
                         }
                     }
                 }
@@ -311,7 +311,8 @@ public class AprilTagVision extends SubsystemBase {
 
     // Calculates new standard deviations This algorithm is a heuristic that creates dynamic standard deviations based
     // on number of tags, estimation strategy, and distance from the tags.
-    private Matrix<N3, N1> estimateStdDev(Pose2d estimatedPose, List<PhotonTrackedTarget> targets) {
+    // private Matrix<N3, N1> estimateStdDev(Pose2d estimatedPose, List<PhotonTrackedTarget> targets) {
+    private Matrix<N3, N1> estimateStdDev(List<PhotonTrackedTarget> targets) {
 
         // Pose present. Start running Heuristic
         int numTags = 0;
@@ -320,12 +321,16 @@ public class AprilTagVision extends SubsystemBase {
         // Precalculation - see how many tags we found, and calculate an
         // average-distance metric
         for (PhotonTrackedTarget tgt : targets) {
-            var tagPose = m_aprilTagFieldLayout.getTagPose(tgt.getFiducialId());
-            if (tagPose.isEmpty())
-                continue;
+        //     var tagPose = m_aprilTagFieldLayout.getTagPose(tgt.getFiducialId());
+        //     if (tagPose.isEmpty())
+        //         continue;
+        //     avgDist += tagPose.get().toPose2d().getTranslation().getDistance(estimatedPose.getTranslation());
 
+            Transform3d bestCam2Target = tgt.getBestCameraToTarget();
+            double dist = bestCam2Target.getTranslation().getNorm();
+
+            avgDist += dist;
             numTags++;
-            avgDist += tagPose.get().toPose2d().getTranslation().getDistance(estimatedPose.getTranslation());
         }
 
         // Should not happen, but protect against divide by zero
