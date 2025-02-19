@@ -39,7 +39,7 @@ public class CoralEffector extends SubsystemBase {
     private final SparkLimitSwitch m_limitSwitch;
     private final Debouncer m_limitDebouncer = new Debouncer(0.025, DebounceType.kFalling);
     private boolean m_limitSwitchDebounced = false;
-    private final BooleanLogEntry m_limitSwitchLogger;
+    // private final BooleanLogEntry m_limitSwitchLogger;
 
     // State
     private enum State {
@@ -70,7 +70,7 @@ public class CoralEffector extends SubsystemBase {
         m_motor.configure(config, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
 
         // log the raw limit switch. Probably should be turned off after debugging
-        m_limitSwitchLogger = new BooleanLogEntry(DataLogManager.getLog(), "/coralEffector/limitSwitch");
+        // m_limitSwitchLogger = new BooleanLogEntry(DataLogManager.getLog(), "/coralEffector/limitSwitch");
     }
 
     @Override
@@ -120,7 +120,7 @@ public class CoralEffector extends SubsystemBase {
 
             // also log it to see how it behaves. This might not be fast enough, but worth a try
             // probably turn off after debugging
-            m_limitSwitchLogger.append(isPressed);
+            // m_limitSwitchLogger.append(isPressed);
         };
     }
 }
