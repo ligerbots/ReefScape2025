@@ -27,6 +27,7 @@ public class DriverRumble extends SubsystemBase {
   private final double LATERAL_OFFSET_TOLERANCE_METER = 0.05; // TODO: Tune this value (e.g., 5 cm or ~2 in). This is the tolerance in which the controller will not rumble as we are satisfactorly aligned. This idealy should be as large as possoble to give a concrete idea if we are ligned up
   // Maximum lateral offset (meters) that corresponds to full rumble intensity.
   private final double METER_TO_TRIGGER = 0.5; //TODO: Tune, most likely will want to be smaller
+  private final double RUMBLE_INTENSITY = 1; // TODO: Tune. This ranges from 0-1. 
 
   private final XboxController m_xbox;
   private final Supplier<Pose2d> m_robotPositionSupplier;
@@ -51,11 +52,11 @@ public class DriverRumble extends SubsystemBase {
       System.out.println("Lateral Offset (m): " + lateralOffset);
       System.out.println("Rumble Value: " + signedRumbleValue);
       if (signedRumbleValue > 0) {
-        m_xbox.setRumble(RumbleType.kLeftRumble, 1);
+        m_xbox.setRumble(RumbleType.kLeftRumble, RUMBLE_INTENSITY);
         m_xbox.setRumble(RumbleType.kRightRumble, 0);
         System.out.println("Rumble Left");
       } else if (signedRumbleValue < 0) {
-        m_xbox.setRumble(RumbleType.kRightRumble, 1);
+        m_xbox.setRumble(RumbleType.kRightRumble, RUMBLE_INTENSITY);
         m_xbox.setRumble(RumbleType.kLeftRumble, 0);
         System.out.println("Rumble Right");
       }
