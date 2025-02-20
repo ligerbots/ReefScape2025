@@ -43,11 +43,14 @@ public class DriverRumble extends SubsystemBase {
     Pose2d targetPose = getClosestScoringLocation();
     Pose2d robotPose = m_robotPositionSupplier.get();
 
+    final Pose2d relitivePose = robotPose.relativeTo(targetPose); //Relitive pose rotated to the target pose
+    final double distance = relitivePose.getTranslation().getNorm();
+
     // Calculate lateral offset in meters (positive means left, negative means right)
-    final double lateralOffset = getLateralOffset(targetPose, robotPose);
+    final double lateralOffset = relitivePose.getY();
     final double signedRumbleValue = getRumble(lateralOffset);
 
-    if (isWithinFeetToTrigger(targetPose, robotPose) && signedRumbleValue != 0) {
+    if (distance < METER_TO_TRIGGER && signedRumbleValue != 0) {
       System.out.println("Within range, activating rumble");
       System.out.println("Lateral Offset (m): " + lateralOffset);
       System.out.println("Rumble Value: " + signedRumbleValue);
@@ -63,19 +66,6 @@ public class DriverRumble extends SubsystemBase {
     } else {
       m_xbox.setRumble(RumbleType.kBothRumble, 0);
     }
-  }
-
-  boolean isWithinFeetToTrigger(Pose2d targetPose, Pose2d robotPose) {
-    // Calculate the distance between the target and the robot.
-    double distance = targetPose.getTranslation().getDistance(robotPose.getTranslation());
-    return distance < METER_TO_TRIGGER;
-  }
-
-  double getLateralOffset(Pose2d targetPose, Pose2d robotPose) {
-    // Transform the robot's pose into the target's coordinate frame (using the target's heading).
-    // In this frame, the x-component is forward and the y-component is lateral (positive is left).
-    Pose2d relativePose = robotPose.relativeTo(targetPose);
-    return relativePose.getY();
   }
 
   double getRumble(double lateralOffset) {
