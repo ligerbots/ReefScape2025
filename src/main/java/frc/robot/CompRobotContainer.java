@@ -34,7 +34,7 @@ public class CompRobotContainer extends RobotContainer {
     private final Elevator m_elevator = new Elevator();
     private final EndEffectorPivot m_pivot = new EndEffectorPivot(() -> m_elevator.getHeight());
     private final Climber m_climber = new Climber();
-    private final DriverRumble m_driverRumble = new DriverRumble(() -> m_driveTrain.getPose(), () -> DriverRumble.getClosestScoringLocation(m_driveTrain.getPose()), m_driverController.getHID(), 0.5);
+    private final DriverRumble m_driverRumble = new DriverRumble(() -> m_driveTrain.getPose(), m_driverController.getHID());
     
     private boolean m_coralMode = true;
     
