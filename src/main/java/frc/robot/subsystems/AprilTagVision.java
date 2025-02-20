@@ -68,6 +68,7 @@ public class AprilTagVision extends SubsystemBase {
     private enum Cam {
         FRONT_RIGHT(0),
         FRONT_LEFT(1);
+        // BACK(2);
 
         int idx;
         Cam(int idx) { this.idx = idx; }
@@ -117,7 +118,7 @@ public class AprilTagVision extends SubsystemBase {
         }
 
         // initialize cameras
-        m_cameras = new Camera[2];
+        m_cameras = new Camera[Cam.values().length];
 
         // Kitbot
         // m_cameras[Cam.FRONT.idx] = new Camera("ArducamFront", new Transform3d(
@@ -133,16 +134,22 @@ public class AprilTagVision extends SubsystemBase {
         // Comp Feb 8
         m_cameras[Cam.FRONT_RIGHT.idx] = new Camera("ArducamBack", new Transform3d(
             new Translation3d(Units.inchesToMeters(9.82), Units.inchesToMeters(-10.0), Units.inchesToMeters(10.53)),
-            new Rotation3d(0.0, Math.toRadians(10), 0)
+            new Rotation3d(0.0, Math.toRadians(-10), 0)
                 .rotateBy(new Rotation3d(0, 0, Math.toRadians(12.5)))
         ));
 
         m_cameras[Cam.FRONT_LEFT.idx] = new Camera("ArducamFront", new Transform3d(
             new Translation3d(Units.inchesToMeters(9.82), Units.inchesToMeters(10.0), Units.inchesToMeters(10.53)),
-            new Rotation3d(0.0, Math.toRadians(10), 0)
+            new Rotation3d(0.0, Math.toRadians(-10), 0)
                 .rotateBy(new Rotation3d(0, 0, Math.toRadians(-12.5)))
             ));
 
+        // m_cameras[Cam.BACK.idx] = new Camera("Arducam3", new Transform3d(
+        //         new Translation3d(Units.inchesToMeters(-8), Units.inchesToMeters(4.0), Units.inchesToMeters(15)),
+        //         new Rotation3d(0.0, Math.toRadians(-25), 0)
+        //             .rotateBy(new Rotation3d(0, 0, Math.toRadians(180)))
+        //         ));
+    
         if (Constants.SIMULATION_SUPPORT) {
             // initialize a simulated camera. Must be done after creating the tag layout
             initializeSimulation();
@@ -154,8 +161,9 @@ public class AprilTagVision extends SubsystemBase {
         // set the driver mode to false
         // setDriverMode(false);
 
-        SmartDashboard.putBoolean("aprilTagVision/frontRightCamera", m_cameras[Cam.FRONT_RIGHT.idx].photonCamera.isConnected());
-        SmartDashboard.putBoolean("aprilTagVision/frontLeftCamera", m_cameras[Cam.FRONT_LEFT.idx].photonCamera.isConnected());
+        for (Cam cam : Cam.values()) {
+            SmartDashboard.putBoolean("aprilTagVision/" + cam.toString(), m_cameras[cam.idx].photonCamera.isConnected());
+        }
     }
 
     public void updateSimulation(SwerveDrive swerve) {
@@ -419,6 +427,8 @@ public class AprilTagVision extends SubsystemBase {
 
         for (Camera c : m_cameras) {
             PhotonCameraSim camSim = new PhotonCameraSim(c.photonCamera, prop);
+            // open web page with a simulate camera image. 
+            camSim.enableDrawWireframe(true);
             camSim.setMaxSightRange(Units.feetToMeters(20.0));
             m_visionSim.addCamera(camSim, c.robotToCam);
         }
