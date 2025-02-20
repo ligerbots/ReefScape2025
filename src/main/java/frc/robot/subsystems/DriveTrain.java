@@ -26,6 +26,7 @@ import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.commands.PathfindingCommand;
 import com.pathplanner.lib.config.RobotConfig;
 import com.pathplanner.lib.controllers.PPHolonomicDriveController;
+import com.pathplanner.lib.path.PathConstraints;
 import com.pathplanner.lib.path.PathPlannerPath;
 import com.pathplanner.lib.config.PIDConstants;
 
@@ -44,7 +45,7 @@ import frc.robot.FieldConstants;
 
 public class DriveTrain extends SubsystemBase {
 
-    public static final double MAX_SPEED = Units.feetToMeters(14.5);
+    public static final double MAX_SPEED = Units.feetToMeters(15);
     
     public static final double ANGLE_TOLERANCE_RADIANS = Math.toRadians(2.0);
 
@@ -60,9 +61,8 @@ public class DriveTrain extends SubsystemBase {
     private static final Translation2d ROTATION_CENTER_OFFSET = new Translation2d(Units.inchesToMeters(ROBOT_SWERVE_OFFSET_X_INCHES), 0 );
 
     // values from 2024 competition. Maybe should be tuned
-    private static final PIDConstants PATH_PLANNER_TRANSLATION_PID = new PIDConstants(3.0, 0, 0);
-    private static final PIDConstants PATH_PLANNER_ANGLE_PID       = new PIDConstants(3.0, 0, 0);
-
+    private static final PIDConstants PATH_PLANNER_TRANSLATION_PID = new PIDConstants(3.5, 0, 0);
+    private static final PIDConstants PATH_PLANNER_ANGLE_PID       = new PIDConstants(3.5, 0, 0);
     // // local overrides for PP max values. 
     // // These are combined using "min()" with the values computed from the JSON config files, where available.
     // private static final double PATH_PLANNER_MAX_SPEED = 4.5;
@@ -274,6 +274,11 @@ public class DriveTrain extends SubsystemBase {
     public Command followPath(PathPlannerPath path) {
         // Create a path following command using AutoBuilder. This will also trigger event markers.
         return AutoBuilder.followPath(path);
+    }
+
+    public Command pathFindToPose(Pose2d targetPose, PathConstraints constraints) {
+        
+        return AutoBuilder.pathfindToPose(targetPose, constraints);
     }
 
     public static PathPlannerPath loadPath(String pathName) {

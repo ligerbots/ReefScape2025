@@ -66,8 +66,8 @@ public class AprilTagVision extends SubsystemBase {
     static final Matrix<N3, N1> INFINITE_STDDEV = VecBuilder.fill(Double.MAX_VALUE, Double.MAX_VALUE, Double.MAX_VALUE);
 
     private enum Cam {
-        FRONT(0),
-        BACK(1);
+        FRONT_RIGHT(0),
+        FRONT_LEFT(1);
 
         int idx;
         Cam(int idx) { this.idx = idx; }
@@ -109,7 +109,8 @@ public class AprilTagVision extends SubsystemBase {
 
     public AprilTagVision() {
         try {
-            m_aprilTagFieldLayout = AprilTagFieldLayout.loadField(AprilTagFields.k2025Reefscape);
+            m_aprilTagFieldLayout = AprilTagFieldLayout.loadField(AprilTagFields.k2025ReefscapeWelded);
+            SmartDashboard.putString("aprilTagVision/field", AprilTagFields.k2025ReefscapeWelded.toString());
         } catch (UncheckedIOException e) {
             System.out.println("Unable to load AprilTag layout " + e.getMessage());
             m_aprilTagFieldLayout = null;
@@ -118,16 +119,30 @@ public class AprilTagVision extends SubsystemBase {
         // initialize cameras
         m_cameras = new Camera[2];
 
-        m_cameras[Cam.FRONT.idx] = new Camera("ArducamFront", new Transform3d(
-            new Translation3d(Units.inchesToMeters(14.5), 0, Units.inchesToMeters(11.75)),
-            new Rotation3d(0.0, Math.toRadians(0.0), 0.0)
+        // Kitbot
+        // m_cameras[Cam.FRONT.idx] = new Camera("ArducamFront", new Transform3d(
+        //     new Translation3d(Units.inchesToMeters(14.5), 0, Units.inchesToMeters(11.75)),
+        //     new Rotation3d(0.0, Math.toRadians(0.0), 0.0)
+        // ));
+
+        // m_cameras[Cam.BACK.idx] = new Camera("ArducamBack", new Transform3d(
+        //     new Translation3d(Units.inchesToMeters(-(27.5/2 - 1.0)), 0, Units.inchesToMeters(17.0)),
+        //     new Rotation3d(0.0, Math.toRadians(0.0), Math.toRadians(180.0))
+        // ));
+        
+        // Comp Feb 8
+        m_cameras[Cam.FRONT_RIGHT.idx] = new Camera("ArducamBack", new Transform3d(
+            new Translation3d(Units.inchesToMeters(9.82), Units.inchesToMeters(-10.0), Units.inchesToMeters(10.53)),
+            new Rotation3d(0.0, Math.toRadians(10), 0)
+                .rotateBy(new Rotation3d(0, 0, Math.toRadians(12.5)))
         ));
 
-        m_cameras[Cam.BACK.idx] = new Camera("ArducamBack", new Transform3d(
-            new Translation3d(Units.inchesToMeters(-(27.5/2 - 1.0)), 0, Units.inchesToMeters(17.0)),
-            new Rotation3d(0.0, Math.toRadians(0.0), Math.toRadians(180.0))
-        ));
-        
+        m_cameras[Cam.FRONT_LEFT.idx] = new Camera("ArducamFront", new Transform3d(
+            new Translation3d(Units.inchesToMeters(9.82), Units.inchesToMeters(10.0), Units.inchesToMeters(10.53)),
+            new Rotation3d(0.0, Math.toRadians(10), 0)
+                .rotateBy(new Rotation3d(0, 0, Math.toRadians(-12.5)))
+            ));
+
         if (Constants.SIMULATION_SUPPORT) {
             // initialize a simulated camera. Must be done after creating the tag layout
             initializeSimulation();
@@ -139,8 +154,8 @@ public class AprilTagVision extends SubsystemBase {
         // set the driver mode to false
         // setDriverMode(false);
 
-        SmartDashboard.putBoolean("aprilTagVision/frontCamera", m_cameras[Cam.FRONT.idx].photonCamera.isConnected());
-        SmartDashboard.putBoolean("aprilTagVision/backCamera", m_cameras[Cam.BACK.idx].photonCamera.isConnected());
+        SmartDashboard.putBoolean("aprilTagVision/frontRightCamera", m_cameras[Cam.FRONT_RIGHT.idx].photonCamera.isConnected());
+        SmartDashboard.putBoolean("aprilTagVision/frontLeftCamera", m_cameras[Cam.FRONT_LEFT.idx].photonCamera.isConnected());
     }
 
     public void updateSimulation(SwerveDrive swerve) {
@@ -201,7 +216,8 @@ public class AprilTagVision extends SubsystemBase {
                         if (estPose.isPresent()) {
                             // Update the main poseEstimator with the vision result
                             // Make sure to use the timestamp of this result
-                            swerve.addVisionMeasurement(estPose.get().estimatedPose.toPose2d(), pipeRes.getTimestampSeconds(), estimateStdDev(robotPose, pipeRes.targets));
+                            // swerve.addVisionMeasurement(estPose.get().estimatedPose.toPose2d(), pipeRes.getTimestampSeconds(), estimateStdDev(robotPose, pipeRes.targets));
+                            swerve.addVisionMeasurement(estPose.get().estimatedPose.toPose2d(), pipeRes.getTimestampSeconds());
                         }
                     }
                 }
@@ -244,42 +260,43 @@ public class AprilTagVision extends SubsystemBase {
     //     }
     // }
 
-    // get the tag ID closest to horizontal center of camera
-    // we might want to use this to do fine adjustments on field element locations
-    public int getCentralTagId() {
-        // make sure camera connected
-        if (!m_cameras[Cam.FRONT.idx].photonCamera.isConnected())
-            return -1;
+    // ** Still will work, but need to decide which camera
+    // // get the tag ID closest to horizontal center of camera
+    // // we might want to use this to do fine adjustments on field element locations
+    // public int getCentralTagId() {
+    //     // make sure camera connected
+    //     if (!m_cameras[Cam.FRONT_RIGHT.idx].photonCamera.isConnected())
+    //         return -1;
 
-        var targetResult = m_cameras[Cam.FRONT.idx].photonCamera.getLatestResult();
-        // make a temp holder var for least Y translation, set to first tags translation
-        double minY = 1.0e6; // big number
-        int targetID = -1;
-        for (PhotonTrackedTarget tag : targetResult.getTargets()) { // for every target in camera
-            // find id for current tag we are focusing on
-            int tempTagID = tag.getFiducialId();
+    //     var targetResult = m_cameras[Cam.FRONT_RIGHT.idx].photonCamera.getLatestResult();
+    //     // make a temp holder var for least Y translation, set to first tags translation
+    //     double minY = 1.0e6; // big number
+    //     int targetID = -1;
+    //     for (PhotonTrackedTarget tag : targetResult.getTargets()) { // for every target in camera
+    //         // find id for current tag we are focusing on
+    //         int tempTagID = tag.getFiducialId();
 
-            // if tag has an invalid ID then skip this tag
-            if (tempTagID < 1 || tempTagID > 16) {
-                continue;
-            }
+    //         // if tag has an invalid ID then skip this tag
+    //         if (tempTagID < 1 || tempTagID > 16) {
+    //             continue;
+    //         }
 
-            // get transformation to target
-            Transform3d tagTransform = tag.getBestCameraToTarget();
-            // get abs translation to target from transformation
-            double tagY = Math.abs(tagTransform.getY());
+    //         // get transformation to target
+    //         Transform3d tagTransform = tag.getBestCameraToTarget();
+    //         // get abs translation to target from transformation
+    //         double tagY = Math.abs(tagTransform.getY());
 
-            // looking for smallest absolute relative to camera Y
-            // if abs Y translation of new tag is less then holder tag, it becomes holder
-            // tag
-            if (tagY < minY) {
-                minY = tagY;
-                targetID = tempTagID; // remember targetID
-            }
-        }
+    //         // looking for smallest absolute relative to camera Y
+    //         // if abs Y translation of new tag is less then holder tag, it becomes holder
+    //         // tag
+    //         if (tagY < minY) {
+    //             minY = tagY;
+    //             targetID = tempTagID; // remember targetID
+    //         }
+    //     }
 
-        return targetID;
-    }
+    //     return targetID;
+    // }
 
     // get the pose for a tag.
     // will return null if the tag is not in the field map (eg -1)

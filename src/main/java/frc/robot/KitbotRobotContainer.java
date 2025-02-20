@@ -6,7 +6,6 @@ package frc.robot;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -16,9 +15,9 @@ import edu.wpi.first.wpilibj2.command.StartEndCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 
 import frc.robot.commands.*;
-
+import frc.robot.commands.kitbot.*;
 import frc.robot.subsystems.*;
-import frc.robot.subsystems.kitbot.KitbotRoller;
+import frc.robot.subsystems.kitbot.*;
 
 public class KitbotRobotContainer extends RobotContainer {
     private static final double JOYSTICK_DEADBAND = 0.05;
@@ -28,11 +27,13 @@ public class KitbotRobotContainer extends RobotContainer {
     private final AprilTagVision m_aprilTagVision = new AprilTagVision();
     private final DriveTrain m_driveTrain = new DriveTrain("swerve/kitbot", m_aprilTagVision);
     private final KitbotRoller m_kitbotRoller = new KitbotRoller();
+    // private final Leds m_leds = new Leds();
+    // private final CoralEffector m_coralEndEffector = new CoralEffector();
+    // private final AlgaeEffector m_algaeEndEffector = new AlgaeEffector();
 
     private final SendableChooser<Command> m_chosenAuto = new SendableChooser<>();
     private final SendableChooser<Command> m_fieldSide = new SendableChooser<>();
     private final SendableChooser<Pose2d> m_startLocation = new SendableChooser<>();
-    private AutoCommandInterface m_autoCommand;
 
     public KitbotRobotContainer() {
         configureBindings();
@@ -65,24 +66,24 @@ public class KitbotRobotContainer extends RobotContainer {
 
         Pose2d[] reefPoints = {FieldConstants.REEF_J, FieldConstants.REEF_K, FieldConstants.REEF_L, FieldConstants.REEF_A};
         m_chosenAuto.setDefaultOption("Processor Side Standard via Generic", 
-            new GenericAutoBase(FieldConstants.ROBOT_START_3, FieldConstants.SOURCE_2_OUT, reefPoints, m_driveTrain, m_kitbotRoller, true));
+            new KitBotGenericAutoBase(FieldConstants.ROBOT_START_3, FieldConstants.SOURCE_2_OUT, reefPoints, m_driveTrain, m_kitbotRoller, true));
 
         Pose2d[] reefPoints0 = {FieldConstants.REEF_J, FieldConstants.REEF_A, FieldConstants.REEF_B};
         m_chosenAuto.addOption("Processor Side Shared Far", 
-            new GenericAutoBase(FieldConstants.ROBOT_START_3, FieldConstants.SOURCE_2_IN, reefPoints0, m_driveTrain, m_kitbotRoller, true));
+            new KitBotGenericAutoBase(FieldConstants.ROBOT_START_3, FieldConstants.SOURCE_2_IN, reefPoints0, m_driveTrain, m_kitbotRoller, true));
     
         Pose2d[] reefPoints1 = {FieldConstants.REEF_H, FieldConstants.REEF_K, FieldConstants.REEF_L};
         m_chosenAuto.addOption("Processor Side Shared Near", 
-            new GenericAutoBase(FieldConstants.ROBOT_START_2, FieldConstants.SOURCE_2_OUT, reefPoints1, m_driveTrain, m_kitbotRoller, true));
+            new KitBotGenericAutoBase(FieldConstants.ROBOT_START_2, FieldConstants.SOURCE_2_OUT, reefPoints1, m_driveTrain, m_kitbotRoller, true));
 
         m_chosenAuto.addOption("Away Side Standard", 
-            new GenericAutoBase(FieldConstants.ROBOT_START_3, FieldConstants.SOURCE_2_OUT, reefPoints, m_driveTrain, m_kitbotRoller, false));
+            new KitBotGenericAutoBase(FieldConstants.ROBOT_START_3, FieldConstants.SOURCE_2_OUT, reefPoints, m_driveTrain, m_kitbotRoller, false));
 
         m_chosenAuto.addOption("Away Side Shared Far", 
-            new GenericAutoBase(FieldConstants.ROBOT_START_3, FieldConstants.SOURCE_2_IN, reefPoints0, m_driveTrain, m_kitbotRoller, false));
+            new KitBotGenericAutoBase(FieldConstants.ROBOT_START_3, FieldConstants.SOURCE_2_IN, reefPoints0, m_driveTrain, m_kitbotRoller, false));
     
         m_chosenAuto.addOption("Away Side Shared Near", 
-            new GenericAutoBase(FieldConstants.ROBOT_START_2, FieldConstants.SOURCE_2_OUT, reefPoints1, m_driveTrain, m_kitbotRoller, false));
+            new KitBotGenericAutoBase(FieldConstants.ROBOT_START_2, FieldConstants.SOURCE_2_OUT, reefPoints1, m_driveTrain, m_kitbotRoller, false));
 
         // m_chosenAuto.addOption("Drive Single Path", 
         //     new SinglePathTestAuto(m_driveTrain, m_kitbotRoller, false));

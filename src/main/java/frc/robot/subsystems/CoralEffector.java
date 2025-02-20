@@ -11,13 +11,17 @@ import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.config.SparkMaxConfig;
 
+import edu.wpi.first.math.filter.Debouncer;
+import edu.wpi.first.math.filter.Debouncer.DebounceType;
+import edu.wpi.first.util.datalog.BooleanLogEntry;
+import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 
 public class CoralEffector extends SubsystemBase {
     /** Creates a new CoralEndEffector. */
-    private static final int MOTOR_CURRENT_LIMIT = 20;
+    private static final int MOTOR_CURRENT_LIMIT = 30;
 
     // This sets a limit for voltage to 10 so it is repeatable
     // until the battery dips below 10 volts
@@ -33,6 +37,9 @@ public class CoralEffector extends SubsystemBase {
 
     // Limit Switch
     private final SparkLimitSwitch m_limitSwitch;
+    private final Debouncer m_limitDebouncer = new Debouncer(0.025, DebounceType.kFalling);
+    private boolean m_limitSwitchDebounced = false;
+    // private final BooleanLogEntry m_limitSwitchLogger;
 
     // State
     private enum State {
@@ -61,47 +68,59 @@ public class CoralEffector extends SubsystemBase {
         config.smartCurrentLimit(MOTOR_CURRENT_LIMIT);
 
         m_motor.configure(config, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
+
+        // log the raw limit switch. Probably should be turned off after debugging
+        // m_limitSwitchLogger = new BooleanLogEntry(DataLogManager.getLog(), "/coralEffector/limitSwitch");
     }
 
     @Override
     public void periodic() {
-        switch (m_state) {
-            case IDLE:
-                m_motor.stopMotor();
-                break;
-
-            case INTAKE:
-                m_motor.set(INTAKE_SPEED);
-                if (m_limitSwitch.isPressed()) {
-                    m_state = State.HOLD;
-                }
-                break;
-
-            case OUTTAKE:
-                m_motor.set(OUTTAKE_SPEED);
-                break;
-
-            case HOLD:
-                m_motor.set(HOLD_SPEED);
-                break;
+        // allow IDLE -> HOLD. This can happen at the start of a match, or manually.
+        if (m_limitSwitchDebounced && (m_state == State.IDLE || m_state == State.INTAKE)) {
+            m_motor.set(HOLD_SPEED);
+            m_state = State.HOLD;        
         }
 
-        SmartDashboard.putBoolean("coralEffector/limitSwitch", m_limitSwitch.isPressed());
+        SmartDashboard.putBoolean("coralEffector/limitSwitchDebounced", m_limitSwitchDebounced);
         SmartDashboard.putString("coralEffector/state", m_state.toString());
         SmartDashboard.putNumber("coralEffector/speed", m_motor.get());
         SmartDashboard.putNumber("coralEffector/current", m_motor.getOutputCurrent());
     }
 
     public void runIntake() {
+        m_motor.set(INTAKE_SPEED);
         m_state = State.INTAKE;
     }
 
     public void runOuttake() {
+        m_motor.set(OUTTAKE_SPEED);
         m_state = State.OUTTAKE;
     }
 
+    // not needed outside the class
+    //  public void setHold(){
+    //     m_state = State.HOLD;
+    // }
+    
     public void stop() {
-        if (m_state != State.HOLD)
+        if (m_state != State.HOLD) {
             m_state = State.IDLE;
+            m_motor.stopMotor();
+        }
+    }
+
+    public boolean hasCoral() {
+        return m_state == State.HOLD;
+    }
+
+    public Runnable updateLimitSwitch() {
+        return () -> {
+            boolean isPressed = m_limitSwitch.isPressed();
+            m_limitSwitchDebounced = m_limitDebouncer.calculate(isPressed);
+
+            // also log it to see how it behaves. This might not be fast enough, but worth a try
+            // probably turn off after debugging
+            // m_limitSwitchLogger.append(isPressed);
+        };
     }
 }
