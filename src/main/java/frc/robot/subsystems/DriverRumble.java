@@ -99,7 +99,7 @@ public class DriverRumble extends SubsystemBase {
   }
 
   public static Pose2d getClosestScoringLocation(Pose2d robotPose) {
-    final List<Pose2d> REEF_POLES = List.of(FieldConstants.REEF_A, FieldConstants.REEF_B, FieldConstants.REEF_C,
+    final List<Pose2d> REEF_SCORING_LOCATIONS = List.of(FieldConstants.REEF_A, FieldConstants.REEF_B, FieldConstants.REEF_C,
         FieldConstants.REEF_D, FieldConstants.REEF_E, FieldConstants.REEF_F,
         FieldConstants.REEF_G, FieldConstants.REEF_H, FieldConstants.REEF_I,
         FieldConstants.REEF_J, FieldConstants.REEF_K, FieldConstants.REEF_L);
@@ -107,7 +107,7 @@ public class DriverRumble extends SubsystemBase {
     Pose2d currentPose = FieldConstants.flipPose(robotPose);
     // System.out.println("Current Pose: " + currentPose);
 
-    Pose2d nearestPole = FieldConstants.flipPose(currentPose.nearest(REEF_POLES));
+    Pose2d nearestPole = FieldConstants.flipPose(currentPose.nearest(REEF_SCORING_LOCATIONS));
     // System.out.println("Nearest Pole: " + nearestPole);
     return nearestPole;
   }
