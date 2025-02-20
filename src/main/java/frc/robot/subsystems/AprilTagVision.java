@@ -415,7 +415,7 @@ public class AprilTagVision extends SubsystemBase {
         // The timestamp is used by PVLib to know if there is a new frame, so in a simulation
         // with no uncertainty, it thinks that it is not detecting a tag if the robot is static.
         // So, always have a little bit of uncertainty.
-        prop.setCalibError(0.1, 0.03);
+        prop.setCalibError(0.5, 0.3);
 
         for (Camera c : m_cameras) {
             PhotonCameraSim camSim = new PhotonCameraSim(c.photonCamera, prop);
