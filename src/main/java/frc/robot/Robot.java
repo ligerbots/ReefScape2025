@@ -24,7 +24,7 @@ public class Robot extends TimedRobot {
     private Command m_autonomousCommand = null;
     private boolean m_prevIsRedAlliance = true;
     
-    public static final String KITBOT_SERIAL_NUMBER = "123";
+    public static final String KITBOT_SERIAL_NUMBER = "0313baff";
     public static final String COMP_V1_SERIAL_NUMBER = "0313bb3a";
     public static final String TESTBENCH_SERIAL_NUMBER = "123";
 

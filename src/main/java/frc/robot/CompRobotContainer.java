@@ -81,9 +81,9 @@ public class CompRobotContainer extends RobotContainer {
         m_driverController.rightBumper().onTrue(new MoveEndEffector(Constants.Position.STOW, m_elevator, m_pivot).andThen().finallyDo(() -> m_coralMode = true));
         
         m_driverController.a().onTrue(new MoveEndEffector(Constants.Position.L2_ALGAE, m_elevator, m_pivot).finallyDo(() -> m_coralMode = false));
-        m_driverController.b().onTrue(new MoveEndEffector(Constants.Position.L3_ALGAE, m_elevator, m_pivot).finallyDo(() -> m_coralMode = false));
-        m_driverController.x().onTrue(new MoveEndEffector(Constants.Position.BARGE, m_elevator, m_pivot).finallyDo(() -> m_coralMode = false));
-        m_driverController.y().onTrue(new MoveEndEffector(Constants.Position.PROCESSOR, m_elevator, m_pivot).finallyDo(() -> m_coralMode = false));
+        m_driverController.x().onTrue(new MoveEndEffector(Constants.Position.L3_ALGAE, m_elevator, m_pivot).finallyDo(() -> m_coralMode = false));
+        m_driverController.y().onTrue(new MoveEndEffector(Constants.Position.BARGE, m_elevator, m_pivot).finallyDo(() -> m_coralMode = false));
+        m_driverController.b().onTrue(new MoveEndEffector(Constants.Position.PROCESSOR, m_elevator, m_pivot).finallyDo(() -> m_coralMode = false));
 
         // m_driverController.y().onTrue(new DeferredCommand(new ReefTractorBeam(m_driveTrain), Set.of(m_driveTrain)));
         
@@ -93,10 +93,10 @@ public class CompRobotContainer extends RobotContainer {
         POVButton dpadRight = new POVButton(m_driverController.getHID(), 90);
         dpadRight.onTrue(new MoveEndEffector(Constants.Position.BACK_INTAKE, m_elevator, m_pivot).finallyDo(() -> m_coralMode = true));
         
-        POVButton dpadDown = new POVButton(m_driverController.getHID(), 180);
+        POVButton dpadDown = new POVButton(m_driverController.getHID(), 0);
         dpadDown.onTrue(new MoveEndEffector(Constants.Position.L3, m_elevator, m_pivot).finallyDo(() -> m_coralMode = true));
         
-        POVButton dpadUp = new POVButton(m_driverController.getHID(), 0);
+        POVButton dpadUp = new POVButton(m_driverController.getHID(), 180);
         dpadUp.onTrue(new MoveEndEffector(Constants.Position.L2, m_elevator, m_pivot).finallyDo(() -> m_coralMode = true));
         
         // m_driverController.a().onTrue(new InstantCommand(() -> m_elevator.setHeight(Units.inchesToMeters(SmartDashboard.getNumber("elevator/testGoal", 0)))));
