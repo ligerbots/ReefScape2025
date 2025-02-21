@@ -5,6 +5,7 @@
 package frc.robot.subsystems;
 
 import java.util.List;
+import java.util.function.BooleanSupplier;
 import java.util.function.Supplier;
 
 import edu.wpi.first.math.geometry.Pose2d;
@@ -25,33 +26,54 @@ public class DriverRumble extends SubsystemBase {
             FieldConstants.REEF_J, FieldConstants.REEF_K, FieldConstants.REEF_L);
     
     // Tolerance for lateral offset (meters) within which no rumble is applied.
-    private final double LATERAL_OFFSET_TOLERANCE_METER = Units.inchesToMeters(2.0);
+    private final double REEF_OFFSET_TOLERANCE_METER = Units.inchesToMeters(2.0);
     // Maximum lateral offset (meters) that corresponds to full rumble intensity.
-    // private final double METER_TO_TRIGGER = 0.5; //TODO: Tune, most likely will want to be smaller
-    private final double RUMBLE_INTENSITY = 1; // TODO: Tune. This ranges from 0-1. 
+    // private final double METER_TO_TRIGGER = 0.5;
     
+    // barge
+    private final double BARGE_LINE_BLUE = 7.5;  // TODO a guess
+    private final double BARGE_TARGET_TOLERANCE_METER = Units.inchesToMeters(3);
+
+    private final double RUMBLE_INTENSITY = 1; 
+
     private final XboxController m_xbox;
     private final Supplier<Pose2d> m_robotPositionSupplier;
-    
-    public DriverRumble(Supplier<Pose2d> positionSupplier, XboxController xbox) {
+    private final BooleanSupplier m_hasCoral;
+    private final BooleanSupplier m_hasAlgae;
+
+    public DriverRumble(XboxController xbox, Supplier<Pose2d> positionSupplier, BooleanSupplier hasCoral, BooleanSupplier hasAlgae) {
         m_xbox = xbox;
         m_robotPositionSupplier = positionSupplier;
+        m_hasCoral = hasCoral;
+        m_hasAlgae = hasAlgae;
     }
     
     @Override
     public void periodic() {
-        // This method will be called once per scheduler run.
-        Pose2d targetPose = getClosestScoringLocation();
         Pose2d robotPose = m_robotPositionSupplier.get();
-        
-        // Relative pose rotated to the target pose
-        Pose2d relativePose = robotPose.relativeTo(targetPose); 
-        // final double distance = relativePose.getTranslation().getNorm();
-        
-        // Calculate lateral offset in meters (positive means left, negative means right)
-        double lateralOffset = relativePose.getY();
-        double rumble = Math.abs(lateralOffset) < LATERAL_OFFSET_TOLERANCE_METER ? RUMBLE_INTENSITY : 0;
-        m_xbox.setRumble(RumbleType.kBothRumble, rumble);
+        boolean rumble = false;
+
+        if (m_hasCoral.getAsBoolean()) {
+            // See if we are aligned with a Reef pole
+            Pose2d targetPose = getClosestScoringLocation();
+            
+            // Relative pose rotated to the target pose
+            Pose2d relativePose = robotPose.relativeTo(targetPose); 
+            // final double distance = relativePose.getTranslation().getNorm();
+            
+            // Calculate lateral offset in meters (positive means left, negative means right)
+            double lateralOffset = relativePose.getY();
+            rumble = Math.abs(lateralOffset) < REEF_OFFSET_TOLERANCE_METER;
+        }
+        else if (m_hasAlgae.getAsBoolean()) {
+            // check if correct place for a Barge shot
+            double bargeLine = BARGE_LINE_BLUE;
+            if (FieldConstants.isRedAlliance())
+                bargeLine = FieldConstants.FIELD_LENGTH - bargeLine;
+            rumble = Math.abs(robotPose.getX() - bargeLine) < BARGE_TARGET_TOLERANCE_METER;
+        }
+
+        m_xbox.setRumble(RumbleType.kBothRumble, rumble ? RUMBLE_INTENSITY : 0);
 
         // final double signedRumbleValue = getRumble(lateralOffset);
         
