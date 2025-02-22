@@ -28,14 +28,10 @@ public class Climber extends SubsystemBase {
     private static final double CURRENT_LIMIT = 40;
 
     // Winch motor speed values
-    private static final double IDLE_SPEED = -0.01;
     private static final double DEPLOY_MAX_SPEED = -0.2;
-    private static final double DEPLOY_MIN_SPEED = -0.1;
     private static final double CLIMB_SPEED = 0.5;
 
     public static final double MANUAL_SPEED = 0.3;
-
-    private static final double EXTEND_SLOWDOWN_INTERVAL = 30.0;
     
     // State definitions:
     // IDLE - winch holding system in place, should be used for entire match until End Game.
