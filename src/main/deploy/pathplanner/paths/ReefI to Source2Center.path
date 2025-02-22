@@ -3,16 +3,16 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 5.282319078947368,
-        "y": 5.044901315789473
+        "x": 5.272697368421052,
+        "y": 5.054523026315789
       },
       "prevControl": null,
       "nextControl": {
-        "x": 4.233552631578947,
-        "y": 6.132154605263157
+        "x": 4.223930921052631,
+        "y": 6.141776315789473
       },
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "scoreReefI"
     },
     {
       "anchor": {
@@ -25,7 +25,7 @@
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "source2Center"
     }
   ],
   "rotationTargets": [],
