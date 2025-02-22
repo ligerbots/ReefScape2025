@@ -9,6 +9,8 @@ import com.revrobotics.spark.SparkBase.ResetMode;
 import com.revrobotics.spark.SparkLimitSwitch;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.SparkMax;
+import com.revrobotics.spark.config.LimitSwitchConfig;
+import com.revrobotics.spark.config.LimitSwitchConfig.Type;
 import com.revrobotics.spark.config.SparkMaxConfig;
 
 import edu.wpi.first.math.filter.Debouncer;
@@ -49,9 +51,8 @@ public class CoralEffector extends SubsystemBase {
     private State m_state = State.IDLE;
 
     public CoralEffector() {
-        // Set up the coral motor as brushed motors
+        // Set up the coral motor as brushless motor
         m_motor = new SparkMax(Constants.CORAL_EFFECTOR_INTAKE_ID, MotorType.kBrushless);
-        m_limitSwitch = m_motor.getReverseLimitSwitch();
 
         // Set can timeout. Because this project only sets parameters once on
         // construction, the timeout can be long without blocking robot operation. Code
@@ -67,7 +68,16 @@ public class CoralEffector extends SubsystemBase {
         config.voltageCompensation(MOTOR_VOLTAGE_COMP);
         config.smartCurrentLimit(MOTOR_CURRENT_LIMIT);
 
+        // include the config of the limit switch, for completeness
+        LimitSwitchConfig lsConfig = new  LimitSwitchConfig();
+        lsConfig.reverseLimitSwitchType(Type.kNormallyOpen);
+        // don't shut off motor when pressed. We will handle that.
+        lsConfig.reverseLimitSwitchEnabled(false);
+        config.apply(lsConfig);
+
         m_motor.configure(config, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
+
+        m_limitSwitch = m_motor.getReverseLimitSwitch();
 
         // log the raw limit switch. Probably should be turned off after debugging
         // m_limitSwitchLogger = new BooleanLogEntry(DataLogManager.getLog(), "/coralEffector/limitSwitch");
