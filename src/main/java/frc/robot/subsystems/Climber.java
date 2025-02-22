@@ -97,10 +97,6 @@ public class Climber extends SubsystemBase {
         else if (m_climberState == ClimberState.WAITING) {
             // Nothing to do here
         }
-        else if (m_climberState == ClimberState.CLIMBING) {
-            // The CLIMBING state is only entered via a command
-            // m_climberMotor.set(CLIMB_SPEED);
-        }
         else if (m_climberState == ClimberState.CLIMBING) {          
             if (position >= CLIMB_ROTATIONS) {
                 // m_climberMotor.set(0.0);
