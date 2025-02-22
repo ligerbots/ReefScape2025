@@ -7,6 +7,7 @@ package frc.robot;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -15,6 +16,7 @@ import edu.wpi.first.wpilibj2.command.ConditionalCommand;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.StartEndCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.POVButton;
 
 import frc.robot.commands.*;
@@ -24,6 +26,7 @@ public class CompRobotContainer extends RobotContainer {
     private static final double JOYSTICK_DEADBAND = 0.05;
     
     private final CommandXboxController m_driverController = new CommandXboxController(0);
+    private final Joystick m_farm = new Joystick(1);
     
     private final AprilTagVision m_aprilTagVision = new AprilTagVision();
     private final DriveTrain m_driveTrain = new DriveTrain("swerve/comp", m_aprilTagVision);
@@ -60,7 +63,7 @@ public class CompRobotContainer extends RobotContainer {
         }
         
         //these are reserved for climbing 
-        // m_driverController.start().onTrue(new InstantCommand(m_driveTrain::lock, m_driveTrain));
+        m_driverController.leftBumper().onTrue(new InstantCommand(m_driveTrain::lock, m_driveTrain));
         // m_driverController.back().onTrue(new InstantCommand(m_driveTrain::zeroHeading, m_driveTrain));
         
         
@@ -78,7 +81,7 @@ public class CompRobotContainer extends RobotContainer {
                         () -> m_coralMode)
         );
         
-        m_driverController.rightBumper().onTrue(new MoveEndEffector(Constants.Position.STOW, m_elevator, m_pivot).andThen().finallyDo(() -> m_coralMode = true));
+        // m_driverController.rightBumper().onTrue(new MoveEndEffector(Constants.Position.STOW, m_elevator, m_pivot).andThen().finallyDo(() -> m_coralMode = true));
         
         m_driverController.a().onTrue(new MoveEndEffector(Constants.Position.L2_ALGAE, m_elevator, m_pivot).finallyDo(() -> m_coralMode = false));
         m_driverController.x().onTrue(new MoveEndEffector(Constants.Position.L3_ALGAE, m_elevator, m_pivot).finallyDo(() -> m_coralMode = false));
@@ -102,14 +105,24 @@ public class CompRobotContainer extends RobotContainer {
         // m_driverController.a().onTrue(new InstantCommand(() -> m_elevator.setHeight(Units.inchesToMeters(SmartDashboard.getNumber("elevator/testGoal", 0)))));
         // m_driverController.b().onTrue(new InstantCommand(() -> m_pivot.setAngle(Rotation2d.fromDegrees(SmartDashboard.getNumber("pivot/testAngle", 0.0)))));
         
-        m_driverController.leftBumper().onTrue(new InstantCommand(() -> m_coralMode = !m_coralMode));
+        // m_driverController.leftBumper().onTrue(new InstantCommand(() -> m_coralMode = !m_coralMode));
         
         // m_driverController.a().whileTrue(new StartEndCommand(() -> m_pivot.run(0.1), () -> m_pivot.run(0), m_pivot));
         // m_driverController.b().whileTrue(new StartEndCommand(() -> m_pivot.run(-0.1), () -> m_pivot.run(0), m_pivot));
         
-        m_driverController.start().whileTrue(new StartEndCommand(() -> m_climber.run(0.4), m_climber::hold, m_climber));
-        m_driverController.back().whileTrue(new StartEndCommand(() -> m_climber.run(-0.4), m_climber::hold, m_climber));
+        m_driverController.start().onTrue(new InstantCommand(m_climber::climb));
+        m_driverController.back().onTrue(new InstantCommand(m_climber::deploy));
         m_driverController.back().onTrue(new MoveEndEffector(Constants.Position.CLIMB, m_elevator, m_pivot, 0));
+
+
+        JoystickButton farm1 = new JoystickButton(m_farm, 1);
+        farm1.whileTrue(new StartEndCommand(() -> m_climber.run(0.4), m_climber::hold, m_climber));
+        JoystickButton farm2 = new JoystickButton(m_farm, 2);
+        farm2.whileTrue(new StartEndCommand(() -> m_climber.run(-0.4), m_climber::hold, m_climber));
+
+        JoystickButton farm12 = new JoystickButton(m_farm, 12);
+        farm2.whileTrue(new InstantCommand(m_elevator::zeroElevator));
+
     }
     
     private void configureAutos() {
@@ -117,9 +130,9 @@ public class CompRobotContainer extends RobotContainer {
             
         // new MoveEndEffector(Constants.Position.L4, m_elevator, m_pivot, CompBotGenericAutoBase.RAISE_ELEVATOR_WAIT_TIME));
         
-        Pose2d[] reefPoints = {FieldConstants.REEF_I, FieldConstants.REEF_J, FieldConstants.REEF_J};
+        Pose2d[] reefPoints = {FieldConstants.REEF_I, FieldConstants.REEF_J, FieldConstants.REEF_K, FieldConstants.REEF_L};
 
-        m_chosenReefPoints.setDefaultOption("IJJ  (aka FEE)", reefPoints);
+        m_chosenReefPoints.setDefaultOption("IJKL  (aka FEDC)", reefPoints);
 
         Pose2d[] reefPoints2 = {FieldConstants.REEF_J, FieldConstants.REEF_K, FieldConstants.REEF_L};
         m_chosenReefPoints.addOption("JKLA  (aka EDCB)", reefPoints2);
