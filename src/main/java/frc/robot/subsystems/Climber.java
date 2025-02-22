@@ -17,7 +17,7 @@ public class Climber extends SubsystemBase {
     // private final RelativeEncoder m_climberMotorEncoder;
     
     // Constants to be used in this class
-    private static final double DEPLOYED_ROTATIONS = -10.0;
+    private static final double DEPLOYED_ROTATIONS = -23.0;
     private static final double CLIMB_ROTATIONS = 610.0; 
     
     // Protection values
