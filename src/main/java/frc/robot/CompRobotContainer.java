@@ -44,7 +44,8 @@ public class CompRobotContainer extends RobotContainer {
     
     private boolean m_coralMode = true;
     
-    private final SendableChooser<String> m_chosenFieldSide = new SendableChooser<>();    
+    private final SendableChooser<String> m_chosenFieldSide = new SendableChooser<>(); 
+    private final SendableChooser<Pose2d> m_chosenStartPoint = new SendableChooser<>();    
     private final SendableChooser<Pose2d> m_chosenSourcePickup = new SendableChooser<>();
     private final SendableChooser<Pose2d[]> m_chosenReefPoints = new SendableChooser<>();
     
@@ -144,17 +145,21 @@ public class CompRobotContainer extends RobotContainer {
         m_chosenFieldSide.setDefaultOption("Processor Side", "Processor Side");
         m_chosenFieldSide.addOption("Barge Side", "Barge Side");
 
+        m_chosenStartPoint.setDefaultOption("3rd cage-- usual spot", FieldConstants.ROBOT_START_3);
+        m_chosenStartPoint.addOption("Field Center", FieldConstants.ROBOT_START_2);
+
         m_chosenSourcePickup.setDefaultOption("Center", FieldConstants.SOURCE_2_CENTER);
         m_chosenSourcePickup.addOption("Inside", FieldConstants.SOURCE_2_IN);
         m_chosenSourcePickup.addOption("Outside", FieldConstants.SOURCE_2_OUT);
 
         SmartDashboard.putData("Field Side", m_chosenFieldSide);
+        SmartDashboard.putData("Auto Start Point", m_chosenStartPoint);
         SmartDashboard.putData("Source Pickup slot", m_chosenSourcePickup);
         SmartDashboard.putData("Reef Points", m_chosenReefPoints);
     }
     
     public Command getAutonomousCommand() {
-        return new CompBotGenericAutoBase(FieldConstants.ROBOT_START_3, m_chosenSourcePickup.getSelected(), m_chosenReefPoints.getSelected(), 
+        return new CompBotGenericAutoBase(m_chosenStartPoint.getSelected(), m_chosenSourcePickup.getSelected(), m_chosenReefPoints.getSelected(), 
         m_driveTrain, m_elevator, m_coralEffector, m_pivot, m_chosenFieldSide.getSelected().equals("Processor Side"));
     }
     
