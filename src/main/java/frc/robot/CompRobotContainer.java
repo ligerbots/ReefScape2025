@@ -153,7 +153,7 @@ public class CompRobotContainer extends RobotContainer {
     }
     
     public Command getAutonomousCommand() {
-        return new CompBotGenericAutoBase(FieldConstants.ROBOT_START_3, m_chosenSourcePickup.getSelected(), m_chosenReefPoints.getSelected(), 
+        return new CompBotGenericAutoBase(FieldConstants.ROBOT_START_2, m_chosenSourcePickup.getSelected(), m_chosenReefPoints.getSelected(), 
         m_driveTrain, m_elevator, m_coralEffector, m_pivot, m_chosenFieldSide.getSelected().equals("Processor Side"));
     }
     
