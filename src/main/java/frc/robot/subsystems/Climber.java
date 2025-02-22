@@ -18,7 +18,7 @@ public class Climber extends SubsystemBase {
     
     // Constants to be used in this class
     private static final double DEPLOYED_ROTATIONS = -23.0;
-    private static final double CLIMB_ROTATIONS = 610.0; 
+    private static final double CLIMB_ROTATIONS = 210; 
     
     // Protection values
     private static final double MAX_ROTATIONS_ALLOWED = 710.0;
@@ -56,6 +56,7 @@ public class Climber extends SubsystemBase {
         talonFXConfigs.withCurrentLimits(currentLimits);
         
         m_climberMotor.getConfigurator().apply(talonFXConfigs);
+        m_climberMotor.setPosition(0);
     }
     
     @Override
