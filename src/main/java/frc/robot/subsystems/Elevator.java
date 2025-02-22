@@ -113,7 +113,7 @@ public class Elevator extends SubsystemBase {
 
     @Override
     public void periodic() {
-        double height = Units.metersToInches(getHeight());
+        double height = getHeight();
 
         // cross check that pivot is in a good place to go low
         // if (height <= HEIGHT_LOW_RANGE && m_pivotOutsideLowRange.getAsBoolean()) {
@@ -125,7 +125,7 @@ public class Elevator extends SubsystemBase {
             m_motor.setControl(new VoltageOut(0));
         }
 
-        SmartDashboard.putNumber("elevator/height", height);
+        SmartDashboard.putNumber("elevator/height", Units.metersToInches(height));
         SmartDashboard.putBoolean("elevator/onGoal", lengthWithinTolerance());
         SmartDashboard.putNumber("elevator/currentGoal", 
             Units.metersToInches(rotationsToHeight(m_motor.getClosedLoopReference().getValueAsDouble())));

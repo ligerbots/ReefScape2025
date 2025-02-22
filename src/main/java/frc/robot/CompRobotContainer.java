@@ -35,9 +35,9 @@ public class CompRobotContainer extends RobotContainer {
     private final EndEffectorPivot m_pivot = new EndEffectorPivot(() -> m_elevator.getHeight());
     private final Climber m_climber = new Climber();
 
-    // private final DriverRumble m_driverRumble = new DriverRumble(
-    //     m_driverController.getHID(), () -> m_driveTrain.getPose(), 
-    //     () -> m_coralEffector.hasCoral(), () -> m_algaeEffector.hasAlgae());
+    private final DriverRumble m_driverRumble = new DriverRumble(
+        m_driverController.getHID(), () -> m_driveTrain.getPose(), 
+        () -> m_coralEffector.hasCoral(), () -> m_algaeEffector.hasAlgae());
     
     private boolean m_coralMode = true;
     
@@ -78,7 +78,7 @@ public class CompRobotContainer extends RobotContainer {
                         () -> m_coralMode)
         );
         
-        m_driverController.rightBumper().onTrue(new MoveEndEffector(Constants.Position.STOW, m_elevator, m_pivot).andThen().finallyDo(() -> m_coralMode = true));
+        // m_driverController.rightBumper().onTrue(new MoveEndEffector(Constants.Position.STOW, m_elevator, m_pivot).andThen().finallyDo(() -> m_coralMode = true));
         
         m_driverController.a().onTrue(new MoveEndEffector(Constants.Position.L2_ALGAE, m_elevator, m_pivot).finallyDo(() -> m_coralMode = false));
         m_driverController.x().onTrue(new MoveEndEffector(Constants.Position.L3_ALGAE, m_elevator, m_pivot).finallyDo(() -> m_coralMode = false));
@@ -110,6 +110,8 @@ public class CompRobotContainer extends RobotContainer {
         m_driverController.start().whileTrue(new StartEndCommand(() -> m_climber.run(0.4), m_climber::hold, m_climber));
         m_driverController.back().whileTrue(new StartEndCommand(() -> m_climber.run(-0.4), m_climber::hold, m_climber));
         m_driverController.back().onTrue(new MoveEndEffector(Constants.Position.CLIMB, m_elevator, m_pivot, 0));
+
+        
     }
     
     private void configureAutos() {
