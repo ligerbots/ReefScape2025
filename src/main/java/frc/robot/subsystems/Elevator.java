@@ -53,7 +53,7 @@ public class Elevator extends SubsystemBase {
     private static final double OFFSET_METER = 0.0;
 
     private static final double STATIC_VOLTAGE = 0.6;
-    private static final double K_P = 0.5;
+    private static final double K_P = 1;
 
     // private final int POTENTIOMETER_CHANNEL = 2; //TODO: Update with actual value
     // private final double POTENTIOMETER_RANGE_METERS = -2.625; // meters, the string potentiometer on takes in range in integers TODO: update to correct value
