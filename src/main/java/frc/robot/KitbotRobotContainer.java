@@ -30,7 +30,7 @@ public class KitbotRobotContainer extends RobotContainer {
     // private final Leds m_leds = new Leds();
     // private final CoralEffector m_coralEndEffector = new CoralEffector();
     // private final AlgaeEffector m_algaeEndEffector = new AlgaeEffector();
-    private final Climber m_climber = new Climber();
+    private final NeoClimber m_climber = new NeoClimber();
 
     private final SendableChooser<Command> m_chosenAuto = new SendableChooser<>();
     private final SendableChooser<Command> m_fieldSide = new SendableChooser<>();
