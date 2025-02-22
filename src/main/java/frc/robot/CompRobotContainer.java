@@ -35,9 +35,9 @@ public class CompRobotContainer extends RobotContainer {
     private final EndEffectorPivot m_pivot = new EndEffectorPivot(() -> m_elevator.getHeight());
     private final Climber m_climber = new Climber();
 
-    private final DriverRumble m_driverRumble = new DriverRumble(
-        m_driverController.getHID(), () -> m_driveTrain.getPose(), 
-        () -> m_coralEffector.hasCoral(), () -> m_algaeEffector.hasAlgae());
+    // private final DriverRumble m_driverRumble = new DriverRumble(
+    //     m_driverController.getHID(), () -> m_driveTrain.getPose(), 
+    //     () -> m_coralEffector.hasCoral(), () -> m_algaeEffector.hasAlgae());
     
     private boolean m_coralMode = true;
     
@@ -60,7 +60,7 @@ public class CompRobotContainer extends RobotContainer {
         }
         
         //these are reserved for climbing 
-        // m_driverController.start().onTrue(new InstantCommand(m_driveTrain::lock, m_driveTrain));
+        m_driverController.leftBumper().onTrue(new InstantCommand(m_driveTrain::lock, m_driveTrain));
         // m_driverController.back().onTrue(new InstantCommand(m_driveTrain::zeroHeading, m_driveTrain));
         
         
@@ -102,7 +102,7 @@ public class CompRobotContainer extends RobotContainer {
         // m_driverController.a().onTrue(new InstantCommand(() -> m_elevator.setHeight(Units.inchesToMeters(SmartDashboard.getNumber("elevator/testGoal", 0)))));
         // m_driverController.b().onTrue(new InstantCommand(() -> m_pivot.setAngle(Rotation2d.fromDegrees(SmartDashboard.getNumber("pivot/testAngle", 0.0)))));
         
-        m_driverController.leftBumper().onTrue(new InstantCommand(() -> m_coralMode = !m_coralMode));
+        // m_driverController.leftBumper().onTrue(new InstantCommand(() -> m_coralMode = !m_coralMode));
         
         // m_driverController.a().whileTrue(new StartEndCommand(() -> m_pivot.run(0.1), () -> m_pivot.run(0), m_pivot));
         // m_driverController.b().whileTrue(new StartEndCommand(() -> m_pivot.run(-0.1), () -> m_pivot.run(0), m_pivot));
