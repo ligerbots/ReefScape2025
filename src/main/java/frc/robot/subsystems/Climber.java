@@ -21,7 +21,7 @@ public class Climber extends SubsystemBase {
     
     // Constants to be used in this class
     private static final double DEPLOYED_ROTATIONS = -23.0;
-    private static final double CLIMB_ROTATIONS = 210; 
+    private static final double CLIMB_ROTATIONS = 200; 
     
     // Protection values
     private static final double MAX_ROTATIONS_ALLOWED = 710.0;
@@ -31,8 +31,8 @@ public class Climber extends SubsystemBase {
     private static final double CURRENT_LIMIT = 40;
 
     // Winch motor speed values
-    private static final double DEPLOY_MAX_SPEED = -0.2;
-    private static final double CLIMB_SPEED = 0.5;
+    private static final double DEPLOY_MAX_SPEED = -0.4;
+    private static final double CLIMB_SPEED = 0.8;
 
     public static final double MANUAL_SPEED = 0.3;
     
