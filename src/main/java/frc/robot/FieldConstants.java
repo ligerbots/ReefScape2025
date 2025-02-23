@@ -1,5 +1,6 @@
 package frc.robot;
 
+import java.util.List;
 import java.util.Optional;
 
 import com.pathplanner.lib.util.FlippingUtil;
@@ -40,6 +41,13 @@ public class FieldConstants {
     public static final Pose2d SOURCE_2_CENTER = new Pose2d(1.17,7.07, Rotation2d.fromDegrees(-52.7));
     public static final Pose2d SOURCE_2_OUT = new Pose2d(1.67,7.41, Rotation2d.fromDegrees(-52.7));
     
+    public static final List<Pose2d> REEF_SCORING_LOCATIONS = List.of(
+        FieldConstants.REEF_A, FieldConstants.REEF_B,
+        FieldConstants.REEF_C, FieldConstants.REEF_D, 
+        FieldConstants.REEF_E, FieldConstants.REEF_F,
+        FieldConstants.REEF_G, FieldConstants.REEF_H, 
+        FieldConstants.REEF_I, FieldConstants.REEF_J, 
+        FieldConstants.REEF_K, FieldConstants.REEF_L);
 
     public static boolean isRedAlliance() {
         Optional<Alliance> alliance = DriverStation.getAlliance();
