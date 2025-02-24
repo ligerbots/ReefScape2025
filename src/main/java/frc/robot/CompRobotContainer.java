@@ -41,7 +41,7 @@ public class CompRobotContainer extends RobotContainer {
     private final DriverRumble m_driverRumble = new DriverRumble(
         m_driverController.getHID(), () -> m_driveTrain.getPose(), 
         () -> m_coralEffector.hasCoral(), () -> m_algaeEffector.hasAlgae(),
-        () -> m_climber.climberIsDeployed());
+        () -> m_climber.isDeployed());
     
     private boolean m_coralMode = true;
     

@@ -148,4 +148,9 @@ public class Climber extends SubsystemBase {
         m_climberState = ClimberState.HOLDING;
         m_climberMotor.set(0.0);
     }
+
+    public boolean isDeployed() {
+        // be generous. Only used in feedback rumble
+        return m_climberState != ClimberState.IDLE;
+    }
 }
