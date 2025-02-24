@@ -129,10 +129,15 @@ public class Robot extends TimedRobot {
         }
         
         boolean isRedAlliance = FieldConstants.isRedAlliance();
-        if (m_autonomousCommand == null || isRedAlliance != m_prevIsRedAlliance) {
-            m_autonomousCommand = m_robotContainer.getAutonomousCommand();
-            if (driveTrain != null) driveTrain.setPose(m_robotContainer.getInitialPose());
+        Command newAuto = m_robotContainer.getAutonomousCommand();
+        // don't change the initialPose unless the Auto or Alliance has changed
+        // don't want to override the true pose on the field (as determined by the AprilTags)
+        //
+        // Note: use "==" to compare autos - checks if they are the same object
+        if (isRedAlliance != m_prevIsRedAlliance || newAuto != m_autonomousCommand) {
+            m_autonomousCommand = newAuto;
             m_prevIsRedAlliance = isRedAlliance;
+            if (driveTrain != null) driveTrain.setPose(m_robotContainer.getInitialPose());
         }
     }
     
