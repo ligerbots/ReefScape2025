@@ -61,8 +61,8 @@ public class DriveTrain extends SubsystemBase {
     private static final Translation2d ROTATION_CENTER_OFFSET = new Translation2d(Units.inchesToMeters(ROBOT_SWERVE_OFFSET_X_INCHES), 0 );
 
     // values from 2024 competition. Maybe should be tuned
-    private static final PIDConstants PATH_PLANNER_TRANSLATION_PID = new PIDConstants(3.5, 0, 0);
-    private static final PIDConstants PATH_PLANNER_ANGLE_PID       = new PIDConstants(3.5, 0, 0);
+    private static final PIDConstants PATH_PLANNER_TRANSLATION_PID = new PIDConstants(5, 0, 0);
+    private static final PIDConstants PATH_PLANNER_ANGLE_PID       = new PIDConstants(5, 0, 0);
     // // local overrides for PP max values. 
     // // These are combined using "min()" with the values computed from the JSON config files, where available.
     // private static final double PATH_PLANNER_MAX_SPEED = 4.5;

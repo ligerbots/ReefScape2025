@@ -25,11 +25,12 @@ public class KitbotRobotContainer extends RobotContainer {
     private final CommandXboxController m_driverController = new CommandXboxController(0);
 
     private final AprilTagVision m_aprilTagVision = new AprilTagVision();
-    private final DriveTrain m_driveTrain = new DriveTrain("swerve/kitbot", m_aprilTagVision);
-    private final KitbotRoller m_kitbotRoller = new KitbotRoller();
+    private final DriveTrain m_driveTrain = null; // new DriveTrain("swerve/kitbot", m_aprilTagVision);
+    // private final KitbotRoller m_kitbotRoller = new KitbotRoller();
     // private final Leds m_leds = new Leds();
     // private final CoralEffector m_coralEndEffector = new CoralEffector();
     // private final AlgaeEffector m_algaeEndEffector = new AlgaeEffector();
+    private final NeoClimber m_climber = new NeoClimber();
 
     private final SendableChooser<Command> m_chosenAuto = new SendableChooser<>();
     private final SendableChooser<Command> m_fieldSide = new SendableChooser<>();
@@ -39,7 +40,7 @@ public class KitbotRobotContainer extends RobotContainer {
         configureBindings();
         configureAutos();
 
-        m_driveTrain.setDefaultCommand(getDriveCommand());
+        // m_driveTrain.setDefaultCommand(getDriveCommand());
     }
             
     private void configureBindings() {
@@ -47,11 +48,14 @@ public class KitbotRobotContainer extends RobotContainer {
             DriverStation.silenceJoystickConnectionWarning(true);
         }
 
-        m_driverController.start().onTrue(new InstantCommand(m_driveTrain::lock, m_driveTrain));
-        m_driverController.back().onTrue(new InstantCommand(m_driveTrain::zeroHeading, m_driveTrain));
+        // m_driverController.start().onTrue(new InstantCommand(m_driveTrain::lock, m_driveTrain));
+        // m_driverController.back().onTrue(new InstantCommand(m_driveTrain::zeroHeading, m_driveTrain));
 
-        m_driverController.rightTrigger().whileTrue(new StartEndCommand(m_kitbotRoller::runRollerOut, m_kitbotRoller::stop, m_kitbotRoller));
-        m_driverController.leftTrigger().whileTrue(new StartEndCommand(m_kitbotRoller::runRollerBack, m_kitbotRoller::stop, m_kitbotRoller));
+        // m_driverController.rightTrigger().whileTrue(new StartEndCommand(m_kitbotRoller::runRollerOut, m_kitbotRoller::stop, m_kitbotRoller));
+        // m_driverController.leftTrigger().whileTrue(new StartEndCommand(m_kitbotRoller::runRollerBack, m_kitbotRoller::stop, m_kitbotRoller));
+
+        m_driverController.start().whileTrue(new StartEndCommand(() -> m_climber.run(0.4), m_climber::hold, m_climber));
+        m_driverController.back().whileTrue(new StartEndCommand(() -> m_climber.run(-0.4), m_climber::hold, m_climber));
     }
     
     private void configureAutos() {
@@ -64,26 +68,26 @@ public class KitbotRobotContainer extends RobotContainer {
         // m_chosenAuto.setDefaultOption("Away Side Standard", new PrimaryAutoBase(m_driveTrain, m_kitbotRoller, false));
         // // m_chosenAuto.addOption("Away Side J-Path", new PrimaryAutoBase(m_driveTrain, m_kitbotRoller, false));
 
-        Pose2d[] reefPoints = {FieldConstants.REEF_J, FieldConstants.REEF_K, FieldConstants.REEF_L, FieldConstants.REEF_A};
-        m_chosenAuto.setDefaultOption("Processor Side Standard via Generic", 
-            new KitBotGenericAutoBase(FieldConstants.ROBOT_START_3, FieldConstants.SOURCE_2_OUT, reefPoints, m_driveTrain, m_kitbotRoller, true));
+        // Pose2d[] reefPoints = {FieldConstants.REEF_J, FieldConstants.REEF_K, FieldConstants.REEF_L, FieldConstants.REEF_A};
+        // m_chosenAuto.setDefaultOption("Processor Side Standard via Generic", 
+        //     new KitBotGenericAutoBase(FieldConstants.ROBOT_START_3, FieldConstants.SOURCE_2_OUT, reefPoints, m_driveTrain, m_kitbotRoller, true));
 
-        Pose2d[] reefPoints0 = {FieldConstants.REEF_J, FieldConstants.REEF_A, FieldConstants.REEF_B};
-        m_chosenAuto.addOption("Processor Side Shared Far", 
-            new KitBotGenericAutoBase(FieldConstants.ROBOT_START_3, FieldConstants.SOURCE_2_IN, reefPoints0, m_driveTrain, m_kitbotRoller, true));
+        // Pose2d[] reefPoints0 = {FieldConstants.REEF_J, FieldConstants.REEF_A, FieldConstants.REEF_B};
+        // m_chosenAuto.addOption("Processor Side Shared Far", 
+        //     new KitBotGenericAutoBase(FieldConstants.ROBOT_START_3, FieldConstants.SOURCE_2_IN, reefPoints0, m_driveTrain, m_kitbotRoller, true));
     
-        Pose2d[] reefPoints1 = {FieldConstants.REEF_H, FieldConstants.REEF_K, FieldConstants.REEF_L};
-        m_chosenAuto.addOption("Processor Side Shared Near", 
-            new KitBotGenericAutoBase(FieldConstants.ROBOT_START_2, FieldConstants.SOURCE_2_OUT, reefPoints1, m_driveTrain, m_kitbotRoller, true));
+        // Pose2d[] reefPoints1 = {FieldConstants.REEF_H, FieldConstants.REEF_K, FieldConstants.REEF_L};
+        // m_chosenAuto.addOption("Processor Side Shared Near", 
+        //     new KitBotGenericAutoBase(FieldConstants.ROBOT_START_2, FieldConstants.SOURCE_2_OUT, reefPoints1, m_driveTrain, m_kitbotRoller, true));
 
-        m_chosenAuto.addOption("Away Side Standard", 
-            new KitBotGenericAutoBase(FieldConstants.ROBOT_START_3, FieldConstants.SOURCE_2_OUT, reefPoints, m_driveTrain, m_kitbotRoller, false));
+        // m_chosenAuto.addOption("Away Side Standard", 
+        //     new KitBotGenericAutoBase(FieldConstants.ROBOT_START_3, FieldConstants.SOURCE_2_OUT, reefPoints, m_driveTrain, m_kitbotRoller, false));
 
-        m_chosenAuto.addOption("Away Side Shared Far", 
-            new KitBotGenericAutoBase(FieldConstants.ROBOT_START_3, FieldConstants.SOURCE_2_IN, reefPoints0, m_driveTrain, m_kitbotRoller, false));
+        // m_chosenAuto.addOption("Away Side Shared Far", 
+        //     new KitBotGenericAutoBase(FieldConstants.ROBOT_START_3, FieldConstants.SOURCE_2_IN, reefPoints0, m_driveTrain, m_kitbotRoller, false));
     
-        m_chosenAuto.addOption("Away Side Shared Near", 
-            new KitBotGenericAutoBase(FieldConstants.ROBOT_START_2, FieldConstants.SOURCE_2_OUT, reefPoints1, m_driveTrain, m_kitbotRoller, false));
+        // m_chosenAuto.addOption("Away Side Shared Near", 
+        //     new KitBotGenericAutoBase(FieldConstants.ROBOT_START_2, FieldConstants.SOURCE_2_OUT, reefPoints1, m_driveTrain, m_kitbotRoller, false));
 
         // m_chosenAuto.addOption("Drive Single Path", 
         //     new SinglePathTestAuto(m_driveTrain, m_kitbotRoller, false));

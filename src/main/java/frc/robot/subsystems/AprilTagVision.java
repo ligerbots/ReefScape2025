@@ -61,13 +61,14 @@ public class AprilTagVision extends SubsystemBase {
     static final double SHED_TAG_SUBSTATION_YOFFSET = 1.19;
 
     // Base standard deviations for vision results
-    static final Matrix<N3, N1> SINGLE_TAG_BASE_STDDEV = VecBuilder.fill(4, 4, 8);
-    static final Matrix<N3, N1> MULTI_TAG_BASE_STDDEV = VecBuilder.fill(0.5, 0.5, 1);
+    static final Matrix<N3, N1> SINGLE_TAG_BASE_STDDEV = VecBuilder.fill(0.9, 0.9, 0.9);
+    static final Matrix<N3, N1> MULTI_TAG_BASE_STDDEV = VecBuilder.fill(0.45, 0.45, 0.45);
     static final Matrix<N3, N1> INFINITE_STDDEV = VecBuilder.fill(Double.MAX_VALUE, Double.MAX_VALUE, Double.MAX_VALUE);
 
     private enum Cam {
         FRONT_RIGHT(0),
         FRONT_LEFT(1);
+        // BACK(2);
 
         int idx;
         Cam(int idx) { this.idx = idx; }
@@ -117,7 +118,7 @@ public class AprilTagVision extends SubsystemBase {
         }
 
         // initialize cameras
-        m_cameras = new Camera[2];
+        m_cameras = new Camera[Cam.values().length];
 
         // Kitbot
         // m_cameras[Cam.FRONT.idx] = new Camera("ArducamFront", new Transform3d(
@@ -133,16 +134,22 @@ public class AprilTagVision extends SubsystemBase {
         // Comp Feb 8
         m_cameras[Cam.FRONT_RIGHT.idx] = new Camera("ArducamBack", new Transform3d(
             new Translation3d(Units.inchesToMeters(9.82), Units.inchesToMeters(-10.0), Units.inchesToMeters(10.53)),
-            new Rotation3d(0.0, Math.toRadians(10), 0)
+            new Rotation3d(0.0, Math.toRadians(-10), 0)
                 .rotateBy(new Rotation3d(0, 0, Math.toRadians(12.5)))
         ));
 
         m_cameras[Cam.FRONT_LEFT.idx] = new Camera("ArducamFront", new Transform3d(
             new Translation3d(Units.inchesToMeters(9.82), Units.inchesToMeters(10.0), Units.inchesToMeters(10.53)),
-            new Rotation3d(0.0, Math.toRadians(10), 0)
+            new Rotation3d(0.0, Math.toRadians(-10), 0)
                 .rotateBy(new Rotation3d(0, 0, Math.toRadians(-12.5)))
             ));
 
+        // m_cameras[Cam.BACK.idx] = new Camera("Arducam3", new Transform3d(
+        //         new Translation3d(Units.inchesToMeters(-8), Units.inchesToMeters(4.0), Units.inchesToMeters(15)),
+        //         new Rotation3d(0.0, Math.toRadians(-25), 0)
+        //             .rotateBy(new Rotation3d(0, 0, Math.toRadians(180)))
+        //         ));
+    
         if (Constants.SIMULATION_SUPPORT) {
             // initialize a simulated camera. Must be done after creating the tag layout
             initializeSimulation();
@@ -154,8 +161,9 @@ public class AprilTagVision extends SubsystemBase {
         // set the driver mode to false
         // setDriverMode(false);
 
-        SmartDashboard.putBoolean("aprilTagVision/frontRightCamera", m_cameras[Cam.FRONT_RIGHT.idx].photonCamera.isConnected());
-        SmartDashboard.putBoolean("aprilTagVision/frontLeftCamera", m_cameras[Cam.FRONT_LEFT.idx].photonCamera.isConnected());
+        for (Cam cam : Cam.values()) {
+            SmartDashboard.putBoolean("aprilTagVision/" + cam.toString(), m_cameras[cam.idx].photonCamera.isConnected());
+        }
     }
 
     public void updateSimulation(SwerveDrive swerve) {
@@ -216,8 +224,8 @@ public class AprilTagVision extends SubsystemBase {
                         if (estPose.isPresent()) {
                             // Update the main poseEstimator with the vision result
                             // Make sure to use the timestamp of this result
-                            // swerve.addVisionMeasurement(estPose.get().estimatedPose.toPose2d(), pipeRes.getTimestampSeconds(), estimateStdDev(robotPose, pipeRes.targets));
-                            swerve.addVisionMeasurement(estPose.get().estimatedPose.toPose2d(), pipeRes.getTimestampSeconds());
+                            swerve.addVisionMeasurement(estPose.get().estimatedPose.toPose2d(), pipeRes.getTimestampSeconds(), estimateStdDev(pipeRes.targets));
+                            // swerve.addVisionMeasurement(estPose.get().estimatedPose.toPose2d(), pipeRes.getTimestampSeconds());
                         }
                     }
                 }
@@ -311,7 +319,8 @@ public class AprilTagVision extends SubsystemBase {
 
     // Calculates new standard deviations This algorithm is a heuristic that creates dynamic standard deviations based
     // on number of tags, estimation strategy, and distance from the tags.
-    private Matrix<N3, N1> estimateStdDev(Pose2d estimatedPose, List<PhotonTrackedTarget> targets) {
+    // private Matrix<N3, N1> estimateStdDev(Pose2d estimatedPose, List<PhotonTrackedTarget> targets) {
+    private Matrix<N3, N1> estimateStdDev(List<PhotonTrackedTarget> targets) {
 
         // Pose present. Start running Heuristic
         int numTags = 0;
@@ -320,12 +329,16 @@ public class AprilTagVision extends SubsystemBase {
         // Precalculation - see how many tags we found, and calculate an
         // average-distance metric
         for (PhotonTrackedTarget tgt : targets) {
-            var tagPose = m_aprilTagFieldLayout.getTagPose(tgt.getFiducialId());
-            if (tagPose.isEmpty())
-                continue;
+        //     var tagPose = m_aprilTagFieldLayout.getTagPose(tgt.getFiducialId());
+        //     if (tagPose.isEmpty())
+        //         continue;
+        //     avgDist += tagPose.get().toPose2d().getTranslation().getDistance(estimatedPose.getTranslation());
 
+            Transform3d bestCam2Target = tgt.getBestCameraToTarget();
+            double dist = bestCam2Target.getTranslation().getNorm();
+
+            avgDist += dist;
             numTags++;
-            avgDist += tagPose.get().toPose2d().getTranslation().getDistance(estimatedPose.getTranslation());
         }
 
         // Should not happen, but protect against divide by zero
@@ -410,10 +423,12 @@ public class AprilTagVision extends SubsystemBase {
         // The timestamp is used by PVLib to know if there is a new frame, so in a simulation
         // with no uncertainty, it thinks that it is not detecting a tag if the robot is static.
         // So, always have a little bit of uncertainty.
-        prop.setCalibError(0.1, 0.03);
+        prop.setCalibError(0.5, 0.3);
 
         for (Camera c : m_cameras) {
             PhotonCameraSim camSim = new PhotonCameraSim(c.photonCamera, prop);
+            // open web page with a simulate camera image. 
+            camSim.enableDrawWireframe(true);
             camSim.setMaxSightRange(Units.feetToMeters(20.0));
             m_visionSim.addCamera(camSim, c.robotToCam);
         }

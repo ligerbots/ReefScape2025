@@ -2,8 +2,11 @@ package frc.robot.subsystems;
 
 import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
 import com.ctre.phoenix6.configs.MotorOutputConfigs;
+import com.ctre.phoenix6.configs.Slot0Configs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
+import com.ctre.phoenix6.controls.PositionVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
+import com.ctre.phoenix6.signals.GravityTypeValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -17,8 +20,8 @@ public class Climber extends SubsystemBase {
     // private final RelativeEncoder m_climberMotorEncoder;
     
     // Constants to be used in this class
-    private static final double DEPLOYED_ROTATIONS = -10.0;
-    private static final double CLIMB_ROTATIONS = 610.0; 
+    private static final double DEPLOYED_ROTATIONS = -23.0;
+    private static final double CLIMB_ROTATIONS = 200; 
     
     // Protection values
     private static final double MAX_ROTATIONS_ALLOWED = 710.0;
@@ -28,15 +31,13 @@ public class Climber extends SubsystemBase {
     private static final double CURRENT_LIMIT = 40;
 
     // Winch motor speed values
-    private static final double IDLE_SPEED = -0.01;
-    private static final double DEPLOY_MAX_SPEED = -0.2;
-    private static final double DEPLOY_MIN_SPEED = -0.1;
-    private static final double CLIMB_SPEED = 0.5;
+    private static final double DEPLOY_MAX_SPEED = -0.4;
+    private static final double CLIMB_SPEED = 0.8;
 
-    public static final double MANUAL_SPEED = 0.3;
-
-    private static final double EXTEND_SLOWDOWN_INTERVAL = 30.0;
+    public static final double MANUAL_SPEED = 0.4;
     
+    private static final double K_P = 1.0;
+
     // State definitions:
     // IDLE - winch holding system in place, should be used for entire match until End Game.
     // DEPLOYING - winch unwinding ropes to allow climber to raise.
@@ -59,7 +60,14 @@ public class Climber extends SubsystemBase {
         CurrentLimitsConfigs currentLimits = new CurrentLimitsConfigs().withSupplyCurrentLimit(CURRENT_LIMIT);
         talonFXConfigs.withCurrentLimits(currentLimits);
         
+        // set slot 0 gains
+        Slot0Configs slot0configs = talonFXConfigs.Slot0;
+        slot0configs.kP = K_P;  // start small!!!
+        slot0configs.kI = 0.0; // no output for integrated error
+        slot0configs.kD = 0.0; // A velocity error of 1 rps results in 0.1 V output
+
         m_climberMotor.getConfigurator().apply(talonFXConfigs);
+        m_climberMotor.setPosition(0);
     }
     
     @Override
@@ -89,13 +97,13 @@ public class Climber extends SubsystemBase {
         else if (m_climberState == ClimberState.WAITING) {
             // Nothing to do here
         }
-        else if (m_climberState == ClimberState.CLIMBING) {
-            // The CLIMBING state is only entered via a command
-            // m_climberMotor.set(CLIMB_SPEED);
-        }
         else if (m_climberState == ClimberState.CLIMBING) {          
             if (position >= CLIMB_ROTATIONS) {
-                m_climberMotor.set(0.0);
+                // m_climberMotor.set(0.0);
+
+                // create a position closed-loop request, voltage output, slot 0 configs
+                m_climberMotor.setControl(new PositionVoltage(getPosition()).withSlot(0));
+
                 m_climberState = ClimberState.HOLDING;
             }
         }

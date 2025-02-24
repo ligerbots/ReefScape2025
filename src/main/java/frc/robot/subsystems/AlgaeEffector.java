@@ -72,26 +72,14 @@ public class AlgaeEffector extends SubsystemBase {
         // TODO: we probably want the scoring methods to be click-once (not whileHeld)
         //  this will mean adding a timer, and turning off the state when it is elapsed
 
-        if (m_state == State.INTAKE) {
-            if (m_limitSwitch.isPressed())
-                m_state = State.HOLD;
-            else
-                m_motor.setVoltage(INTAKE_VOLTAGE);
-        } 
-        else if (m_state == State.PROCESSOR) {
-            m_motor.setVoltage(PROCESSOR_VOLTAGE);
-        } 
-        else if (m_state == State.BARGE) {
-            m_motor.setVoltage(BARGE_VOLTAGE);
-        }
-
-        // allow fall-through for HOLD. Speeds up state changes
-        if (m_state == State.HOLD) {
+        boolean pressed = m_limitSwitch.isPressed();
+        if (pressed && (m_state == State.IDLE || m_state == State.INTAKE)) {
             m_motor.setVoltage(HOLD_VOLTAGE);
+            m_state = State.HOLD;        
         }
 
         SmartDashboard.putString("algaeEffector/state", m_state.toString());
-        SmartDashboard.putBoolean("algaeEffector/limitSwitch", m_limitSwitch.isPressed());
+        SmartDashboard.putBoolean("algaeEffector/limitSwitch", pressed);
         SmartDashboard.putNumber("algaeEffector/speed", m_motor.get());
         SmartDashboard.putNumber("algaeEffector/current", m_motor.getOutputCurrent());
 
@@ -100,18 +88,17 @@ public class AlgaeEffector extends SubsystemBase {
     }
 
     public void runIntake() {
+        m_motor.setVoltage(INTAKE_VOLTAGE);
         m_state = State.INTAKE;
     }
 
     public void scoreBarge() {
+        m_motor.setVoltage(BARGE_VOLTAGE);
         m_state = State.BARGE;
     }
 
-    public void setHold(){
-        m_state = State.HOLD;
-    }
-
     public void scoreProcessor() {
+        m_motor.setVoltage(PROCESSOR_VOLTAGE);
         m_state = State.PROCESSOR;
     }
 
@@ -120,5 +107,9 @@ public class AlgaeEffector extends SubsystemBase {
             m_motor.stopMotor();
             m_state = State.IDLE;
         }
+    }
+
+    public boolean hasAlgae() {
+        return m_state == State.HOLD;
     }
 }

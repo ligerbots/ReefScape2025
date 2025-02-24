@@ -24,11 +24,12 @@ public class Robot extends TimedRobot {
     private Command m_autonomousCommand = null;
     private boolean m_prevIsRedAlliance = true;
     
-    public static final String KITBOT_SERIAL_NUMBER = "123";
+    public static final String KITBOT_SERIAL_NUMBER = "0313baff";
     public static final String COMP_V1_SERIAL_NUMBER = "0313bb3a";
+    public static final String TESTBENCH_SERIAL_NUMBER = "123";
 
     public enum RobotType {
-        KITBOT, COMP_V1, TEST
+        KITBOT, COMP_V1, TESTBENCH
     }
     // we want this to be static so that it is easy for subsystems to query the robot type
     private static RobotType m_robotType;
@@ -66,8 +67,11 @@ public class Robot extends TimedRobot {
             m_robotType = RobotType.KITBOT;
         } else if (serialNum.equals(COMP_V1_SERIAL_NUMBER)) {
             m_robotType = RobotType.COMP_V1;
+        } else if (serialNum.equals(TESTBENCH_SERIAL_NUMBER)) {
+            m_robotType = RobotType.TESTBENCH;
         } else {
-            m_robotType = RobotType.TEST;
+            // default to the Comp robot. Helps with simulation
+            m_robotType = RobotType.COMP_V1;
         }
         SmartDashboard.putString("robotType", m_robotType.toString());
 
