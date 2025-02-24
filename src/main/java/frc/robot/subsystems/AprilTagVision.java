@@ -46,6 +46,9 @@ public class AprilTagVision extends SubsystemBase {
     // if this is false, the compiler should remove all the unused code.
     static final boolean USE_PRIVATE_TAG_LAYOUT = false;
 
+    // static final AprilTagFields APRILTAG_FIELD = AprilTagFields.k2025ReefscapeWelded;
+    static final AprilTagFields APRILTAG_FIELD = AprilTagFields.k2025ReefscapeAndyMark;
+
     // Use the multitag pose estimator
     static final PoseStrategy POSE_STRATEGY = PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR;
     // static final PoseStrategy POSE_STRATEGY = PoseStrategy.CLOSEST_TO_REFERENCE_POSE;
@@ -110,8 +113,8 @@ public class AprilTagVision extends SubsystemBase {
 
     public AprilTagVision() {
         try {
-            m_aprilTagFieldLayout = AprilTagFieldLayout.loadField(AprilTagFields.k2025ReefscapeWelded);
-            SmartDashboard.putString("aprilTagVision/field", AprilTagFields.k2025ReefscapeWelded.toString());
+            m_aprilTagFieldLayout = AprilTagFieldLayout.loadField(APRILTAG_FIELD);
+            SmartDashboard.putString("aprilTagVision/field", APRILTAG_FIELD.toString());
         } catch (UncheckedIOException e) {
             System.out.println("Unable to load AprilTag layout " + e.getMessage());
             m_aprilTagFieldLayout = null;
