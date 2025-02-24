@@ -34,7 +34,7 @@ public class Climber extends SubsystemBase {
     private static final double DEPLOY_MAX_SPEED = -0.4;
     private static final double CLIMB_SPEED = 0.8;
 
-    public static final double MANUAL_SPEED = 0.3;
+    public static final double MANUAL_SPEED = 0.4;
     
     private static final double K_P = 1.0;
 
