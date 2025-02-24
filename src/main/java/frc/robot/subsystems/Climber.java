@@ -32,8 +32,8 @@ public class Climber extends SubsystemBase {
     private static final double CURRENT_LIMIT = 40;
 
     // Motion Magic limits
-    private static final double MAX_VEL_ROT_PER_SEC = 200.0;
-    private static final double MAX_ACC_ROT_PER_SEC_SQ = 400.0;
+    private static final double MAX_VEL_ROT_PER_SEC = 100.0;
+    private static final double MAX_ACC_ROT_PER_SEC_SQ = 200.0;
     private static final double MAX_JERK_ROT_PER_SEC3 = 2000.0;
 
     // Winch motor speed values
