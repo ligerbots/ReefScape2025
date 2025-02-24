@@ -118,9 +118,9 @@ public class CompRobotContainer extends RobotContainer {
 
 
         JoystickButton farm1 = new JoystickButton(m_farm, 1);
-        farm1.whileTrue(new StartEndCommand(() -> m_climber.run(0.4), m_climber::hold, m_climber));
+        farm1.whileTrue(new StartEndCommand(() -> m_climber.run(Climber.MANUAL_SPEED), m_climber::hold, m_climber));
         JoystickButton farm2 = new JoystickButton(m_farm, 2);
-        farm2.whileTrue(new StartEndCommand(() -> m_climber.run(-0.4), m_climber::hold, m_climber));
+        farm2.whileTrue(new StartEndCommand(() -> m_climber.run(-Climber.MANUAL_SPEED), m_climber::hold, m_climber));
         farm2.onTrue(new MoveEndEffector(Constants.Position.CLIMB, m_elevator, m_pivot, 0));
 
         JoystickButton farm12 = new JoystickButton(m_farm, 12);
