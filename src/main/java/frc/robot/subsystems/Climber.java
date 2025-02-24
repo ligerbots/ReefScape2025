@@ -89,8 +89,8 @@ public class Climber extends SubsystemBase {
     
     @Override
     public void periodic() {
-        double position = getPosition();
         
+        // not sure if this is needed
         if (motionMagicIsFinished() 
             && (m_climberState == ClimberState.DEPLOYING || m_climberState == ClimberState.CLIMBING)) {
                 hold();
@@ -114,7 +114,8 @@ public class Climber extends SubsystemBase {
         //         m_climberState = ClimberState.HOLDING;
         //     }
         // }
-        
+
+        double position = getPosition();
         double climberCurrent = m_climberMotor.getSupplyCurrent().getValueAsDouble();
 
         // Protection: stop if position is at max or current is too high
