@@ -190,14 +190,14 @@ public class AprilTagVision extends SubsystemBase {
             return;
 
         try {
-            if (PLOT_VISIBLE_TAGS) {
-                plotVisibleTags(swerve.field);
-            }
-
             // Since we want to go through the images twice, we need to fetch the results and save them
             // getAllUnreadResults() forgets the results once called
             for (Camera c : m_cameras) {
                 c.pipeResults = c.photonCamera.getAllUnreadResults();
+            }
+
+            if (PLOT_VISIBLE_TAGS) {
+                plotVisibleTags(swerve.field);
             }
 
             // Do MultiTag
@@ -462,16 +462,17 @@ public class AprilTagVision extends SubsystemBase {
 
         ArrayList<Pose2d> poses = new ArrayList<Pose2d>();
         for (Camera cam : m_cameras) {
-            if (!cam.photonCamera.isConnected()) continue;
+            int nRes = cam.pipeResults.size();
+            if (nRes > 0) {
+                for (PhotonTrackedTarget target : cam.pipeResults.get(nRes - 1).getTargets()) {
+                    int targetFiducialId = target.getFiducialId();
+                    if (targetFiducialId == -1)
+                        continue;
 
-            for (PhotonTrackedTarget target : cam.photonCamera.getLatestResult().getTargets()) {
-                int targetFiducialId = target.getFiducialId();
-                if (targetFiducialId == -1)
-                    continue;
-
-                Optional<Pose3d> targetPosition = m_aprilTagFieldLayout.getTagPose(targetFiducialId);
-                if (!targetPosition.isEmpty())
-                    poses.add(targetPosition.get().toPose2d());
+                    Optional<Pose3d> targetPosition = m_aprilTagFieldLayout.getTagPose(targetFiducialId);
+                    if (!targetPosition.isEmpty())
+                        poses.add(targetPosition.get().toPose2d());
+                }
             }
         }
 
