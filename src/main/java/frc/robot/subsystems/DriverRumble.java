@@ -20,9 +20,9 @@ public class DriverRumble extends SubsystemBase {
     private static final double CLIMB_LOCATION_FROM_CENTER = Units.inchesToMeters(6);
 
     // Tolerance for lateral offset (meters) within which no rumble is applied.
-    private final double REEF_OFFSET_TOLERANCE_METER = Units.inchesToMeters(2.0);
-    // Maximum lateral offset (meters) that corresponds to full rumble intensity.
-    // private final double METER_TO_TRIGGER = 0.5;
+    private final double REEF_OFFSET_TOLERANCE_METER = Units.inchesToMeters(1.0);
+    // distance to position
+    private final double METER_TO_TRIGGER = 0.25;
     
     // barge
     private final double BARGE_LINE_BLUE = 7.5; // meters
@@ -57,11 +57,11 @@ public class DriverRumble extends SubsystemBase {
             
             // Relative pose rotated to the target pose
             Pose2d relativePose = robotPose.relativeTo(targetPose); 
-            // final double distance = relativePose.getTranslation().getNorm();
+            final double distance = relativePose.getTranslation().getNorm();
             
             // Calculate lateral offset in meters (positive means left, negative means right)
             rumbleValue = relativePose.getY();
-            rumble = Math.abs(rumbleValue) < REEF_OFFSET_TOLERANCE_METER;
+            rumble = distance < METER_TO_TRIGGER && Math.abs(rumbleValue) < REEF_OFFSET_TOLERANCE_METER;
         }
         else if (m_hasAlgae.getAsBoolean()) {
             // check if correct place for a Barge shot
