@@ -71,10 +71,8 @@ public class CompRobotContainer extends RobotContainer {
             DriverStation.silenceJoystickConnectionWarning(true);
         }
         
-        //these are reserved for climbing 
         m_driverController.leftBumper().onTrue(new InstantCommand(m_driveTrain::lock, m_driveTrain));
         // m_driverController.back().onTrue(new InstantCommand(m_driveTrain::zeroHeading, m_driveTrain));
-        
         
         m_driverController.leftTrigger().whileTrue(
                 new ConditionalCommand(
@@ -97,9 +95,6 @@ public class CompRobotContainer extends RobotContainer {
         m_driverController.y().onTrue(new MoveEndEffector(Constants.Position.BARGE, m_elevator, m_pivot).finallyDo(() -> m_coralMode = false));
         m_driverController.b().onTrue(new MoveEndEffector(Constants.Position.PROCESSOR, m_elevator, m_pivot).finallyDo(() -> m_coralMode = false));
 
-        // m_driverController.y().onTrue(new DeferredCommand(new ReefTractorBeam(m_driveTrain), Set.of(m_driveTrain)));
-        // m_driverController.rightBumper().onTrue(new DeferredCommand(new ReefTractorBeam(m_driveTrain), Set.of(m_driveTrain)));
-        
         POVButton dpadLeft = new POVButton(m_driverController.getHID(), 270);
         dpadLeft.onTrue(new MoveEndEffector(Constants.Position.L4, m_elevator, m_pivot).finallyDo(() -> m_coralMode = true));
         
@@ -117,13 +112,9 @@ public class CompRobotContainer extends RobotContainer {
         
         // m_driverController.leftBumper().onTrue(new InstantCommand(() -> m_coralMode = !m_coralMode));
         
-        // m_driverController.a().whileTrue(new StartEndCommand(() -> m_pivot.run(0.1), () -> m_pivot.run(0), m_pivot));
-        // m_driverController.b().whileTrue(new StartEndCommand(() -> m_pivot.run(-0.1), () -> m_pivot.run(0), m_pivot));
-        
         m_driverController.start().onTrue(new InstantCommand(m_climber::climb));
         m_driverController.back().onTrue(new InstantCommand(m_climber::deploy));
         m_driverController.back().onTrue(new MoveEndEffector(Constants.Position.CLIMB, m_elevator, m_pivot, 0));
-
 
         JoystickButton farm1 = new JoystickButton(m_farm, 1);
         farm1.whileTrue(new StartEndCommand(() -> m_climber.run(Climber.MANUAL_SPEED), m_climber::hold, m_climber));
@@ -136,7 +127,6 @@ public class CompRobotContainer extends RobotContainer {
 
         JoystickButton farm15 = new JoystickButton(m_farm, 15);
         farm15.onTrue(new DeferredCommand(new ReefTractorBeam(m_driveTrain), Set.of(m_driveTrain)));
-
     }
     
     private void configureAutos() {
