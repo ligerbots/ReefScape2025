@@ -4,34 +4,28 @@
 
 package frc.robot.subsystems;
 
-import java.util.List;
 import java.util.function.BooleanSupplier;
 import java.util.function.Supplier;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.GenericHID.RumbleType;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.FieldConstants;
 
-public class DriverRumble extends SubsystemBase {
-    /** Creates a new DriverRumble. */
+public class DriverRumble extends SubsystemBase {    
     
-    //Note: We can add source pickup locations to the list below so we get feedback for source alignment as well as the reef.
-    static final List<Pose2d> REEF_SCORING_LOCATIONS = List.of(FieldConstants.REEF_A, FieldConstants.REEF_B,
-            FieldConstants.REEF_C,
-            FieldConstants.REEF_D, FieldConstants.REEF_E, FieldConstants.REEF_F,
-            FieldConstants.REEF_G, FieldConstants.REEF_H, FieldConstants.REEF_I,
-            FieldConstants.REEF_J, FieldConstants.REEF_K, FieldConstants.REEF_L);
-    
+    private static final double CLIMB_LOCATION_FROM_CENTER = Units.inchesToMeters(6);
+
     // Tolerance for lateral offset (meters) within which no rumble is applied.
-    private final double REEF_OFFSET_TOLERANCE_METER = Units.inchesToMeters(2.0);
-    // Maximum lateral offset (meters) that corresponds to full rumble intensity.
-    // private final double METER_TO_TRIGGER = 0.5;
+    private final double REEF_OFFSET_TOLERANCE_METER = Units.inchesToMeters(1.0);
+    // distance to position
+    private final double METER_TO_TRIGGER = 0.25;
     
     // barge
-    private final double BARGE_LINE_BLUE = 7.5;  // TODO a guess
+    private final double BARGE_LINE_BLUE = 7.5; // meters
     private final double BARGE_TARGET_TOLERANCE_METER = Units.inchesToMeters(3);
 
     private final double RUMBLE_INTENSITY = 1; 
@@ -40,18 +34,22 @@ public class DriverRumble extends SubsystemBase {
     private final Supplier<Pose2d> m_robotPositionSupplier;
     private final BooleanSupplier m_hasCoral;
     private final BooleanSupplier m_hasAlgae;
+    private final BooleanSupplier m_climberDeployed;
 
-    public DriverRumble(XboxController xbox, Supplier<Pose2d> positionSupplier, BooleanSupplier hasCoral, BooleanSupplier hasAlgae) {
+    public DriverRumble(XboxController xbox, Supplier<Pose2d> positionSupplier, 
+            BooleanSupplier hasCoral, BooleanSupplier hasAlgae, BooleanSupplier climberDeployed) {
         m_xbox = xbox;
         m_robotPositionSupplier = positionSupplier;
         m_hasCoral = hasCoral;
         m_hasAlgae = hasAlgae;
+        m_climberDeployed = climberDeployed;
     }
     
     @Override
     public void periodic() {
         Pose2d robotPose = m_robotPositionSupplier.get();
         boolean rumble = false;
+        double rumbleValue = 0;
 
         if (m_hasCoral.getAsBoolean()) {
             // See if we are aligned with a Reef pole
@@ -59,21 +57,36 @@ public class DriverRumble extends SubsystemBase {
             
             // Relative pose rotated to the target pose
             Pose2d relativePose = robotPose.relativeTo(targetPose); 
-            // final double distance = relativePose.getTranslation().getNorm();
+            final double distance = relativePose.getTranslation().getNorm();
             
             // Calculate lateral offset in meters (positive means left, negative means right)
-            double lateralOffset = relativePose.getY();
-            rumble = Math.abs(lateralOffset) < REEF_OFFSET_TOLERANCE_METER;
+            rumbleValue = relativePose.getY();
+            rumble = distance < METER_TO_TRIGGER && Math.abs(rumbleValue) < REEF_OFFSET_TOLERANCE_METER;
         }
         else if (m_hasAlgae.getAsBoolean()) {
             // check if correct place for a Barge shot
             double bargeLine = BARGE_LINE_BLUE;
             if (FieldConstants.isRedAlliance())
                 bargeLine = FieldConstants.FIELD_LENGTH - bargeLine;
-            rumble = Math.abs(robotPose.getX() - bargeLine) < BARGE_TARGET_TOLERANCE_METER;
+            rumbleValue = robotPose.getX() - bargeLine;
+            rumble = Math.abs(rumbleValue) < BARGE_TARGET_TOLERANCE_METER;
+        }
+        else if (m_climberDeployed.getAsBoolean()) {
+            // check if correct place for a Barge shot
+            double xMax = 0.5 * FieldConstants.FIELD_LENGTH;
+            double xMin = xMax - CLIMB_LOCATION_FROM_CENTER;
+
+            double xBlue = robotPose.getX();
+            if (FieldConstants.isRedAlliance())
+                xBlue = FieldConstants.FIELD_LENGTH - xBlue;
+            rumbleValue = xBlue - xMin;
+            rumble = xBlue >= xMin && xBlue <= xMax;
         }
 
         m_xbox.setRumble(RumbleType.kBothRumble, rumble ? RUMBLE_INTENSITY : 0);
+
+        SmartDashboard.putBoolean("rumble", rumble);
+        SmartDashboard.putNumber("rumbleValue", rumbleValue);
 
         // final double signedRumbleValue = getRumble(lateralOffset);
         
@@ -112,7 +125,7 @@ public class DriverRumble extends SubsystemBase {
         Pose2d currentPose = FieldConstants.flipPose(robotPose);
         // System.out.println("Current Pose: " + currentPose);
         
-        Pose2d nearestLocation = FieldConstants.flipPose(currentPose.nearest(REEF_SCORING_LOCATIONS));
+        Pose2d nearestLocation = FieldConstants.flipPose(currentPose.nearest(FieldConstants.REEF_SCORING_LOCATIONS));
         // System.out.println("Nearest Pole: " + nearestPole);
         return nearestLocation;
     }

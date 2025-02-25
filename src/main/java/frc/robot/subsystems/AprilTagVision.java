@@ -46,6 +46,9 @@ public class AprilTagVision extends SubsystemBase {
     // if this is false, the compiler should remove all the unused code.
     static final boolean USE_PRIVATE_TAG_LAYOUT = false;
 
+    // static final AprilTagFields APRILTAG_FIELD = AprilTagFields.k2025ReefscapeWelded;
+    static final AprilTagFields APRILTAG_FIELD = AprilTagFields.k2025ReefscapeAndyMark;
+
     // Use the multitag pose estimator
     static final PoseStrategy POSE_STRATEGY = PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR;
     // static final PoseStrategy POSE_STRATEGY = PoseStrategy.CLOSEST_TO_REFERENCE_POSE;
@@ -110,8 +113,8 @@ public class AprilTagVision extends SubsystemBase {
 
     public AprilTagVision() {
         try {
-            m_aprilTagFieldLayout = AprilTagFieldLayout.loadField(AprilTagFields.k2025ReefscapeWelded);
-            SmartDashboard.putString("aprilTagVision/field", AprilTagFields.k2025ReefscapeWelded.toString());
+            m_aprilTagFieldLayout = AprilTagFieldLayout.loadField(APRILTAG_FIELD);
+            SmartDashboard.putString("aprilTagVision/field", APRILTAG_FIELD.toString());
         } catch (UncheckedIOException e) {
             System.out.println("Unable to load AprilTag layout " + e.getMessage());
             m_aprilTagFieldLayout = null;
@@ -187,14 +190,14 @@ public class AprilTagVision extends SubsystemBase {
             return;
 
         try {
-            if (PLOT_VISIBLE_TAGS) {
-                plotVisibleTags(swerve.field);
-            }
-
             // Since we want to go through the images twice, we need to fetch the results and save them
             // getAllUnreadResults() forgets the results once called
             for (Camera c : m_cameras) {
                 c.pipeResults = c.photonCamera.getAllUnreadResults();
+            }
+
+            if (PLOT_VISIBLE_TAGS) {
+                plotVisibleTags(swerve.field);
             }
 
             // Do MultiTag
@@ -459,16 +462,17 @@ public class AprilTagVision extends SubsystemBase {
 
         ArrayList<Pose2d> poses = new ArrayList<Pose2d>();
         for (Camera cam : m_cameras) {
-            if (!cam.photonCamera.isConnected()) continue;
+            int nRes = cam.pipeResults.size();
+            if (nRes > 0) {
+                for (PhotonTrackedTarget target : cam.pipeResults.get(nRes - 1).getTargets()) {
+                    int targetFiducialId = target.getFiducialId();
+                    if (targetFiducialId == -1)
+                        continue;
 
-            for (PhotonTrackedTarget target : cam.photonCamera.getLatestResult().getTargets()) {
-                int targetFiducialId = target.getFiducialId();
-                if (targetFiducialId == -1)
-                    continue;
-
-                Optional<Pose3d> targetPosition = m_aprilTagFieldLayout.getTagPose(targetFiducialId);
-                if (!targetPosition.isEmpty())
-                    poses.add(targetPosition.get().toPose2d());
+                    Optional<Pose3d> targetPosition = m_aprilTagFieldLayout.getTagPose(targetFiducialId);
+                    if (!targetPosition.isEmpty())
+                        poses.add(targetPosition.get().toPose2d());
+                }
             }
         }
 

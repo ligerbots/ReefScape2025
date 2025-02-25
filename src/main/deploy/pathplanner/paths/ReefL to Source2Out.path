@@ -12,20 +12,20 @@
         "y": 6.80206992320221
       },
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "scoreReefL"
     },
     {
       "anchor": {
-        "x": 1.6645559210526315,
-        "y": 7.411842105263157
+        "x": 1.6741776315789472,
+        "y": 7.440707236842105
       },
       "prevControl": {
-        "x": 2.519182083202466,
-        "y": 6.423605420092304
+        "x": 2.5288037937287817,
+        "y": 6.452470551671252
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "source2Out"
     }
   ],
   "rotationTargets": [],
@@ -42,7 +42,7 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": -52.94347181059034
+    "rotation": -53.530765609948155
   },
   "reversed": false,
   "folder": null,
