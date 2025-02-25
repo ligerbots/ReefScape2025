@@ -99,9 +99,9 @@ public class AprilTagVision extends SubsystemBase {
             photonCamera.setDriverMode(false);
         }
 
-        void setDriverMode(Boolean mode) {
-            photonCamera.setDriverMode(mode);
-        }
+        // void setDriverMode(Boolean mode) {
+        //     photonCamera.setDriverMode(mode);
+        // }
     }
 
     private Camera[] m_cameras;

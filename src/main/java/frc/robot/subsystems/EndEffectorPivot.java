@@ -6,7 +6,6 @@ package frc.robot.subsystems;
 
 import com.revrobotics.spark.config.*;
 import com.revrobotics.spark.config.ClosedLoopConfig.FeedbackSensor;
-import com.revrobotics.spark.config.MAXMotionConfig.MAXMotionPositionMode;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 
 import java.util.function.DoubleSupplier;
@@ -22,7 +21,6 @@ import com.revrobotics.spark.SparkLowLevel.MotorType;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
@@ -65,7 +63,7 @@ public class EndEffectorPivot extends SubsystemBase {
     private static final double K_P = 2.5;
     private static final double K_I = 0.0;
     private static final double K_D = 0.0;
-    private static final double K_FF = 0.0;
+    // private static final double K_FF = 0.0;
 
     private final SparkMax m_motor;
     // private final RelativeEncoder m_encoder;

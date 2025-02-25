@@ -146,7 +146,7 @@ public class Climber extends SubsystemBase {
     
     public void hold() {
         m_climberState = ClimberState.HOLDING;
-        m_climberMotor.set(0.0);
+        m_climberMotor.setControl(new PositionVoltage(getPosition()).withSlot(0));
     }
 
     public boolean isDeployed() {
