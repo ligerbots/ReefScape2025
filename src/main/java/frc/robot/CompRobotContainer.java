@@ -165,14 +165,14 @@ public class CompRobotContainer extends RobotContainer {
         // Only call constructor if the auto selection inputs have changed
         if (m_autoSelectionCode != currentAutoSelectionCode) {
             m_autoCommand = new CompBotGenericAutoBase(m_chosenStartPoint.getSelected(), m_chosenSourcePickup.getSelected(), m_chosenReefPoints.getSelected(), 
-            m_driveTrain, m_elevator, m_coralEffector, m_pivot, m_chosenFieldSide.getSelected().equals("Processor Side"));
+                    m_driveTrain, m_elevator, m_coralEffector, m_pivot, m_chosenFieldSide.getSelected().equals("Processor Side"));
             m_autoSelectionCode = currentAutoSelectionCode;
         } 
+
         // System.out.println("Auto selection code: " + currentAutoSelectionCode + " actualAutoObj: " + m_autoCommand.hashCode());
         return m_autoCommand;
     }
     
-
     public Pose2d getInitialPose() {
         return ((AutoCommandInterface) getAutonomousCommand()).getInitialPose();
     }
@@ -184,12 +184,12 @@ public class CompRobotContainer extends RobotContainer {
         // Right stick X axis -> rotation
         // note: "rightBumper()"" is a Trigger which is a BooleanSupplier
         return m_driveTrain.driveCommand(
-        () -> -conditionAxis(m_driverController.getLeftY()),
-        () -> -conditionAxis(m_driverController.getLeftX()),
-        () -> -conditionAxis(m_driverController.getRightX()),
-        // if you have a Logitech controller:
-        // () -> -conditionAxis(m_driverController.getRawAxis(2)),
-        m_driverController.rightBumper());
+            () -> -conditionAxis(m_driverController.getLeftY()),
+            () -> -conditionAxis(m_driverController.getLeftX()),
+            () -> -conditionAxis(m_driverController.getRightX()),
+            // if you have a Logitech controller:
+            // () -> -conditionAxis(m_driverController.getRawAxis(2)),
+            m_driverController.rightBumper());
     }
     
     private double conditionAxis(double value) {
