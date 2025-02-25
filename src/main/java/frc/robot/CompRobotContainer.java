@@ -5,6 +5,7 @@
 package frc.robot;
 
 import java.util.Objects;
+import java.util.Set;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -15,6 +16,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.ConditionalCommand;
+import edu.wpi.first.wpilibj2.command.DeferredCommand;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.StartEndCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
@@ -96,6 +98,7 @@ public class CompRobotContainer extends RobotContainer {
         m_driverController.b().onTrue(new MoveEndEffector(Constants.Position.PROCESSOR, m_elevator, m_pivot).finallyDo(() -> m_coralMode = false));
 
         // m_driverController.y().onTrue(new DeferredCommand(new ReefTractorBeam(m_driveTrain), Set.of(m_driveTrain)));
+        // m_driverController.rightBumper().onTrue(new DeferredCommand(new ReefTractorBeam(m_driveTrain), Set.of(m_driveTrain)));
         
         POVButton dpadLeft = new POVButton(m_driverController.getHID(), 270);
         dpadLeft.onTrue(new MoveEndEffector(Constants.Position.L4, m_elevator, m_pivot).finallyDo(() -> m_coralMode = true));
@@ -130,6 +133,9 @@ public class CompRobotContainer extends RobotContainer {
 
         JoystickButton farm12 = new JoystickButton(m_farm, 12);
         farm12.whileTrue(new InstantCommand(m_elevator::zeroElevator));
+
+        JoystickButton farm15 = new JoystickButton(m_farm, 15);
+        farm15.onTrue(new DeferredCommand(new ReefTractorBeam(m_driveTrain), Set.of(m_driveTrain)));
 
     }
     
