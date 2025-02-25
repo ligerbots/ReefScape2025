@@ -37,7 +37,7 @@ public class CompRobotContainer extends RobotContainer {
     private final CoralEffector m_coralEffector = new CoralEffector();
     private final PowerDistribution m_pdh = new PowerDistribution();
     private final AlgaeEffector m_algaeEffector = new AlgaeEffector(m_pdh);
-    private final Leds m_leds = new Leds();
+    // private final Leds m_leds = new Leds();
     private final Elevator m_elevator = new Elevator();
     private final EndEffectorPivot m_pivot = new EndEffectorPivot(() -> m_elevator.getHeight());
     private final Climber m_climber = new Climber();
