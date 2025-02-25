@@ -3,16 +3,16 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 0.6446546052631578,
-        "y": 6.690213815789473
+        "x": 0.6350328947368421,
+        "y": 6.670970394736842
       },
       "prevControl": null,
       "nextControl": {
-        "x": 1.7676157838250632,
-        "y": 5.844845867634561
+        "x": 1.7579940732987476,
+        "y": 5.82560244658193
       },
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "source2In"
     },
     {
       "anchor": {
@@ -25,7 +25,7 @@
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "scoreReefK"
     }
   ],
   "rotationTargets": [],
@@ -42,7 +42,7 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": -59.93141717813754
+    "rotation": -59.99999999999999
   },
   "reversed": false,
   "folder": null,
