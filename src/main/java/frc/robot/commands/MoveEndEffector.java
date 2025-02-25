@@ -32,9 +32,9 @@ public class MoveEndEffector extends Command {
     public static final double L1_ANGLE = 180.0;
     public static final double L1_HEIGHT = Units.inchesToMeters(0.0);
     public static final double L2_ANGLE = 275;
-    public static final double L2_HEIGHT = Units.inchesToMeters(2);
+    public static final double L2_HEIGHT = Units.inchesToMeters(1.0);
     public static final double L3_ANGLE = 275;
-    public static final double L3_HEIGHT = Units.inchesToMeters(18.0);
+    public static final double L3_HEIGHT = Units.inchesToMeters(17.0);
     public static final double L4_ANGLE = 320.0;
     public static final double L4_HEIGHT = Units.inchesToMeters(58.0);
     

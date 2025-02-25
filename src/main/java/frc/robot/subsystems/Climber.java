@@ -41,7 +41,7 @@ public class Climber extends SubsystemBase {
     // private static final double DEPLOY_MAX_SPEED = -0.4;
     // private static final double CLIMB_SPEED = 0.8;
 
-    public static final double MANUAL_SPEED = 0.3;
+    public static final double MANUAL_SPEED = 0.4;
     
     private static final double K_P = 1.0;
 
@@ -175,5 +175,10 @@ public class Climber extends SubsystemBase {
 
     boolean motionMagicIsFinished(){
         return m_climberMotor.getClosedLoopReference().getValueAsDouble() == m_goal;
+    }
+
+    public boolean isDeployed() {
+        // be generous. Only used in feedback rumble
+        return m_climberState != ClimberState.IDLE;
     }
 }

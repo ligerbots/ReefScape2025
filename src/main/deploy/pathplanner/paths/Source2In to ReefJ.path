@@ -3,29 +3,29 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 1.6453125,
-        "y": 0.6381578947368428
+        "x": 0.6350328947368421,
+        "y": 6.670970394736842
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.5778282949650544,
-        "y": 1.3211230044242672
+        "x": 1.7579940732987471,
+        "y": 5.82560244658193
       },
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "source2In"
     },
     {
       "anchor": {
-        "x": 3.9833881578947365,
-        "y": 2.851151315789474
+        "x": 4.945559210526316,
+        "y": 5.246957236842105
       },
       "prevControl": {
-        "x": 3.5347113757088935,
-        "y": 2.5068281023916583
+        "x": 4.887828947368421,
+        "y": 5.805016447368421
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "scoreReefJ"
     }
   ],
   "rotationTargets": [],
@@ -42,13 +42,13 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 58.39249775375109
+    "rotation": -119.99999999999999
   },
   "reversed": false,
   "folder": null,
   "idealStartingState": {
     "velocity": 0,
-    "rotation": 52.88313931672966
+    "rotation": -53.530765609948155
   },
   "useDefaultConstraints": true
 }

@@ -4,6 +4,9 @@
 
 package frc.robot;
 
+import java.util.Objects;
+import java.util.Set;
+
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -13,6 +16,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.ConditionalCommand;
+import edu.wpi.first.wpilibj2.command.DeferredCommand;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.StartEndCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
@@ -33,14 +37,15 @@ public class CompRobotContainer extends RobotContainer {
     private final CoralEffector m_coralEffector = new CoralEffector();
     private final PowerDistribution m_pdh = new PowerDistribution();
     private final AlgaeEffector m_algaeEffector = new AlgaeEffector(m_pdh);
-    private final Leds m_leds = new Leds();
+    // private final Leds m_leds = new Leds();
     private final Elevator m_elevator = new Elevator();
     private final EndEffectorPivot m_pivot = new EndEffectorPivot(() -> m_elevator.getHeight());
     private final Climber m_climber = new Climber();
 
     private final DriverRumble m_driverRumble = new DriverRumble(
         m_driverController.getHID(), () -> m_driveTrain.getPose(), 
-        () -> m_coralEffector.hasCoral(), () -> m_algaeEffector.hasAlgae());
+        () -> m_coralEffector.hasCoral(), () -> m_algaeEffector.hasAlgae(),
+        () -> m_climber.isDeployed());
     
     private boolean m_coralMode = true;
     
@@ -48,6 +53,9 @@ public class CompRobotContainer extends RobotContainer {
     private final SendableChooser<Pose2d> m_chosenStartPoint = new SendableChooser<>();    
     private final SendableChooser<Pose2d> m_chosenSourcePickup = new SendableChooser<>();
     private final SendableChooser<Pose2d[]> m_chosenReefPoints = new SendableChooser<>();
+
+    private CompBotGenericAutoBase m_autoCommand;
+    private int m_autoSelectionCode = 0;
     
     public CompRobotContainer() {
         m_elevator.setPivotCheckSupplier(() -> m_pivot.isOutsideLowRange());
@@ -63,10 +71,8 @@ public class CompRobotContainer extends RobotContainer {
             DriverStation.silenceJoystickConnectionWarning(true);
         }
         
-        //these are reserved for climbing 
         m_driverController.leftBumper().onTrue(new InstantCommand(m_driveTrain::lock, m_driveTrain));
         // m_driverController.back().onTrue(new InstantCommand(m_driveTrain::zeroHeading, m_driveTrain));
-        
         
         m_driverController.leftTrigger().whileTrue(
                 new ConditionalCommand(
@@ -89,8 +95,6 @@ public class CompRobotContainer extends RobotContainer {
         m_driverController.y().onTrue(new MoveEndEffector(Constants.Position.BARGE, m_elevator, m_pivot).finallyDo(() -> m_coralMode = false));
         m_driverController.b().onTrue(new MoveEndEffector(Constants.Position.PROCESSOR, m_elevator, m_pivot).finallyDo(() -> m_coralMode = false));
 
-        // m_driverController.y().onTrue(new DeferredCommand(new ReefTractorBeam(m_driveTrain), Set.of(m_driveTrain)));
-        
         POVButton dpadLeft = new POVButton(m_driverController.getHID(), 270);
         dpadLeft.onTrue(new MoveEndEffector(Constants.Position.L4, m_elevator, m_pivot).finallyDo(() -> m_coralMode = true));
         
@@ -108,23 +112,21 @@ public class CompRobotContainer extends RobotContainer {
         
         // m_driverController.leftBumper().onTrue(new InstantCommand(() -> m_coralMode = !m_coralMode));
         
-        // m_driverController.a().whileTrue(new StartEndCommand(() -> m_pivot.run(0.1), () -> m_pivot.run(0), m_pivot));
-        // m_driverController.b().whileTrue(new StartEndCommand(() -> m_pivot.run(-0.1), () -> m_pivot.run(0), m_pivot));
-        
         m_driverController.start().onTrue(new InstantCommand(m_climber::climb));
         m_driverController.back().onTrue(new InstantCommand(m_climber::deploy));
         m_driverController.back().onTrue(new MoveEndEffector(Constants.Position.CLIMB, m_elevator, m_pivot, 0));
 
-
         JoystickButton farm1 = new JoystickButton(m_farm, 1);
-        farm1.whileTrue(new StartEndCommand(() -> m_climber.run(0.4), m_climber::hold, m_climber));
+        farm1.whileTrue(new StartEndCommand(() -> m_climber.run(Climber.MANUAL_SPEED), m_climber::hold, m_climber));
         JoystickButton farm2 = new JoystickButton(m_farm, 2);
-        farm2.whileTrue(new StartEndCommand(() -> m_climber.run(-0.4), m_climber::hold, m_climber));
+        farm2.whileTrue(new StartEndCommand(() -> m_climber.run(-Climber.MANUAL_SPEED), m_climber::hold, m_climber));
         farm2.onTrue(new MoveEndEffector(Constants.Position.CLIMB, m_elevator, m_pivot, 0));
 
         JoystickButton farm12 = new JoystickButton(m_farm, 12);
         farm12.whileTrue(new InstantCommand(m_elevator::zeroElevator));
 
+        JoystickButton farm15 = new JoystickButton(m_farm, 15);
+        farm15.onTrue(new DeferredCommand(new ReefTractorBeam(m_driveTrain), Set.of(m_driveTrain)));
     }
     
     private void configureAutos() {
@@ -132,11 +134,11 @@ public class CompRobotContainer extends RobotContainer {
             
         // new MoveEndEffector(Constants.Position.L4, m_elevator, m_pivot, CompBotGenericAutoBase.RAISE_ELEVATOR_WAIT_TIME));
         
-        Pose2d[] reefPoints = {FieldConstants.REEF_I, FieldConstants.REEF_J, FieldConstants.REEF_K};
+        Pose2d[] reefPoints = {FieldConstants.REEF_I, FieldConstants.REEF_J, FieldConstants.REEF_K, FieldConstants.REEF_L};
 
-        m_chosenReefPoints.setDefaultOption("IJK  (aka FED)", reefPoints);
+        m_chosenReefPoints.setDefaultOption("IJKL  (aka FEDC)", reefPoints);
 
-        Pose2d[] reefPoints2 = {FieldConstants.REEF_J, FieldConstants.REEF_K, FieldConstants.REEF_L};
+        Pose2d[] reefPoints2 = {FieldConstants.REEF_J, FieldConstants.REEF_K, FieldConstants.REEF_L, FieldConstants.REEF_A};
         m_chosenReefPoints.addOption("JKLA  (aka EDCB)", reefPoints2);
  
         Pose2d[] reefPoints3 = { FieldConstants.REEF_H };
@@ -159,11 +161,18 @@ public class CompRobotContainer extends RobotContainer {
     }
     
     public Command getAutonomousCommand() {
-        return new CompBotGenericAutoBase(m_chosenStartPoint.getSelected(), m_chosenSourcePickup.getSelected(), m_chosenReefPoints.getSelected(), 
-        m_driveTrain, m_elevator, m_coralEffector, m_pivot, m_chosenFieldSide.getSelected().equals("Processor Side"));
+        int currentAutoSelectionCode = Objects.hash(m_chosenStartPoint.getSelected(), m_chosenSourcePickup.getSelected(), m_chosenReefPoints.getSelected(), m_chosenFieldSide.getSelected());
+        // Only call constructor if the auto selection inputs have changed
+        if (m_autoSelectionCode != currentAutoSelectionCode) {
+            m_autoCommand = new CompBotGenericAutoBase(m_chosenStartPoint.getSelected(), m_chosenSourcePickup.getSelected(), m_chosenReefPoints.getSelected(), 
+                    m_driveTrain, m_elevator, m_coralEffector, m_pivot, m_chosenFieldSide.getSelected().equals("Processor Side"));
+            m_autoSelectionCode = currentAutoSelectionCode;
+        } 
+
+        // System.out.println("Auto selection code: " + currentAutoSelectionCode + " actualAutoObj: " + m_autoCommand.hashCode());
+        return m_autoCommand;
     }
     
-
     public Pose2d getInitialPose() {
         return ((AutoCommandInterface) getAutonomousCommand()).getInitialPose();
     }
@@ -175,12 +184,12 @@ public class CompRobotContainer extends RobotContainer {
         // Right stick X axis -> rotation
         // note: "rightBumper()"" is a Trigger which is a BooleanSupplier
         return m_driveTrain.driveCommand(
-        () -> -conditionAxis(m_driverController.getLeftY()),
-        () -> -conditionAxis(m_driverController.getLeftX()),
-        () -> -conditionAxis(m_driverController.getRightX()),
-        // if you have a Logitech controller:
-        // () -> -conditionAxis(m_driverController.getRawAxis(2)),
-        m_driverController.rightBumper());
+            () -> -conditionAxis(m_driverController.getLeftY()),
+            () -> -conditionAxis(m_driverController.getLeftX()),
+            () -> -conditionAxis(m_driverController.getRightX()),
+            // if you have a Logitech controller:
+            // () -> -conditionAxis(m_driverController.getRawAxis(2)),
+            m_driverController.rightBumper());
     }
     
     private double conditionAxis(double value) {
