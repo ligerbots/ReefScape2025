@@ -21,8 +21,8 @@ public class Climber extends SubsystemBase {
     // private final RelativeEncoder m_climberMotorEncoder;
     
     // Constants to be used in this class
-    private static final double DEPLOYED_ROTATIONS = -23.0;
-    private static final double CLIMB_ROTATIONS = 200; 
+    private static final double DEPLOYED_ROTATIONS = -30.0;
+    private static final double CLIMB_ROTATIONS = 178; 
     
     // Protection values
     private static final double MAX_ROTATIONS_ALLOWED = 210.0;
@@ -65,7 +65,7 @@ public class Climber extends SubsystemBase {
 
         MotorOutputConfigs mco = talonFXConfigs.MotorOutput;
         mco.NeutralMode = NeutralModeValue.Brake;
-        mco.Inverted = InvertedValue.Clockwise_Positive;  // same as inverted == true
+        mco.Inverted = InvertedValue.CounterClockwise_Positive;
         //talonFXConfigs.withMotorOutput(mco);
 
         //CurrentLimitsConfigs currentLimits = new CurrentLimitsConfigs().withSupplyCurrentLimit(CURRENT_LIMIT);
