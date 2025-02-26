@@ -137,10 +137,10 @@ public class CompRobotContainer extends RobotContainer {
         
         Pose2d[] reefPoints = {FieldConstants.REEF_I, FieldConstants.REEF_J, FieldConstants.REEF_K};
 
-        m_chosenReefPoints.setDefaultOption("IJK  (aka FED)", reefPoints);
+        m_chosenReefPoints.addOption("IJK  (aka FED)", reefPoints);
 
         Pose2d[] reefPoints2 = {FieldConstants.REEF_J, FieldConstants.REEF_K, FieldConstants.REEF_L};
-        m_chosenReefPoints.addOption("JKL  (aka EDC)", reefPoints2);
+        m_chosenReefPoints.setDefaultOption("JKL  (aka EDC)", reefPoints2);
  
         Pose2d[] reefPoints3 = { FieldConstants.REEF_H };
         m_chosenReefPoints.addOption("H only  (aka G only) Center auto", reefPoints3);
