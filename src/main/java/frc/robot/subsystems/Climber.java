@@ -59,7 +59,16 @@ public class Climber extends SubsystemBase {
 
     public Climber() {
         m_climberMotor = new TalonFX(Constants.CLIMBER_ID);
-        // m_climberMotor.setInverted(true);
+
+        // set config to factory default
+        m_climberMotor.getConfigurator().apply(new TalonFXConfiguration());
+
+        // set configs
+        MotorOutputConfigs climberMotorConfigs = new MotorOutputConfigs();
+
+        // set invert to CW+ and apply config change
+        climberMotorConfigs.Inverted = InvertedValue.Clockwise_Positive;
+        m_climberMotor.getConfigurator().apply(climberMotorConfigs);
         
         TalonFXConfiguration talonFXConfigs = new TalonFXConfiguration();
 
