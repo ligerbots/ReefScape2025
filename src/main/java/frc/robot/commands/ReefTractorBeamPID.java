@@ -20,6 +20,8 @@ public class ReefTractorBeamPID extends Command {
     private final double m_D = 0;
     private final PIDController m_pid = new PIDController(m_P, m_I, m_D);
     private double m_tolorence;
+    private Pose2d m_currentPose;
+    private Pose2d m_nearestPole;
 
     public ReefTractorBeamPID(DriveTrain drivetrain) {
         // Use addRequirements() here to declare subsystem dependencies.
@@ -30,20 +32,21 @@ public class ReefTractorBeamPID extends Command {
     // Called when the command is initially scheduled.
     @Override
     public void initialize() {
+        m_currentPose = m_driveTrain.getPose();
+        m_nearestPole = FieldConstants.flipPose(FieldConstants.flipPose(m_currentPose).nearest(FieldConstants.REEF_SCORING_LOCATIONS));
     }
 
     // Called every time the scheduler runs while the command is scheduled.
     @Override
     public void execute() {
-        Pose2d currentPose = m_driveTrain.getPose();
-        Pose2d nearestPole = FieldConstants.flipPose(FieldConstants.flipPose(currentPose).nearest(FieldConstants.REEF_SCORING_LOCATIONS));
+        m_currentPose = m_driveTrain.getPose();
 
-        double translationX = -m_pid.calculate(currentPose.getX(), nearestPole.getX());
-        double translationY = -m_pid.calculate(currentPose.getY(), nearestPole.getY());
+        double translationX = -m_pid.calculate(m_currentPose.getX(), m_nearestPole.getX());
+        double translationY = -m_pid.calculate(m_currentPose.getY(), m_nearestPole.getY());
 
         m_tolorence = Math.abs(translationY) + Math.abs(translationX);
 
-        m_driveTrain.driveWithHeading(translationX, translationY, nearestPole.getRotation().getRadians());
+        m_driveTrain.driveWithHeading(translationX, translationY, m_nearestPole.getRotation().getRadians());
     }
 
     // Called once the command ends or is interrupted.
