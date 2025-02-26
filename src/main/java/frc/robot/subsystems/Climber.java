@@ -173,7 +173,7 @@ public class Climber extends SubsystemBase {
     }
 
     boolean motionMagicIsFinished(){
-        return m_climberMotor.getClosedLoopReference().getValueAsDouble() == m_goal;
+        return Math.abs(m_climberMotor.getClosedLoopReference().getValueAsDouble() - m_goal) < 0.01;
     }
 
     public boolean isDeployed() {
