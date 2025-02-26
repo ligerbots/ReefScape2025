@@ -5,6 +5,7 @@ import java.util.function.Supplier;
 import com.pathplanner.lib.path.PathConstraints;
 
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.FieldConstants;
 import frc.robot.subsystems.DriveTrain;
@@ -20,7 +21,9 @@ public class ReefTractorBeam implements Supplier<Command> {
     }
     @Override
     public Command get() {  // getDriveToNearestPole
-        PathConstraints constraints =  PathConstraints.unlimitedConstraints(12);
+        PathConstraints constraints =  new PathConstraints(
+            3.0, 3.0,
+            Units.degreesToRadians(540), Units.degreesToRadians(720));
 
         Pose2d currentPose = FieldConstants.flipPose(m_driveTrain.getPose());
         System.out.println("Current Pose: " + currentPose);
