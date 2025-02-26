@@ -41,10 +41,10 @@ public class CompBotGenericAutoBase extends AutoCommandInterface {
             addCommands(m_driveTrain.followPath(startPath).alongWith(
                 new MoveEndEffector(Constants.Position.L4, elevator, pivot, RAISE_ELEVATOR_WAIT_TIME)));
             addCommands(new StartEndCommand(coralEffector::runOuttake, coralEffector::stop, coralEffector).withTimeout(CORAL_SCORE_WAIT_TIME));                
-            addCommands(new MoveEndEffector(Constants.Position.BACK_INTAKE, elevator, pivot, LOWER_ELEVATOR_WAIT_TIME));
+            addCommands(new MoveEndEffector(Constants.Position.BACK_INTAKE, elevator, pivot, LOWER_ELEVATOR_WAIT_TIME).alongWith(
 
-            if (reefPoints.length > 1) {
-                addCommands(m_driveTrain.followPath(PathFactory.getPath(reefPoints[0], sourcePoint, isProcessorSide)));
+            // if (reefPoints.length > 1) {
+                m_driveTrain.followPath(PathFactory.getPath(reefPoints[0], sourcePoint, isProcessorSide))));
                 if (Robot.isSimulation()) {
                     addCommands(new StartEndCommand(coralEffector::runIntake, coralEffector::stop, coralEffector).until(coralEffector::hasCoral).withTimeout(CORAL_PICKUP_WAIT_TIME));
                 } else {
@@ -56,9 +56,9 @@ public class CompBotGenericAutoBase extends AutoCommandInterface {
                 addCommands(m_driveTrain.followPath(PathFactory.getPath(sourcePoint, reefPoints[1], isProcessorSide))
                         .alongWith(new WaitCommand(1).andThen(new MoveEndEffector(Constants.Position.L4, elevator, pivot, RAISE_ELEVATOR_WAIT_TIME))));
                 addCommands(new StartEndCommand(coralEffector::runOuttake, coralEffector::stop, coralEffector).withTimeout(CORAL_SCORE_WAIT_TIME));                
-                addCommands(new MoveEndEffector(Constants.Position.BACK_INTAKE, elevator, pivot, LOWER_ELEVATOR_WAIT_TIME));
+                addCommands(new MoveEndEffector(Constants.Position.BACK_INTAKE, elevator, pivot, LOWER_ELEVATOR_WAIT_TIME).alongWith(
                 
-                addCommands(m_driveTrain.followPath(PathFactory.getPath(reefPoints[1], sourcePoint, isProcessorSide)));
+                m_driveTrain.followPath(PathFactory.getPath(reefPoints[1], sourcePoint, isProcessorSide))));
                 if (Robot.isSimulation()) {
                     addCommands(new StartEndCommand(coralEffector::runIntake, coralEffector::stop, coralEffector).until(coralEffector::hasCoral).withTimeout(CORAL_PICKUP_WAIT_TIME));
                 } else {
@@ -85,7 +85,7 @@ public class CompBotGenericAutoBase extends AutoCommandInterface {
                     addCommands(new StartEndCommand(coralEffector::runOuttake, coralEffector::stop, coralEffector).withTimeout(CORAL_SCORE_WAIT_TIME));                
                     addCommands(new MoveEndEffector(Constants.Position.BACK_INTAKE, elevator, pivot, LOWER_ELEVATOR_WAIT_TIME));
                 }
-        }
+        // }
             
         } catch (Exception e) {
             DriverStation.reportError("Unable to load PP path Test", true);
