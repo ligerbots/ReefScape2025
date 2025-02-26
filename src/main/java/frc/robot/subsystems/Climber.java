@@ -62,23 +62,13 @@ public class Climber extends SubsystemBase {
 
         // set config to factory default
         m_climberMotor.getConfigurator().apply(new TalonFXConfiguration());
-
-        // set configs
-        MotorOutputConfigs climberMotorConfigs = new MotorOutputConfigs();
-
-        // set invert to CW+ and apply config change
-        climberMotorConfigs.Inverted = InvertedValue.Clockwise_Positive;
-        m_climberMotor.getConfigurator().apply(climberMotorConfigs);
         
         TalonFXConfiguration talonFXConfigs = new TalonFXConfiguration();
 
         MotorOutputConfigs mco = talonFXConfigs.MotorOutput;
         mco.NeutralMode = NeutralModeValue.Brake;
         mco.Inverted = InvertedValue.CounterClockwise_Positive;
-        //talonFXConfigs.withMotorOutput(mco);
 
-        //CurrentLimitsConfigs currentLimits = new CurrentLimitsConfigs().withSupplyCurrentLimit(CURRENT_LIMIT);
-        //talonFXConfigs.withCurrentLimits(currentLimits);
         talonFXConfigs.CurrentLimits.SupplyCurrentLimit = CURRENT_LIMIT;
         
         // set slot 0 gains
