@@ -6,6 +6,7 @@ import com.ctre.phoenix6.configs.Slot0Configs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.PositionVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
+import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -49,7 +50,16 @@ public class Climber extends SubsystemBase {
     
     public Climber() {
         m_climberMotor = new TalonFX(Constants.CLIMBER_ID);
-        m_climberMotor.setInverted(true);
+
+        // set config to factory default
+        m_climberMotor.getConfigurator().apply(new TalonFXConfiguration());
+
+        // set configs
+        MotorOutputConfigs climberMotorConfigs = new MotorOutputConfigs();
+
+        // set invert to CW+ and apply config change
+        climberMotorConfigs.Inverted = InvertedValue.Clockwise_Positive;
+        m_climberMotor.getConfigurator().apply(climberMotorConfigs);
         
         TalonFXConfiguration talonFXConfigs = new TalonFXConfiguration();
         MotorOutputConfigs mco = new MotorOutputConfigs();
