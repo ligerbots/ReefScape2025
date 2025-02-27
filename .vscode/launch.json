@@ -6,12 +6,10 @@
   "configurations": [
     {
       "type": "java",
-      "name": "TestPathMirror",
+      "name": "PathFactory",
       "request": "launch",
-      "mainClass": "frc.robot.TestPathMirror",
-      "projectName": "ReefScape2025",
-      "vmArgs": "-Djava.libray.path='C:\\Users\\Jake Hendrickson\\gitdev\\com.github\\ligerbots\\ReefScape2025\\build\\jni\\release'"
-    
+      "mainClass": "frc.robot.PathFactory",
+      "projectName": "ReefScape2025"
     },
     {
       "type": "wpilib",

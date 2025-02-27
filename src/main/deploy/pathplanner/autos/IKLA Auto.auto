@@ -7,13 +7,13 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Start3 to ReefJ"
+            "pathName": "Start3 to ReefI"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "ReefJ to Source2Center"
+            "pathName": "ReefI to Source2Center"
           }
         },
         {
@@ -32,6 +32,18 @@
           "type": "path",
           "data": {
             "pathName": "Source2Center to ReefL"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "ReefL to Source2Center"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Source2Center to ReefA"
           }
         }
       ]
