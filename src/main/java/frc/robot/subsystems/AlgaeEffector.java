@@ -21,7 +21,7 @@ import frc.robot.Constants;
 public class AlgaeEffector extends SubsystemBase {
     static final int MOTOR_CURRENT_LIMIT = 20;
    
-    static final double INTAKE_VOLTAGE = -6.0;
+    static final double INTAKE_VOLTAGE = -8.0;
     static final double PROCESSOR_VOLTAGE = 6.0;
     static final double BARGE_VOLTAGE = 12.0;
     static final double HOLD_VOLTAGE = -4.0;
