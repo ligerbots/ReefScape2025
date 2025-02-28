@@ -134,7 +134,7 @@ public class AprilTagVision extends SubsystemBase {
         //     new Rotation3d(0.0, Math.toRadians(0.0), Math.toRadians(180.0))
         // ));
         
-        // Comp Feb 8
+        // Comp Granite State
         m_cameras[Cam.FRONT_RIGHT.idx] = new Camera("ArducamFrontRight", new Transform3d(
             new Translation3d(Units.inchesToMeters(9.82), Units.inchesToMeters(-10.0), Units.inchesToMeters(10.53)),
             new Rotation3d(0.0, Math.toRadians(-10), 0)
@@ -148,7 +148,7 @@ public class AprilTagVision extends SubsystemBase {
             ));
 
         m_cameras[Cam.BACK.idx] = new Camera("ArducamBack", new Transform3d(
-                new Translation3d(Units.inchesToMeters(-9.5), Units.inchesToMeters(10.75), Units.inchesToMeters(9.0)),
+                new Translation3d(Units.inchesToMeters(-9.85), Units.inchesToMeters(11.05), Units.inchesToMeters(9.3)),
                 new Rotation3d(0.0, Math.toRadians(-20), 0)
                     .rotateBy(new Rotation3d(0, 0, Math.toRadians(180)))
                 ));
