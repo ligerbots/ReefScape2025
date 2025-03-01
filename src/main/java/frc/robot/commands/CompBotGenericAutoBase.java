@@ -37,7 +37,7 @@ public class CompBotGenericAutoBase extends AutoCommandInterface {
             CORAL_PICKUP_WAIT_TIME = 1.0;
         } else {
             // in real life, we wait for the coral to hit the limit switch
-            CORAL_PICKUP_WAIT_TIME = 15.0;
+            CORAL_PICKUP_WAIT_TIME = 5.0;
         }
         try {
             PathPlannerPath startPath = PathFactory.getPath(startPoint, reefPoints[0], isProcessorSide);
