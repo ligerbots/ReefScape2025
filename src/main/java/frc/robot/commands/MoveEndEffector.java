@@ -46,8 +46,8 @@ public class MoveEndEffector extends Command {
     
     public static final double FRONT_INTAKE_HEIGHT = 0;
     public static final double FRONT_INTAKE_ANGLE = 250;
-    public static final double BACK_INTAKE_HEIGHT = Units.inchesToMeters(0.75);
-    public static final double BACK_INTAKE_ANGLE = 140.0;
+    public static final double BACK_INTAKE_HEIGHT = Units.inchesToMeters(2.5);
+    public static final double BACK_INTAKE_ANGLE = 127.5;
     
     public static final double L2_ALGAE_HEIGHT= Units.inchesToMeters(3);
     public static final double L2_ALGAE_ANGLE = 335.0;
