@@ -32,7 +32,7 @@ public class AutoReefAlignPID extends Command {
 
     public AutoReefAlignPID(DriveTrain drivetrain, CommandXboxController driveController) {
         // Use addRequirements() here to declare subsystem dependencies.
-        addRequirements(drivetrain);
+        addRequirements();
         m_driveTrain = drivetrain;
         m_drivController = driveController;
     }
@@ -50,8 +50,15 @@ public class AutoReefAlignPID extends Command {
     // Called every time the scheduler runs while the command is scheduled.
     @Override
     public void execute() {
+        //Yes, this is nesssary to allow target changing. This should probly be a subsystem
+        m_targetPose = FieldConstants.flipPose(FieldConstants.flipPose(m_currentPose).nearest(FieldConstants.REEF_SCORING_LOCATIONS));
+
         m_currentPose = m_driveTrain.getPose();
         Pose2d currentPoseRelitiveToGoal = m_currentPose.relativeTo(m_targetPose);
+
+        if (m_targetPose.getTranslation().getDistance(m_currentPose.getTranslation()) > 0.5) {
+            return;
+        }
         // double currentDistance = m_currentPose.getTranslation().getNorm();
 
         double magnitude = m_pid.calculate(currentPoseRelitiveToGoal.getY());
