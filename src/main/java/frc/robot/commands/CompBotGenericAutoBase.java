@@ -52,7 +52,7 @@ public class CompBotGenericAutoBase extends AutoCommandInterface {
                 addCommands(
                     new MoveEndEffector(Constants.Position.BACK_INTAKE, elevator, pivot, LOWER_ELEVATOR_WAIT_TIME).alongWith(
                     m_driveTrain.followPath(PathFactory.getPath(reefPoints[0], sourcePoint, isProcessorSide)),
-                    new WaitCommand(2).andThen(
+                    new WaitCommand(1.5).andThen(
                         new StartEndCommand(coralEffector::runIntake, coralEffector::stop, coralEffector).until(coralEffector::hasCoral).withTimeout(CORAL_PICKUP_WAIT_TIME))
                         ));
                     
@@ -61,7 +61,7 @@ public class CompBotGenericAutoBase extends AutoCommandInterface {
                 addCommands(new StartEndCommand(coralEffector::runOuttake, coralEffector::stop, coralEffector).withTimeout(CORAL_SCORE_WAIT_TIME));                
                 addCommands(new MoveEndEffector(Constants.Position.BACK_INTAKE, elevator, pivot, LOWER_ELEVATOR_WAIT_TIME).alongWith(     
                     m_driveTrain.followPath(PathFactory.getPath(reefPoints[1], sourcePoint, isProcessorSide)),
-                    new WaitCommand(2).andThen(
+                    new WaitCommand(1.5).andThen(
                         new StartEndCommand(coralEffector::runIntake, coralEffector::stop, coralEffector).until(coralEffector::hasCoral).withTimeout(CORAL_PICKUP_WAIT_TIME))
                     ));
                     
