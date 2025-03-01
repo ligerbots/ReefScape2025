@@ -25,7 +25,7 @@ public class Climber extends SubsystemBase {
     private static final double CLIMB_ROTATIONS = 200; 
     
     // Protection values
-    private static final double MAX_ROTATIONS_ALLOWED = 210.0;
+    private static final double MAX_ROTATIONS_ALLOWED = 220.0;
     private static final double MAX_CURRENT = 100.0;
 
     // Current limit in the motor
