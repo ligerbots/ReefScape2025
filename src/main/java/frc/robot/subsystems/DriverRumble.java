@@ -19,6 +19,7 @@ import frc.robot.FieldConstants;
 public class DriverRumble extends SubsystemBase {    
     
     private static final double CLIMB_LOCATION_FROM_CENTER = Units.inchesToMeters(6);
+    private static final double CLIMB_LOCATION_BLUE = 8.94;
 
     // Tolerance for lateral offset (meters) within which no rumble is applied.
     private final double REEF_OFFSET_TOLERANCE_METER = Units.inchesToMeters(1.0);
