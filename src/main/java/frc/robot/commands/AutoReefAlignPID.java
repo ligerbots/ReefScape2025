@@ -67,8 +67,6 @@ public class AutoReefAlignPID extends Command {
         // m_tolorence = Math.abs(translation.getX()) + Math.abs(magnitude);
 
         m_driveTrain.driveWithHeading(translation.getX()-m_drivController.getLeftY(), translation.getY()-m_drivController.getLeftX(), m_targetPose.getRotation().getRadians());
-
-        //TODO: Work on scale down and % limits
     }
 
     // Called once the command ends or is interrupted.

@@ -93,8 +93,10 @@ public class CompRobotContainer extends RobotContainer {
         m_driverController.a().onTrue(new MoveEndEffector(Constants.Position.L2_ALGAE, m_elevator, m_pivot).finallyDo(() -> m_coralMode = false));
         m_driverController.x().onTrue(new MoveEndEffector(Constants.Position.L3_ALGAE, m_elevator, m_pivot).finallyDo(() -> m_coralMode = false));
         m_driverController.y().onTrue(new MoveEndEffector(Constants.Position.BARGE, m_elevator, m_pivot).finallyDo(() -> m_coralMode = false));
+        
         // For simulation testing on ReefTractorBeamPID:
-        // m_driverController.y().onTrue(new ReefTractorBeamPID(m_driveTrain));
+        // m_driverController.y().onTrue(new AutoReefAlignPID(m_driveTrain, m_driverController));
+
         m_driverController.b().onTrue(new MoveEndEffector(Constants.Position.PROCESSOR, m_elevator, m_pivot).finallyDo(() -> m_coralMode = false));
 
         POVButton dpadLeft = new POVButton(m_driverController.getHID(), 270);
@@ -131,7 +133,7 @@ public class CompRobotContainer extends RobotContainer {
         farm15.onTrue(new DeferredCommand(new ReefTractorBeam(m_driveTrain), Set.of(m_driveTrain)));
 
         JoystickButton farm16 = new JoystickButton(m_farm, 16);
-        farm16.onTrue(new ReefTractorBeamPID(m_driveTrain));
+        farm16.onTrue(new AutoReefAlignPID(m_driveTrain, m_driverController));
     }
     
     private void configureAutos() {
