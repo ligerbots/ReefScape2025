@@ -4,6 +4,8 @@
 
 package frc.robot.commands;
 
+import java.util.function.BooleanSupplier;
+
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -29,12 +31,14 @@ public class AutoReefAlignPID extends Command {
     private Pose2d m_currentPose;
     private Pose2d m_targetPose;
     private long m_startTime;
+    private BooleanSupplier m_hasCoral;
 
-    public AutoReefAlignPID(DriveTrain drivetrain, CommandXboxController driveController) {
+    public AutoReefAlignPID(DriveTrain drivetrain, CommandXboxController driveController, BooleanSupplier hasCoral) {
         // Use addRequirements() here to declare subsystem dependencies.
         addRequirements();
         m_driveTrain = drivetrain;
         m_drivController = driveController;
+        m_hasCoral = hasCoral;
     }
 
     // Called when the command is initially scheduled.
@@ -80,6 +84,6 @@ public class AutoReefAlignPID extends Command {
     public boolean isFinished() {
         // boolean isWithinTolorence = m_tolorence < 0.001;
         // return isWithinTolorence;
-        return false;
+        return !m_hasCoral.getAsBoolean();
     }
 }
