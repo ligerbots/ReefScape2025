@@ -23,7 +23,7 @@ public class AutoReefAlignPID extends Command {
     /** Creates a new ReefTractorBeamPID. */
     private final DriveTrain m_driveTrain;
     private final CommandXboxController m_drivController;
-    private final double m_P = 0.5;
+    private final double m_P = 0.25;
     private final double m_I = 0;
     private final double m_D = 0;
     private final PIDController m_pid = new PIDController(m_P, m_I, m_D);
@@ -54,10 +54,10 @@ public class AutoReefAlignPID extends Command {
     // Called every time the scheduler runs while the command is scheduled.
     @Override
     public void execute() {
-        //Yes, this is nesssary to allow target changing. This should probly be a subsystem
-        m_targetPose = FieldConstants.flipPose(FieldConstants.flipPose(m_currentPose).nearest(FieldConstants.REEF_SCORING_LOCATIONS));
-
         m_currentPose = m_driveTrain.getPose();
+        //Yes, this is nesssary to allow target changing. This should probly be a subsystem
+        // m_targetPose = FieldConstants.flipPose(FieldConstants.flipPose(m_currentPose).nearest(FieldConstants.REEF_SCORING_LOCATIONS));
+
         Pose2d currentPoseRelitiveToGoal = m_currentPose.relativeTo(m_targetPose);
 
         if (m_targetPose.getTranslation().getDistance(m_currentPose.getTranslation()) > 0.5) {
@@ -84,6 +84,6 @@ public class AutoReefAlignPID extends Command {
     public boolean isFinished() {
         // boolean isWithinTolorence = m_tolorence < 0.001;
         // return isWithinTolorence;
-        return !m_hasCoral.getAsBoolean();
+        return false; // !m_hasCoral.getAsBoolean();
     }
 }
