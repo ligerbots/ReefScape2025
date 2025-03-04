@@ -3,25 +3,25 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 3.9833881578947365,
-        "y": 5.198848684210526
+        "x": 3.99,
+        "y": 5.21
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.711511536691761,
-        "y": 6.035338401730351
+        "x": 2.718123378797025,
+        "y": 6.046489717519824
       },
       "isLocked": false,
       "linkedName": "scoreReefK"
     },
     {
       "anchor": {
-        "x": 1.135361842105263,
-        "y": 7.20016447368421
+        "x": 1.277,
+        "y": 7.3417
       },
       "prevControl": {
-        "x": 2.294882943799945,
-        "y": 6.445383846696926
+        "x": 2.4365211016946824,
+        "y": 6.586919373012717
       },
       "nextControl": null,
       "isLocked": false,
@@ -33,8 +33,8 @@
   "pointTowardsZones": [],
   "eventMarkers": [],
   "globalConstraints": {
-    "maxVelocity": 3.0,
-    "maxAcceleration": 3.0,
+    "maxVelocity": 3.5,
+    "maxAcceleration": 2.25,
     "maxAngularVelocity": 540.0,
     "maxAngularAcceleration": 720.0,
     "nominalVoltage": 12.0,
@@ -50,5 +50,5 @@
     "velocity": 0,
     "rotation": -59.99999999999999
   },
-  "useDefaultConstraints": true
+  "useDefaultConstraints": false
 }

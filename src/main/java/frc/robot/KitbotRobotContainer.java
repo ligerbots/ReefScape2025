@@ -10,12 +10,10 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.StartEndCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 
 import frc.robot.commands.*;
-import frc.robot.commands.kitbot.*;
 import frc.robot.subsystems.*;
 import frc.robot.subsystems.kitbot.*;
 
@@ -24,7 +22,7 @@ public class KitbotRobotContainer extends RobotContainer {
 
     private final CommandXboxController m_driverController = new CommandXboxController(0);
 
-    private final AprilTagVision m_aprilTagVision = new AprilTagVision();
+    // private final AprilTagVision m_aprilTagVision = new AprilTagVision();
     private final DriveTrain m_driveTrain = null; // new DriveTrain("swerve/kitbot", m_aprilTagVision);
     // private final KitbotRoller m_kitbotRoller = new KitbotRoller();
     // private final Leds m_leds = new Leds();
@@ -33,8 +31,6 @@ public class KitbotRobotContainer extends RobotContainer {
     private final NeoClimber m_climber = new NeoClimber();
 
     private final SendableChooser<Command> m_chosenAuto = new SendableChooser<>();
-    private final SendableChooser<Command> m_fieldSide = new SendableChooser<>();
-    private final SendableChooser<Pose2d> m_startLocation = new SendableChooser<>();
 
     public KitbotRobotContainer() {
         configureBindings();

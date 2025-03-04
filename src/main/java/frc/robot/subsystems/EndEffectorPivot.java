@@ -6,7 +6,6 @@ package frc.robot.subsystems;
 
 import com.revrobotics.spark.config.*;
 import com.revrobotics.spark.config.ClosedLoopConfig.FeedbackSensor;
-import com.revrobotics.spark.config.MAXMotionConfig.MAXMotionPositionMode;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 
 import java.util.function.DoubleSupplier;
@@ -22,7 +21,6 @@ import com.revrobotics.spark.SparkLowLevel.MotorType;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
@@ -30,7 +28,7 @@ import frc.robot.Constants;
 
 public class EndEffectorPivot extends SubsystemBase {
     
-    private static final double MIN_ANGLE_LOW_DEG = 137.0;
+    private static final double MIN_ANGLE_LOW_DEG = 132.5;
     private static final double MAX_ANGLE_LOW_DEG = 305.0;
 
     private static final double MIN_ANGLE_HIGH_DEG = 110.0;
@@ -59,13 +57,14 @@ public class EndEffectorPivot extends SubsystemBase {
     private static final double ALLOWED_ERROR = 2.0/360.0 * GEAR_RATIO;
 
     // Zero point of the absolute encoder
-    private static final double ABS_ENCODER_ZERO_OFFSET = 0.5/360.0; //(135.2+180)/360.0; 
+    private static final double ABS_ENCODER_ZERO_OFFSET = (226.0-180.0)/360.0;
+    //0.5/360.0; //(135.2+180)/360.0; 
 
     // Constants for the pivot PID controller
     private static final double K_P = 2.5;
     private static final double K_I = 0.0;
     private static final double K_D = 0.0;
-    private static final double K_FF = 0.0;
+    // private static final double K_FF = 0.0;
 
     private final SparkMax m_motor;
     // private final RelativeEncoder m_encoder;

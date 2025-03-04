@@ -42,6 +42,7 @@ public class CompRobotContainer extends RobotContainer {
     private final EndEffectorPivot m_pivot = new EndEffectorPivot(() -> m_elevator.getHeight());
     private final Climber m_climber = new Climber();
 
+    @SuppressWarnings("unused")
     private final DriverRumble m_driverRumble = new DriverRumble(
         m_driverController.getHID(), () -> m_driveTrain.getPose(), 
         () -> m_coralEffector.hasCoral(), () -> m_algaeEffector.hasAlgae(),
@@ -141,15 +142,15 @@ public class CompRobotContainer extends RobotContainer {
             
         // new MoveEndEffector(Constants.Position.L4, m_elevator, m_pivot, CompBotGenericAutoBase.RAISE_ELEVATOR_WAIT_TIME));
         
-        Pose2d[] reefPoints = {FieldConstants.REEF_I, FieldConstants.REEF_J, FieldConstants.REEF_K, FieldConstants.REEF_L};
+        Pose2d[] reefPoints = {FieldConstants.REEF_I, FieldConstants.REEF_J, FieldConstants.REEF_K};
 
-        m_chosenReefPoints.setDefaultOption("IJKL  (aka FEDC)", reefPoints);
+        m_chosenReefPoints.addOption("IJK  (aka FED)", reefPoints);
 
-        Pose2d[] reefPoints2 = {FieldConstants.REEF_J, FieldConstants.REEF_K, FieldConstants.REEF_L, FieldConstants.REEF_A};
-        m_chosenReefPoints.addOption("JKLA  (aka EDCB)", reefPoints2);
+        Pose2d[] reefPoints2 = {FieldConstants.REEF_J, FieldConstants.REEF_K, FieldConstants.REEF_L};
+        m_chosenReefPoints.setDefaultOption("JKL  (aka EDC)", reefPoints2);
  
         Pose2d[] reefPoints3 = { FieldConstants.REEF_H };
-        m_chosenReefPoints.addOption("H only  (aka I only) Center auto", reefPoints3);
+        m_chosenReefPoints.addOption("H only  (aka G only) Center auto", reefPoints3);
 
         m_chosenFieldSide.setDefaultOption("Processor Side", "Processor Side");
         m_chosenFieldSide.addOption("Barge Side", "Barge Side");
