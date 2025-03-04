@@ -101,16 +101,16 @@ public class CompRobotContainer extends RobotContainer {
         m_driverController.b().onTrue(new MoveEndEffector(Constants.Position.PROCESSOR, m_elevator, m_pivot).finallyDo(() -> m_coralMode = false));
 
         POVButton dpadLeft = new POVButton(m_driverController.getHID(), 270);
-        dpadLeft.onTrue(new MoveEndEffector(Constants.Position.L4, m_elevator, m_pivot).alongWith(new AutoReefAlignPID(m_driveTrain, m_driverController, () -> m_coralEffector.hasCoral())).finallyDo(() -> m_coralMode = true));
+        dpadLeft.onTrue(new MoveEndEffector(Constants.Position.L4, m_elevator, m_pivot).finallyDo(() -> m_coralMode = true));
         
         POVButton dpadRight = new POVButton(m_driverController.getHID(), 90);
         dpadRight.onTrue(new MoveEndEffector(Constants.Position.BACK_INTAKE, m_elevator, m_pivot).finallyDo(() -> m_coralMode = true));
         
         POVButton dpadDown = new POVButton(m_driverController.getHID(), 0);
-        dpadDown.onTrue(new MoveEndEffector(Constants.Position.L3, m_elevator, m_pivot).alongWith(new AutoReefAlignPID(m_driveTrain, m_driverController, () -> m_coralEffector.hasCoral())).finallyDo(() -> m_coralMode = true));
+        dpadDown.onTrue(new MoveEndEffector(Constants.Position.L3, m_elevator, m_pivot).finallyDo(() -> m_coralMode = true));
         
         POVButton dpadUp = new POVButton(m_driverController.getHID(), 180);
-        dpadUp.onTrue(new MoveEndEffector(Constants.Position.L2, m_elevator, m_pivot).alongWith(new AutoReefAlignPID(m_driveTrain, m_driverController, () -> m_coralEffector.hasCoral())).finallyDo(() -> m_coralMode = true));
+        dpadUp.onTrue(new MoveEndEffector(Constants.Position.L2, m_elevator, m_pivot).finallyDo(() -> m_coralMode = true));
         
         // m_driverController.a().onTrue(new InstantCommand(() -> m_elevator.setHeight(Units.inchesToMeters(SmartDashboard.getNumber("elevator/testGoal", 0)))));
         // m_driverController.b().onTrue(new InstantCommand(() -> m_pivot.setAngle(Rotation2d.fromDegrees(SmartDashboard.getNumber("pivot/testAngle", 0.0)))));
@@ -134,7 +134,7 @@ public class CompRobotContainer extends RobotContainer {
         farm15.onTrue(new DeferredCommand(new ReefTractorBeam(m_driveTrain), Set.of(m_driveTrain)));
 
         JoystickButton farm16 = new JoystickButton(m_farm, 16);
-        farm16.onTrue(new AutoReefAlignPID(m_driveTrain, m_driverController, () -> m_coralEffector.hasCoral()));
+        farm16.onTrue(new AutoReefAlignPID(m_driveTrain, m_driverController));
     }
     
     private void configureAutos() {

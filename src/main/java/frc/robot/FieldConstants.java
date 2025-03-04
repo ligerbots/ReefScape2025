@@ -33,6 +33,19 @@ public class FieldConstants {
     public static final Pose2d REEF_K = new Pose2d(3.99, 5.21, Rotation2d.fromDegrees(-60.0));
     public static final Pose2d REEF_L = new Pose2d(3.71, 5.04, Rotation2d.fromDegrees(-60.0));
 
+    public static final Pose2d REEF_POLE_END_A = new Pose2d(3.68, 4.19, Rotation2d.fromDegrees(0.0));
+    public static final Pose2d REEF_POLE_END_B = new Pose2d(3.68, 3.86, Rotation2d.fromDegrees(0.0));
+    public static final Pose2d REEF_POLE_END_C = new Pose2d(3.94, 3.4, Rotation2d.fromDegrees(60.0));
+    public static final Pose2d REEF_POLE_END_D = new Pose2d(4.23, 3.24, Rotation2d.fromDegrees(60.0));
+    public static final Pose2d REEF_POLE_END_E = new Pose2d(4.75, 3.24, Rotation2d.fromDegrees(120.0));
+    public static final Pose2d REEF_POLE_END_F = new Pose2d(5.04, 3.4, Rotation2d.fromDegrees(120.0));
+    public static final Pose2d REEF_POLE_END_G = new Pose2d(5.3, 3.86, Rotation2d.fromDegrees(180.0));
+    public static final Pose2d REEF_POLE_END_H = new Pose2d(5.3, 4.19, Rotation2d.fromDegrees(180.0));
+    public static final Pose2d REEF_POLE_END_I = new Pose2d(5.04, 4.64, Rotation2d.fromDegrees(-120.0));
+    public static final Pose2d REEF_POLE_END_J = new Pose2d(4.75, 4.8, Rotation2d.fromDegrees(-120.0));
+    public static final Pose2d REEF_POLE_END_K = new Pose2d(4.23, 4.8, Rotation2d.fromDegrees(-60.0));
+    public static final Pose2d REEF_POLE_END_L = new Pose2d(3.94, 4.64, Rotation2d.fromDegrees(-60.0));
+
     public static final Pose2d SOURCE_1_IN = new Pose2d(0.64, 1.37, Rotation2d.fromDegrees(55.6));
     public static final Pose2d SOURCE_1_OUT = new Pose2d(1.65, 0.64, Rotation2d.fromDegrees(55.6));
     public static final Pose2d SOURCE_1_CENTER = new Pose2d(1.65, 0.64, Rotation2d.fromDegrees(55.6));
@@ -48,6 +61,14 @@ public class FieldConstants {
         FieldConstants.REEF_G, FieldConstants.REEF_H, 
         FieldConstants.REEF_I, FieldConstants.REEF_J, 
         FieldConstants.REEF_K, FieldConstants.REEF_L);
+
+    public static final List<Pose2d> REEF_POLE_END_LOCATIONS = List.of(
+        FieldConstants.REEF_POLE_END_A, FieldConstants.REEF_POLE_END_B,
+        FieldConstants.REEF_POLE_END_C, FieldConstants.REEF_POLE_END_D, 
+        FieldConstants.REEF_POLE_END_E, FieldConstants.REEF_POLE_END_F,
+        FieldConstants.REEF_POLE_END_G, FieldConstants.REEF_POLE_END_H, 
+        FieldConstants.REEF_POLE_END_I, FieldConstants.REEF_POLE_END_J, 
+        FieldConstants.REEF_POLE_END_K, FieldConstants.REEF_POLE_END_L);
 
     public static boolean isRedAlliance() {
         Optional<Alliance> alliance = DriverStation.getAlliance();
