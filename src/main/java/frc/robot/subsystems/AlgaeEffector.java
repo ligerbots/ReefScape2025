@@ -12,23 +12,23 @@ import com.revrobotics.spark.config.SparkMaxConfig;
 import com.revrobotics.spark.config.LimitSwitchConfig.Type;
 import com.revrobotics.spark.SparkLimitSwitch;
 
-import edu.wpi.first.wpilibj.PowerDistribution;
+import edu.wpi.first.math.filter.MedianFilter;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 
-
 public class AlgaeEffector extends SubsystemBase {
-    static final int MOTOR_CURRENT_LIMIT = 20;
+    private static final int MOTOR_CURRENT_LIMIT = 20;
    
-    static final double INTAKE_VOLTAGE = -6.0;
-    static final double PROCESSOR_VOLTAGE = 6.0;
-    static final double BARGE_VOLTAGE = 12.0;
-    static final double HOLD_VOLTAGE = -4.0;
+    private static final double INTAKE_VOLTAGE = -6.0;
+    private static final double PROCESSOR_VOLTAGE = 6.0;
+    private static final double BARGE_VOLTAGE = 12.0;
+    private static final double HOLD_VOLTAGE = -4.0;
+
+    private final static double INTAKE_CURRENT_THRESHOLD = 15;
 
     private final SparkMax m_motor;
     private final SparkLimitSwitch m_limitSwitch;
-    private final PowerDistribution m_pdp;
 
     // State
     private enum State {
@@ -37,11 +37,16 @@ public class AlgaeEffector extends SubsystemBase {
 
     private State m_state = State.IDLE;
 
-    public AlgaeEffector(PowerDistribution pdp) {
-        m_pdp = pdp;
+    // median filter to filter the feeder current, to signal holding an algae
+    private final MedianFilter m_medianFilter = new MedianFilter(5);
+    private double m_medianCurrent = 0.0;
+    private boolean m_prevCurrentTrigger;
+    private boolean m_pastFirstCurrentSpike;
+
+    public AlgaeEffector() {
 
         // Set up the   motor as a brushed motor
-        m_motor = new SparkMax(Constants.ALGAR_EFFECTOR_INTAKE_ID, MotorType.kBrushless);
+        m_motor = new SparkMax(Constants.ALGAE_EFFECTOR_INTAKE_ID, MotorType.kBrushless);
 
         // // Set can timeout. Because this project only sets parameters once on
         // // construction, the timeout can be long without blocking robot operation. Code
@@ -69,25 +74,36 @@ public class AlgaeEffector extends SubsystemBase {
 
     @Override
     public void periodic() {
-        // TODO: we probably want the scoring methods to be click-once (not whileHeld)
-        //  this will mean adding a timer, and turning off the state when it is elapsed
-
         boolean pressed = m_limitSwitch.isPressed();
         if (pressed && (m_state == State.IDLE || m_state == State.INTAKE)) {
             m_motor.setVoltage(HOLD_VOLTAGE);
             m_state = State.HOLD;        
         }
 
+        boolean currentTriggered = currentTrigger();
+        if (m_state == State.INTAKE && !m_prevCurrentTrigger && currentTriggered) {
+            if (!m_pastFirstCurrentSpike) {
+                m_pastFirstCurrentSpike = true;
+            } else {
+                // current has spiked a 2nd time, so assume we have an Algae
+                m_motor.setVoltage(HOLD_VOLTAGE);
+                m_state = State.HOLD;
+            }
+        }
+        m_prevCurrentTrigger = currentTriggered;
+
         SmartDashboard.putString("algaeEffector/state", m_state.toString());
         SmartDashboard.putBoolean("algaeEffector/limitSwitch", pressed);
         SmartDashboard.putNumber("algaeEffector/speed", m_motor.get());
         SmartDashboard.putNumber("algaeEffector/current", m_motor.getOutputCurrent());
-
-        SmartDashboard.putNumber("pdp/current1", m_pdp.getCurrent(1));
-        SmartDashboard.putNumber("pdp/current2", m_pdp.getCurrent(2));
+        SmartDashboard.putNumber("algaeEffector/medianCurrent", m_medianCurrent);
+        SmartDashboard.putBoolean("algaeEffector/currentTrigger", currentTriggered);
     }
 
     public void runIntake() {
+        m_prevCurrentTrigger = false;
+        m_pastFirstCurrentSpike = false;
+
         m_motor.setVoltage(INTAKE_VOLTAGE);
         m_state = State.INTAKE;
     }
@@ -111,5 +127,15 @@ public class AlgaeEffector extends SubsystemBase {
 
     public boolean hasAlgae() {
         return m_state == State.HOLD;
+    }
+
+    public Runnable updateCurrentReading(){
+        return () -> {
+            m_medianCurrent = m_medianFilter.calculate(m_motor.getOutputCurrent());
+        };
+    }
+
+    public boolean currentTrigger(){
+        return m_medianCurrent > INTAKE_CURRENT_THRESHOLD;
     }
 }

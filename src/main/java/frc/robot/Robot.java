@@ -12,6 +12,7 @@ import edu.wpi.first.wpilibj.livewindow.LiveWindow;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import frc.robot.subsystems.AlgaeEffector;
 import frc.robot.subsystems.CoralEffector;
 import frc.robot.subsystems.DriveTrain;
 
@@ -89,6 +90,10 @@ public class Robot extends TimedRobot {
         CoralEffector coralE = m_robotContainer.getCoralEffector();
         if (coralE != null) {
             addPeriodic(coralE.updateLimitSwitch(), 0.002);
+        }
+        AlgaeEffector algaeEff = m_robotContainer.getAlgaeEffector();
+        if (algaeEff != null) {
+            addPeriodic(algaeEff.updateCurrentReading(), 0.010);
         }
     }
 

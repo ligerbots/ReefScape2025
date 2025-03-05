@@ -7,7 +7,6 @@ package frc.robot;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.StartEndCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
@@ -23,8 +22,8 @@ public class TestRobotContainer extends RobotContainer {
     // private final AprilTagVision m_aprilTagVision = new AprilTagVision();
     private final DriveTrain m_driveTrain = null; // new DriveTrain("swerve/kitbot", m_aprilTagVision);
     private final CoralEffector m_coralEffector = new CoralEffector(); 
-    private final PowerDistribution m_pdp = new PowerDistribution();
-    private final AlgaeEffector m_algaeEffector = new AlgaeEffector(m_pdp); 
+    // private final PowerDistribution m_pdp = new PowerDistribution();
+    private final AlgaeEffector m_algaeEffector = new AlgaeEffector(); 
 
     private AutoCommandInterface m_autoCommand;
 

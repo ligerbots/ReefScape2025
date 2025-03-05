@@ -6,6 +6,7 @@ package frc.robot;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj2.command.Command;
+import frc.robot.subsystems.AlgaeEffector;
 import frc.robot.subsystems.CoralEffector;
 import frc.robot.subsystems.DriveTrain;
 
@@ -16,4 +17,5 @@ public abstract class RobotContainer  {
     public abstract DriveTrain getDriveTrain();
 
     public CoralEffector getCoralEffector() { return null; };
+    public AlgaeEffector getAlgaeEffector() { return null; };
 }

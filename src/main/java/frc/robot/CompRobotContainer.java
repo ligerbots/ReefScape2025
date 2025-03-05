@@ -12,7 +12,6 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -36,8 +35,8 @@ public class CompRobotContainer extends RobotContainer {
     private final AprilTagVision m_aprilTagVision = new AprilTagVision();
     private final DriveTrain m_driveTrain = new DriveTrain("swerve/comp", m_aprilTagVision);
     private final CoralEffector m_coralEffector = new CoralEffector();
-    private final PowerDistribution m_pdh = new PowerDistribution();
-    private final AlgaeEffector m_algaeEffector = new AlgaeEffector(m_pdh);
+    // private final PowerDistribution m_pdh = new PowerDistribution();
+    private final AlgaeEffector m_algaeEffector = new AlgaeEffector();
     // private final Leds m_leds = new Leds();
     private final Elevator m_elevator = new Elevator();
     private final EndEffectorPivot m_pivot = new EndEffectorPivot(() -> m_elevator.getHeight());
@@ -207,5 +206,10 @@ public class CompRobotContainer extends RobotContainer {
     @Override
     public CoralEffector getCoralEffector() {
         return m_coralEffector;
+    }
+        
+    @Override
+    public AlgaeEffector getAlgaeEffector() {
+        return m_algaeEffector;
     }
 }
