@@ -132,6 +132,8 @@ public class Elevator extends SubsystemBase {
         SmartDashboard.putNumber("elevator/voltage", m_motor.getMotorVoltage().getValueAsDouble());
         SmartDashboard.putNumber("elevator/supplyCurrent", m_motor.getSupplyCurrent().getValueAsDouble());
         SmartDashboard.putNumber("elevator/statorCurrent", m_motor.getStatorCurrent().getValueAsDouble());
+        SmartDashboard.putNumber("elevator/dutyCycle", m_motor.getDutyCycle().getValueAsDouble());
+        SmartDashboard.putNumber("elevator/velocity", m_motor.getVelocity().getValueAsDouble());
     }
     
     // set elevator length in meters

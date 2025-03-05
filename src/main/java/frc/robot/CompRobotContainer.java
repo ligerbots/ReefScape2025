@@ -9,6 +9,8 @@ import java.util.Set;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.PowerDistribution;
@@ -22,9 +24,18 @@ import edu.wpi.first.wpilibj2.command.StartEndCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.POVButton;
-
-import frc.robot.commands.*;
-import frc.robot.subsystems.*;
+import frc.robot.commands.AutoCommandInterface;
+import frc.robot.commands.CompBotGenericAutoBase;
+import frc.robot.commands.MoveEndEffector;
+import frc.robot.commands.ReefTractorBeam;
+import frc.robot.subsystems.AlgaeEffector;
+import frc.robot.subsystems.AprilTagVision;
+import frc.robot.subsystems.Climber;
+import frc.robot.subsystems.CoralEffector;
+import frc.robot.subsystems.DriveTrain;
+import frc.robot.subsystems.DriverRumble;
+import frc.robot.subsystems.Elevator;
+import frc.robot.subsystems.EndEffectorPivot;
 
 public class CompRobotContainer extends RobotContainer {
     private static final double JOYSTICK_DEADBAND = 0.05;
@@ -107,10 +118,7 @@ public class CompRobotContainer extends RobotContainer {
         
         POVButton dpadUp = new POVButton(m_driverController.getHID(), 180);
         dpadUp.onTrue(new MoveEndEffector(Constants.Position.L2, m_elevator, m_pivot).finallyDo(() -> m_coralMode = true));
-        
-        // m_driverController.a().onTrue(new InstantCommand(() -> m_elevator.setHeight(Units.inchesToMeters(SmartDashboard.getNumber("elevator/testGoal", 0)))));
-        // m_driverController.b().onTrue(new InstantCommand(() -> m_pivot.setAngle(Rotation2d.fromDegrees(SmartDashboard.getNumber("pivot/testAngle", 0.0)))));
-        
+                
         // m_driverController.leftBumper().onTrue(new InstantCommand(() -> m_coralMode = !m_coralMode));
         
         m_driverController.start().onTrue(new InstantCommand(m_climber::climb));
@@ -128,6 +136,13 @@ public class CompRobotContainer extends RobotContainer {
 
         JoystickButton farm15 = new JoystickButton(m_farm, 15);
         farm15.onTrue(new DeferredCommand(new ReefTractorBeam(m_driveTrain), Set.of(m_driveTrain)));
+
+        JoystickButton farm5 = new JoystickButton(m_farm, 5);
+        farm5.onTrue(new InstantCommand(() -> m_elevator.setHeight(Units.inchesToMeters(SmartDashboard.getNumber("elevator/testGoal", 0)))));
+
+        JoystickButton farm10 = new JoystickButton(m_farm, 10);
+        farm10.onTrue(new InstantCommand(() -> m_pivot.setAngle(Rotation2d.fromDegrees(SmartDashboard.getNumber("pivot/testAngle", 0.0)))));
+
     }
     
     private void configureAutos() {

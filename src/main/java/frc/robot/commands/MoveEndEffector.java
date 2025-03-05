@@ -43,9 +43,11 @@ public class MoveEndEffector extends Command {
     
     public static final double BARGE_HEIGHT = Units.inchesToMeters(62.0);
     public static final double BARGE_ANGLE = 300.0;
+    public static final double ALT_BARGE_HEIGHT = 55.0;
+    public static final double ALT_BARGE_ANGLE = 200.0;
     
     public static final double FRONT_INTAKE_HEIGHT = 0;
-    public static final double FRONT_INTAKE_ANGLE = 250;
+    public static final double FRONT_INTAKE_ANGLE = 245;
     public static final double BACK_INTAKE_HEIGHT = Units.inchesToMeters(2.5);
     public static final double BACK_INTAKE_ANGLE = 127.5;
     
@@ -68,7 +70,7 @@ public class MoveEndEffector extends Command {
             put(Position.L2, new Pair<>(L2_HEIGHT, L2_ANGLE));
             put(Position.L3, new Pair<>(L3_HEIGHT, L3_ANGLE));
             put(Position.L4, new Pair<>(L4_HEIGHT, L4_ANGLE));
-            put(Position.BARGE, new Pair<>(BARGE_HEIGHT, BARGE_ANGLE));
+            put(Position.BARGE, new Pair<>(ALT_BARGE_HEIGHT, ALT_BARGE_ANGLE));
             put(Position.FRONT_INTAKE, new Pair<>(FRONT_INTAKE_HEIGHT, FRONT_INTAKE_ANGLE));
             put(Position.BACK_INTAKE, new Pair<>(BACK_INTAKE_HEIGHT, BACK_INTAKE_ANGLE));
             put(Position.L2_ALGAE, new Pair<>(L2_ALGAE_HEIGHT, L2_ALGAE_ANGLE));
