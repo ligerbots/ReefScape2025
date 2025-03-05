@@ -70,13 +70,16 @@ public class AutoReefAlignPID extends Command {
                         + (m_targetPose.getRotation().getSin() * driverTranslation.getY()));
         Translation2d filteredDriverTranslation = new Translation2d(driverMagnitude, m_targetPose.getRotation());
 
-        double magnitude = m_pid.calculate(currentPoseRelitiveToGoal.getY());
-        m_compensationTranslation = new Translation2d(magnitude,
+        double compensationMagnitude = m_pid.calculate(currentPoseRelitiveToGoal.getY());
+        m_compensationTranslation = new Translation2d(compensationMagnitude,
                 Rotation2d.fromDegrees(m_targetPose.getRotation().getDegrees() - 90));
+
+        double rotationRadians = m_targetPose.getRotation().getRadians();
+
 
         m_driveTrain.driveWithHeading(m_compensationTranslation.getX() - filteredDriverTranslation.getX(),
                 m_compensationTranslation.getY() - filteredDriverTranslation.getY(),
-                m_targetPose.getRotation().getRadians());
+                rotationRadians);
     }
 
     // Called once the command ends or is interrupted.
@@ -91,6 +94,6 @@ public class AutoReefAlignPID extends Command {
     public boolean isFinished() {
         boolean isWithinTolorence = m_currentPose.minus(m_targetPose).getTranslation().getNorm() < POSE_TOLORENCE;
         // return isWithinTolorence;
-        return false; // !m_hasCoral.getAsBoolean();
+        return isWithinTolorence; // !m_hasCoral.getAsBoolean();
     }
 }
