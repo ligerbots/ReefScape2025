@@ -66,9 +66,8 @@ public class AutoReefAlignPID extends Command {
 
         Rotation2d targetRotation = m_targetPose.getRotation();
         // This filters sideways motion relitive to the goal heading out.
-        Translation2d driverTranslation = new Translation2d(m_drivController.getLeftX(), m_drivController.getLeftY());
-        double driverMagnitude = ((targetRotation.getCos() * driverTranslation.getX())
-                        + (targetRotation.getSin() * driverTranslation.getY()));
+        double driverMagnitude = ((targetRotation.getCos() * m_drivController.getLeftX())
+                        + (targetRotation.getSin() * m_drivController.getLeftY()));
         Translation2d filteredDriverTranslation = new Translation2d(driverMagnitude, targetRotation);
 
         double compensationMagnitude = m_pid.calculate(currentPoseRelitiveToGoal.getY());
