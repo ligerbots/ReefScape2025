@@ -22,10 +22,10 @@ public class Climber extends SubsystemBase {
     
     // Constants to be used in this class
     private static final double DEPLOYED_ROTATIONS = -30.0;
-    private static final double CLIMB_ROTATIONS = 178; 
+    private static final double CLIMB_ROTATIONS = 200; 
     
     // Protection values
-    private static final double MAX_ROTATIONS_ALLOWED = 210.0;
+    private static final double MAX_ROTATIONS_ALLOWED = 220.0;
     private static final double MAX_CURRENT = 100.0;
 
     // Current limit in the motor
@@ -33,8 +33,8 @@ public class Climber extends SubsystemBase {
 
     // Motion Magic limits
     // maxV=100, maxA=200 would be about 2.5 sec to climb
-    private static final double MAX_VEL_ROT_PER_SEC = 100.0;
-    private static final double MAX_ACC_ROT_PER_SEC_SQ = 200.0;
+    private static final double MAX_VEL_ROT_PER_SEC = 50.0;
+    private static final double MAX_ACC_ROT_PER_SEC_SQ = 100.0;
     private static final double MAX_JERK_ROT_PER_SEC3 = 2000.0;
 
     // Winch motor speed values

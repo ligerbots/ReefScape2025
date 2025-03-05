@@ -118,7 +118,7 @@ public class CoralEffector extends SubsystemBase {
     }
 
     public boolean hasCoral() {
-        return m_state == State.HOLD;
+        return m_state == State.HOLD || m_limitSwitchDebounced;
     }
 
     public Runnable updateLimitSwitch() {
