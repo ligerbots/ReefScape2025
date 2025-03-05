@@ -27,7 +27,7 @@ public class AutoReefAlignPID extends Command {
     private double POSE_TOLORENCE = 0.0254;
     private Pose2d m_currentPose;
     private Pose2d m_targetPose;
-    private Pose2d m_targetPoleEnd;
+    // private Pose2d m_targetPoleEnd;
     private long m_startTime;
     private double TRIGGER_DISTANCE = 1;
 
@@ -46,8 +46,8 @@ public class AutoReefAlignPID extends Command {
         m_pid.setSetpoint(0);
         m_targetPose = FieldConstants
                 .flipPose(FieldConstants.flipPose(m_currentPose).nearest(FieldConstants.REEF_SCORING_LOCATIONS));
-        m_targetPoleEnd = FieldConstants
-                .flipPose(FieldConstants.flipPose(m_currentPose).nearest(FieldConstants.REEF_POLE_END_LOCATIONS));
+        // m_targetPoleEnd = FieldConstants
+        //         .flipPose(FieldConstants.flipPose(m_currentPose).nearest(FieldConstants.REEF_POLE_END_LOCATIONS));
 
         System.out.println("Target Pose: " + m_targetPose);
     }
