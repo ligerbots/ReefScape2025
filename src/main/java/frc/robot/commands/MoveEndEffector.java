@@ -19,7 +19,7 @@ import frc.robot.subsystems.EndEffectorPivot;
 public class MoveEndEffector extends Command {
     EndEffectorPivot m_pivot;
     Elevator m_elevator;
-    boolean m_cancel;  // TODO some way to cancel the motion?
+    // boolean m_cancel;  // TODO some way to cancel the motion?
     
     Rotation2d m_desiredAngle;
     double m_desiredHeight;
@@ -29,39 +29,39 @@ public class MoveEndEffector extends Command {
 
     private static final double DEFAULT_TIMEOUT = 2.0;
     
-    public static final double L1_ANGLE = 180.0;
-    public static final double L1_HEIGHT = Units.inchesToMeters(0.0);
-    public static final double L2_ANGLE = 275;
-    public static final double L2_HEIGHT = Units.inchesToMeters(1.0);
-    public static final double L3_ANGLE = 275;
-    public static final double L3_HEIGHT = Units.inchesToMeters(17.0);
-    public static final double L4_ANGLE = 318.0;
-    public static final double L4_HEIGHT = Units.inchesToMeters(59.0);
+    private static final double L1_ANGLE = 180.0;
+    private static final double L1_HEIGHT = Units.inchesToMeters(0.0);
+    private static final double L2_ANGLE = 275;
+    private static final double L2_HEIGHT = Units.inchesToMeters(1.0);
+    private static final double L3_ANGLE = 275;
+    private static final double L3_HEIGHT = Units.inchesToMeters(17.0);
+    private static final double L4_ANGLE = 318.0;
+    private static final double L4_HEIGHT = Units.inchesToMeters(59.0);
     
-    public static final double STOW_ANGLE = 138.0;
-    public static final double STOW_HEIGHT = 0.0;
+    private static final double STOW_ANGLE = 138.0;
+    private static final double STOW_HEIGHT = 0.0;
     
-    public static final double BARGE_HEIGHT = Units.inchesToMeters(62.0);
-    public static final double BARGE_ANGLE = 300.0;
-    public static final double ALT_BARGE_HEIGHT = 55.0;
-    public static final double ALT_BARGE_ANGLE = 200.0;
+    private static final double BARGE_HEIGHT = Units.inchesToMeters(62.0);
+    private static final double BARGE_ANGLE = 300.0;
+    private static final double ALT_BARGE_HEIGHT = Units.inchesToMeters(63.0);  //TODO FIX ME
+    private static final double ALT_BARGE_ANGLE = 200.0;
     
-    public static final double FRONT_INTAKE_HEIGHT = 0;
-    public static final double FRONT_INTAKE_ANGLE = 245;
-    public static final double BACK_INTAKE_HEIGHT = Units.inchesToMeters(2.5);
-    public static final double BACK_INTAKE_ANGLE = 127.5;
+    private static final double FRONT_INTAKE_HEIGHT = 0;
+    private static final double FRONT_INTAKE_ANGLE = 245;
+    private static final double BACK_INTAKE_HEIGHT = Units.inchesToMeters(2.5);
+    private static final double BACK_INTAKE_ANGLE = 127.5;
     
-    public static final double L2_ALGAE_HEIGHT= Units.inchesToMeters(1);
-    public static final double L2_ALGAE_ANGLE = 335.0;
+    private static final double L2_ALGAE_HEIGHT= Units.inchesToMeters(1);
+    private static final double L2_ALGAE_ANGLE = 335.0;
     
-    public static final double L3_ALGAE_HEIGHT= Units.inchesToMeters(24);
-    public static final double L3_ALGAE_ANGLE = 335.0;    
+    private static final double L3_ALGAE_HEIGHT= Units.inchesToMeters(24);
+    private static final double L3_ALGAE_ANGLE = 335.0;    
 
-    public static final double PROCESSOR_HEIGHT = Units.inchesToMeters(0);
-    public static final double PROCESSOR_ANGLE = 140;
+    private static final double PROCESSOR_HEIGHT = Units.inchesToMeters(0);
+    private static final double PROCESSOR_ANGLE = 140;
 
-    public static final double CLIMB_ANGLE = 296.0;
-    public static final double CLIMB_HEIGHT = 0.0;
+    private static final double CLIMB_ANGLE = 296.0;
+    private static final double CLIMB_HEIGHT = 0.0;
 
     
     private static final HashMap<Position, Pair<Double, Double>> POSITIONS = new HashMap<Position, Pair<Double, Double>>() {

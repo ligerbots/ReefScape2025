@@ -29,11 +29,11 @@ public class Elevator extends SubsystemBase {
 
     private static final double GEAR_REDUCTION = 15.0;  // 15:1 planetary
     // diameter of final 18 tooth gear
-    private static final double FINAL_GEAR_DIAMETER = Units.inchesToMeters(1.504);  // TODO fix me
+    private static final double FINAL_GEAR_DIAMETER = Units.inchesToMeters(1.504);
     // calibration: (circumference of 18T gear) * (2 for 2nd stage) / (motor gear reduction)
     private static final double METER_PER_REVOLUTION = Math.PI * FINAL_GEAR_DIAMETER * 2.0 / GEAR_REDUCTION;
     
-    private static final double MAX_LENGTH_METERS = Units.inchesToMeters(63.0); // TODO fix me
+    private static final double MAX_LENGTH_METERS = Units.inchesToMeters(63.0);
     private static final double MIN_LENGTH_METERS = Units.inchesToMeters(0.25);
     // private static int m_lengthAdjustment = 1;
     

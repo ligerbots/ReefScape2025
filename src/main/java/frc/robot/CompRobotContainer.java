@@ -12,7 +12,6 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -21,27 +20,18 @@ import edu.wpi.first.wpilibj2.command.ConditionalCommand;
 import edu.wpi.first.wpilibj2.command.DeferredCommand;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.StartEndCommand;
+import edu.wpi.first.wpilibj2.command.button.CommandJoystick;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
-import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.POVButton;
-import frc.robot.commands.AutoCommandInterface;
-import frc.robot.commands.CompBotGenericAutoBase;
-import frc.robot.commands.MoveEndEffector;
-import frc.robot.commands.ReefTractorBeam;
-import frc.robot.subsystems.AlgaeEffector;
-import frc.robot.subsystems.AprilTagVision;
-import frc.robot.subsystems.Climber;
-import frc.robot.subsystems.CoralEffector;
-import frc.robot.subsystems.DriveTrain;
-import frc.robot.subsystems.DriverRumble;
-import frc.robot.subsystems.Elevator;
-import frc.robot.subsystems.EndEffectorPivot;
+
+import frc.robot.commands.*;
+import frc.robot.subsystems.*;
 
 public class CompRobotContainer extends RobotContainer {
     private static final double JOYSTICK_DEADBAND = 0.05;
     
     private final CommandXboxController m_driverController = new CommandXboxController(0);
-    private final Joystick m_farm = new Joystick(1);
+    private final CommandJoystick m_farm = new CommandJoystick(1);
     
     private final AprilTagVision m_aprilTagVision = new AprilTagVision();
     private final DriveTrain m_driveTrain = new DriveTrain("swerve/comp", m_aprilTagVision);
@@ -125,24 +115,20 @@ public class CompRobotContainer extends RobotContainer {
         m_driverController.back().onTrue(new InstantCommand(m_climber::deploy));
         m_driverController.back().onTrue(new MoveEndEffector(Constants.Position.CLIMB, m_elevator, m_pivot, 0));
 
-        JoystickButton farm1 = new JoystickButton(m_farm, 1);
-        farm1.whileTrue(new StartEndCommand(() -> m_climber.run(Climber.MANUAL_SPEED), m_climber::hold, m_climber));
-        JoystickButton farm2 = new JoystickButton(m_farm, 2);
-        farm2.whileTrue(new StartEndCommand(() -> m_climber.run(-Climber.MANUAL_SPEED), m_climber::hold, m_climber));
-        farm2.onTrue(new MoveEndEffector(Constants.Position.CLIMB, m_elevator, m_pivot, 0));
+        m_farm.button(1).whileTrue(new StartEndCommand(() -> m_climber.run(Climber.MANUAL_SPEED), m_climber::hold, m_climber));
 
-        JoystickButton farm12 = new JoystickButton(m_farm, 12);
-        farm12.whileTrue(new InstantCommand(m_elevator::zeroElevator));
+        m_farm.button(2).whileTrue(new StartEndCommand(() -> m_climber.run(-Climber.MANUAL_SPEED), m_climber::hold, m_climber));
+        m_farm.button(2).onTrue(new MoveEndEffector(Constants.Position.CLIMB, m_elevator, m_pivot, 0));
 
-        JoystickButton farm15 = new JoystickButton(m_farm, 15);
-        farm15.onTrue(new DeferredCommand(new ReefTractorBeam(m_driveTrain), Set.of(m_driveTrain)));
+        m_farm.button(12).whileTrue(new InstantCommand(m_elevator::zeroElevator));
 
-        JoystickButton farm5 = new JoystickButton(m_farm, 5);
-        farm5.onTrue(new InstantCommand(() -> m_elevator.setHeight(Units.inchesToMeters(SmartDashboard.getNumber("elevator/testGoal", 0)))));
+        m_farm.button(15).onTrue(new DeferredCommand(new ReefTractorBeam(m_driveTrain), Set.of(m_driveTrain)));
 
-        JoystickButton farm10 = new JoystickButton(m_farm, 10);
-        farm10.onTrue(new InstantCommand(() -> m_pivot.setAngle(Rotation2d.fromDegrees(SmartDashboard.getNumber("pivot/testAngle", 0.0)))));
+        // Testing commands
 
+        m_farm.button(5).onTrue(new InstantCommand(() -> m_elevator.setHeight(Units.inchesToMeters(SmartDashboard.getNumber("elevator/testGoal", 0)))));
+
+        m_farm.button(10).onTrue(new InstantCommand(() -> m_pivot.setAngle(Rotation2d.fromDegrees(SmartDashboard.getNumber("pivot/testAngle", 0.0)))));
     }
     
     private void configureAutos() {
