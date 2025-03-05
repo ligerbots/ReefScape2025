@@ -95,6 +95,7 @@ public class AlgaeEffector extends SubsystemBase {
                 m_pastFirstCurrentSpike = true;
             } else {
                 // current has spiked a 2nd time, so assume we have an Algae
+                // TODO do we need a timer to run the motor for a little bit???
                 m_motor.setVoltage(HOLD_VOLTAGE);
                 m_state = State.HOLD;
             }
