@@ -47,7 +47,7 @@ public class AutoReefAlignPID extends Command {
         m_targetPose = FieldConstants
                 .flipPose(FieldConstants.flipPose(m_currentPose).nearest(FieldConstants.REEF_SCORING_LOCATIONS));
         // m_targetPoleEnd = FieldConstants
-        // .flipPose(FieldConstants.flipPose(m_currentPose).nearest(FieldConstants.REEF_POLE_END_LOCATIONS));
+        //         .flipPose(FieldConstants.flipPose(m_currentPose).nearest(FieldConstants.REEF_POLE_END_LOCATIONS));
 
         System.out.println("Target Pose: " + m_targetPose);
     }
@@ -68,16 +68,15 @@ public class AutoReefAlignPID extends Command {
         // This filters sideways motion relitive to the goal heading out.
         Translation2d driverTranslation = new Translation2d(m_drivController.getLeftX(), m_drivController.getLeftY());
         double driverMagnitude = ((targetRotation.getCos() * driverTranslation.getX())
-                + (targetRotation.getSin() * driverTranslation.getY()));
-        Translation2d filteredDriverTranslation = new Translation2d(
-                -driverMagnitude * targetRotation.getCos(),
-                -driverMagnitude * targetRotation.getSin());
+                        + (targetRotation.getSin() * driverTranslation.getY()));
+        Translation2d filteredDriverTranslation = new Translation2d(driverMagnitude, targetRotation);
 
         double compensationMagnitude = m_pid.calculate(currentPoseRelitiveToGoal.getY());
         m_compensationTranslation = new Translation2d(compensationMagnitude,
                 Rotation2d.fromDegrees(targetRotation.getDegrees() - 90));
 
         double rotationRadians = targetRotation.getRadians();
+
 
         m_driveTrain.driveWithHeading(m_compensationTranslation.getX() - filteredDriverTranslation.getX(),
                 m_compensationTranslation.getY() - filteredDriverTranslation.getY(),
