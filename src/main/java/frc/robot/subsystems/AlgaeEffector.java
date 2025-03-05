@@ -3,6 +3,8 @@
 // the WPILib BSD license file in the root directory of this project.
 
 package frc.robot.subsystems;
+import java.util.function.DoubleSupplier;
+
 import com.revrobotics.spark.SparkBase.PersistMode;
 import com.revrobotics.spark.SparkBase.ResetMode;
 import com.revrobotics.spark.SparkMax;
@@ -13,6 +15,7 @@ import com.revrobotics.spark.config.LimitSwitchConfig.Type;
 import com.revrobotics.spark.SparkLimitSwitch;
 
 import edu.wpi.first.math.filter.MedianFilter;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
@@ -26,6 +29,9 @@ public class AlgaeEffector extends SubsystemBase {
     private static final double HOLD_VOLTAGE = -4.0;
 
     private final static double INTAKE_CURRENT_THRESHOLD = 15;
+
+    // elevator is at the bottom when scoring in the Processor. Use some small height
+    private final static double PROCESSOR_HEIGHT_MAX = Units.inchesToMeters(10.0);
 
     private final SparkMax m_motor;
     private final SparkLimitSwitch m_limitSwitch;
@@ -43,7 +49,10 @@ public class AlgaeEffector extends SubsystemBase {
     private boolean m_prevCurrentTrigger;
     private boolean m_pastFirstCurrentSpike;
 
-    public AlgaeEffector() {
+    private final DoubleSupplier m_elevatorHeight;
+
+    public AlgaeEffector(DoubleSupplier elevatorHeight) {
+        m_elevatorHeight = elevatorHeight;
 
         // Set up the   motor as a brushed motor
         m_motor = new SparkMax(Constants.ALGAE_EFFECTOR_INTAKE_ID, MotorType.kBrushless);
@@ -80,7 +89,7 @@ public class AlgaeEffector extends SubsystemBase {
             m_state = State.HOLD;        
         }
 
-        boolean currentTriggered = currentTrigger();
+        boolean currentTriggered = m_medianCurrent > INTAKE_CURRENT_THRESHOLD;;
         if (m_state == State.INTAKE && !m_prevCurrentTrigger && currentTriggered) {
             if (!m_pastFirstCurrentSpike) {
                 m_pastFirstCurrentSpike = true;
@@ -108,14 +117,15 @@ public class AlgaeEffector extends SubsystemBase {
         m_state = State.INTAKE;
     }
 
-    public void scoreBarge() {
-        m_motor.setVoltage(BARGE_VOLTAGE);
-        m_state = State.BARGE;
-    }
-
-    public void scoreProcessor() {
-        m_motor.setVoltage(PROCESSOR_VOLTAGE);
-        m_state = State.PROCESSOR;
+    public void score() {
+        double elevatorH = m_elevatorHeight.getAsDouble();
+        if (elevatorH >= PROCESSOR_HEIGHT_MAX) {
+            m_motor.setVoltage(BARGE_VOLTAGE);
+            m_state = State.BARGE;
+        } else {
+            m_motor.setVoltage(PROCESSOR_VOLTAGE);
+            m_state = State.PROCESSOR;    
+        }
     }
 
     public void stop() {
@@ -133,9 +143,5 @@ public class AlgaeEffector extends SubsystemBase {
         return () -> {
             m_medianCurrent = m_medianFilter.calculate(m_motor.getOutputCurrent());
         };
-    }
-
-    public boolean currentTrigger(){
-        return m_medianCurrent > INTAKE_CURRENT_THRESHOLD;
     }
 }
