@@ -33,7 +33,7 @@ public class AutoReefAlignPID extends Command {
 
     public AutoReefAlignPID(DriveTrain drivetrain, CommandXboxController driveController) {
         // Use addRequirements() here to declare subsystem dependencies.
-        addRequirements();
+        addRequirements(drivetrain);
         m_driveTrain = drivetrain;
         m_drivController = driveController;
     }
