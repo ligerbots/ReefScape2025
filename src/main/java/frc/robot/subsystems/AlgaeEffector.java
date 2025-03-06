@@ -30,6 +30,10 @@ public class AlgaeEffector extends SubsystemBase {
 
     private final static double INTAKE_CURRENT_THRESHOLD = 15;
 
+    // Max velocity indicating the motor has stalled
+    // TODO: value
+    private final static double STALL_VELOCITY_LIMIT = 1e6;
+
     // elevator is at the bottom when scoring in the Processor. Use some small height
     private final static double PROCESSOR_HEIGHT_MAX = Units.inchesToMeters(10.0);
 
@@ -89,17 +93,24 @@ public class AlgaeEffector extends SubsystemBase {
             m_state = State.HOLD;        
         }
 
-        boolean currentTriggered = m_medianCurrent > INTAKE_CURRENT_THRESHOLD;;
-        if (m_state == State.INTAKE && !m_prevCurrentTrigger && currentTriggered) {
-            if (!m_pastFirstCurrentSpike) {
-                m_pastFirstCurrentSpike = true;
-            } else {
-                // current has spiked a 2nd time, so assume we have an Algae
-                // TODO do we need a timer to run the motor for a little bit???
-                m_motor.setVoltage(HOLD_VOLTAGE);
-                m_state = State.HOLD;
-            }
+        double velocity = m_motor.getEncoder().getVelocity();
+        SmartDashboard.putNumber("algaeEffector/velocity", velocity);
+        if (m_state == State.INTAKE && velocity < STALL_VELOCITY_LIMIT) {
+            m_motor.setVoltage(HOLD_VOLTAGE);
+            m_state = State.HOLD;        
         }
+
+        boolean currentTriggered = m_medianCurrent > INTAKE_CURRENT_THRESHOLD;;
+        // if (m_state == State.INTAKE && !m_prevCurrentTrigger && currentTriggered) {
+        //     if (!m_pastFirstCurrentSpike) {
+        //         m_pastFirstCurrentSpike = true;
+        //     } else {
+        //         // current has spiked a 2nd time, so assume we have an Algae
+        //         // TODO do we need a timer to run the motor for a little bit???
+        //         m_motor.setVoltage(HOLD_VOLTAGE);
+        //         m_state = State.HOLD;
+        //     }
+        // }
         m_prevCurrentTrigger = currentTriggered;
 
         SmartDashboard.putString("algaeEffector/state", m_state.toString());
