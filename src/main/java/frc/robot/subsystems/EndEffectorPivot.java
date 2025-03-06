@@ -4,26 +4,27 @@
 
 package frc.robot.subsystems;
 
-import com.revrobotics.spark.config.*;
-import com.revrobotics.spark.config.ClosedLoopConfig.FeedbackSensor;
-import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
-
 import java.util.function.DoubleSupplier;
 
 import com.revrobotics.sim.SparkAbsoluteEncoderSim;
-import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.SparkAbsoluteEncoder;
 import com.revrobotics.spark.SparkBase;
 import com.revrobotics.spark.SparkBase.PersistMode;
 import com.revrobotics.spark.SparkBase.ResetMode;
 import com.revrobotics.spark.SparkClosedLoopController;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
+import com.revrobotics.spark.SparkMax;
+import com.revrobotics.spark.config.AbsoluteEncoderConfig;
+import com.revrobotics.spark.config.ClosedLoopConfig.FeedbackSensor;
+import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
+import com.revrobotics.spark.config.SparkMaxConfig;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.trajectory.TrapezoidProfile;
+import edu.wpi.first.math.trajectory.TrapezoidProfile.State;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-
 import frc.robot.Constants;
 
 public class EndEffectorPivot extends SubsystemBase {
@@ -78,6 +79,15 @@ public class EndEffectorPivot extends SubsystemBase {
 
     // adjustment offset. Starts at 0, but retained throughout a match
     // private double m_angleAdjustment = Math.toRadians(0.0);
+
+    // TODO Test these constants
+    private static final double MAX_VELOCITY = 1;
+    private static final double MAX_ACCELERATION = 2;
+    private static final double DT = 0.1;
+
+    TrapezoidProfile m_profile;
+    State m_setpoint;
+    State m_goalSetpoint;
 
     private final DoubleSupplier m_elevatorHeight;
 
@@ -134,6 +144,11 @@ public class EndEffectorPivot extends SubsystemBase {
         // controller for MAX Motion
         m_controller = m_motor.getClosedLoopController();
 
+        // Trapezoid Profile
+        m_profile = new TrapezoidProfile(new TrapezoidProfile.Constraints(MAX_VELOCITY, MAX_ACCELERATION));
+        m_setpoint = new State(0, 0);
+        m_goalSetpoint = new State(0, 0);
+
         // updateMotorEncoderOffset();
         resetGoal();
 
@@ -148,7 +163,10 @@ public class EndEffectorPivot extends SubsystemBase {
         double elevHeight = m_elevatorHeight.getAsDouble();
         m_goalClipped = limitPivotAngle(m_goal, elevHeight);
 
-        m_controller.setReference(m_goalClipped.getRotations(), SparkBase.ControlType.kPosition);
+        // Trapezoid Profile
+        m_setpoint = m_profile.calculate(DT, m_setpoint, m_goalSetpoint);
+
+        m_controller.setReference(m_setpoint.position, SparkBase.ControlType.kPosition);
 
         // Display current values on the SmartDashboard
         // This also gets logged to the log file on the Rio and aids in replaying a match
@@ -175,6 +193,7 @@ public class EndEffectorPivot extends SubsystemBase {
     // set shooterPivot angle
     public void setAngle(Rotation2d angle) {
         m_goal = angle;
+        m_goalSetpoint.position = m_goal.getRotations();
         SmartDashboard.putNumber("pivot/goal", m_goal.getDegrees());
     }
     
