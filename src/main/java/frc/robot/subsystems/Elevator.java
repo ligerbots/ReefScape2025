@@ -27,13 +27,13 @@ import frc.robot.Constants;
 public class Elevator extends SubsystemBase {
     public static final double HEIGHT_LOW_RANGE = Units.inchesToMeters(5.0);
 
-    private static final double GEAR_REDUCTION = 15.0;  // 15:1 planetary
+    private static final double GEAR_REDUCTION = 12.0;  // 15:1 planetary
     // diameter of final 18 tooth gear
-    private static final double FINAL_GEAR_DIAMETER = Units.inchesToMeters(1.504);
+    private static final double FINAL_GEAR_DIAMETER = Units.inchesToMeters(1.504);  // TODO fix me
     // calibration: (circumference of 18T gear) * (2 for 2nd stage) / (motor gear reduction)
     private static final double METER_PER_REVOLUTION = Math.PI * FINAL_GEAR_DIAMETER * 2.0 / GEAR_REDUCTION;
     
-    private static final double MAX_LENGTH_METERS = Units.inchesToMeters(63.0);
+    private static final double MAX_LENGTH_METERS = Units.inchesToMeters(63.0); // TODO fix me
     private static final double MIN_LENGTH_METERS = Units.inchesToMeters(0.25);
     // private static int m_lengthAdjustment = 1;
     
@@ -42,8 +42,8 @@ public class Elevator extends SubsystemBase {
 
     private static final double MIN_HEIGHT_TURN_OFF = Units.inchesToMeters(1.0);
 
-    private static final double MAX_VEL_METER_PER_SEC = Units.inchesToMeters(250.0);
-    private static final double MAX_ACC_METER_PER_SEC_SQ = Units.inchesToMeters(500.0);
+    private static final double MAX_VEL_METER_PER_SEC = Units.inchesToMeters(300.0);
+    private static final double MAX_ACC_METER_PER_SEC_SQ = Units.inchesToMeters(750.0);
     private static final double MAX_JERK_METER_PER_SEC3 = Units.inchesToMeters(5000.0);
     
     private static final int CURRENT_LIMIT = 60;
@@ -92,7 +92,9 @@ public class Elevator extends SubsystemBase {
         magicConfigs.MotionMagicAcceleration = heightToRotations(MAX_ACC_METER_PER_SEC_SQ); // Target acceleration of 160 rps/s (0.5 seconds)
         magicConfigs.MotionMagicJerk = heightToRotations(MAX_JERK_METER_PER_SEC3); // Target jerk of 1600 rps/s/s (0.1 seconds)
         
-        CurrentLimitsConfigs currentLimits = new CurrentLimitsConfigs().withSupplyCurrentLimit(CURRENT_LIMIT);
+        CurrentLimitsConfigs currentLimits = new CurrentLimitsConfigs()
+            .withSupplyCurrentLimit(CURRENT_LIMIT)
+            .withStatorCurrentLimit(CURRENT_LIMIT);
         talonFXConfigs.withCurrentLimits(currentLimits);
         
         m_motor.getConfigurator().apply(talonFXConfigs);
