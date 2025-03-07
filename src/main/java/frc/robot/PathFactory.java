@@ -41,23 +41,21 @@ public class PathFactory {
     public static PathPlannerPath getPath(Pose2d start, Pose2d end) {
         return getPath(start, end, false);
     }
-    
-    public static PathPlannerPath getPath(Pose2d start, Pose2d end, boolean mirrorPath) {
+    public static PathPlannerPath getPath(String pathname, boolean mirrorPath) {
         PathPlannerPath path = null;
-        StringBuilder sb = new StringBuilder(40);
-        String pathName =  sb.append(pointNames.get(start)).append(" to ").append(pointNames.get(end)).toString();
-        
-        // String pathName = pointNames.get(start) + " to " + pointNames.get(end);
         try {
-            // path = PathPlannerPath.fromPathFile(pathMap.get(Pair.with(start, end)));
-            path = PathPlannerPath.fromPathFile(pathName);
+            path = PathPlannerPath.fromPathFile(pathname);
         } catch (IOException | ParseException e) {
-            System.out.println(pathName);
-            System.out.println(Pair.with(start, end));
-
             e.printStackTrace();
         } 
         return mirrorPath ? path.mirrorPath() : path;
+    }
+    
+    public static PathPlannerPath getPath(Pose2d start, Pose2d end, boolean mirrorPath) {
+        StringBuilder sb = new StringBuilder(40);
+        String pathName =  sb.append(pointNames.get(start)).append(" to ").append(pointNames.get(end)).toString();
+        
+        return getPath(pathName, mirrorPath);
     }
 
     public static void main(String[] args) {

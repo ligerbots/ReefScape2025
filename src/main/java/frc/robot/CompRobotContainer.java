@@ -55,7 +55,7 @@ public class CompRobotContainer extends RobotContainer {
     private final SendableChooser<Pose2d> m_chosenSourcePickup = new SendableChooser<>();
     private final SendableChooser<Pose2d[]> m_chosenReefPoints = new SendableChooser<>();
 
-    private CompBotGenericAutoBase m_autoCommand;
+    private CompBotExperimentalAuto m_autoCommand;
     private int m_autoSelectionCode = 0;
     
     public CompRobotContainer() {
@@ -165,7 +165,7 @@ public class CompRobotContainer extends RobotContainer {
         int currentAutoSelectionCode = Objects.hash(m_chosenStartPoint.getSelected(), m_chosenSourcePickup.getSelected(), m_chosenReefPoints.getSelected(), m_chosenFieldSide.getSelected());
         // Only call constructor if the auto selection inputs have changed
         if (m_autoSelectionCode != currentAutoSelectionCode) {
-            m_autoCommand = new CompBotGenericAutoBase(m_chosenStartPoint.getSelected(), m_chosenSourcePickup.getSelected(), m_chosenReefPoints.getSelected(), 
+            m_autoCommand = new CompBotExperimentalAuto(m_chosenStartPoint.getSelected(), m_chosenSourcePickup.getSelected(), m_chosenReefPoints.getSelected(), 
                     m_driveTrain, m_elevator, m_coralEffector, m_pivot, m_chosenFieldSide.getSelected().equals("Processor Side"));
             m_autoSelectionCode = currentAutoSelectionCode;
         } 
