@@ -156,6 +156,10 @@ public class Elevator extends SubsystemBase {
         // updateMotorEncoderOffset();
     }
     
+    public void resetGoal() {
+        setHeight(getHeight());
+    }
+    
     // public double getPotentiometerReadingMeters(){
     //     return m_stringPotentiometer.get();
     // }

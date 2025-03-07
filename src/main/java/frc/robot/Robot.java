@@ -118,6 +118,8 @@ public class Robot extends TimedRobot {
     
     @Override
     public void disabledPeriodic() {
+        m_robotContainer.resetAllGoals();
+
         // drivetrain might be null when testing code. So check
         DriveTrain driveTrain = m_robotContainer.getDriveTrain();
 

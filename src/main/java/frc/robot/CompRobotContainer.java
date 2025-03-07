@@ -204,6 +204,13 @@ public class CompRobotContainer extends RobotContainer {
         return Math.abs(value) * value;
     }
     
+        
+    @Override
+    public void resetAllGoals() {
+        m_pivot.resetGoal();
+        m_elevator.resetGoal();
+    }
+
     public DriveTrain getDriveTrain() {
         return m_driveTrain;
     }
