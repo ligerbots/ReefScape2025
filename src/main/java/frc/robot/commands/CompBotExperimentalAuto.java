@@ -20,14 +20,13 @@ import frc.robot.subsystems.DriveTrain;
 import frc.robot.subsystems.Elevator;
 import frc.robot.subsystems.EndEffectorPivot;
 
-public class CompBotExperimentalAuto extends AutoCommandInterface {
+public class CompBotExperimentalAuto extends ReefscapeAbstractAuto {
     private static final double CORAL_SCORE_WAIT_TIME = 0.2;
     private final double CORAL_PICKUP_WAIT_TIME;
     public static final double RAISE_ELEVATOR_WAIT_TIME = 2.0;
     private static final double LOWER_ELEVATOR_WAIT_TIME = 0.5;  // maybe can be lower
 
     private DriveTrain m_driveTrain;
-    private Pose2d m_initPose;
     
     PathConstraints constraints =  new PathConstraints(
     3.0, 2.0,
@@ -36,6 +35,7 @@ public class CompBotExperimentalAuto extends AutoCommandInterface {
     /** Creates a new NoteAuto. */
     public CompBotExperimentalAuto(Pose2d startPoint, Pose2d sourcePoint, Pose2d[] reefPoints, DriveTrain driveTrain, 
     Elevator elevator, CoralEffector coralEffector, EndEffectorPivot pivot, boolean isProcessorSide) {
+        super(startPoint, sourcePoint, reefPoints, driveTrain, elevator, coralEffector, pivot, isProcessorSide);
         m_driveTrain = driveTrain;
         
         if (Robot.isSimulation()) {

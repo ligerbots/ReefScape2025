@@ -11,7 +11,6 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.StartEndCommand;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.Constants;
-import frc.robot.FieldConstants;
 import frc.robot.PathFactory;
 import frc.robot.Robot;
 import frc.robot.subsystems.CoralEffector;
@@ -19,18 +18,18 @@ import frc.robot.subsystems.DriveTrain;
 import frc.robot.subsystems.Elevator;
 import frc.robot.subsystems.EndEffectorPivot;
 
-public class CompBotGenericAutoBase extends AutoCommandInterface {
+public class CompBotGraniteStateAuto extends ReefscapeAbstractAuto {
     private static final double CORAL_SCORE_WAIT_TIME = 0.2;
     private final double CORAL_PICKUP_WAIT_TIME;
     public static final double RAISE_ELEVATOR_WAIT_TIME = 2.0;
     private static final double LOWER_ELEVATOR_WAIT_TIME = 0.5;  // maybe can be lower
 
     private DriveTrain m_driveTrain;
-    private Pose2d m_initPose;
     
     /** Creates a new NoteAuto. */
-    public CompBotGenericAutoBase(Pose2d startPoint, Pose2d sourcePoint, Pose2d[] reefPoints, DriveTrain driveTrain, 
+    public CompBotGraniteStateAuto(Pose2d startPoint, Pose2d sourcePoint, Pose2d[] reefPoints, DriveTrain driveTrain, 
     Elevator elevator, CoralEffector coralEffector, EndEffectorPivot pivot, boolean isProcessorSide) {
+        super(startPoint, sourcePoint, reefPoints, driveTrain, elevator, coralEffector, pivot, isProcessorSide);
         m_driveTrain = driveTrain;
         
         if (Robot.isSimulation()) {
@@ -91,8 +90,5 @@ public class CompBotGenericAutoBase extends AutoCommandInterface {
         }
     }
     
-    @Override
-    public Pose2d getInitialPose() {
-        return FieldConstants.flipPose(m_initPose);
-    }
+
 }
