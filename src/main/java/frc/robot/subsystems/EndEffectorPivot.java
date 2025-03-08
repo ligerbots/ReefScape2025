@@ -31,8 +31,8 @@ import frc.robot.Constants;
 
 public class EndEffectorPivot extends SubsystemBase {
     
-    private static final double MIN_ANGLE_LOW_DEG = 132.5;
-    private static final double MAX_ANGLE_LOW_DEG = 305.0;
+    private static final double MIN_ANGLE_LOW_DEG = 130.0;
+    private static final double MAX_ANGLE_LOW_DEG = 325.0;
 
     private static final double MIN_ANGLE_HIGH_DEG = 110.0;
     private static final double MAX_ANGLE_HIGH_DEG = 340.0;
@@ -43,7 +43,7 @@ public class EndEffectorPivot extends SubsystemBase {
     // As of writing the above note we still may want to change the limits
     public static final double ANGLE_TOLERANCE_DEG = 1.0;
 
-    private static final int CURRENT_LIMIT = 30;
+    private static final int CURRENT_LIMIT = 60;
 
 
     // position constants for commands
@@ -55,7 +55,7 @@ public class EndEffectorPivot extends SubsystemBase {
     // Constants to limit the shooterPivot rotation speed
     // max vel: 1 rotation = 10 seconds  and then gear_ratio
     private static final double MAX_VEL_ROT_PER_SEC = 1;
-    private static final double MAX_ACC_ROT_PER_SEC2 = 0.5;
+    private static final double MAX_ACC_ROT_PER_SEC2 = 2.5;
     private static final double ROBOT_LOOP_PERIOD = 0.02;
 
     // Zero point of the absolute encoder
@@ -63,12 +63,12 @@ public class EndEffectorPivot extends SubsystemBase {
     //0.5/360.0; //(135.2+180)/360.0; 
 
     // Constants for the pivot PID controller
-    private static final double K_P = 4.0;
+    private static final double K_P = 3.0;
     private static final double K_I = 0.0;
     private static final double K_D = 0.0;
 
     // parameters for kicking the pivot to get it moving
-    private static final double K_S = 2.0;
+    private static final double K_S = 0.0;//2.0;
     private final Timer m_kickTimer = new Timer();
     private static final double KICK_TIME = 0.04;
 
@@ -179,7 +179,7 @@ public class EndEffectorPivot extends SubsystemBase {
         SmartDashboard.putNumber("pivot/busVoltage", m_motor.getBusVoltage());
         SmartDashboard.putBoolean("pivot/onGoal", angleWithinTolerance());
         SmartDashboard.putNumber("pivot/appliedOutput", m_motor.getAppliedOutput());
-        // SmartDashboard.putNumber("pivot/velocity", velocity_rot * 360.0);
+        SmartDashboard.putNumber("pivot/velocity", getVelocity().getDegrees());
         // SmartDashboard.putNumber("pivot/feedforward", feedforward);
         // SmartDashboard.putNumber("pivot/accel", accel);
     }
