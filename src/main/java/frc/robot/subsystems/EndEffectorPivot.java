@@ -4,26 +4,27 @@
 
 package frc.robot.subsystems;
 
-import com.revrobotics.spark.config.*;
-import com.revrobotics.spark.config.ClosedLoopConfig.FeedbackSensor;
-import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
-
 import java.util.function.DoubleSupplier;
 
 import com.revrobotics.sim.SparkAbsoluteEncoderSim;
-import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.SparkAbsoluteEncoder;
 import com.revrobotics.spark.SparkBase;
 import com.revrobotics.spark.SparkBase.PersistMode;
 import com.revrobotics.spark.SparkBase.ResetMode;
 import com.revrobotics.spark.SparkClosedLoopController;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
+import com.revrobotics.spark.SparkMax;
+import com.revrobotics.spark.config.AbsoluteEncoderConfig;
+import com.revrobotics.spark.config.ClosedLoopConfig.FeedbackSensor;
+import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
+import com.revrobotics.spark.config.SparkMaxConfig;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.trajectory.TrapezoidProfile;
+import edu.wpi.first.math.trajectory.TrapezoidProfile.State;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-
 import frc.robot.Constants;
 
 public class EndEffectorPivot extends SubsystemBase {
@@ -61,7 +62,7 @@ public class EndEffectorPivot extends SubsystemBase {
     //0.5/360.0; //(135.2+180)/360.0; 
 
     // Constants for the pivot PID controller
-    private static final double K_P = 2.5;
+    private static final double K_P = 4.0;
     private static final double K_I = 0.0;
     private static final double K_D = 0.0;
     // private static final double K_FF = 0.0;
@@ -78,6 +79,14 @@ public class EndEffectorPivot extends SubsystemBase {
 
     // adjustment offset. Starts at 0, but retained throughout a match
     // private double m_angleAdjustment = Math.toRadians(0.0);
+
+    // TODO Test these constants
+    private static final double MAX_VELOCITY = 1;
+    private static final double MAX_ACCELERATION = 6;
+    private static final double DT = 0.02;
+
+    TrapezoidProfile m_profile;
+    State m_currentState = new State(0, 0);
 
     private final DoubleSupplier m_elevatorHeight;
 
@@ -108,19 +117,6 @@ public class EndEffectorPivot extends SubsystemBase {
         config.closedLoop.feedbackSensor(FeedbackSensor.kAbsoluteEncoder);
         config.closedLoop.positionWrappingEnabled(false);  // don't treat it as a circle
         // config.closedLoop.positionWrappingInputRange(0,1.0);
-
-        // Set Smart Motion and Smart Velocity parameters.
-        config.closedLoop.maxMotion
-                .maxVelocity(MAX_VEL_ROT_PER_SEC)
-                .maxAcceleration(MAX_ACC_ROT_PER_SEC2)
-                .allowedClosedLoopError(ALLOWED_ERROR);
-               
-        // MAXMotionConfig mmConfig = new MAXMotionConfig();
-        // mmConfig.maxVelocity(MAX_VEL_ROT_PER_SEC)
-        //             .maxAcceleration(MAX_ACC_ROT_PER_SEC2)
-        //             .allowedClosedLoopError(ALLOWED_ERROR)
-        //             .positionMode(MAXMotionPositionMode.kMAXMotionTrapezoidal);
-        // config.apply(mmConfig);
                         
         m_motor.configure(config, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
 
@@ -131,8 +127,11 @@ public class EndEffectorPivot extends SubsystemBase {
         m_absoluteEncoderSim = new SparkAbsoluteEncoderSim(m_motor);
         m_absoluteEncoderSim.setZeroOffset(ABS_ENCODER_ZERO_OFFSET);
 
-        // controller for MAX Motion
+        // controller for PID control
         m_controller = m_motor.getClosedLoopController();
+
+        // Trapezoid Profile
+        m_profile = new TrapezoidProfile(new TrapezoidProfile.Constraints(MAX_VELOCITY, MAX_ACCELERATION));
 
         // updateMotorEncoderOffset();
         resetGoal();
@@ -148,24 +147,37 @@ public class EndEffectorPivot extends SubsystemBase {
         double elevHeight = m_elevatorHeight.getAsDouble();
         m_goalClipped = limitPivotAngle(m_goal, elevHeight);
 
-        m_controller.setReference(m_goalClipped.getRotations(), SparkBase.ControlType.kPosition);
+        Rotation2d angle = getAngle();
+        Rotation2d velocity = getVelocity();
+
+        State goalState = new State(m_goalClipped.getRotations(), 0);
+
+        // Trapezoid Profile
+        m_currentState = m_profile.calculate(DT, m_currentState, goalState);
+
+        m_controller.setReference(m_currentState.position, SparkBase.ControlType.kPosition);
 
         // Display current values on the SmartDashboard
         // This also gets logged to the log file on the Rio and aids in replaying a match
+        SmartDashboard.putNumber("pivot/statePosition", m_currentState.position);
         SmartDashboard.putNumber("pivot/goalClipped", m_goalClipped.getDegrees());
-        SmartDashboard.putNumber("pivot/absoluteEncoder", getAngle().getDegrees());
+        SmartDashboard.putNumber("pivot/absoluteEncoder", angle.getDegrees());
         SmartDashboard.putNumber("pivot/outputCurrent", m_motor.getOutputCurrent());
         SmartDashboard.putNumber("pivot/busVoltage", m_motor.getBusVoltage());
         SmartDashboard.putBoolean("pivot/onGoal", angleWithinTolerance());
         SmartDashboard.putNumber("pivot/appliedOutput", m_motor.getAppliedOutput());
-        // SmartDashboard.putNumber("pivot/rawAbsEncoder", m_absoluteEncoder.getPosition());
-
+        SmartDashboard.putNumber("pivot/velocity", velocity.getDegrees());
         // setCoastMode();
     }
 
     // get the current pivot angle
     public Rotation2d getAngle() {
         return Rotation2d.fromRotations(m_absoluteEncoder.getPosition());
+    }
+
+    public Rotation2d getVelocity() {
+        // Encoder returns RPM
+        return Rotation2d.fromRotations(m_absoluteEncoder.getVelocity() * 60);
     }
 
     public void run(double speed) {
@@ -216,7 +228,10 @@ public class EndEffectorPivot extends SubsystemBase {
     // }
 
     public void resetGoal() {
-        setAngle(getAngle());
+        Rotation2d angle = getAngle();
+        setAngle(angle);
+        m_currentState.position = angle.getRotations();
+        m_currentState.velocity = 0;
     }
 
     public void setCoastMode() {
