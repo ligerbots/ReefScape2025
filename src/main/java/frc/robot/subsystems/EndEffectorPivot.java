@@ -7,6 +7,7 @@ package frc.robot.subsystems;
 import java.util.function.DoubleSupplier;
 
 import com.revrobotics.sim.SparkAbsoluteEncoderSim;
+import com.revrobotics.spark.ClosedLoopSlot;
 import com.revrobotics.spark.SparkAbsoluteEncoder;
 import com.revrobotics.spark.SparkBase;
 import com.revrobotics.spark.SparkBase.PersistMode;
@@ -23,6 +24,7 @@ import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.trajectory.TrapezoidProfile.State;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
@@ -48,24 +50,27 @@ public class EndEffectorPivot extends SubsystemBase {
     // private static final double ADJUSTMENT_STEP = Math.toRadians(1.0);
     
     // 25:1 planetary plus 42:18 sprockets
-    private static final double GEAR_RATIO = 25.0 * (42.0 / 18.0);
+    // private static final double GEAR_RATIO = 25.0 * (42.0 / 18.0);
       
     // Constants to limit the shooterPivot rotation speed
     // max vel: 1 rotation = 10 seconds  and then gear_ratio
-    private static final double MAX_VEL_ROT_PER_SEC = 0.1 * GEAR_RATIO;
-    private static final double MAX_ACC_ROT_PER_SEC2 = 0.2 * GEAR_RATIO;
-    // units??? rotations?
-    private static final double ALLOWED_ERROR = 2.0/360.0 * GEAR_RATIO;
+    private static final double MAX_VEL_ROT_PER_SEC = 1;
+    private static final double MAX_ACC_ROT_PER_SEC2 = 0.5;
+    private static final double ROBOT_LOOP_PERIOD = 0.02;
 
     // Zero point of the absolute encoder
-    private static final double ABS_ENCODER_ZERO_OFFSET = (226.0-180.0)/360.0;
+    private static final double ABS_ENCODER_ZERO_OFFSET = (225.1-180.0)/360.0;
     //0.5/360.0; //(135.2+180)/360.0; 
 
     // Constants for the pivot PID controller
     private static final double K_P = 4.0;
     private static final double K_I = 0.0;
     private static final double K_D = 0.0;
-    // private static final double K_FF = 0.0;
+
+    // parameters for kicking the pivot to get it moving
+    private static final double K_S = 2.0;
+    private final Timer m_kickTimer = new Timer();
+    private static final double KICK_TIME = 0.04;
 
     private final SparkMax m_motor;
     // private final RelativeEncoder m_encoder;
@@ -80,13 +85,9 @@ public class EndEffectorPivot extends SubsystemBase {
     // adjustment offset. Starts at 0, but retained throughout a match
     // private double m_angleAdjustment = Math.toRadians(0.0);
 
-    // TODO Test these constants
-    private static final double MAX_VELOCITY = 1;
-    private static final double MAX_ACCELERATION = 6;
-    private static final double DT = 0.02;
-
-    TrapezoidProfile m_profile;
-    State m_currentState = new State(0, 0);
+    // Trapezoid Profile
+    private final TrapezoidProfile m_profile = new TrapezoidProfile(new TrapezoidProfile.Constraints(MAX_VEL_ROT_PER_SEC, MAX_ACC_ROT_PER_SEC2));
+    private State m_currentState;
 
     private final DoubleSupplier m_elevatorHeight;
 
@@ -130,9 +131,6 @@ public class EndEffectorPivot extends SubsystemBase {
         // controller for PID control
         m_controller = m_motor.getClosedLoopController();
 
-        // Trapezoid Profile
-        m_profile = new TrapezoidProfile(new TrapezoidProfile.Constraints(MAX_VELOCITY, MAX_ACCELERATION));
-
         // updateMotorEncoderOffset();
         resetGoal();
 
@@ -145,29 +143,45 @@ public class EndEffectorPivot extends SubsystemBase {
     @Override
     public void periodic() {
         double elevHeight = m_elevatorHeight.getAsDouble();
+
+        double oldGoalClipped = m_goalClipped.getDegrees();
         m_goalClipped = limitPivotAngle(m_goal, elevHeight);
 
-        Rotation2d angle = getAngle();
-        Rotation2d velocity = getVelocity();
+        boolean goalChanged = Math.abs(m_goalClipped.getDegrees() - oldGoalClipped) > 5.0;
 
+        // double feedforward = -K_GRAVITY * Math.sin(angle.getRadians() - GRAVITY_ZERO);
         State goalState = new State(m_goalClipped.getRotations(), 0);
 
         // Trapezoid Profile
-        m_currentState = m_profile.calculate(DT, m_currentState, goalState);
+        m_currentState = m_profile.calculate(ROBOT_LOOP_PERIOD, m_currentState, goalState);
 
-        m_controller.setReference(m_currentState.position, SparkBase.ControlType.kPosition);
+        double angleDeg = getAngle().getDegrees();
+
+        // feedforward in Volts
+        double feedforward = 0;
+        if (goalChanged && (angleDeg > 290.0 || angleDeg < 160.0)) {
+            m_kickTimer.restart();
+        }
+
+        if (!m_kickTimer.hasElapsed(KICK_TIME)) {
+            // needs a kick to get started. Always kick physical down
+            feedforward = (angleDeg > 240 ? 1 : -1) * K_S;
+        }
+
+        m_controller.setReference(m_currentState.position, SparkBase.ControlType.kPosition, ClosedLoopSlot.kSlot0, feedforward);
 
         // Display current values on the SmartDashboard
         // This also gets logged to the log file on the Rio and aids in replaying a match
-        SmartDashboard.putNumber("pivot/statePosition", m_currentState.position);
+        SmartDashboard.putNumber("pivot/statePosition", m_currentState.position * 360.0);
         SmartDashboard.putNumber("pivot/goalClipped", m_goalClipped.getDegrees());
-        SmartDashboard.putNumber("pivot/absoluteEncoder", angle.getDegrees());
+        SmartDashboard.putNumber("pivot/absoluteEncoder", angleDeg);
         SmartDashboard.putNumber("pivot/outputCurrent", m_motor.getOutputCurrent());
         SmartDashboard.putNumber("pivot/busVoltage", m_motor.getBusVoltage());
         SmartDashboard.putBoolean("pivot/onGoal", angleWithinTolerance());
         SmartDashboard.putNumber("pivot/appliedOutput", m_motor.getAppliedOutput());
-        SmartDashboard.putNumber("pivot/velocity", velocity.getDegrees());
-        // setCoastMode();
+        // SmartDashboard.putNumber("pivot/velocity", velocity_rot * 360.0);
+        // SmartDashboard.putNumber("pivot/feedforward", feedforward);
+        // SmartDashboard.putNumber("pivot/accel", accel);
     }
 
     // get the current pivot angle
