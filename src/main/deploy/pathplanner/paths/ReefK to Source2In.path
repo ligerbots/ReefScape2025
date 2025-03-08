@@ -3,13 +3,13 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 3.4807500000000005,
-        "y": 5.6435
+        "x": 3.99,
+        "y": 5.21
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.3479740020308197,
-        "y": 6.4997919914815325
+        "x": 2.8572240020308195,
+        "y": 6.066291991481532
       },
       "isLocked": false,
       "linkedName": "scoreReefK"
