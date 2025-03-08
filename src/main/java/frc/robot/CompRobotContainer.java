@@ -162,7 +162,8 @@ public class CompRobotContainer extends RobotContainer {
     }
     
     public Command getAutonomousCommand() {
-        int currentAutoSelectionCode = Objects.hash(m_chosenStartPoint.getSelected(), m_chosenSourcePickup.getSelected(), m_chosenReefPoints.getSelected(), m_chosenFieldSide.getSelected());
+        int currentAutoSelectionCode = Objects.hash(m_chosenStartPoint.getSelected(), m_chosenSourcePickup.getSelected(), 
+            m_chosenReefPoints.getSelected(), m_chosenFieldSide.getSelected(), DriverStation.getAlliance());
         // Only call constructor if the auto selection inputs have changed
         if (m_autoSelectionCode != currentAutoSelectionCode) {
             m_autoCommand = new CompBotExperimentalAuto(m_chosenStartPoint.getSelected(), m_chosenSourcePickup.getSelected(), m_chosenReefPoints.getSelected(), 

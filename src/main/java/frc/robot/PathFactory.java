@@ -6,7 +6,6 @@ import edu.wpi.first.math.geometry.Pose2d;
 import java.io.IOException;
 import java.util.HashMap;
 
-import org.javatuples.Pair;
 import org.json.simple.parser.ParseException;
 
 public class PathFactory {
