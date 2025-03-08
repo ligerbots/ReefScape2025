@@ -87,7 +87,7 @@ public class EndEffectorPivot extends SubsystemBase {
 
     // Trapezoid Profile
     private final TrapezoidProfile m_profile = new TrapezoidProfile(new TrapezoidProfile.Constraints(MAX_VEL_ROT_PER_SEC, MAX_ACC_ROT_PER_SEC2));
-    private State m_currentState;
+    private State m_currentState = new State();
 
     private final DoubleSupplier m_elevatorHeight;
 
