@@ -115,18 +115,21 @@ public class Elevator extends SubsystemBase {
 
     @Override
     public void periodic() {
-        double height = getHeight();
+        double goalClipped = limitElevatorLength(m_goalMeters, m_pivotOutsideLowRange.getAsBoolean());
 
-        // cross check that pivot is in a good place to go low
+        // // cross check that pivot is in a good place to go low
         // if (height <= HEIGHT_LOW_RANGE && m_pivotOutsideLowRange.getAsBoolean()) {
         //     setHeight(HEIGHT_LOW_RANGE);
         // }
 
         // if basically at the bottom, turn off the motor
-        if (m_goalMeters < MIN_HEIGHT_TURN_OFF && height < MIN_HEIGHT_TURN_OFF) {
+        double height = getHeight();
+        if (goalClipped < MIN_HEIGHT_TURN_OFF && height < MIN_HEIGHT_TURN_OFF) {
             m_motor.setControl(new VoltageOut(0));
+        } else {
+            m_motor.setControl(new MotionMagicVoltage(heightToRotations(goalClipped)));    
         }
-
+        
         SmartDashboard.putNumber("elevator/height", Units.metersToInches(height));
         SmartDashboard.putBoolean("elevator/onGoal", lengthWithinTolerance());
         SmartDashboard.putNumber("elevator/currentGoal", 
@@ -140,11 +143,7 @@ public class Elevator extends SubsystemBase {
     
     // set elevator length in meters
     public void setHeight(double goal) {
-        m_goalMeters = limitElevatorLength(goal);
-        
-        MotionMagicVoltage m_request = new MotionMagicVoltage(0);        
-        m_motor.setControl(m_request.withPosition(heightToRotations(m_goalMeters)));
-        
+        m_goalMeters = goal;
         SmartDashboard.putNumber("elevator/goal", Units.metersToInches(m_goalMeters));
     }
     
@@ -188,7 +187,7 @@ public class Elevator extends SubsystemBase {
         return rotations * METER_PER_REVOLUTION;
     }
     
-    private static double limitElevatorLength(double length) {
-        return MathUtil.clamp(length, MIN_LENGTH_METERS, MAX_LENGTH_METERS);
+    private static double limitElevatorLength(double length, boolean pivotOutsideRange) {
+        return MathUtil.clamp(length, pivotOutsideRange ? HEIGHT_LOW_RANGE : MIN_LENGTH_METERS, MAX_LENGTH_METERS);
     }
 }

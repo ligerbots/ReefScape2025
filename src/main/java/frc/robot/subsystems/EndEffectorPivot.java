@@ -35,7 +35,7 @@ public class EndEffectorPivot extends SubsystemBase {
     private static final double MAX_ANGLE_LOW_DEG = 305.0;
 
     private static final double MIN_ANGLE_HIGH_DEG = 110.0;
-    private static final double MAX_ANGLE_HIGH_DEG = 350.0;
+    private static final double MAX_ANGLE_HIGH_DEG = 340.0;
 
     // NOTE: All constants were taken from the 2023 arm 
     // Note: Current values for limits are refrenced with the shooter being flat
