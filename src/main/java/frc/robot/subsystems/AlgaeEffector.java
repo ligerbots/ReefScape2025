@@ -32,7 +32,7 @@ public class AlgaeEffector extends SubsystemBase {
 
     // Max velocity indicating the motor has stalled
     // TODO: value
-    private final static double STALL_VELOCITY_LIMIT = 1e6;
+    private final static double STALL_VELOCITY_LIMIT = 1000;
 
     // elevator is at the bottom when scoring in the Processor. Use some small height
     private final static double PROCESSOR_HEIGHT_MAX = Units.inchesToMeters(10.0);
@@ -95,7 +95,7 @@ public class AlgaeEffector extends SubsystemBase {
 
         double velocity = m_motor.getEncoder().getVelocity();
         SmartDashboard.putNumber("algaeEffector/velocity", velocity);
-        if (m_state == State.INTAKE && velocity < STALL_VELOCITY_LIMIT) {
+        if (m_state == State.INTAKE && Math.abs(velocity) < STALL_VELOCITY_LIMIT) {
             m_motor.setVoltage(HOLD_VOLTAGE);
             m_state = State.HOLD;        
         }
