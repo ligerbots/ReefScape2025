@@ -62,7 +62,7 @@ public class EndEffectorPivot extends SubsystemBase {
     //0.5/360.0; //(135.2+180)/360.0; 
 
     // Constants for the pivot PID controller
-    private static final double K_P = 2.5;
+    private static final double K_P = 4.0;
     private static final double K_I = 0.0;
     private static final double K_D = 0.0;
     // private static final double K_FF = 0.0;
@@ -82,10 +82,11 @@ public class EndEffectorPivot extends SubsystemBase {
 
     // TODO Test these constants
     private static final double MAX_VELOCITY = 1;
-    private static final double MAX_ACCELERATION = 2;
+    private static final double MAX_ACCELERATION = 6;
     private static final double DT = 0.02;
 
     TrapezoidProfile m_profile;
+    State m_currentState = new State(0, 0);
 
     private final DoubleSupplier m_elevatorHeight;
 
@@ -149,16 +150,16 @@ public class EndEffectorPivot extends SubsystemBase {
         Rotation2d angle = getAngle();
         Rotation2d velocity = getVelocity();
 
-        State currentpos = new State(angle.getRotations(), velocity.getRotations());
         State goalState = new State(m_goalClipped.getRotations(), 0);
 
         // Trapezoid Profile
-        currentpos = m_profile.calculate(DT, currentpos, goalState);
+        m_currentState = m_profile.calculate(DT, m_currentState, goalState);
 
-        m_controller.setReference(currentpos.position, SparkBase.ControlType.kPosition);
+        m_controller.setReference(m_currentState.position, SparkBase.ControlType.kPosition);
 
         // Display current values on the SmartDashboard
         // This also gets logged to the log file on the Rio and aids in replaying a match
+        SmartDashboard.putNumber("pivot/statePosition", m_currentState.position);
         SmartDashboard.putNumber("pivot/goalClipped", m_goalClipped.getDegrees());
         SmartDashboard.putNumber("pivot/absoluteEncoder", angle.getDegrees());
         SmartDashboard.putNumber("pivot/outputCurrent", m_motor.getOutputCurrent());
@@ -227,7 +228,10 @@ public class EndEffectorPivot extends SubsystemBase {
     // }
 
     public void resetGoal() {
-        setAngle(getAngle());
+        Rotation2d angle = getAngle();
+        setAngle(angle);
+        m_currentState.position = angle.getRotations();
+        m_currentState.velocity = 0;
     }
 
     public void setCoastMode() {
