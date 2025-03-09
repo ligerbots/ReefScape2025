@@ -3,6 +3,8 @@
 // the WPILib BSD license file in the root directory of this project.
 
 package frc.robot.subsystems;
+import java.util.function.DoubleSupplier;
+
 import com.revrobotics.spark.SparkBase.PersistMode;
 import com.revrobotics.spark.SparkBase.ResetMode;
 import com.revrobotics.spark.SparkMax;
@@ -12,13 +14,13 @@ import com.revrobotics.spark.config.SparkMaxConfig;
 import com.revrobotics.spark.config.LimitSwitchConfig.Type;
 import com.revrobotics.spark.SparkLimitSwitch;
 
-import edu.wpi.first.wpilibj.PowerDistribution;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 
-
 public class AlgaeEffector extends SubsystemBase {
+
     static final int MOTOR_CURRENT_LIMIT = 30;
    
     static final double INTAKE_VOLTAGE = -6.0;
@@ -26,9 +28,14 @@ public class AlgaeEffector extends SubsystemBase {
     static final double BARGE_VOLTAGE = 12.0;
     static final double HOLD_VOLTAGE = -6.0;
 
+    // Max velocity indicating the motor has stalled
+    private final static double STALL_VELOCITY_LIMIT = 1000;
+
+    // elevator is at the bottom when scoring in the Processor. Use some small height
+    private final static double PROCESSOR_HEIGHT_MAX = Units.inchesToMeters(10.0);
+
     private final SparkMax m_motor;
     private final SparkLimitSwitch m_limitSwitch;
-    private final PowerDistribution m_pdp;
 
     // State
     private enum State {
@@ -37,11 +44,13 @@ public class AlgaeEffector extends SubsystemBase {
 
     private State m_state = State.IDLE;
 
-    public AlgaeEffector(PowerDistribution pdp) {
-        m_pdp = pdp;
+    private final DoubleSupplier m_elevatorHeight;
+
+    public AlgaeEffector(DoubleSupplier elevatorHeight) {
+        m_elevatorHeight = elevatorHeight;
 
         // Set up the   motor as a brushed motor
-        m_motor = new SparkMax(Constants.ALGAR_EFFECTOR_INTAKE_ID, MotorType.kBrushless);
+        m_motor = new SparkMax(Constants.ALGAE_EFFECTOR_INTAKE_ID, MotorType.kBrushless);
 
         // // Set can timeout. Because this project only sets parameters once on
         // // construction, the timeout can be long without blocking robot operation. Code
@@ -69,11 +78,14 @@ public class AlgaeEffector extends SubsystemBase {
 
     @Override
     public void periodic() {
-        // TODO: we probably want the scoring methods to be click-once (not whileHeld)
-        //  this will mean adding a timer, and turning off the state when it is elapsed
-
         boolean pressed = m_limitSwitch.isPressed();
         if (pressed && (m_state == State.IDLE || m_state == State.INTAKE)) {
+            m_motor.setVoltage(HOLD_VOLTAGE);
+            m_state = State.HOLD;        
+        }
+
+        double velocity = m_motor.getEncoder().getVelocity();
+        if (m_state == State.INTAKE && Math.abs(velocity) < STALL_VELOCITY_LIMIT) {
             m_motor.setVoltage(HOLD_VOLTAGE);
             m_state = State.HOLD;        
         }
@@ -82,9 +94,7 @@ public class AlgaeEffector extends SubsystemBase {
         SmartDashboard.putBoolean("algaeEffector/limitSwitch", pressed);
         SmartDashboard.putNumber("algaeEffector/speed", m_motor.get());
         SmartDashboard.putNumber("algaeEffector/current", m_motor.getOutputCurrent());
-
-        SmartDashboard.putNumber("pdp/current1", m_pdp.getCurrent(1));
-        SmartDashboard.putNumber("pdp/current2", m_pdp.getCurrent(2));
+        SmartDashboard.putNumber("algaeEffector/velocity", velocity);
     }
 
     public void runIntake() {
@@ -92,14 +102,15 @@ public class AlgaeEffector extends SubsystemBase {
         m_state = State.INTAKE;
     }
 
-    public void scoreBarge() {
-        m_motor.setVoltage(BARGE_VOLTAGE);
-        m_state = State.BARGE;
-    }
-
-    public void scoreProcessor() {
-        m_motor.setVoltage(PROCESSOR_VOLTAGE);
-        m_state = State.PROCESSOR;
+    public void score() {
+        double elevatorH = m_elevatorHeight.getAsDouble();
+        if (elevatorH >= PROCESSOR_HEIGHT_MAX) {
+            m_motor.setVoltage(BARGE_VOLTAGE);
+            m_state = State.BARGE;
+        } else {
+            m_motor.setVoltage(PROCESSOR_VOLTAGE);
+            m_state = State.PROCESSOR;    
+        }
     }
 
     public void stop() {
