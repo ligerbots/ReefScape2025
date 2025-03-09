@@ -91,10 +91,6 @@ public class Robot extends TimedRobot {
         if (coralE != null) {
             addPeriodic(coralE.updateLimitSwitch(), 0.002);
         }
-        AlgaeEffector algaeEff = m_robotContainer.getAlgaeEffector();
-        if (algaeEff != null) {
-            addPeriodic(algaeEff.updateCurrentReading(), 0.010);
-        }
     }
 
     public static RobotType getRobotType() {

@@ -19,5 +19,4 @@ public abstract class RobotContainer  {
     public void resetAllGoals() { return; }
 
     public CoralEffector getCoralEffector() { return null; };
-    public AlgaeEffector getAlgaeEffector() { return null; };
 }

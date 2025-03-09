@@ -220,9 +220,4 @@ public class CompRobotContainer extends RobotContainer {
     public CoralEffector getCoralEffector() {
         return m_coralEffector;
     }
-        
-    @Override
-    public AlgaeEffector getAlgaeEffector() {
-        return m_algaeEffector;
-    }
 }

@@ -29,10 +29,7 @@ public class AlgaeEffector extends SubsystemBase {
     static final double BARGE_VOLTAGE = 12.0;
     static final double HOLD_VOLTAGE = -6.0;
 
-    private final static double INTAKE_CURRENT_THRESHOLD = 15;
-
     // Max velocity indicating the motor has stalled
-    // TODO: value
     private final static double STALL_VELOCITY_LIMIT = 1000;
 
     // elevator is at the bottom when scoring in the Processor. Use some small height
@@ -47,12 +44,6 @@ public class AlgaeEffector extends SubsystemBase {
     }
 
     private State m_state = State.IDLE;
-
-    // median filter to filter the feeder current, to signal holding an algae
-    private final MedianFilter m_medianFilter = new MedianFilter(5);
-    private double m_medianCurrent = 0.0;
-    private boolean m_prevCurrentTrigger;
-    private boolean m_pastFirstCurrentSpike;
 
     private final DoubleSupplier m_elevatorHeight;
 
@@ -95,37 +86,19 @@ public class AlgaeEffector extends SubsystemBase {
         }
 
         double velocity = m_motor.getEncoder().getVelocity();
-        SmartDashboard.putNumber("algaeEffector/velocity", velocity);
         if (m_state == State.INTAKE && Math.abs(velocity) < STALL_VELOCITY_LIMIT) {
             m_motor.setVoltage(HOLD_VOLTAGE);
             m_state = State.HOLD;        
         }
 
-        boolean currentTriggered = m_medianCurrent > INTAKE_CURRENT_THRESHOLD;;
-        // if (m_state == State.INTAKE && !m_prevCurrentTrigger && currentTriggered) {
-        //     if (!m_pastFirstCurrentSpike) {
-        //         m_pastFirstCurrentSpike = true;
-        //     } else {
-        //         // current has spiked a 2nd time, so assume we have an Algae
-        //         // TODO do we need a timer to run the motor for a little bit???
-        //         m_motor.setVoltage(HOLD_VOLTAGE);
-        //         m_state = State.HOLD;
-        //     }
-        // }
-        m_prevCurrentTrigger = currentTriggered;
-
         SmartDashboard.putString("algaeEffector/state", m_state.toString());
         SmartDashboard.putBoolean("algaeEffector/limitSwitch", pressed);
         SmartDashboard.putNumber("algaeEffector/speed", m_motor.get());
         SmartDashboard.putNumber("algaeEffector/current", m_motor.getOutputCurrent());
-        SmartDashboard.putNumber("algaeEffector/medianCurrent", m_medianCurrent);
-        SmartDashboard.putBoolean("algaeEffector/currentTrigger", currentTriggered);
+        SmartDashboard.putNumber("algaeEffector/velocity", velocity);
     }
 
     public void runIntake() {
-        m_prevCurrentTrigger = false;
-        m_pastFirstCurrentSpike = false;
-
         m_motor.setVoltage(INTAKE_VOLTAGE);
         m_state = State.INTAKE;
     }
@@ -150,11 +123,5 @@ public class AlgaeEffector extends SubsystemBase {
 
     public boolean hasAlgae() {
         return m_state == State.HOLD;
-    }
-
-    public Runnable updateCurrentReading(){
-        return () -> {
-            m_medianCurrent = m_medianFilter.calculate(m_motor.getOutputCurrent());
-        };
     }
 }
