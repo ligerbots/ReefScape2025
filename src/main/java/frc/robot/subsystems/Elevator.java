@@ -25,9 +25,9 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 
 public class Elevator extends SubsystemBase {
-    public static final double HEIGHT_LOW_RANGE = Units.inchesToMeters(5.0);
+    public static final double HEIGHT_LOW_RANGE = Units.inchesToMeters(2.0);
 
-    private static final double GEAR_REDUCTION = 15.0;  // 15:1 planetary
+    private static final double GEAR_REDUCTION = 12.0;  // 15:1 planetary
     // diameter of final 18 tooth gear
     private static final double FINAL_GEAR_DIAMETER = Units.inchesToMeters(1.504);  // TODO fix me
     // calibration: (circumference of 18T gear) * (2 for 2nd stage) / (motor gear reduction)
@@ -42,8 +42,8 @@ public class Elevator extends SubsystemBase {
 
     private static final double MIN_HEIGHT_TURN_OFF = Units.inchesToMeters(1.0);
 
-    private static final double MAX_VEL_METER_PER_SEC = Units.inchesToMeters(250.0);
-    private static final double MAX_ACC_METER_PER_SEC_SQ = Units.inchesToMeters(500.0);
+    private static final double MAX_VEL_METER_PER_SEC = Units.inchesToMeters(300.0);
+    private static final double MAX_ACC_METER_PER_SEC_SQ = Units.inchesToMeters(750.0);
     private static final double MAX_JERK_METER_PER_SEC3 = Units.inchesToMeters(5000.0);
     
     private static final int CURRENT_LIMIT = 60;
@@ -92,7 +92,9 @@ public class Elevator extends SubsystemBase {
         magicConfigs.MotionMagicAcceleration = heightToRotations(MAX_ACC_METER_PER_SEC_SQ); // Target acceleration of 160 rps/s (0.5 seconds)
         magicConfigs.MotionMagicJerk = heightToRotations(MAX_JERK_METER_PER_SEC3); // Target jerk of 1600 rps/s/s (0.1 seconds)
         
-        CurrentLimitsConfigs currentLimits = new CurrentLimitsConfigs().withSupplyCurrentLimit(CURRENT_LIMIT);
+        CurrentLimitsConfigs currentLimits = new CurrentLimitsConfigs()
+            .withSupplyCurrentLimit(CURRENT_LIMIT)
+            .withStatorCurrentLimit(CURRENT_LIMIT);
         talonFXConfigs.withCurrentLimits(currentLimits);
         
         m_motor.getConfigurator().apply(talonFXConfigs);
@@ -113,18 +115,21 @@ public class Elevator extends SubsystemBase {
 
     @Override
     public void periodic() {
-        double height = getHeight();
+        double goalClipped = limitElevatorLength(m_goalMeters, m_pivotOutsideLowRange.getAsBoolean());
 
-        // cross check that pivot is in a good place to go low
+        // // cross check that pivot is in a good place to go low
         // if (height <= HEIGHT_LOW_RANGE && m_pivotOutsideLowRange.getAsBoolean()) {
         //     setHeight(HEIGHT_LOW_RANGE);
         // }
 
         // if basically at the bottom, turn off the motor
-        if (m_goalMeters < MIN_HEIGHT_TURN_OFF && height < MIN_HEIGHT_TURN_OFF) {
+        double height = getHeight();
+        if (goalClipped < MIN_HEIGHT_TURN_OFF && height < MIN_HEIGHT_TURN_OFF) {
             m_motor.setControl(new VoltageOut(0));
+        } else {
+            m_motor.setControl(new MotionMagicVoltage(heightToRotations(goalClipped)));    
         }
-
+        
         SmartDashboard.putNumber("elevator/height", Units.metersToInches(height));
         SmartDashboard.putBoolean("elevator/onGoal", lengthWithinTolerance());
         SmartDashboard.putNumber("elevator/currentGoal", 
@@ -132,15 +137,13 @@ public class Elevator extends SubsystemBase {
         SmartDashboard.putNumber("elevator/voltage", m_motor.getMotorVoltage().getValueAsDouble());
         SmartDashboard.putNumber("elevator/supplyCurrent", m_motor.getSupplyCurrent().getValueAsDouble());
         SmartDashboard.putNumber("elevator/statorCurrent", m_motor.getStatorCurrent().getValueAsDouble());
+        SmartDashboard.putNumber("elevator/dutyCycle", m_motor.getDutyCycle().getValueAsDouble());
+        SmartDashboard.putNumber("elevator/velocity", m_motor.getVelocity().getValueAsDouble());
     }
     
     // set elevator length in meters
     public void setHeight(double goal) {
-        m_goalMeters = limitElevatorLength(goal);
-        
-        MotionMagicVoltage m_request = new MotionMagicVoltage(0);        
-        m_motor.setControl(m_request.withPosition(heightToRotations(m_goalMeters)));
-        
+        m_goalMeters = goal;
         SmartDashboard.putNumber("elevator/goal", Units.metersToInches(m_goalMeters));
     }
     
@@ -152,6 +155,10 @@ public class Elevator extends SubsystemBase {
     public void zeroElevator() {
         m_motor.setPosition(heightToRotations(OFFSET_METER));
         // updateMotorEncoderOffset();
+    }
+    
+    public void resetGoal() {
+        setHeight(getHeight());
     }
     
     // public double getPotentiometerReadingMeters(){
@@ -180,7 +187,7 @@ public class Elevator extends SubsystemBase {
         return rotations * METER_PER_REVOLUTION;
     }
     
-    private static double limitElevatorLength(double length) {
-        return MathUtil.clamp(length, MIN_LENGTH_METERS, MAX_LENGTH_METERS);
+    private static double limitElevatorLength(double length, boolean pivotOutsideRange) {
+        return MathUtil.clamp(length, pivotOutsideRange ? HEIGHT_LOW_RANGE : MIN_LENGTH_METERS, MAX_LENGTH_METERS);
     }
 }
