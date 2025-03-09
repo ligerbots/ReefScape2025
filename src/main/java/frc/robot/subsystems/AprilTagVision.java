@@ -111,6 +111,9 @@ public class AprilTagVision extends SubsystemBase {
     // Simulation support
     private VisionSystemSim m_visionSim;
 
+    // list of poses sent to the odometry, so we can plot them
+    ArrayList<Pose2d> m_odometryPoses = new ArrayList<Pose2d>();
+
     public AprilTagVision() {
         try {
             m_aprilTagFieldLayout = AprilTagFieldLayout.loadField(APRILTAG_FIELD);
@@ -196,6 +199,7 @@ public class AprilTagVision extends SubsystemBase {
                 c.pipeResults = c.photonCamera.getAllUnreadResults();
             }
 
+            m_odometryPoses.clear();
             if (PLOT_VISIBLE_TAGS) {
                 plotVisibleTags(swerve.field);
             }
@@ -205,6 +209,10 @@ public class AprilTagVision extends SubsystemBase {
 
             // Do SingleTag
             addVisionMeasurements(swerve, false);
+
+            if (PLOT_POSE_SOLUTIONS) {
+                plotVisionPoses(swerve.field, m_odometryPoses);
+            }
         } catch (Exception e) {
             DriverStation.reportError("Error updating odometry from AprilTags " + e.getLocalizedMessage(), false);
         }
@@ -227,8 +235,12 @@ public class AprilTagVision extends SubsystemBase {
                         if (estPose.isPresent()) {
                             // Update the main poseEstimator with the vision result
                             // Make sure to use the timestamp of this result
-                            swerve.addVisionMeasurement(estPose.get().estimatedPose.toPose2d(), pipeRes.getTimestampSeconds(), estimateStdDev(pipeRes.targets));
+                            Pose2d pose = estPose.get().estimatedPose.toPose2d();
+
+                            swerve.addVisionMeasurement(pose, pipeRes.getTimestampSeconds(), estimateStdDev(pipeRes.targets));
                             // swerve.addVisionMeasurement(estPose.get().estimatedPose.toPose2d(), pipeRes.getTimestampSeconds());
+
+                            m_odometryPoses.add(pose);
                         }
                     }
                 }
@@ -238,38 +250,6 @@ public class AprilTagVision extends SubsystemBase {
             }
         }
     }
-
-    // // FROM HERE TO THE BOTTOM, ALL ARE NOT USED
-    // List<Pose3d> getOptions(Camera camera, Optional<EstimatedRobotPose> estimate) {
-    //     List<Pose3d> options = new ArrayList<Pose3d>();
-    //     if (estimate.get().strategy == PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR) {
-    //         // if multitag is used, add robot pose to options
-    //         options.add(estimate.get().estimatedPose);
-    //     } else {
-    //         // if only one tag is visible, add all possible poses to options
-    //         options = getAmbiguousPoses(camera.photonCamera.getLatestResult(), camera.robotToCam);
-    //     }
-
-    //     return options;
-    // }
-
-    // void plotAndUpdate(Camera camera, Optional<EstimatedRobotPose> estimate, SwerveDrive swerve) {
-    //     Pose2d pose = estimate.get().estimatedPose.toPose2d();
-    //     swerve.addVisionMeasurement(pose, camera.photonCamera.getLatestResult().getTimestampSeconds());
-
-    //     if (PLOT_POSE_SOLUTIONS) {
-    //         plotVisionPose(swerve.field, pose);
-    //     }
-    //     if (PLOT_ALTERNATE_POSES) {
-    //         // *** Yes, this is repeated code, and maybe that is bad.
-    //         // But this will save some cycles if this PLOT option is turned off.
-    //         if (estimate.get().strategy != PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR) {
-    //             plotAlternateSolutions(swerve.field,
-    //                     List.of(getAmbiguousPoses(camera.photonCamera.getLatestResult(), camera.robotToCam)));
-    //         } else
-    //             swerve.field.getObject("visionAltPoses").setPose(pose);
-    //     }
-    // }
 
     // ** Still will work, but need to decide which camera
     // // get the tag ID closest to horizontal center of camera
@@ -441,14 +421,14 @@ public class AprilTagVision extends SubsystemBase {
 
     // --- Routines to plot the vision solutions on a Field2d ---------
 
-    // private void plotVisionPoses(Field2d field, List<Pose2d> poses) {
-    //     if (field == null)
-    //         return;
-    //     if (poses == null)
-    //         field.getObject("visionPoses").setPoses();
-    //     else
-    //         field.getObject("visionPoses").setPoses(poses);
-    // }
+    private void plotVisionPoses(Field2d field, List<Pose2d> poses) {
+        if (field == null)
+            return;
+        if (poses == null)
+            field.getObject("visionPoses").setPoses();
+        else
+            field.getObject("visionPoses").setPoses(poses);
+    }
 
     // private void plotVisionPose(Field2d field, Pose2d pose) {
     //     if (field == null)

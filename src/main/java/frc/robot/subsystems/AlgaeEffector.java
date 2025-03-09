@@ -21,12 +21,13 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 
 public class AlgaeEffector extends SubsystemBase {
-    private static final int MOTOR_CURRENT_LIMIT = 20;
+
+    static final int MOTOR_CURRENT_LIMIT = 30;
    
-    private static final double INTAKE_VOLTAGE = -6.0;
-    private static final double PROCESSOR_VOLTAGE = 6.0;
-    private static final double BARGE_VOLTAGE = 12.0;
-    private static final double HOLD_VOLTAGE = -4.0;
+    static final double INTAKE_VOLTAGE = -6.0;
+    static final double PROCESSOR_VOLTAGE = 6.0;
+    static final double BARGE_VOLTAGE = 12.0;
+    static final double HOLD_VOLTAGE = -6.0;
 
     private final static double INTAKE_CURRENT_THRESHOLD = 15;
 

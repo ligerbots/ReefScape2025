@@ -16,6 +16,8 @@ public abstract class RobotContainer  {
 
     public abstract DriveTrain getDriveTrain();
 
+    public void resetAllGoals() { return; }
+
     public CoralEffector getCoralEffector() { return null; };
     public AlgaeEffector getAlgaeEffector() { return null; };
 }
