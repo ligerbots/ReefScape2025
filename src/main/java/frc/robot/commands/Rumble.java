@@ -10,14 +10,15 @@ import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj2.command.Command;
 
 public class Rumble extends Command {
-    static final double RUMBLING_WAIT_TIME = 0.3;
+    private final double RUMBLING_WAIT_TIME;
     XboxController m_xbox;
     Timer m_timer;
 
     /** Creates a new Rumble. */
-    public Rumble(XboxController xbox) {
+    public Rumble(XboxController xbox, double RUMBLING_WAIT_TIME) {
         // Use addRequirements() here to declare subsystem dependencies.
         m_xbox = xbox;
+        this.RUMBLING_WAIT_TIME = RUMBLING_WAIT_TIME;
         m_timer = new Timer();
     }
 
