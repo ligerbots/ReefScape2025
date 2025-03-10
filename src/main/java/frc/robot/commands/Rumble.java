@@ -10,25 +10,20 @@ import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj2.command.Command;
 
 public class Rumble extends Command {
-    private final double RUMBLING_WAIT_TIME;
     XboxController m_xbox;
-    Timer m_timer;
+    boolean m_rumbling;
 
     /** Creates a new Rumble. */
-    public Rumble(XboxController xbox, double RUMBLING_WAIT_TIME) {
+    public Rumble(XboxController xbox) {
         // Use addRequirements() here to declare subsystem dependencies.
         m_xbox = xbox;
-        this.RUMBLING_WAIT_TIME = RUMBLING_WAIT_TIME;
-        m_timer = new Timer();
+        m_rumbling = false;
     }
 
     // Called when the command is initially scheduled.
     @Override
     public void initialize() {
-        m_timer.reset();
-        m_timer.start();
-        // start rumbling
-        m_xbox.setRumble(RumbleType.kBothRumble, 1);
+        
     }
 
     // Called every time the scheduler runs while the command is scheduled.
@@ -46,6 +41,15 @@ public class Rumble extends Command {
     // Returns true when the command should end.
     @Override
     public boolean isFinished() {
-        return m_timer.hasElapsed(RUMBLING_WAIT_TIME);
+        return false;
+    }
+
+    public void start(int value) {
+        // start rumbling
+        m_xbox.setRumble(RumbleType.kBothRumble, value);
+    }
+
+    public void stop() {
+        m_xbox.setRumble(RumbleType.kBothRumble, 0);
     }
 }
