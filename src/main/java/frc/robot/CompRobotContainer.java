@@ -12,7 +12,6 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -35,12 +34,14 @@ public class CompRobotContainer extends RobotContainer {
     
     private final AprilTagVision m_aprilTagVision = new AprilTagVision();
     private final DriveTrain m_driveTrain = new DriveTrain("swerve/comp", m_aprilTagVision);
-    private final CoralEffector m_coralEffector = new CoralEffector();
-    private final PowerDistribution m_pdh = new PowerDistribution();
-    private final AlgaeEffector m_algaeEffector = new AlgaeEffector(m_pdh);
     // private final Leds m_leds = new Leds();
+    // private final PowerDistribution m_pdh = new PowerDistribution();
+
     private final Elevator m_elevator = new Elevator();
     private final EndEffectorPivot m_pivot = new EndEffectorPivot(() -> m_elevator.getHeight());
+    private final CoralEffector m_coralEffector = new CoralEffector();
+    private final AlgaeEffector m_algaeEffector = new AlgaeEffector(() -> m_elevator.getHeight());
+
     private final Climber m_climber = new Climber();
 
     @SuppressWarnings("unused")
@@ -86,7 +87,7 @@ public class CompRobotContainer extends RobotContainer {
         m_driverController.rightTrigger().whileTrue(
                 new ConditionalCommand(
                         new StartEndCommand(m_coralEffector::runOuttake, m_coralEffector::stop, m_coralEffector),
-                        new StartEndCommand(m_algaeEffector::scoreBarge, m_algaeEffector::stop, m_algaeEffector),
+                        new StartEndCommand(m_algaeEffector::score, m_algaeEffector::stop, m_algaeEffector),
                         () -> m_coralMode)
         );
         
