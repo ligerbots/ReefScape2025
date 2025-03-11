@@ -6,19 +6,19 @@ package frc.robot.commands;
 
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj2.command.Command;
 
 public class Rumble extends Command {
-    private final double RUMBLING_WAIT_TIME;
+    private final double RUMBLING_WAIT_TIME = 0.3;
     XboxController m_xbox;
     Timer m_timer;
 
     /** Creates a new Rumble. */
-    public Rumble(XboxController xbox, double RUMBLING_WAIT_TIME) {
+    public Rumble(XboxController xbox) {
         // Use addRequirements() here to declare subsystem dependencies.
         m_xbox = xbox;
-        this.RUMBLING_WAIT_TIME = RUMBLING_WAIT_TIME;
         m_timer = new Timer();
     }
 
@@ -28,7 +28,9 @@ public class Rumble extends Command {
         m_timer.reset();
         m_timer.start();
         // start rumbling
-        m_xbox.setRumble(RumbleType.kBothRumble, 1);
+        if (DriverStation.isTeleopEnabled()) {
+            m_xbox.setRumble(RumbleType.kBothRumble, 1);
+        }
     }
 
     // Called every time the scheduler runs while the command is scheduled.
