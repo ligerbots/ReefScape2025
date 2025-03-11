@@ -22,7 +22,7 @@ import edu.wpi.first.wpilibj2.command.StartEndCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandJoystick;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 // import edu.wpi.first.wpilibj2.command.button.POVButton;
-
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.commands.*;
 import frc.robot.subsystems.*;
 
@@ -84,13 +84,18 @@ public class CompRobotContainer extends RobotContainer {
                         new StartEndCommand(m_algaeEffector::runIntake, m_algaeEffector::stop, m_algaeEffector),
                         () -> m_coralMode)
         );
-        
+
         m_driverController.rightTrigger().whileTrue(
                 new ConditionalCommand(
                         new StartEndCommand(m_coralEffector::runOuttake, m_coralEffector::stop, m_coralEffector),
                         new StartEndCommand(m_algaeEffector::score, m_algaeEffector::stop, m_algaeEffector),
                         () -> m_coralMode)
         );
+
+        Trigger coralRumble = new Trigger(() -> m_coralEffector.hasCoral());
+        coralRumble.onTrue(new Rumble(m_driverController.getHID()));
+        Trigger algaeRumble = new Trigger(() -> m_algaeEffector.hasAlgae());
+        algaeRumble.onTrue(new Rumble(m_driverController.getHID()));
         
         // m_driverController.rightBumper().onTrue(new MoveEndEffector(Constants.Position.STOW, m_elevator, m_pivot).andThen().finallyDo(() -> m_coralMode = true));
         
