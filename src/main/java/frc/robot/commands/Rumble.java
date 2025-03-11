@@ -11,7 +11,7 @@ import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj2.command.Command;
 
 public class Rumble extends Command {
-    private final double RUMBLING_WAIT_TIME = 0.3;
+    private final double RUMBLING_WAIT_TIME = 1.0;
     XboxController m_xbox;
     Timer m_timer;
 
