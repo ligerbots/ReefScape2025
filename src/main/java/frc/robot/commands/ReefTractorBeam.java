@@ -15,23 +15,23 @@ public class ReefTractorBeam implements Supplier<Command> {
 
     public ReefTractorBeam(DriveTrain driveTrain) {
         m_driveTrain = driveTrain;
-        // addRequirements(driveTrain);
-        // addCommands(driveToNearestPole(driveTrain));
+
+        // do not Require the drivetrain - the outside command handles that
     }
+
     @Override
     public Command get() {  // getDriveToNearestPole
-        PathConstraints constraints =  PathConstraints.unlimitedConstraints(12);
+        PathConstraints constraints =  new PathConstraints(
+            3.0, 3.0,
+            Math.toRadians(540), Math.toRadians(720));
 
         Pose2d currentPose = FieldConstants.flipPose(m_driveTrain.getPose());
-        System.out.println("Current Pose: " + currentPose);
+        // System.out.println("Current Pose: " + currentPose);
         // SmartDashboard.putData("Current Pose:", currentPose);
 
-        Pose2d nearestPole = FieldConstants.flipPose(currentPose.nearest(FieldConstants.REEF_POLES));
-        System.out.println("Nearest Pole: " + nearestPole);
+        Pose2d nearestPole = FieldConstants.flipPose(currentPose.nearest(FieldConstants.REEF_SCORING_LOCATIONS));
+        // System.out.println("Nearest Pole: " + nearestPole);
+
         return m_driveTrain.pathFindToPose(nearestPole, constraints);
     }
-
-
-
-    
 }

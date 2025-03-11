@@ -12,20 +12,20 @@
         "y": 5.82560244658193
       },
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "source2In"
     },
     {
       "anchor": {
-        "x": 3.7043585526315788,
-        "y": 5.054523026315789
+        "x": 3.71,
+        "y": 5.035279605263158
       },
       "prevControl": {
-        "x": 3.367918499262547,
-        "y": 5.311550688711563
+        "x": 3.373559946630968,
+        "y": 5.292307267658932
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "scoreReefL"
     }
   ],
   "rotationTargets": [],
@@ -33,8 +33,8 @@
   "pointTowardsZones": [],
   "eventMarkers": [],
   "globalConstraints": {
-    "maxVelocity": 4.5,
-    "maxAcceleration": 4.0,
+    "maxVelocity": 3.0,
+    "maxAcceleration": 3.0,
     "maxAngularVelocity": 540.0,
     "maxAngularAcceleration": 720.0,
     "nominalVoltage": 12.0,
@@ -42,7 +42,7 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": -59.93141717813754
+    "rotation": -59.99999999999999
   },
   "reversed": false,
   "folder": null,

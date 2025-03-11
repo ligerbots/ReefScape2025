@@ -24,11 +24,12 @@ public class Robot extends TimedRobot {
     private Command m_autonomousCommand = null;
     private boolean m_prevIsRedAlliance = true;
     
-    public static final String KITBOT_SERIAL_NUMBER = "123";
+    public static final String KITBOT_SERIAL_NUMBER = "0313baff";
     public static final String COMP_V1_SERIAL_NUMBER = "0313bb3a";
+    public static final String TESTBENCH_SERIAL_NUMBER = "123";
 
     public enum RobotType {
-        KITBOT, COMP_V1, TEST
+        KITBOT, COMP_V1, TESTBENCH
     }
     // we want this to be static so that it is easy for subsystems to query the robot type
     private static RobotType m_robotType;
@@ -66,8 +67,11 @@ public class Robot extends TimedRobot {
             m_robotType = RobotType.KITBOT;
         } else if (serialNum.equals(COMP_V1_SERIAL_NUMBER)) {
             m_robotType = RobotType.COMP_V1;
+        } else if (serialNum.equals(TESTBENCH_SERIAL_NUMBER)) {
+            m_robotType = RobotType.TESTBENCH;
         } else {
-            m_robotType = RobotType.TEST;
+            // default to the Comp robot. Helps with simulation
+            m_robotType = RobotType.COMP_V1;
         }
         SmartDashboard.putString("robotType", m_robotType.toString());
 
@@ -114,6 +118,8 @@ public class Robot extends TimedRobot {
     
     @Override
     public void disabledPeriodic() {
+        m_robotContainer.resetAllGoals();
+
         // drivetrain might be null when testing code. So check
         DriveTrain driveTrain = m_robotContainer.getDriveTrain();
 
@@ -125,10 +131,15 @@ public class Robot extends TimedRobot {
         }
         
         boolean isRedAlliance = FieldConstants.isRedAlliance();
-        if (m_autonomousCommand == null || isRedAlliance != m_prevIsRedAlliance) {
-            m_autonomousCommand = m_robotContainer.getAutonomousCommand();
-            if (driveTrain != null) driveTrain.setPose(m_robotContainer.getInitialPose());
+        Command newAuto = m_robotContainer.getAutonomousCommand();
+        // don't change the initialPose unless the Auto or Alliance has changed
+        // don't want to override the true pose on the field (as determined by the AprilTags)
+        //
+        // Note: use "==" to compare autos - checks if they are the same object
+        if (isRedAlliance != m_prevIsRedAlliance || newAuto != m_autonomousCommand) {
+            m_autonomousCommand = newAuto;
             m_prevIsRedAlliance = isRedAlliance;
+            if (driveTrain != null) driveTrain.setPose(m_robotContainer.getInitialPose());
         }
     }
     

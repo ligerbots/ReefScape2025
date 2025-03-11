@@ -8,24 +8,24 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 5.773026315789473,
-        "y": 5.179605263157893
+        "x": 6.225246710526315,
+        "y": 5.891611842105262
       },
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "scoreReefH"
     },
     {
       "anchor": {
-        "x": 1.693421052631579,
-        "y": 7.421463815789473
+        "x": 1.6741776315789472,
+        "y": 7.440707236842105
       },
       "prevControl": {
-        "x": 3.1423414636951947,
-        "y": 6.6052949175645095
+        "x": 3.123098042642563,
+        "y": 6.624538338617142
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "source2Out"
     }
   ],
   "rotationTargets": [],
@@ -33,8 +33,8 @@
   "pointTowardsZones": [],
   "eventMarkers": [],
   "globalConstraints": {
-    "maxVelocity": 4.5,
-    "maxAcceleration": 4.0,
+    "maxVelocity": 3.0,
+    "maxAcceleration": 3.0,
     "maxAngularVelocity": 540.0,
     "maxAngularAcceleration": 720.0,
     "nominalVoltage": 12.0,
@@ -42,7 +42,7 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": -51.34019174590989
+    "rotation": -53.530765609948155
   },
   "reversed": false,
   "folder": null,
