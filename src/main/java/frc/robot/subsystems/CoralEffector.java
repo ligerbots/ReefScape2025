@@ -32,7 +32,7 @@ public class CoralEffector extends SubsystemBase {
     // Speeds
     private static final double INTAKE_SPEED = -0.4;
     private static final double OUTTAKE_SPEED = 0.5;
-    private static final double HOLD_SPEED = -0.2;
+    private static final double HOLD_SPEED = -0.05;
 
     // Max velocity indicating the motor has stalled
     private final static double STALL_VELOCITY_LIMIT = 2000;
@@ -101,7 +101,7 @@ public class CoralEffector extends SubsystemBase {
         double velocity = m_encoder.getVelocity();
         boolean stalled = m_speedThres.compute(Math.abs(velocity));
         if (m_state == State.INTAKE && stalled) {
-            m_motor.setVoltage(HOLD_SPEED);
+            m_motor.set(HOLD_SPEED);
             m_state = State.HOLD;        
         }
 
