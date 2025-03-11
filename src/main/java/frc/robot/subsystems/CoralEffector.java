@@ -32,6 +32,9 @@ public class CoralEffector extends SubsystemBase {
     private static final double OUTTAKE_SPEED = 0.5;
     private static final double HOLD_SPEED = -0.05;
 
+    // Max velocity indicating the motor has stalled
+    private final static double STALL_VELOCITY_LIMIT = 500;
+
     // Motor
     private final SparkMax m_motor;
 
@@ -88,6 +91,12 @@ public class CoralEffector extends SubsystemBase {
             m_motor.set(HOLD_SPEED);
             m_state = State.HOLD;        
         }
+        
+        double velocity = m_motor.getEncoder().getVelocity();
+        // if (m_state == State.INTAKE && Math.abs(velocity) < STALL_VELOCITY_LIMIT) {
+        //     m_motor.setVoltage(HOLD_SPEED);
+        //     m_state = State.HOLD;        
+        // }
 
         SmartDashboard.putBoolean("coralEffector/limitSwitchDebounced", m_limitSwitchDebounced);
         SmartDashboard.putString("coralEffector/state", m_state.toString());

@@ -128,7 +128,7 @@ public class CompRobotContainer extends RobotContainer {
         // Miscellaneous
         m_farm.button(12).whileTrue(new InstantCommand(m_elevator::zeroElevator));
 
-        m_farm.button(15).onTrue(new DeferredCommand(new ReefTractorBeam(m_driveTrain), Set.of(m_driveTrain)));
+       m_driverController.rightBumper().onTrue(new DeferredCommand(new ReefTractorBeam(m_driveTrain), Set.of(m_driveTrain)));
 
         // Testing commands
 
