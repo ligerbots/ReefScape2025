@@ -54,10 +54,11 @@ public class CompRobotContainer extends RobotContainer {
     
     private final SendableChooser<String> m_chosenFieldSide = new SendableChooser<>(); 
     private final SendableChooser<Pose2d> m_chosenStartPoint = new SendableChooser<>();    
-    private final SendableChooser<Pose2d> m_chosenSourcePickup = new SendableChooser<>();
+    // private final SendableChooser<Pose2d> m_chosenSourcePickup = new SendableChooser<>();
+    private final SendableChooser<String> m_chosenAutoFlavor = new SendableChooser<>(); 
     private final SendableChooser<Pose2d[]> m_chosenReefPoints = new SendableChooser<>();
 
-    private CompBotGenericAutoBase m_autoCommand;
+    private ReefscapeAbstractAuto m_autoCommand;
     private int m_autoSelectionCode = 0;
     
     public CompRobotContainer() {
@@ -127,7 +128,7 @@ public class CompRobotContainer extends RobotContainer {
         // Miscellaneous
         m_farm.button(12).whileTrue(new InstantCommand(m_elevator::zeroElevator));
 
-        m_farm.button(15).onTrue(new DeferredCommand(new ReefTractorBeam(m_driveTrain), Set.of(m_driveTrain)));
+       m_driverController.rightBumper().onTrue(new DeferredCommand(new ReefTractorBeam(m_driveTrain), Set.of(m_driveTrain)));
 
         // Testing commands
 
@@ -157,22 +158,36 @@ public class CompRobotContainer extends RobotContainer {
         m_chosenStartPoint.setDefaultOption("3rd cage-- usual spot", FieldConstants.ROBOT_START_3);
         m_chosenStartPoint.addOption("Field Center", FieldConstants.ROBOT_START_2);
 
-        m_chosenSourcePickup.setDefaultOption("Center", FieldConstants.SOURCE_2_CENTER);
-        m_chosenSourcePickup.addOption("Inside", FieldConstants.SOURCE_2_IN);
-        m_chosenSourcePickup.addOption("Outside", FieldConstants.SOURCE_2_OUT);
+        m_chosenAutoFlavor.setDefaultOption("Granite State", "Granite State");
+        m_chosenAutoFlavor.addOption("Experimental", "Experimental");
+
+        // m_chosenSourcePickup.setDefaultOption("Center", FieldConstants.SOURCE_2_CENTER);
+        // m_chosenSourcePickup.addOption("Inside", FieldConstants.SOURCE_2_IN);
+        // m_chosenSourcePickup.addOption("Outside", FieldConstants.SOURCE_2_OUT);
 
         SmartDashboard.putData("Field Side", m_chosenFieldSide);
         SmartDashboard.putData("Auto Start Point", m_chosenStartPoint);
-        SmartDashboard.putData("Source Pickup slot", m_chosenSourcePickup);
+        // SmartDashboard.putData("Source Pickup slot", m_chosenSourcePickup);
         SmartDashboard.putData("Reef Points", m_chosenReefPoints);
+        SmartDashboard.putData("Auto flavor", m_chosenAutoFlavor);
     }
     
     public Command getAutonomousCommand() {
-        int currentAutoSelectionCode = Objects.hash(m_chosenStartPoint.getSelected(), m_chosenSourcePickup.getSelected(), m_chosenReefPoints.getSelected(), m_chosenFieldSide.getSelected());
+        int currentAutoSelectionCode = Objects.hash(m_chosenStartPoint.getSelected(), m_chosenAutoFlavor.getSelected(),
+            m_chosenReefPoints.getSelected(), m_chosenFieldSide.getSelected(), DriverStation.getAlliance());
         // Only call constructor if the auto selection inputs have changed
         if (m_autoSelectionCode != currentAutoSelectionCode) {
-            m_autoCommand = new CompBotGenericAutoBase(m_chosenStartPoint.getSelected(), m_chosenSourcePickup.getSelected(), m_chosenReefPoints.getSelected(), 
+            String autoFlavor = m_chosenAutoFlavor.getSelected();
+            if(autoFlavor.equals("Granite State")) {
+                m_autoCommand = new CompBotGraniteStateAuto(m_chosenStartPoint.getSelected(), FieldConstants.SOURCE_2_CENTER, m_chosenReefPoints.getSelected(), 
                     m_driveTrain, m_elevator, m_coralEffector, m_pivot, m_chosenFieldSide.getSelected().equals("Processor Side"));
+            } 
+
+            if(autoFlavor.equals("Experimental")) { 
+                m_autoCommand = new CompBotExperimentalAuto(m_chosenStartPoint.getSelected(), FieldConstants.SOURCE_2_CENTER, m_chosenReefPoints.getSelected(), 
+                        m_driveTrain, m_elevator, m_coralEffector, m_pivot, m_chosenFieldSide.getSelected().equals("Processor Side"));
+            }
+            
             m_autoSelectionCode = currentAutoSelectionCode;
         } 
 

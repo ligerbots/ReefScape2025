@@ -54,8 +54,8 @@ public class EndEffectorPivot extends SubsystemBase {
       
     // Constants to limit the shooterPivot rotation speed
     // max vel: 1 rotation = 10 seconds  and then gear_ratio
-    private static final double MAX_VEL_ROT_PER_SEC = 1;
-    private static final double MAX_ACC_ROT_PER_SEC2 = 2.5;
+    private static final double MAX_VEL_ROT_PER_SEC = 1.5;
+    private static final double MAX_ACC_ROT_PER_SEC2 = 3.0;
     private static final double ROBOT_LOOP_PERIOD = 0.02;
 
     // Zero point of the absolute encoder
@@ -63,14 +63,14 @@ public class EndEffectorPivot extends SubsystemBase {
     //0.5/360.0; //(135.2+180)/360.0; 
 
     // Constants for the pivot PID controller
-    private static final double K_P = 3.0;
+    private static final double K_P = 5.0;
     private static final double K_I = 0.0;
     private static final double K_D = 0.0;
 
-    // parameters for kicking the pivot to get it moving
-    private static final double K_S = 0.0;//2.0;
-    private final Timer m_kickTimer = new Timer();
-    private static final double KICK_TIME = 0.04;
+    // // parameters for kicking the pivot to get it moving
+    // private static final double K_S = 0.0;//2.0;
+    // private final Timer m_kickTimer = new Timer();
+    // private static final double KICK_TIME = 0.04;
 
     private final SparkMax m_motor;
     // private final RelativeEncoder m_encoder;
@@ -159,14 +159,14 @@ public class EndEffectorPivot extends SubsystemBase {
 
         // feedforward in Volts
         double feedforward = 0;
-        if (goalChanged && (angleDeg > 290.0 || angleDeg < 160.0)) {
-            m_kickTimer.restart();
-        }
+        // if (goalChanged && (angleDeg > 290.0 || angleDeg < 160.0)) {
+        //     m_kickTimer.restart();
+        // }
 
-        if (!m_kickTimer.hasElapsed(KICK_TIME)) {
-            // needs a kick to get started. Always kick physical down
-            feedforward = (angleDeg > 240 ? 1 : -1) * K_S;
-        }
+        // if (!m_kickTimer.hasElapsed(KICK_TIME)) {
+        //     // needs a kick to get started. Always kick physical down
+        //     feedforward = (angleDeg > 240 ? 1 : -1) * K_S;
+        // }
 
         m_controller.setReference(m_currentState.position, SparkBase.ControlType.kPosition, ClosedLoopSlot.kSlot0, feedforward);
 

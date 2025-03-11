@@ -73,4 +73,12 @@ public class FieldConstants {
         // Blue or we don't know; return the original position
         return position;
     }
+
+    public static Translation2d mirrorTranslation(Translation2d translation) {
+        return new Translation2d(translation.getX(), FlippingUtil.fieldSizeY - translation.getY());
+      }
+
+    public static Pose2d mirrorPose(Pose2d pose) {
+        return new Pose2d(mirrorTranslation(pose.getTranslation()), pose.getRotation().unaryMinus());
+    }
 }
