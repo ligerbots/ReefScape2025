@@ -49,6 +49,22 @@ public class FieldConstants {
         FieldConstants.REEF_I, FieldConstants.REEF_J, 
         FieldConstants.REEF_K, FieldConstants.REEF_L);
 
+    public static final List<Pose2d> REEF_SCORING_LOCATIONS_LEFT = List.of(
+        FieldConstants.REEF_A, 
+        FieldConstants.REEF_C, 
+        FieldConstants.REEF_E, 
+        FieldConstants.REEF_G, 
+        FieldConstants.REEF_I, 
+        FieldConstants.REEF_K );
+        
+    public static final List<Pose2d> REEF_SCORING_LOCATIONS_RIGHT = List.of(
+        FieldConstants.REEF_B,
+        FieldConstants.REEF_D, 
+        FieldConstants.REEF_F,
+        FieldConstants.REEF_H, 
+        FieldConstants.REEF_J, 
+        FieldConstants.REEF_L);
+    
     public static boolean isRedAlliance() {
         Optional<Alliance> alliance = DriverStation.getAlliance();
         return alliance.isPresent() && alliance.get() == Alliance.Red;

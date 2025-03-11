@@ -75,7 +75,7 @@ public class CompRobotContainer extends RobotContainer {
             DriverStation.silenceJoystickConnectionWarning(true);
         }
         
-        m_driverController.leftBumper().onTrue(new InstantCommand(m_driveTrain::lock, m_driveTrain));
+        // m_driverController.leftBumper().onTrue(new InstantCommand(m_driveTrain::lock, m_driveTrain));
         // m_driverController.back().onTrue(new InstantCommand(m_driveTrain::zeroHeading, m_driveTrain));
         
         m_driverController.leftTrigger().whileTrue(
@@ -94,6 +94,9 @@ public class CompRobotContainer extends RobotContainer {
         
         // m_driverController.rightBumper().onTrue(new MoveEndEffector(Constants.Position.STOW, m_elevator, m_pivot).andThen().finallyDo(() -> m_coralMode = true));
         
+        m_driverController.rightBumper().onTrue(new DeferredCommand(new ReefTractorBeam(m_driveTrain, false), Set.of(m_driveTrain)));
+        m_driverController.leftBumper().onTrue(new DeferredCommand(new ReefTractorBeam(m_driveTrain, true), Set.of(m_driveTrain)));
+
         // Algae Scoring
         m_driverController.a().onTrue(new MoveEndEffector(Constants.Position.L2_ALGAE, m_elevator, m_pivot).alongWith(new InstantCommand(() -> m_coralMode = false)));
         m_driverController.x().onTrue(new MoveEndEffector(Constants.Position.L3_ALGAE, m_elevator, m_pivot).alongWith(new InstantCommand(() -> m_coralMode = false)));
@@ -127,8 +130,6 @@ public class CompRobotContainer extends RobotContainer {
 
         // Miscellaneous
         m_farm.button(12).whileTrue(new InstantCommand(m_elevator::zeroElevator));
-
-       m_driverController.rightBumper().onTrue(new DeferredCommand(new ReefTractorBeam(m_driveTrain), Set.of(m_driveTrain)));
 
         // Testing commands
 
