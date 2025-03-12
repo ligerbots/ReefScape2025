@@ -33,7 +33,7 @@ public class FieldConstants {
     public static final Pose2d REEF_K = new Pose2d(3.994, 5.209, Rotation2d.fromDegrees(-60.0));
     public static final Pose2d REEF_L = new Pose2d(3.708, 5.044, Rotation2d.fromDegrees(-60.0));
 
-    // Note: these positions are 4 inches back from touching the bumpers touching the wall
+    // Note: these positions are 4 inches back from the bumpers touching the wall
     //   because we need to move the EE before driving all the way in.
     public static final Pose2d REEF_ALGAE_AB = new Pose2d(3.111, 4.021, Rotation2d.fromDegrees(0.0));
     public static final Pose2d REEF_ALGAE_CD = new Pose2d(3.8, 2.827, Rotation2d.fromDegrees(60.0));
@@ -58,22 +58,6 @@ public class FieldConstants {
         FieldConstants.REEF_I, FieldConstants.REEF_J, 
         FieldConstants.REEF_K, FieldConstants.REEF_L);
 
-    public static final List<Pose2d> REEF_SCORING_LOCATIONS_LEFT = List.of(
-        FieldConstants.REEF_A, 
-        FieldConstants.REEF_C, 
-        FieldConstants.REEF_F, 
-        FieldConstants.REEF_H, 
-        FieldConstants.REEF_J, 
-        FieldConstants.REEF_K );
-        
-    public static final List<Pose2d> REEF_SCORING_LOCATIONS_RIGHT = List.of(
-        FieldConstants.REEF_B,
-        FieldConstants.REEF_D, 
-        FieldConstants.REEF_E,
-        FieldConstants.REEF_G, 
-        FieldConstants.REEF_I, 
-        FieldConstants.REEF_L);
-    
     public static boolean isRedAlliance() {
         Optional<Alliance> alliance = DriverStation.getAlliance();
         return alliance.isPresent() && alliance.get() == Alliance.Red;
