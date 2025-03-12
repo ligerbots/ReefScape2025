@@ -6,6 +6,7 @@ def meters(inches):
     return inches * 0.0254
 
 center = (176.75, 158.3)
+# offset: (half-width of Reef) + (1/2 robot perimeter) + (bumpers)
 center_offset = 32.75 + 28/2.0 + 3.5
 reef_offset = 13.0 / 2
 center_algae_offset = 4.0
