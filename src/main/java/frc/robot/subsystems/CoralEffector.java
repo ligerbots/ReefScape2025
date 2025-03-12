@@ -54,7 +54,7 @@ public class CoralEffector extends SubsystemBase {
         IDLE, INTAKE, OUTTAKE, HOLD;
     }
 
-    private State m_state = State.IDLE;
+    private State m_state = State.HOLD;
 
     public CoralEffector() {
         // Set up the coral motor as brushless motor

@@ -21,7 +21,7 @@ import frc.robot.subsystems.Elevator;
 import frc.robot.subsystems.EndEffectorPivot;
 
 public class CompBotExperimentalAuto extends ReefscapeAbstractAuto {
-    private static final double CORAL_SCORE_WAIT_TIME = 0.2;
+    private static final double CORAL_SCORE_WAIT_TIME = 0.1;
     private final double CORAL_PICKUP_WAIT_TIME;
     public static final double RAISE_ELEVATOR_WAIT_TIME = 2.0;
     private static final double LOWER_ELEVATOR_WAIT_TIME = 0.5;  // maybe can be lower
@@ -29,7 +29,7 @@ public class CompBotExperimentalAuto extends ReefscapeAbstractAuto {
     private DriveTrain m_driveTrain;
     
     PathConstraints constraints =  new PathConstraints(
-    3.0, 2.0,
+    4.0, 2.0,
     Math.toRadians(540), Math.toRadians(720));
 
     /** Creates a new NoteAuto. */

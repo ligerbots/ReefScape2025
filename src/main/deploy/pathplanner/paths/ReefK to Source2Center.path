@@ -8,20 +8,20 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.718123378797025,
-        "y": 6.046489717519824
+        "x": 3.295058312766158,
+        "y": 5.673943320329178
       },
       "isLocked": false,
       "linkedName": "scoreReefK"
     },
     {
       "anchor": {
-        "x": 1.277,
-        "y": 7.3417
+        "x": 1.1661764705882351,
+        "y": 7.179411764705882
       },
       "prevControl": {
-        "x": 2.4365211016946824,
-        "y": 6.586919373012717
+        "x": 2.6960065895945924,
+        "y": 6.113796548214064
       },
       "nextControl": null,
       "isLocked": false,
@@ -29,12 +29,26 @@
     }
   ],
   "rotationTargets": [],
-  "constraintZones": [],
+  "constraintZones": [
+    {
+      "name": "Constraints Zone",
+      "minWaypointRelativePos": 0.6780700338873649,
+      "maxWaypointRelativePos": 1.0,
+      "constraints": {
+        "maxVelocity": 2.0,
+        "maxAcceleration": 2.0,
+        "maxAngularVelocity": 540.0,
+        "maxAngularAcceleration": 720.0,
+        "nominalVoltage": 12.0,
+        "unlimited": false
+      }
+    }
+  ],
   "pointTowardsZones": [],
   "eventMarkers": [],
   "globalConstraints": {
-    "maxVelocity": 3.5,
-    "maxAcceleration": 2.25,
+    "maxVelocity": 4.0,
+    "maxAcceleration": 4.5,
     "maxAngularVelocity": 540.0,
     "maxAngularAcceleration": 720.0,
     "nominalVoltage": 12.0,
