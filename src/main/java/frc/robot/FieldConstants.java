@@ -20,6 +20,8 @@ public class FieldConstants {
     public static final Pose2d ROBOT_START_2 = new Pose2d(7.23, 4.20, Rotation2d.fromDegrees(180));
     public static final Pose2d ROBOT_START_3 = new Pose2d(7.29, 6.75, Rotation2d.fromDegrees(-149.9));  
 
+    // Reef pole robot positions
+
     public static final Pose2d REEF_A = new Pose2d(3.213, 4.186, Rotation2d.fromDegrees(0.0));
     public static final Pose2d REEF_B = new Pose2d(3.213, 3.856, Rotation2d.fromDegrees(0.0));
     public static final Pose2d REEF_C = new Pose2d(3.708, 2.998, Rotation2d.fromDegrees(60.0));
@@ -33,14 +35,36 @@ public class FieldConstants {
     public static final Pose2d REEF_K = new Pose2d(3.994, 5.209, Rotation2d.fromDegrees(-60.0));
     public static final Pose2d REEF_L = new Pose2d(3.708, 5.044, Rotation2d.fromDegrees(-60.0));
 
-    // Note: these positions are 4 inches back from the bumpers touching the wall
-    //   because we need to move the EE before driving all the way in.
+    // Algae robot positions - these positions are 4.0 inches short of the wall
+
     public static final Pose2d REEF_ALGAE_AB = new Pose2d(3.111, 4.021, Rotation2d.fromDegrees(0.0));
-    public static final Pose2d REEF_ALGAE_CD = new Pose2d(3.8, 2.827, Rotation2d.fromDegrees(60.0));
+    public static final Pose2d REEF_ALGAE_CD = new Pose2d(3.800, 2.827, Rotation2d.fromDegrees(60.0));
     public static final Pose2d REEF_ALGAE_EF = new Pose2d(5.178, 2.827, Rotation2d.fromDegrees(120.0));
     public static final Pose2d REEF_ALGAE_GH = new Pose2d(5.867, 4.021, Rotation2d.fromDegrees(180.0));
     public static final Pose2d REEF_ALGAE_IJ = new Pose2d(5.178, 5.214, Rotation2d.fromDegrees(-120.0));
-    public static final Pose2d REEF_ALGAE_KL = new Pose2d(3.8, 5.214, Rotation2d.fromDegrees(-60.0));
+    public static final Pose2d REEF_ALGAE_KL = new Pose2d(3.800, 5.214, Rotation2d.fromDegrees(-60.0));
+
+    // Coral Slot robot locations - these positions push 2.0 inches into the wall
+
+    public static final Pose2d SOURCE_1_SLOT1 = new Pose2d(0.425, 1.452, Rotation2d.fromDegrees(54.0));
+    public static final Pose2d SOURCE_1_SLOT2 = new Pose2d(0.589, 1.332, Rotation2d.fromDegrees(54.0));
+    public static final Pose2d SOURCE_1_SLOT3 = new Pose2d(0.754, 1.213, Rotation2d.fromDegrees(54.0));
+    public static final Pose2d SOURCE_1_SLOT4 = new Pose2d(0.918, 1.093, Rotation2d.fromDegrees(54.0));
+    public static final Pose2d SOURCE_1_SLOT5 = new Pose2d(1.083, 0.974, Rotation2d.fromDegrees(54.0));
+    public static final Pose2d SOURCE_1_SLOT6 = new Pose2d(1.247, 0.854, Rotation2d.fromDegrees(54.0));
+    public static final Pose2d SOURCE_1_SLOT7 = new Pose2d(1.411, 0.735, Rotation2d.fromDegrees(54.0));
+    public static final Pose2d SOURCE_1_SLOT8 = new Pose2d(1.576, 0.616, Rotation2d.fromDegrees(54.0));
+    public static final Pose2d SOURCE_1_SLOT9 = new Pose2d(1.740, 0.496, Rotation2d.fromDegrees(54.0));
+
+    public static final Pose2d SOURCE_2_SLOT1 = new Pose2d(0.425, 6.590, Rotation2d.fromDegrees(-54.0));
+    public static final Pose2d SOURCE_2_SLOT2 = new Pose2d(0.589, 6.710, Rotation2d.fromDegrees(-54.0));
+    public static final Pose2d SOURCE_2_SLOT3 = new Pose2d(0.754, 6.829, Rotation2d.fromDegrees(-54.0));
+    public static final Pose2d SOURCE_2_SLOT4 = new Pose2d(0.918, 6.949, Rotation2d.fromDegrees(-54.0));
+    public static final Pose2d SOURCE_2_SLOT5 = new Pose2d(1.083, 7.068, Rotation2d.fromDegrees(-54.0));
+    public static final Pose2d SOURCE_2_SLOT6 = new Pose2d(1.247, 7.188, Rotation2d.fromDegrees(-54.0));
+    public static final Pose2d SOURCE_2_SLOT7 = new Pose2d(1.411, 7.307, Rotation2d.fromDegrees(-54.0));
+    public static final Pose2d SOURCE_2_SLOT8 = new Pose2d(1.576, 7.426, Rotation2d.fromDegrees(-54.0));
+    public static final Pose2d SOURCE_2_SLOT9 = new Pose2d(1.740, 7.546, Rotation2d.fromDegrees(-54.0));
 
     public static final Pose2d SOURCE_1_IN = new Pose2d(0.64, 1.37, Rotation2d.fromDegrees(55.6));
     public static final Pose2d SOURCE_1_OUT = new Pose2d(1.65, 0.64, Rotation2d.fromDegrees(55.6));
