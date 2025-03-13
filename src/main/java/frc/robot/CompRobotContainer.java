@@ -92,9 +92,9 @@ public class CompRobotContainer extends RobotContainer {
         );
 
         Trigger coralRumble = new Trigger(() -> m_coralEffector.hasCoral());
-        coralRumble.onTrue(new Rumble(m_driverController.getHID()));
+        coralRumble.onTrue(new InstantCommand(() -> m_driverRumble.rumble()));
         Trigger algaeRumble = new Trigger(() -> m_algaeEffector.hasAlgae());
-        algaeRumble.onTrue(new Rumble(m_driverController.getHID()));
+        algaeRumble.onTrue(new InstantCommand(() -> m_driverRumble.rumble()));
         
         // m_driverController.rightBumper().onTrue(new MoveEndEffector(Constants.Position.STOW, m_elevator, m_pivot).andThen().finallyDo(() -> m_coralMode = true));
         
