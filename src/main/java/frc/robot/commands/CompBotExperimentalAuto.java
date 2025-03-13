@@ -62,7 +62,7 @@ public class CompBotExperimentalAuto extends ReefscapeAbstractAuto {
                         ));
                     
                 // addCommands(m_driveTrain.followPath(PathFactory.getPath(sourcePoint, reefPoints[1], isProcessorSide))
-                addCommands(m_driveTrain.followPath(PathFactory.getPath("Source2Center to ReefAreaKL", isProcessorSide)));
+                addCommands(m_driveTrain.followPath(PathFactory.getPath("Source2Center to ReefApproachK", isProcessorSide)));
                 Pose2d reefPoint1 = isProcessorSide ? FieldConstants.mirrorPose(reefPoints[1]) : reefPoints[1];
                 Pose2d reefPoint2 = isProcessorSide ? FieldConstants.mirrorPose(reefPoints[2]) : reefPoints[2];
 
@@ -78,7 +78,7 @@ public class CompBotExperimentalAuto extends ReefscapeAbstractAuto {
                         new StartEndCommand(coralEffector::runIntake, coralEffector::stop, coralEffector).until(coralEffector::hasCoral).withTimeout(CORAL_PICKUP_WAIT_TIME)
                     )));
                     
-                addCommands(m_driveTrain.followPath(PathFactory.getPath("Source2Center to ReefAreaKL", isProcessorSide)));                    
+                addCommands(m_driveTrain.followPath(PathFactory.getPath("Source2Center to ReefApproachL", isProcessorSide)));                    
                 // addCommands(m_driveTrain.followPath(PathFactory.getPath(sourcePoint, reefPoints[2], isProcessorSide))
                 addCommands(m_driveTrain.pathFindToPose(FieldConstants.flipPose(reefPoint2), constraints)
                         .alongWith(new MoveEndEffector(Constants.Position.L4, elevator, pivot, RAISE_ELEVATOR_WAIT_TIME)));
