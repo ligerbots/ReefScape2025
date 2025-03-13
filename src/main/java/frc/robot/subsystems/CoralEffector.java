@@ -16,6 +16,7 @@ import com.revrobotics.spark.config.SparkMaxConfig;
 
 import edu.wpi.first.math.filter.Debouncer;
 import edu.wpi.first.math.filter.Debouncer.DebounceType;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
@@ -47,7 +48,9 @@ public class CoralEffector extends SubsystemBase {
     private boolean m_limitSwitchDebounced = false;
     // private final BooleanLogEntry m_limitSwitchLogger;
 
-    ValueThreshold m_speedThres = new ValueThreshold(Direction.FALLING, STALL_VELOCITY_LIMIT);
+    private final ValueThreshold m_speedThres = new ValueThreshold(Direction.FALLING, STALL_VELOCITY_LIMIT);
+    private static final double STOP_INTAKE_DELAY = 1.0;
+    private final Timer m_intakeStopTimer = new Timer();
     
     // State
     private enum State {
@@ -105,6 +108,13 @@ public class CoralEffector extends SubsystemBase {
             m_state = State.HOLD;        
         }
 
+        // isRunning and hasElapsed is probably redundant here, but better safe
+        if (m_state == State.INTAKE && m_intakeStopTimer.isRunning() && m_intakeStopTimer.hasElapsed(STOP_INTAKE_DELAY)) {
+            // note: don't call stop() - that would leave it on forever
+            m_motor.set(0);
+            m_state = State.IDLE;
+        }
+
         SmartDashboard.putBoolean("coralEffector/limitSwitchDebounced", m_limitSwitchDebounced);
         SmartDashboard.putString("coralEffector/state", m_state.toString());
         SmartDashboard.putNumber("coralEffector/setSpeed", m_motor.get());
@@ -115,6 +125,10 @@ public class CoralEffector extends SubsystemBase {
     public void runIntake() {
         m_motor.set(INTAKE_SPEED);
         m_state = State.INTAKE;
+
+        // stop and zero the timer so it does not trip
+        m_intakeStopTimer.stop();
+        m_intakeStopTimer.reset();
     }
 
     public void runOuttake() {
@@ -123,7 +137,13 @@ public class CoralEffector extends SubsystemBase {
     }
 
     public void stop() {
-        if (m_state != State.HOLD) {
+        // test timer, for safety
+        if (m_state == State.INTAKE && !m_intakeStopTimer.isRunning()) {
+            // we have not register picking up a Coral.
+            // leave INTAKE on for a little longer in hopes of triggering the speed test
+            m_intakeStopTimer.restart();
+        }
+        else if (m_state != State.HOLD) {
             m_state = State.IDLE;
             m_motor.stopMotor();
         }
