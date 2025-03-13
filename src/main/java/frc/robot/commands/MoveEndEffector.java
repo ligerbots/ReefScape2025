@@ -24,7 +24,7 @@ public class MoveEndEffector extends Command {
     Rotation2d m_desiredAngle;
     double m_desiredHeight;
     Constants.Position m_position;
-    Timer m_timer;
+    Timer m_commandTimeout = new Timer();
     double m_timeoutDelay;
 
     private static final double DEFAULT_TIMEOUT = 2.0;
@@ -63,7 +63,13 @@ public class MoveEndEffector extends Command {
     private static final double CLIMB_ANGLE = 296.0;
     private static final double CLIMB_HEIGHT = 0.0;
 
-    
+    // support delaying the elevator motion for a little bit
+    // allows the pivot to start moving out of the way
+    private static final double ELEVATOR_DELAY_HEIGHT = L4_HEIGHT - 0.1;
+    private static final double ELEVATOR_DELAY_TIME = 0.1;
+    private Timer m_elevatorTimer = new Timer();
+    private boolean m_elevatorSet = false;
+
     private static final HashMap<Position, Pair<Double, Double>> POSITIONS = new HashMap<Position, Pair<Double, Double>>() {
         {
             put(Position.L1, new Pair<>(L1_HEIGHT, L1_ANGLE));
@@ -89,7 +95,6 @@ public class MoveEndEffector extends Command {
         m_pivot = pivot;
         m_elevator = elevator;
         m_position = position;
-        m_timer = new Timer();
         m_timeoutDelay = timeout;
 
         Pair<Double, Double> desiredPos = POSITIONS.get(position);
@@ -103,15 +108,34 @@ public class MoveEndEffector extends Command {
     // Called when the command is initially scheduled.
     @Override
     public void initialize() {
-        m_elevator.setHeight(m_desiredHeight);
         m_pivot.setAngle(m_desiredAngle);
-        m_timer.reset();
-        m_timer.start();
+
+        // figure out whether to set the elevator immediately, or delay a bit
+        m_elevatorSet = true;
+        double height = m_elevator.getHeight();
+        if (height > ELEVATOR_DELAY_HEIGHT) {
+            // elevator is high. If the pivot only moves a bit, don't delay.
+            Rotation2d angle = m_pivot.getAngle();
+            m_elevatorSet = Math.abs(angle.minus(m_desiredAngle).getDegrees()) < 90.0;
+        }
+
+        if (m_elevatorSet) {
+            m_elevator.setHeight(m_desiredHeight);
+        } else {
+            m_elevatorTimer.restart();
+        }
+
+        m_commandTimeout.restart();
     }
     
-    // // Called every time the scheduler runs while the command is scheduled.
-    // @Override
-    // public void execute() {}
+    // Called every time the scheduler runs while the command is scheduled.
+    @Override
+    public void execute() {
+        if (!m_elevatorSet && m_elevatorTimer.hasElapsed(ELEVATOR_DELAY_TIME)) {
+            m_elevator.setHeight(m_desiredHeight);
+            m_elevatorSet = true;
+        }
+    }
     
     // // Called once the command ends or is interrupted.
     // @Override
@@ -120,7 +144,7 @@ public class MoveEndEffector extends Command {
     // Returns true when the command should end.
     @Override
     public boolean isFinished() {
-        return (m_elevator.lengthWithinTolerance() && m_pivot.angleWithinTolerance())
-                || m_timer.hasElapsed(m_timeoutDelay);
+        return (m_elevatorSet && m_elevator.lengthWithinTolerance() && m_pivot.angleWithinTolerance())
+                || m_commandTimeout.hasElapsed(m_timeoutDelay);
     }
 }
