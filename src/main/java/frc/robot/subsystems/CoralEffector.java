@@ -49,7 +49,7 @@ public class CoralEffector extends SubsystemBase {
     // private final BooleanLogEntry m_limitSwitchLogger;
 
     private final ValueThreshold m_speedThres = new ValueThreshold(Direction.FALLING, STALL_VELOCITY_LIMIT);
-    private static final double STOP_INTAKE_DELAY = 1.0;
+    private static final double STOP_INTAKE_DELAY = 0.5;
     private final Timer m_intakeStopTimer = new Timer();
     
     // State
