@@ -124,7 +124,7 @@ public class CompRobotContainer extends RobotContainer {
         // Miscellaneous
         m_farm.button(6).onTrue(new InstantCommand(m_driveTrain::lock, m_driveTrain));
         
-        m_farm.button(8).onTrue(new MoveEndEffector(Constants.Position.L1, m_elevator, m_pivot));
+        m_farm.button(21).onTrue(new MoveEndEffector(Constants.Position.L1, m_elevator, m_pivot));
         // note: farm 7 is robot-centric
         m_farm.button(8).onTrue(new InstantCommand(m_driveTrain::zeroHeading, m_driveTrain));
         m_farm.button(11).onTrue(new InstantCommand(() -> m_coralMode = !m_coralMode));

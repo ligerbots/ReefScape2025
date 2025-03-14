@@ -37,7 +37,7 @@ public class CoralEffector extends SubsystemBase {
     private static final double INTAKE_SPEED = -0.4;
     private static final double OUTTAKE_SPEED = 0.7;
     private static final double HOLD_SPEED = -0.05;
-    private static final double OUTTAKE_L1 = 0.1;
+    private static final double OUTTAKE_L1 = 0.15;
 
     // Max velocity indicating the motor has stalled
     private final static double STALL_VELOCITY_LIMIT = 2000;
@@ -126,6 +126,7 @@ public class CoralEffector extends SubsystemBase {
         SmartDashboard.putNumber("coralEffector/setSpeed", m_motor.get());
         SmartDashboard.putNumber("coralEffector/current", m_motor.getOutputCurrent());
         SmartDashboard.putNumber("coralEffector/velocity", velocity);
+    
     }
 
     public void runIntake() {

@@ -153,7 +153,7 @@ public class Elevator extends SubsystemBase {
     }
 
     public double getGoal () {
-        return Units.metersToInches(m_goalMeters);
+        return m_goalMeters;
     }
     
     public void zeroElevator() {
