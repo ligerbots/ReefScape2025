@@ -32,7 +32,7 @@ public class CoralEffector extends SubsystemBase {
 
     // Speeds
     private static final double INTAKE_SPEED = -0.4;
-    private static final double OUTTAKE_SPEED = 0.5;
+    private static final double OUTTAKE_SPEED = 0.7;
     private static final double HOLD_SPEED = -0.05;
 
     // Max velocity indicating the motor has stalled
