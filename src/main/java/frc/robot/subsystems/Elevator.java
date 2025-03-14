@@ -151,6 +151,10 @@ public class Elevator extends SubsystemBase {
         return rotationsToHeight(m_motor.getPosition().getValueAsDouble());
         // return m_stringPotentiometer.get();  
     }
+
+    public double getGoal () {
+        return Units.metersToInches(m_goalMeters);
+    }
     
     public void zeroElevator() {
         m_motor.setPosition(heightToRotations(OFFSET_METER));

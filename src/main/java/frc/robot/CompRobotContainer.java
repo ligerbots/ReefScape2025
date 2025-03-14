@@ -40,7 +40,7 @@ public class CompRobotContainer extends RobotContainer {
 
     private final Elevator m_elevator = new Elevator();
     private final EndEffectorPivot m_pivot = new EndEffectorPivot(() -> m_elevator.getHeight());
-    private final CoralEffector m_coralEffector = new CoralEffector();
+    private final CoralEffector m_coralEffector = new CoralEffector(()-> m_elevator.getGoal());
     private final AlgaeEffector m_algaeEffector = new AlgaeEffector(() -> m_elevator.getHeight());
 
     private final Climber m_climber = new Climber();
@@ -123,6 +123,8 @@ public class CompRobotContainer extends RobotContainer {
 
         // Miscellaneous
         m_farm.button(6).onTrue(new InstantCommand(m_driveTrain::lock, m_driveTrain));
+        
+        m_farm.button(8).onTrue(new MoveEndEffector(Constants.Position.L1, m_elevator, m_pivot));
         // note: farm 7 is robot-centric
         m_farm.button(8).onTrue(new InstantCommand(m_driveTrain::zeroHeading, m_driveTrain));
         m_farm.button(11).onTrue(new InstantCommand(() -> m_coralMode = !m_coralMode));
@@ -192,10 +194,10 @@ public class CompRobotContainer extends RobotContainer {
                         m_driveTrain, m_elevator, m_coralEffector, m_pivot, m_chosenFieldSide.getSelected().equals("Processor Side"));
             }
 
-            if(autoFlavor.equals("Algae")) { 
-                m_autoCommand = new CompBotAlgaeAuto(m_chosenStartPoint.getSelected(), m_chosenStartPoint.getSelected(), m_chosenReefPoints.getSelected(), 
-                        m_driveTrain, m_elevator, m_coralEffector, m_pivot, m_chosenFieldSide.getSelected().equals("Processor Side"));
-            }
+            // if(autoFlavor.equals("Algae")) { 
+            //     m_autoCommand = new CompBotAlgaeAuto(m_chosenStartPoint.getSelected(), m_chosenStartPoint.getSelected(), m_chosenReefPoints.getSelected(), 
+            //             m_driveTrain, m_elevator, m_coralEffector, m_pivot, m_chosenFieldSide.getSelected().equals("Processor Side"));
+            // }
             
             m_autoSelectionCode = currentAutoSelectionCode;
         } 

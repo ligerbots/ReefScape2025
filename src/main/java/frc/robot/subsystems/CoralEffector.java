@@ -4,9 +4,11 @@
 
 package frc.robot.subsystems;
 
+import java.util.function.DoubleSupplier;
+
+import com.revrobotics.RelativeEncoder;
 import com.revrobotics.spark.SparkBase.PersistMode;
 import com.revrobotics.spark.SparkBase.ResetMode;
-import com.revrobotics.RelativeEncoder;
 import com.revrobotics.spark.SparkLimitSwitch;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.SparkMax;
@@ -20,6 +22,7 @@ import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
+import frc.robot.commands.MoveEndEffector;
 import frc.robot.subsystems.ValueThreshold.Direction;
 
 public class CoralEffector extends SubsystemBase {
@@ -34,6 +37,7 @@ public class CoralEffector extends SubsystemBase {
     private static final double INTAKE_SPEED = -0.4;
     private static final double OUTTAKE_SPEED = 0.7;
     private static final double HOLD_SPEED = -0.05;
+    private static final double OUTTAKE_L1 = 0.1;
 
     // Max velocity indicating the motor has stalled
     private final static double STALL_VELOCITY_LIMIT = 2000;
@@ -51,15 +55,17 @@ public class CoralEffector extends SubsystemBase {
     private final ValueThreshold m_speedThres = new ValueThreshold(Direction.FALLING, STALL_VELOCITY_LIMIT);
     private static final double STOP_INTAKE_DELAY = 0.5;
     private final Timer m_intakeStopTimer = new Timer();
+    private final DoubleSupplier m_elevatorHeight;
     
     // State
     private enum State {
-        IDLE, INTAKE, OUTTAKE, HOLD;
+        IDLE, INTAKE, OUTTAKE, HOLD, OUTTAKE_L1;
     }
 
     private State m_state = State.HOLD;
 
-    public CoralEffector() {
+    public CoralEffector(DoubleSupplier elevatorHeight) {
+        m_elevatorHeight = elevatorHeight;
         // Set up the coral motor as brushless motor
         m_motor = new SparkMax(Constants.CORAL_EFFECTOR_INTAKE_ID, MotorType.kBrushless);
 
@@ -132,7 +138,14 @@ public class CoralEffector extends SubsystemBase {
     }
 
     public void runOuttake() {
+        double elevatorH = m_elevatorHeight.getAsDouble();
+        if(elevatorH == MoveEndEffector.L1_HEIGHT){
+            m_motor.set(OUTTAKE_L1);
+        }
+        else{
         m_motor.set(OUTTAKE_SPEED);
+        }
+
         m_state = State.OUTTAKE;
     }
 
