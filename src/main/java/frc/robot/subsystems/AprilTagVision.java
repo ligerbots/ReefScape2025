@@ -412,7 +412,7 @@ public class AprilTagVision extends SubsystemBase {
             PhotonCameraSim camSim = new PhotonCameraSim(c.photonCamera, prop);
             // open web page with a simulate camera image. 
             camSim.enableDrawWireframe(true);
-            camSim.setMaxSightRange(Units.feetToMeters(20.0));
+            camSim.setMaxSightRange(Units.feetToMeters(15.0));
             m_visionSim.addCamera(camSim, c.robotToCam);
         }
 

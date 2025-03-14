@@ -76,9 +76,6 @@ public class CompRobotContainer extends RobotContainer {
             DriverStation.silenceJoystickConnectionWarning(true);
         }
         
-        m_driverController.leftBumper().onTrue(new InstantCommand(m_driveTrain::lock, m_driveTrain));
-        // m_driverController.back().onTrue(new InstantCommand(m_driveTrain::zeroHeading, m_driveTrain));
-        
         m_driverController.leftTrigger().whileTrue(
                 new ConditionalCommand(
                         new StartEndCommand(m_coralEffector::runIntake, m_coralEffector::stop, m_coralEffector),
@@ -99,8 +96,9 @@ public class CompRobotContainer extends RobotContainer {
         Trigger algaeRumble = new Trigger(() -> m_algaeEffector.hasAlgae());
         algaeRumble.onTrue(new Rumble(m_driverController.getHID()).alongWith(new PrintCommand("RUMBLE!!!")));
         
-        // m_driverController.rightBumper().onTrue(new MoveEndEffector(Constants.Position.STOW, m_elevator, m_pivot).andThen().finallyDo(() -> m_coralMode = true));
-        
+        m_driverController.rightBumper().onTrue(new DeferredCommand(new ReefTractorBeam(m_driveTrain, false, m_coralEffector::hasCoral), Set.of(m_driveTrain)));
+        m_driverController.leftBumper().onTrue(new DeferredCommand(new ReefTractorBeam(m_driveTrain, true, m_coralEffector::hasCoral), Set.of(m_driveTrain)));
+
         // Algae Scoring
         m_driverController.a().onTrue(new MoveEndEffector(Constants.Position.L2_ALGAE, m_elevator, m_pivot).alongWith(new InstantCommand(() -> m_coralMode = false)));
         m_driverController.x().onTrue(new MoveEndEffector(Constants.Position.L3_ALGAE, m_elevator, m_pivot).alongWith(new InstantCommand(() -> m_coralMode = false)));
@@ -108,20 +106,11 @@ public class CompRobotContainer extends RobotContainer {
         m_driverController.b().onTrue(new MoveEndEffector(Constants.Position.PROCESSOR, m_elevator, m_pivot).alongWith(new InstantCommand(() -> m_coralMode = false)));
 
         // Coral Scoring
-        // POVButton dpadLeft = new POVButton(m_driverController.getHID(), 270);   // Test before removing
         m_driverController.pov(270).onTrue(new MoveEndEffector(Constants.Position.L4, m_elevator, m_pivot).alongWith(new InstantCommand(() -> m_coralMode = true)));
-        
-        // POVButton dpadRight = new POVButton(m_driverController.getHID(), 90);
         m_driverController.pov(90).onTrue(new MoveEndEffector(Constants.Position.BACK_INTAKE, m_elevator, m_pivot).alongWith(new InstantCommand(() -> m_coralMode = true)));
-        
-        // POVButton dpadDown = new POVButton(m_driverController.getHID(), 0);
         m_driverController.pov(0).onTrue(new MoveEndEffector(Constants.Position.L3, m_elevator, m_pivot).alongWith(new InstantCommand(() -> m_coralMode = true)));
-        
-        // POVButton dpadUp = new POVButton(m_driverController.getHID(), 180);
         m_driverController.pov(180).onTrue(new MoveEndEffector(Constants.Position.L2, m_elevator, m_pivot).alongWith(new InstantCommand(() -> m_coralMode = true)));
                 
-        // m_driverController.leftBumper().onTrue(new InstantCommand(() -> m_coralMode = !m_coralMode));
-        
         // Climber
         m_driverController.start().onTrue(new InstantCommand(m_climber::climb));
         m_driverController.back().onTrue(new InstantCommand(m_climber::deploy));
@@ -133,14 +122,15 @@ public class CompRobotContainer extends RobotContainer {
         m_farm.button(2).onTrue(new MoveEndEffector(Constants.Position.CLIMB, m_elevator, m_pivot, 0));
 
         // Miscellaneous
+        m_farm.button(6).onTrue(new InstantCommand(m_driveTrain::lock, m_driveTrain));
+        // note: farm 7 is robot-centric
+        m_farm.button(8).onTrue(new InstantCommand(m_driveTrain::zeroHeading, m_driveTrain));
+        m_farm.button(11).onTrue(new InstantCommand(() -> m_coralMode = !m_coralMode));
         m_farm.button(12).whileTrue(new InstantCommand(m_elevator::zeroElevator));
-
-       m_driverController.rightBumper().onTrue(new DeferredCommand(new ReefTractorBeam(m_driveTrain), Set.of(m_driveTrain)));
 
         // Testing commands
 
         m_farm.button(5).onTrue(new InstantCommand(() -> m_elevator.setHeight(Units.inchesToMeters(SmartDashboard.getNumber("elevator/testGoal", 0)))));
-
         m_farm.button(10).onTrue(new InstantCommand(() -> m_pivot.setAngle(Rotation2d.fromDegrees(SmartDashboard.getNumber("pivot/testAngle", 0.0)))));
     }
     
@@ -211,14 +201,13 @@ public class CompRobotContainer extends RobotContainer {
         // Left stick Y axis -> forward and backwards movement
         // Left stick X axis -> left and right movement
         // Right stick X axis -> rotation
-        // note: "rightBumper()"" is a Trigger which is a BooleanSupplier
         return m_driveTrain.driveCommand(
             () -> -conditionAxis(m_driverController.getLeftY()),
             () -> -conditionAxis(m_driverController.getLeftX()),
             () -> -conditionAxis(m_driverController.getRightX()),
             // if you have a Logitech controller:
             // () -> -conditionAxis(m_driverController.getRawAxis(2)),
-            m_driverController.rightBumper());
+            m_farm.button(7));
     }
     
     private double conditionAxis(double value) {
