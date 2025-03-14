@@ -65,14 +65,14 @@ public class DriverRumble extends SubsystemBase {
         }
         
         if (m_timer.isRunning()) {
-            if (m_timer.get() < RUMBLING_WAIT_TIME) {
+            if (!m_timer.hasElapsed(RUMBLING_WAIT_TIME)) {
                 rumbleValue = 1;
                 rumble = true;
             } else {
-                m_timer.reset();
+                m_timer.stop();
             }
         }
-        
+
         if (m_hasCoral.getAsBoolean()) {
             // See if we are aligned with a Reef pole
             Pose2d targetPose = getClosestScoringLocation();
