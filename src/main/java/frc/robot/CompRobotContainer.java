@@ -159,6 +159,11 @@ public class CompRobotContainer extends RobotContainer {
         Pose2d[] reefPoints3 = { FieldConstants.REEF_H };
         m_chosenReefPoints.addOption("H only  (aka G only) Center auto", reefPoints3);
 
+        Pose2d REEF_ALGAE_GH = new Pose2d(5.867, 4.021, Rotation2d.fromDegrees(180.0));
+
+        Pose2d[] reefPoints4 = { FieldConstants.REEF_H, REEF_ALGAE_GH };
+        m_chosenReefPoints.addOption("H coral score, then grab GH Algae", reefPoints4);
+
         m_chosenFieldSide.setDefaultOption("Processor Side", "Processor Side");
         m_chosenFieldSide.addOption("Barge Side", "Barge Side");
 
@@ -167,6 +172,8 @@ public class CompRobotContainer extends RobotContainer {
 
         m_chosenAutoFlavor.setDefaultOption("Granite State", "Granite State");
         m_chosenAutoFlavor.addOption("Experimental", "Experimental");
+        m_chosenAutoFlavor.addOption("Algae", "Algae");
+
 
         // m_chosenSourcePickup.setDefaultOption("Center", FieldConstants.SOURCE_2_CENTER);
         // m_chosenSourcePickup.addOption("Inside", FieldConstants.SOURCE_2_IN);
@@ -192,6 +199,11 @@ public class CompRobotContainer extends RobotContainer {
 
             if(autoFlavor.equals("Experimental")) { 
                 m_autoCommand = new CompBotExperimentalAuto(m_chosenStartPoint.getSelected(), FieldConstants.SOURCE_2_CENTER, m_chosenReefPoints.getSelected(), 
+                        m_driveTrain, m_elevator, m_coralEffector, m_pivot, m_chosenFieldSide.getSelected().equals("Processor Side"));
+            }
+
+            if(autoFlavor.equals("Algae")) { 
+                m_autoCommand = new CompBotAlgaeAuto(m_chosenStartPoint.getSelected(), m_chosenStartPoint.getSelected(), m_chosenReefPoints.getSelected(), 
                         m_driveTrain, m_elevator, m_coralEffector, m_pivot, m_chosenFieldSide.getSelected().equals("Processor Side"));
             }
             
