@@ -8,40 +8,54 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 6.01609072320628,
-        "y": 5.148161764705882
+        "x": 6.105069981689175,
+        "y": 5.416109555510715
       },
       "isLocked": false,
       "linkedName": "start3"
     },
     {
       "anchor": {
-        "x": 4.9725,
-        "y": 5.1754999999999995
+        "x": 5.314705882352942,
+        "y": 5.148161764705882
       },
       "prevControl": {
-        "x": 5.4150413285157235,
-        "y": 5.505264029920765
+        "x": 5.554266837442295,
+        "y": 5.076673662222483
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "scoreReefJ"
+      "linkedName": "scoreReefI"
     }
   ],
   "rotationTargets": [],
-  "constraintZones": [],
+  "constraintZones": [
+    {
+      "name": "Constraints Zone",
+      "minWaypointRelativePos": 0.0,
+      "maxWaypointRelativePos": 1.0,
+      "constraints": {
+        "maxVelocity": 2.0,
+        "maxAcceleration": 2.0,
+        "maxAngularVelocity": 540.0,
+        "maxAngularAcceleration": 720.0,
+        "nominalVoltage": 12.0,
+        "unlimited": false
+      }
+    }
+  ],
   "pointTowardsZones": [],
   "eventMarkers": [
     {
       "name": "raiseElevatorBeforeReef",
-      "waypointRelativePos": 0,
+      "waypointRelativePos": 0.4021543985637344,
       "endWaypointRelativePos": null,
       "command": null
     }
   ],
   "globalConstraints": {
-    "maxVelocity": 3.3,
-    "maxAcceleration": 2.0,
+    "maxVelocity": 4.0,
+    "maxAcceleration": 3.5,
     "maxAngularVelocity": 540.0,
     "maxAngularAcceleration": 720.0,
     "nominalVoltage": 12.0,
@@ -55,7 +69,7 @@
   "folder": null,
   "idealStartingState": {
     "velocity": 0,
-    "rotation": 180.0
+    "rotation": -116.63639228726078
   },
-  "useDefaultConstraints": false
+  "useDefaultConstraints": true
 }
