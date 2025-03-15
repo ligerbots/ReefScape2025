@@ -63,13 +63,12 @@ public class CompBotExperimentalAuto extends ReefscapeAbstractAuto {
                         ))));
                     
                 // addCommands(m_driveTrain.followPath(PathFactory.getPath(sourcePoint, reefPoints[1], isProcessorSide))
-                addCommands(m_driveTrain.followPath(PathFactory.getPath("Source2Center to ReefApproachK", isProcessorSide)));
                 Pose2d reefPoint1 = isProcessorSide ? FieldConstants.mirrorPose(reefPoints[1]) : reefPoints[1];
                 Pose2d reefPoint2 = isProcessorSide ? FieldConstants.mirrorPose(reefPoints[2]) : reefPoints[2];
                 Pose2d reefPoint3 = isProcessorSide ? FieldConstants.mirrorPose(reefPoints[3]) : reefPoints[3];
 
-                addCommands(m_driveTrain.pathFindToPose(FieldConstants.flipPose(reefPoint1), constraints)
-                        .alongWith(new MoveEndEffector(Constants.Position.L4, elevator, pivot, RAISE_ELEVATOR_WAIT_TIME)));
+                addCommands(m_driveTrain.followPath(PathFactory.getPath("Source2Center to ReefApproachK", isProcessorSide)).andThen(m_driveTrain.pathFindToPose(FieldConstants.flipPose(reefPoint1), constraints))
+                        .alongWith(new WaitCommand(1).andThen(new MoveEndEffector(Constants.Position.L4, elevator, pivot, RAISE_ELEVATOR_WAIT_TIME))));
                 
                 addCommands(new StartEndCommand(coralEffector::runOuttake, coralEffector::stop, coralEffector).withTimeout(CORAL_SCORE_WAIT_TIME));                
                 
@@ -80,10 +79,9 @@ public class CompBotExperimentalAuto extends ReefscapeAbstractAuto {
                         new StartEndCommand(coralEffector::runIntake, coralEffector::stop, coralEffector)//.until(coralEffector::hasCoral).withTimeout(CORAL_PICKUP_WAIT_TIME)
                     ))));
                     
-                addCommands(m_driveTrain.followPath(PathFactory.getPath("Source2Center to ReefApproachL", isProcessorSide)));                    
-                // addCommands(m_driveTrain.followPath(PathFactory.getPath(sourcePoint, reefPoints[2], isProcessorSide))
-                addCommands(m_driveTrain.pathFindToPose(FieldConstants.flipPose(reefPoint2), constraints)
-                        .alongWith(new MoveEndEffector(Constants.Position.L4, elevator, pivot, RAISE_ELEVATOR_WAIT_TIME)));
+                addCommands(m_driveTrain.followPath(PathFactory.getPath("Source2Center to ReefApproachL", isProcessorSide)).andThen(m_driveTrain.pathFindToPose(FieldConstants.flipPose(reefPoint2), constraints))
+                        .alongWith(new WaitCommand(1).andThen(new MoveEndEffector(Constants.Position.L4, elevator, pivot, RAISE_ELEVATOR_WAIT_TIME))));
+
                 addCommands(new StartEndCommand(coralEffector::runOuttake, coralEffector::stop, coralEffector).withTimeout(CORAL_SCORE_WAIT_TIME));                
                 addCommands(new MoveEndEffector(Constants.Position.BACK_INTAKE, elevator, pivot, LOWER_ELEVATOR_WAIT_TIME));
                 
@@ -93,11 +91,9 @@ public class CompBotExperimentalAuto extends ReefscapeAbstractAuto {
                             new StartEndCommand(coralEffector::runIntake, coralEffector::stop, coralEffector)//.until(coralEffector::hasCoral).withTimeout(CORAL_PICKUP_WAIT_TIME)
                         )));
                     
+                    addCommands(m_driveTrain.followPath(PathFactory.getPath("Source2Center to ReefApproachA", isProcessorSide)).andThen(m_driveTrain.pathFindToPose(FieldConstants.flipPose(reefPoint3), constraints))
+                        .alongWith(new WaitCommand(1).andThen(new MoveEndEffector(Constants.Position.L4, elevator, pivot, RAISE_ELEVATOR_WAIT_TIME))));
 
-                    addCommands(m_driveTrain.followPath(PathFactory.getPath("Source2Center to ReefApproachA", isProcessorSide)));                    
-                // addCommands(m_driveTrain.followPath(PathFactory.getPath(sourcePoint, reefPoints[2], isProcessorSide))
-                    addCommands(m_driveTrain.pathFindToPose(FieldConstants.flipPose(reefPoint3), constraints)
-                        .alongWith(new MoveEndEffector(Constants.Position.L4, elevator, pivot, RAISE_ELEVATOR_WAIT_TIME)));
                     addCommands(new StartEndCommand(coralEffector::runOuttake, coralEffector::stop, coralEffector).withTimeout(CORAL_SCORE_WAIT_TIME));                
                     addCommands(new MoveEndEffector(Constants.Position.BACK_INTAKE, elevator, pivot, LOWER_ELEVATOR_WAIT_TIME));
                 }
