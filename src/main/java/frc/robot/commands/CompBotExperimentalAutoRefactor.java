@@ -8,8 +8,8 @@ import com.pathplanner.lib.path.PathConstraints;
 import com.pathplanner.lib.path.PathPlannerPath;
 
 import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.units.measure.Time;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.StartEndCommand;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
@@ -32,6 +32,10 @@ public class CompBotExperimentalAutoRefactor extends ReefscapeAbstractAuto {
     
 
     private DriveTrain m_driveTrain;
+    private Elevator m_elevator;
+    private CoralEffector m_coralEffector;
+    private EndEffectorPivot m_pivot;
+    private boolean m_isProcessorSide;
     
     PathConstraints constraints =  new PathConstraints(
     4.0, 2.0,
@@ -42,6 +46,10 @@ public class CompBotExperimentalAutoRefactor extends ReefscapeAbstractAuto {
     Elevator elevator, CoralEffector coralEffector, EndEffectorPivot pivot, boolean isProcessorSide) {
         super(startPoint, sourcePoint, reefPoints, driveTrain, elevator, coralEffector, pivot, isProcessorSide);
         m_driveTrain = driveTrain;
+        m_elevator = elevator;
+        m_coralEffector = coralEffector;
+        m_pivot = pivot;
+        m_isProcessorSide = isProcessorSide;
         
         if (Robot.isSimulation()) {
             CORAL_PICKUP_WAIT_TIME = 1.0;
@@ -64,88 +72,11 @@ public class CompBotExperimentalAutoRefactor extends ReefscapeAbstractAuto {
                     new MoveEndEffector(Constants.Position.L4, elevator, pivot, RAISE_ELEVATOR_WAIT_TIME))));
             addCommands(new StartEndCommand(coralEffector::runOuttake, coralEffector::stop, coralEffector).withTimeout(CORAL_SCORE_WAIT_TIME));                
             if (reefPoints.length > 1) {
-                ///////////////////////
-                Pose2d driveStartPoint = reefPoints[0];
-                String approachPath = "Source2Center to ReefApproachK";
-                Pose2d targetScore = reefPoint1;
-
                 addCommands(
-
-                Commands.sequence(
-                // addCommands(                
-                        Commands.parallel(new MoveEndEffector(Constants.Position.BACK_INTAKE, elevator, pivot, LOWER_ELEVATOR_WAIT_TIME),
-                            Commands.deadline(m_driveTrain.followPath(PathFactory.getPath(driveStartPoint, sourcePoint, isProcessorSide)),
-                                              new WaitCommand(START_INTAKE_AFTER_PATH_START).andThen(
-                                                  new StartEndCommand(coralEffector::runIntake, coralEffector::stop, coralEffector)
-                                                        .until(coralEffector::hasCoral).withTimeout(CORAL_PICKUP_WAIT_TIME))
-                                )
-                            ),
-                            // );
-                // addCommands(
-                    Commands.parallel(
-                        Commands.sequence(m_driveTrain.followPath(PathFactory.getPath(approachPath, isProcessorSide)),
-                                          m_driveTrain.pathFindToPose(FieldConstants.flipPose(targetScore), constraints)
-                                          ),
-                        new WaitCommand(RAISE_ELEVATOR_AFTER_PATH_START).andThen(new MoveEndEffector(Constants.Position.L4, elevator, pivot, RAISE_ELEVATOR_WAIT_TIME))
-                    ),
-                // );
-                // addCommands(
-                    new StartEndCommand(coralEffector::runOuttake, coralEffector::stop, coralEffector).withTimeout(CORAL_SCORE_WAIT_TIME)
-                    )
-                    
+                    pickupCorralThenScoreL4(reefPoints[0], sourcePoint, "Source2Center to ReefApproachK", reefPoint1),
+                    pickupCorralThenScoreL4(reefPoints[1], sourcePoint, "Source2Center to ReefApproachL", reefPoint2),
+                    pickupCorralThenScoreL4(reefPoints[2], sourcePoint, "Source2Center to ReefApproachA", reefPoint3)
                 );
-                ////////////////////////
-
-                driveStartPoint = reefPoints[1];
-                approachPath = "Source2Center to ReefApproachL";
-                targetScore = reefPoint2;
-
-                addCommands(                
-                    Commands.parallel(new MoveEndEffector(Constants.Position.BACK_INTAKE, elevator, pivot, LOWER_ELEVATOR_WAIT_TIME),
-                        Commands.deadline(m_driveTrain.followPath(PathFactory.getPath(driveStartPoint, sourcePoint, isProcessorSide)),
-                                          new WaitCommand(START_INTAKE_AFTER_PATH_START).andThen(
-                                              new StartEndCommand(coralEffector::runIntake, coralEffector::stop, coralEffector)
-                                                    .until(coralEffector::hasCoral).withTimeout(CORAL_PICKUP_WAIT_TIME))
-                            )
-                        ));
-                addCommands(
-                    Commands.parallel(
-                        Commands.sequence(m_driveTrain.followPath(PathFactory.getPath(approachPath, isProcessorSide)),
-                                        m_driveTrain.pathFindToPose(FieldConstants.flipPose(targetScore), constraints)
-                                        ),
-                        new WaitCommand(RAISE_ELEVATOR_AFTER_PATH_START).andThen(new MoveEndEffector(Constants.Position.L4, elevator, pivot, RAISE_ELEVATOR_WAIT_TIME))
-                    )
-                );
-                addCommands(new StartEndCommand(coralEffector::runOuttake, coralEffector::stop, coralEffector).withTimeout(CORAL_SCORE_WAIT_TIME));     
-
-                // //////////////////////
-                // addCommands(new MoveEndEffector(Constants.Position.BACK_INTAKE, elevator, pivot, LOWER_ELEVATOR_WAIT_TIME)
-                // .alongWith(     
-                //     m_driveTrain.followPath(PathFactory.getPath(reefPoints[1], sourcePoint, isProcessorSide)).deadlineWith(
-                //     new WaitCommand(0.5).andThen(
-                //         new StartEndCommand(coralEffector::runIntake, coralEffector::stop, coralEffector)//.until(coralEffector::hasCoral).withTimeout(CORAL_PICKUP_WAIT_TIME)
-                //     ))));
-                    
-                // addCommands(m_driveTrain.followPath(PathFactory.getPath("Source2Center to ReefApproachL", isProcessorSide)).andThen(m_driveTrain.pathFindToPose(FieldConstants.flipPose(reefPoint2), constraints))
-                //         .alongWith(new WaitCommand(1).andThen(new MoveEndEffector(Constants.Position.L4, elevator, pivot, RAISE_ELEVATOR_WAIT_TIME))));
-
-                // addCommands(new StartEndCommand(coralEffector::runOuttake, coralEffector::stop, coralEffector).withTimeout(CORAL_SCORE_WAIT_TIME));      
-                
-                // /////////////////////////
-                // addCommands(new MoveEndEffector(Constants.Position.BACK_INTAKE, elevator, pivot, LOWER_ELEVATOR_WAIT_TIME));
-                
-                // if (reefPoints.length > 3) {
-                //     addCommands(m_driveTrain.followPath(PathFactory.getPath(reefPoints[2], sourcePoint, isProcessorSide)).deadlineWith(
-                //         new WaitCommand(0.5).andThen(
-                //             new StartEndCommand(coralEffector::runIntake, coralEffector::stop, coralEffector)//.until(coralEffector::hasCoral).withTimeout(CORAL_PICKUP_WAIT_TIME)
-                //         )));
-                    
-                //     addCommands(m_driveTrain.followPath(PathFactory.getPath("Source2Center to ReefApproachA", isProcessorSide)).andThen(m_driveTrain.pathFindToPose(FieldConstants.flipPose(reefPoint3), constraints))
-                //         .alongWith(new WaitCommand(1).andThen(new MoveEndEffector(Constants.Position.L4, elevator, pivot, RAISE_ELEVATOR_WAIT_TIME))));
-
-                //     addCommands(new StartEndCommand(coralEffector::runOuttake, coralEffector::stop, coralEffector).withTimeout(CORAL_SCORE_WAIT_TIME));                
-                //     addCommands(new MoveEndEffector(Constants.Position.BACK_INTAKE, elevator, pivot, LOWER_ELEVATOR_WAIT_TIME));
-                // }
         }
             
         } catch (Exception e) {
@@ -154,6 +85,25 @@ public class CompBotExperimentalAutoRefactor extends ReefscapeAbstractAuto {
         }
     }
     
+    private Command pickupCorralThenScoreL4(Pose2d driveStartPoint, Pose2d sourcePoint, String approachPath, Pose2d targetScore) {
+        return Commands.sequence(
+                    Commands.parallel(new MoveEndEffector(Constants.Position.BACK_INTAKE, m_elevator, m_pivot, LOWER_ELEVATOR_WAIT_TIME),
+                        Commands.deadline(m_driveTrain.followPath(PathFactory.getPath(driveStartPoint, sourcePoint, m_isProcessorSide)),
+                                          new WaitCommand(START_INTAKE_AFTER_PATH_START).andThen(
+                                              new StartEndCommand(m_coralEffector::runIntake, m_coralEffector::stop, m_coralEffector)
+                                                    .until(m_coralEffector::hasCoral).withTimeout(CORAL_PICKUP_WAIT_TIME))
+                            )
+                        ),
+                Commands.parallel(
+                    Commands.sequence(m_driveTrain.followPath(PathFactory.getPath(approachPath, m_isProcessorSide)),
+                                      m_driveTrain.pathFindToPose(FieldConstants.flipPose(targetScore), constraints)
+                                      ),
+                    new WaitCommand(RAISE_ELEVATOR_AFTER_PATH_START).andThen(new MoveEndEffector(Constants.Position.L4, m_elevator, m_pivot, RAISE_ELEVATOR_WAIT_TIME))
+                ),
+                new StartEndCommand(m_coralEffector::runOuttake, m_coralEffector::stop, m_coralEffector).withTimeout(CORAL_SCORE_WAIT_TIME)
+                );
+    }
+
     @Override
     public Pose2d getInitialPose() {
         return FieldConstants.flipPose(m_initPose);
