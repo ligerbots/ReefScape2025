@@ -165,6 +165,7 @@ public class CompRobotContainer extends RobotContainer {
         m_chosenAutoFlavor.setDefaultOption("Granite State", "Granite State");
         m_chosenAutoFlavor.addOption("Experimental", "Experimental");
         m_chosenAutoFlavor.addOption("Algae", "Algae");
+        m_chosenAutoFlavor.addOption("Refactor", "Refactor");
 
 
         // m_chosenSourcePickup.setDefaultOption("Center", FieldConstants.SOURCE_2_CENTER);
@@ -198,6 +199,10 @@ public class CompRobotContainer extends RobotContainer {
             //     m_autoCommand = new CompBotAlgaeAuto(m_chosenStartPoint.getSelected(), m_chosenStartPoint.getSelected(), m_chosenReefPoints.getSelected(), 
             //             m_driveTrain, m_elevator, m_coralEffector, m_pivot, m_chosenFieldSide.getSelected().equals("Processor Side"));
             // }
+            if(autoFlavor.equals("Refactor")) { 
+                m_autoCommand = new CompBotExperimentalAutoRefactor(m_chosenStartPoint.getSelected(), FieldConstants.SOURCE_2_CENTER, m_chosenReefPoints.getSelected(), 
+                        m_driveTrain, m_elevator, m_coralEffector, m_pivot, m_chosenFieldSide.getSelected().equals("Processor Side"));
+            }
             
             m_autoSelectionCode = currentAutoSelectionCode;
         } 
