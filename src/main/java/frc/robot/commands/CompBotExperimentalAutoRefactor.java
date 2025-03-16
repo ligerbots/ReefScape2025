@@ -23,20 +23,9 @@ import frc.robot.subsystems.Elevator;
 import frc.robot.subsystems.EndEffectorPivot;
 
 public class CompBotExperimentalAutoRefactor extends ReefscapeAbstractAuto {
-    private static final double CORAL_SCORE_WAIT_TIME = 0.1;
+
     private final double CORAL_PICKUP_WAIT_TIME;
-    public static final double RAISE_ELEVATOR_WAIT_TIME = 2.0;
-    private static final double LOWER_ELEVATOR_WAIT_TIME = 0.5;  // maybe can be lower
-    private static final double RAISE_ELEVATOR_AFTER_PATH_START = 1.0;
-    private static final double START_INTAKE_AFTER_PATH_START = 0.5;
-    
-    private Pose2d m_sourcePoint;
-    private DriveTrain m_driveTrain;
-    private Elevator m_elevator;
-    private CoralEffector m_coralEffector;
-    private EndEffectorPivot m_pivot;
-    private boolean m_isProcessorSide;
-    
+
     PathConstraints constraints =  new PathConstraints(
     4.0, 2.0,
     Math.toRadians(540), Math.toRadians(720));
@@ -66,7 +55,7 @@ public class CompBotExperimentalAutoRefactor extends ReefscapeAbstractAuto {
                 new WaitCommand(.5).andThen(
                     new MoveEndEffector(Constants.Position.L4, elevator, pivot, RAISE_ELEVATOR_WAIT_TIME))));
             addCommands(new StartEndCommand(coralEffector::runOuttake, coralEffector::stop, coralEffector).withTimeout(CORAL_SCORE_WAIT_TIME));  
-                          
+
             if (reefPoints.length > 1) {
                 addCommands(
                     pickupCorralThenScoreL4(reefPoints[0], "Source2Center to ReefApproachK", reefPoints[1]),
@@ -95,13 +84,13 @@ public class CompBotExperimentalAutoRefactor extends ReefscapeAbstractAuto {
                                                     .until(m_coralEffector::hasCoral).withTimeout(CORAL_PICKUP_WAIT_TIME))
                             )
                         ),
-                Commands.parallel(
-                    Commands.sequence(m_driveTrain.followPath(PathFactory.getPath(approachPath, m_isProcessorSide)),
-                                      m_driveTrain.pathFindToPose(FieldConstants.flipPose(targetScore), constraints)
-                                      ),
-                    new WaitCommand(RAISE_ELEVATOR_AFTER_PATH_START).andThen(new MoveEndEffector(Constants.Position.L4, m_elevator, m_pivot, RAISE_ELEVATOR_WAIT_TIME))
-                ),
-                new StartEndCommand(m_coralEffector::runOuttake, m_coralEffector::stop, m_coralEffector).withTimeout(CORAL_SCORE_WAIT_TIME)
+                    Commands.parallel(
+                        Commands.sequence(m_driveTrain.followPath(PathFactory.getPath(approachPath, m_isProcessorSide)),
+                                        m_driveTrain.pathFindToPose(FieldConstants.flipPose(targetScore), constraints)
+                                        ),
+                        new WaitCommand(RAISE_ELEVATOR_AFTER_PATH_START)//.andThen(new MoveEndEffector(Constants.Position.L4, m_elevator, m_pivot, RAISE_ELEVATOR_WAIT_TIME))
+                    ),
+                    new StartEndCommand(m_coralEffector::runOuttake, m_coralEffector::stop, m_coralEffector).withTimeout(CORAL_SCORE_WAIT_TIME)
                 );
     }
 

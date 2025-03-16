@@ -7,6 +7,8 @@ package frc.robot;
 import java.util.Objects;
 import java.util.Set;
 
+import com.pathplanner.lib.auto.NamedCommands;
+
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -15,6 +17,7 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.ConditionalCommand;
 import edu.wpi.first.wpilibj2.command.DeferredCommand;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
@@ -141,6 +144,9 @@ public class CompRobotContainer extends RobotContainer {
             
         // new MoveEndEffector(Constants.Position.L4, m_elevator, m_pivot, CompBotGenericAutoBase.RAISE_ELEVATOR_WAIT_TIME));
         
+        NamedCommands.registerCommand("raiseElevatorBeforeReef", Commands.print("Running raiseElevatorBeforeReef-- holy cow!")
+                                        .andThen(new MoveEndEffector(Constants.Position.L4, m_elevator, m_pivot, ReefscapeAbstractAuto.RAISE_ELEVATOR_WAIT_TIME)));
+
         Pose2d[] reefPoints = {FieldConstants.REEF_I, FieldConstants.REEF_J, FieldConstants.REEF_K};
 
         m_chosenReefPoints.addOption("IJK  (aka FED)", reefPoints);
@@ -151,9 +157,7 @@ public class CompRobotContainer extends RobotContainer {
         Pose2d[] reefPoints3 = { FieldConstants.REEF_H };
         m_chosenReefPoints.addOption("H only  (aka G only) Center auto", reefPoints3);
 
-        Pose2d REEF_ALGAE_GH = new Pose2d(5.867, 4.021, Rotation2d.fromDegrees(180.0));
-
-        Pose2d[] reefPoints4 = { FieldConstants.REEF_H, REEF_ALGAE_GH };
+        Pose2d[] reefPoints4 = { FieldConstants.REEF_H, FieldConstants.REEF_ALGAE_GH };
         m_chosenReefPoints.addOption("H coral score, then grab GH Algae", reefPoints4);
 
         m_chosenFieldSide.setDefaultOption("Processor Side", "Processor Side");
@@ -162,8 +166,8 @@ public class CompRobotContainer extends RobotContainer {
         m_chosenStartPoint.setDefaultOption("3rd cage-- usual spot", FieldConstants.ROBOT_START_3);
         m_chosenStartPoint.addOption("Field Center", FieldConstants.ROBOT_START_2);
 
-        m_chosenAutoFlavor.setDefaultOption("Granite State", "Granite State");
-        m_chosenAutoFlavor.addOption("Experimental", "Experimental");
+        m_chosenAutoFlavor.addOption("Granite State", "Granite State");
+        m_chosenAutoFlavor.setDefaultOption("Experimental", "Experimental");
         m_chosenAutoFlavor.addOption("Algae", "Algae");
         m_chosenAutoFlavor.addOption("Refactor", "Refactor");
 

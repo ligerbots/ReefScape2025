@@ -1,0 +1,43 @@
+{
+  "version": "2025.0",
+  "command": {
+    "type": "sequential",
+    "data": {
+      "commands": [
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Start3 to ReefJ"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "ReefJ to Source2Center"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Source2Center to ReefAreaKL"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "ReefK to Source2Center"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Source2Center to ReefAreaKL"
+          }
+        }
+      ]
+    }
+  },
+  "resetOdom": true,
+  "folder": null,
+  "choreoAuto": false
+}
