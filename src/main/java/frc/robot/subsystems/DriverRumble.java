@@ -28,8 +28,8 @@ public class DriverRumble extends SubsystemBase {
     private final double REEF_DISTANCE_METER = 0.10;  // meters
     
     // barge
-    private final double BARGE_LINE_BLUE = 7.5; // meters
-    private final double BARGE_TARGET_TOLERANCE_METER = Units.inchesToMeters(3);
+    private final double BARGE_LINE_MIN_BLUE = 7.75; // meters
+    private final double BARGE_LINE_MAX_BLUE = 7.90; // meters
 
     private final double RUMBLE_INTENSITY = 1; 
     private final double RUMBLING_WAIT_TIME = 0.3;
@@ -82,15 +82,13 @@ public class DriverRumble extends SubsystemBase {
             
             // Calculate lateral offset in meters (positive means left, negative means right)
             rumbleValue = relativePose.getY();
-            rumble = rumble | (Math.abs(relativePose.getX()) < REEF_DISTANCE_METER && Math.abs(rumbleValue) < REEF_OFFSET_TOLERANCE_METER);
+            rumble = rumble || (Math.abs(relativePose.getX()) < REEF_DISTANCE_METER && Math.abs(rumbleValue) < REEF_OFFSET_TOLERANCE_METER);
         } else if (m_hasAlgae.getAsBoolean()) {
             // check if correct place for a Barge shot
-            double bargeLine = BARGE_LINE_BLUE;
-            if (FieldConstants.isRedAlliance())
-                bargeLine = FieldConstants.FIELD_LENGTH - bargeLine;
+            double xBlue = FieldConstants.flipPose(robotPose).getX();
 
-            rumbleValue = robotPose.getX() - bargeLine;
-            rumble = rumble | (Math.abs(rumbleValue) < BARGE_TARGET_TOLERANCE_METER);
+            rumbleValue = xBlue - BARGE_LINE_MIN_BLUE;
+            rumble = rumble || (xBlue >= BARGE_LINE_MIN_BLUE && xBlue < BARGE_LINE_MAX_BLUE);
         } else if (m_climberDeployed.getAsBoolean()) {
             // check if correct place for a climb
             double xMax = 0.5 * FieldConstants.FIELD_LENGTH;
@@ -101,7 +99,7 @@ public class DriverRumble extends SubsystemBase {
                 xBlue = FieldConstants.FIELD_LENGTH - xBlue;
 
             rumbleValue = xBlue - xMin;
-            rumble = rumble | (xBlue >= xMin && xBlue <= xMax);
+            rumble = rumble || (xBlue >= xMin && xBlue <= xMax);
         }
 
         m_xbox.setRumble(RumbleType.kBothRumble, rumble ? RUMBLE_INTENSITY : 0);

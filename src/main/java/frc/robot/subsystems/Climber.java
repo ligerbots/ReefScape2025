@@ -180,4 +180,8 @@ public class Climber extends SubsystemBase {
         // be generous. Only used in feedback rumble
         return m_climberState != ClimberState.IDLE;
     }
+
+    public void resetGoal() {
+        m_climberMotor.setControl(new MotionMagicVoltage(getPosition()));
+    }
 }
