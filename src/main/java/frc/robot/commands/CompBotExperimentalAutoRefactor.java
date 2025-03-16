@@ -62,7 +62,7 @@ public class CompBotExperimentalAutoRefactor extends ReefscapeAbstractAuto {
                     pickupCorralThenScoreL4(reefPoints[1], "Source2Center to ReefApproachL", reefPoints[2]),
                     pickupCorralThenScoreL4(reefPoints[2], "Source2Center to ReefApproachA", reefPoints[3])
                 );
-        }
+            }
             
         } catch (Exception e) {
             DriverStation.reportError("Unable to load PP path Test", true);
