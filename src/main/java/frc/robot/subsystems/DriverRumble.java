@@ -10,6 +10,7 @@ import java.util.function.Supplier;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.GenericHID.RumbleType;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.XboxController;
@@ -31,12 +32,15 @@ public class DriverRumble extends SubsystemBase {
     private final double BARGE_TARGET_TOLERANCE_METER = Units.inchesToMeters(3);
 
     private final double RUMBLE_INTENSITY = 1; 
+    private final double RUMBLING_WAIT_TIME = 0.3;
 
     private final XboxController m_xbox;
     private final Supplier<Pose2d> m_robotPositionSupplier;
     private final BooleanSupplier m_hasCoral;
     private final BooleanSupplier m_hasAlgae;
     private final BooleanSupplier m_climberDeployed;
+
+    Timer m_timer;
 
     public DriverRumble(XboxController xbox, Supplier<Pose2d> positionSupplier, 
             BooleanSupplier hasCoral, BooleanSupplier hasAlgae, BooleanSupplier climberDeployed) {
@@ -45,6 +49,7 @@ public class DriverRumble extends SubsystemBase {
         m_hasCoral = hasCoral;
         m_hasAlgae = hasAlgae;
         m_climberDeployed = climberDeployed;
+        m_timer = new Timer();
     }
     
     @Override
@@ -56,8 +61,19 @@ public class DriverRumble extends SubsystemBase {
         if (!DriverStation.isTeleopEnabled()) {
             // not in Teleop and/or not Enabled
             // nothing to do - don't rumble
+            return;
         }
-        else if (m_hasCoral.getAsBoolean()) {
+        
+        if (m_timer.isRunning()) {
+            if (!m_timer.hasElapsed(RUMBLING_WAIT_TIME)) {
+                rumbleValue = 1;
+                rumble = true;
+            } else {
+                m_timer.stop();
+            }
+        }
+
+        if (m_hasCoral.getAsBoolean()) {
             // See if we are aligned with a Reef pole
             Pose2d targetPose = getClosestScoringLocation();
             
@@ -66,18 +82,16 @@ public class DriverRumble extends SubsystemBase {
             
             // Calculate lateral offset in meters (positive means left, negative means right)
             rumbleValue = relativePose.getY();
-            rumble = Math.abs(relativePose.getX()) < REEF_DISTANCE_METER && Math.abs(rumbleValue) < REEF_OFFSET_TOLERANCE_METER;
-        }
-        else if (m_hasAlgae.getAsBoolean()) {
+            rumble = rumble | (Math.abs(relativePose.getX()) < REEF_DISTANCE_METER && Math.abs(rumbleValue) < REEF_OFFSET_TOLERANCE_METER);
+        } else if (m_hasAlgae.getAsBoolean()) {
             // check if correct place for a Barge shot
             double bargeLine = BARGE_LINE_BLUE;
             if (FieldConstants.isRedAlliance())
                 bargeLine = FieldConstants.FIELD_LENGTH - bargeLine;
 
             rumbleValue = robotPose.getX() - bargeLine;
-            rumble = Math.abs(rumbleValue) < BARGE_TARGET_TOLERANCE_METER;
-        }
-        else if (m_climberDeployed.getAsBoolean()) {
+            rumble = rumble | (Math.abs(rumbleValue) < BARGE_TARGET_TOLERANCE_METER);
+        } else if (m_climberDeployed.getAsBoolean()) {
             // check if correct place for a climb
             double xMax = 0.5 * FieldConstants.FIELD_LENGTH;
             double xMin = xMax - CLIMB_LOCATION_FROM_CENTER;
@@ -87,7 +101,7 @@ public class DriverRumble extends SubsystemBase {
                 xBlue = FieldConstants.FIELD_LENGTH - xBlue;
 
             rumbleValue = xBlue - xMin;
-            rumble = xBlue >= xMin && xBlue <= xMax;
+            rumble = rumble | (xBlue >= xMin && xBlue <= xMax);
         }
 
         m_xbox.setRumble(RumbleType.kBothRumble, rumble ? RUMBLE_INTENSITY : 0);
@@ -125,6 +139,11 @@ public class DriverRumble extends SubsystemBase {
     //     // Clamp the strength between -1 and 1.
     //     return MathUtil.clamp(strength, -1, 1);
     // }
+
+    public void rumble() {
+        m_timer.reset();
+        m_timer.start();
+    }
     
     public Pose2d getClosestScoringLocation() {
         final Pose2d robotPose = m_robotPositionSupplier.get();
