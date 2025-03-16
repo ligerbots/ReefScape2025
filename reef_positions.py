@@ -13,7 +13,7 @@ reef_offset = 13.0 / 2
 
 # have the Algae position back 4 inches from touching the Reef,
 #   so we can move the EE first
-center_algae_offset = 4.0
+center_algae_offset = 1.0
 
 letter = 'A'
 algae = []
