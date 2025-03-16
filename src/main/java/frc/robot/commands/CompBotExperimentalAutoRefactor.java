@@ -78,7 +78,7 @@ public class CompBotExperimentalAutoRefactor extends ReefscapeAbstractAuto {
         targetScore = mirrorIfNeeded(targetScore);
         return Commands.sequence(
                     Commands.parallel(new MoveEndEffector(Constants.Position.BACK_INTAKE, m_elevator, m_pivot, LOWER_ELEVATOR_WAIT_TIME),
-                        Commands.deadline(m_driveTrain.followPath(PathFactory.getPath(driveStartPoint, m_sourcePoint, m_isProcessorSide)),
+                        Commands.parallel(m_driveTrain.followPath(PathFactory.getPath(driveStartPoint, m_sourcePoint, m_isProcessorSide)),
                                           new WaitCommand(START_INTAKE_AFTER_PATH_START).andThen(
                                               new StartEndCommand(m_coralEffector::runIntake, m_coralEffector::stop, m_coralEffector)
                                                     .until(m_coralEffector::hasCoral).withTimeout(CORAL_PICKUP_WAIT_TIME))
