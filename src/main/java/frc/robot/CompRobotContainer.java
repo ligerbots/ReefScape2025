@@ -144,8 +144,8 @@ public class CompRobotContainer extends RobotContainer {
             
         // new MoveEndEffector(Constants.Position.L4, m_elevator, m_pivot, CompBotGenericAutoBase.RAISE_ELEVATOR_WAIT_TIME));
         
-        NamedCommands.registerCommand("raiseElevatorBeforeReef", Commands.print("Running raiseElevatorBeforeReef-- holy cow!")
-                                        .andThen(new MoveEndEffector(Constants.Position.L4, m_elevator, m_pivot, ReefscapeAbstractAuto.RAISE_ELEVATOR_WAIT_TIME)));
+        // NamedCommands.registerCommand("raiseElevatorBeforeReef", Commands.print("Running raiseElevatorBeforeReef-- holy cow!")
+        //                                 .andThen(new MoveEndEffector(Constants.Position.L4, m_elevator, m_pivot, ReefscapeAbstractAuto.RAISE_ELEVATOR_WAIT_TIME)));
 
         Pose2d[] reefPoints = {FieldConstants.REEF_I, FieldConstants.REEF_J, FieldConstants.REEF_K};
 
@@ -167,9 +167,9 @@ public class CompRobotContainer extends RobotContainer {
         m_chosenStartPoint.addOption("Field Center", FieldConstants.ROBOT_START_2);
 
         m_chosenAutoFlavor.addOption("Granite State", "Granite State");
-        m_chosenAutoFlavor.setDefaultOption("Experimental", "Experimental");
+        m_chosenAutoFlavor.addOption("Experimental", "Experimental");
         m_chosenAutoFlavor.addOption("Algae", "Algae");
-        m_chosenAutoFlavor.addOption("Refactor", "Refactor");
+        m_chosenAutoFlavor.setDefaultOption("Refactor", "Refactor");
 
 
         // m_chosenSourcePickup.setDefaultOption("Center", FieldConstants.SOURCE_2_CENTER);

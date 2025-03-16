@@ -36,12 +36,7 @@
       "name": "RaiseElevatorMarker A",
       "waypointRelativePos": 0.791741472172351,
       "endWaypointRelativePos": null,
-      "command": {
-        "type": "named",
-        "data": {
-          "name": "raiseElevatorBeforeReef"
-        }
-      }
+      "command": null
     }
   ],
   "globalConstraints": {
