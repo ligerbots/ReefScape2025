@@ -8,6 +8,7 @@ import com.pathplanner.lib.path.PathConstraints;
 import com.pathplanner.lib.path.PathPlannerPath;
 
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.StartEndCommand;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
@@ -38,6 +39,14 @@ public class CompBotAlgaeAuto extends ReefscapeAbstractAuto {
         super(startPoint, sourcePoint, reefPoints, driveTrain, elevator, coralEffector, algaeEffector, pivot, isProcessorSide);
         m_driveTrain = driveTrain;
         
+        double ALGAE_PICKUP_WAIT_TIME;
+        if (Robot.isSimulation()) {
+            ALGAE_PICKUP_WAIT_TIME = 1.0;
+        } else {
+            // in real life, we wait for the coral to hit the limit switch
+            ALGAE_PICKUP_WAIT_TIME = 5.0;
+        }
+        Pose2d REEF_ALGAE_GH_AUTO_PICKUP = new Pose2d(5.74, 4.021, Rotation2d.fromDegrees(180.0));
 
         try {
             PathPlannerPath startPath = PathFactory.getPath("Start2 to ReefH", isProcessorSide);
@@ -50,10 +59,10 @@ public class CompBotAlgaeAuto extends ReefscapeAbstractAuto {
 
 
             addCommands(m_driveTrain.followPath(PathFactory.getPath("Algae backup path", isProcessorSide)));
-            addCommands(m_driveTrain.pathFindToPose(FieldConstants.flipPose(FieldConstants.REEF_ALGAE_GH), constraints).alongWith(
+            addCommands(m_driveTrain.pathFindToPose(FieldConstants.flipPose(REEF_ALGAE_GH_AUTO_PICKUP), constraints).alongWith(
                 new MoveEndEffector(Constants.Position.L3_ALGAE, elevator, pivot, LOWER_ELEVATOR_WAIT_TIME)));
-            addCommands(new StartEndCommand(algaeEffector::runIntake, algaeEffector::stop, algaeEffector).until(algaeEffector::hasAlgae));
-            addCommands(m_driveTrain.followPath(PathFactory.getPath("Algae backup path", isProcessorSide)));
+            addCommands(new StartEndCommand(algaeEffector::runIntake, algaeEffector::stop, algaeEffector).until(algaeEffector::hasAlgae).withTimeout(ALGAE_PICKUP_WAIT_TIME));
+            addCommands(m_driveTrain.followPath(PathFactory.getPath("AlgaeGH to Barge", false)));
 
    
             
