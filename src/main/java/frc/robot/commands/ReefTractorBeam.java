@@ -36,6 +36,7 @@ public class ReefTractorBeam implements Supplier<Command> {
     private final DriveTrain m_driveTrain;
     private final boolean m_goLeft;
     private final BooleanSupplier m_hasCoral;
+    private static final double PATHFIND_TIMEOUT = 2.0;
 
     private final PathConstraints m_constraints =  new PathConstraints(
         3.0, 3.0,
@@ -67,6 +68,6 @@ public class ReefTractorBeam implements Supplier<Command> {
             destination = m_goLeft ? coralLeftRight.getFirst() : coralLeftRight.getSecond();
         }
 
-        return m_driveTrain.pathFindToPose(FieldConstants.flipPose(destination), m_constraints);
+        return m_driveTrain.pathFindToPose(FieldConstants.flipPose(destination), m_constraints).withTimeout(PATHFIND_TIMEOUT);
     }
 }
