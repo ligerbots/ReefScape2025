@@ -251,6 +251,7 @@ public class CompRobotContainer extends RobotContainer {
     public void resetAllGoals() {
         m_pivot.resetGoal();
         m_elevator.resetGoal();
+        m_climber.resetGoal();
     }
 
     public DriveTrain getDriveTrain() {
