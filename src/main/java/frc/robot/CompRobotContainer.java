@@ -168,9 +168,9 @@ public class CompRobotContainer extends RobotContainer {
         m_chosenStartPoint.setDefaultOption("3rd cage-- usual spot", FieldConstants.ROBOT_START_3);
         m_chosenStartPoint.addOption("Field Center", FieldConstants.ROBOT_START_2);
 
-        m_chosenAutoFlavor.addOption("Granite State", "Granite State");
-        m_chosenAutoFlavor.addOption("Experimental", "Experimental");
-        m_chosenAutoFlavor.addOption("Algae", "Algae");
+        // m_chosenAutoFlavor.addOption("Granite State", "Granite State");
+        // m_chosenAutoFlavor.addOption("Experimental", "Experimental");
+        // m_chosenAutoFlavor.addOption("Algae", "Algae");
         m_chosenAutoFlavor.setDefaultOption("Refactor", "Refactor");
 
 
