@@ -134,15 +134,16 @@ public class CompRobotContainer extends RobotContainer {
         // note: farm 7 is robot-centric
         m_farm.button(8).onTrue(new InstantCommand(m_driveTrain::zeroHeading, m_driveTrain));
         m_farm.button(11).onTrue(new InstantCommand(() -> m_coralMode = !m_coralMode));
-        m_farm.button(12).whileTrue(new InstantCommand(m_elevator::zeroElevator));
+        m_farm.button(5).whileTrue(new InstantCommand(m_elevator::zeroElevator));
+        m_farm.button(12).onTrue(new DeferredCommand(new ReefTractorBeam(m_driveTrain, false, ()->false), Set.of(m_driveTrain)));
 
         // schedule Drive command, which will cancel other control of Drivetrain, ie active heading
         m_farm.button(16).onTrue(new InstantCommand(() -> m_driveTrain.getDefaultCommand().schedule()));
 
         // Testing commands
 
-        m_farm.button(5).onTrue(new InstantCommand(() -> m_elevator.setHeight(Units.inchesToMeters(SmartDashboard.getNumber("elevator/testGoal", 0)))));
-        m_farm.button(10).onTrue(new InstantCommand(() -> m_pivot.setAngle(Rotation2d.fromDegrees(SmartDashboard.getNumber("pivot/testAngle", 0.0)))));
+        m_farm.button(22).onTrue(new InstantCommand(() -> m_elevator.setHeight(Units.inchesToMeters(SmartDashboard.getNumber("elevator/testGoal", 0)))));
+        m_farm.button(23).onTrue(new InstantCommand(() -> m_pivot.setAngle(Rotation2d.fromDegrees(SmartDashboard.getNumber("pivot/testAngle", 0.0)))));
     }
     
     private void configureAutos() {
