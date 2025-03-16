@@ -25,6 +25,7 @@ import edu.wpi.first.wpilibj2.command.PrintCommand;
 import edu.wpi.first.wpilibj2.command.StartEndCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandJoystick;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 // import edu.wpi.first.wpilibj2.command.button.POVButton;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.commands.*;
@@ -134,6 +135,9 @@ public class CompRobotContainer extends RobotContainer {
         m_farm.button(8).onTrue(new InstantCommand(m_driveTrain::zeroHeading, m_driveTrain));
         m_farm.button(11).onTrue(new InstantCommand(() -> m_coralMode = !m_coralMode));
         m_farm.button(12).whileTrue(new InstantCommand(m_elevator::zeroElevator));
+
+        // schedule Drive command, which will cancel other control of Drivetrain, ie active heading
+        m_farm.button(16).onTrue(new InstantCommand(() -> m_driveTrain.getDefaultCommand().schedule()));
 
         // Testing commands
 
