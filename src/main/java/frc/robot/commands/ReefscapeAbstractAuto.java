@@ -4,6 +4,7 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Constants;
 import frc.robot.FieldConstants;
+import frc.robot.subsystems.AlgaeEffector;
 import frc.robot.subsystems.CoralEffector;
 import frc.robot.subsystems.DriveTrain;
 import frc.robot.subsystems.Elevator;
@@ -22,11 +23,19 @@ public abstract class ReefscapeAbstractAuto extends AutoCommandInterface {
     protected DriveTrain m_driveTrain;
     protected Elevator m_elevator;
     protected CoralEffector m_coralEffector;
+    protected AlgaeEffector m_algaeEffector;
     protected EndEffectorPivot m_pivot;
     protected boolean m_isProcessorSide;
 
     ReefscapeAbstractAuto(Pose2d startPoint, Pose2d sourcePoint, Pose2d[] reefPoints, DriveTrain driveTrain,
-            Elevator elevator, CoralEffector coralEffector, EndEffectorPivot pivot, boolean isProcessorSide) {
+            Elevator elevator, CoralEffector coralEffector, AlgaeEffector algaeEffector, EndEffectorPivot pivot, boolean isProcessorSide) {
+                m_sourcePoint = sourcePoint;
+                m_driveTrain = driveTrain;
+                m_elevator = elevator;
+                m_coralEffector = coralEffector;
+                m_algaeEffector = algaeEffector;
+                m_pivot = pivot;
+                m_isProcessorSide = isProcessorSide;
     }
 
     @Override

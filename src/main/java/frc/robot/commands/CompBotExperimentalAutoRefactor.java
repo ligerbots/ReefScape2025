@@ -17,6 +17,7 @@ import frc.robot.Constants;
 import frc.robot.FieldConstants;
 import frc.robot.PathFactory;
 import frc.robot.Robot;
+import frc.robot.subsystems.AlgaeEffector;
 import frc.robot.subsystems.CoralEffector;
 import frc.robot.subsystems.DriveTrain;
 import frc.robot.subsystems.Elevator;
@@ -31,14 +32,9 @@ public class CompBotExperimentalAutoRefactor extends ReefscapeAbstractAuto {
     Math.toRadians(540), Math.toRadians(720));
     
     public CompBotExperimentalAutoRefactor(Pose2d startPoint, Pose2d sourcePoint, Pose2d[] reefPoints, DriveTrain driveTrain, 
-        Elevator elevator, CoralEffector coralEffector, EndEffectorPivot pivot, boolean isProcessorSide) {
-            super(startPoint, sourcePoint, reefPoints, driveTrain, elevator, coralEffector, pivot, isProcessorSide);
-            m_sourcePoint = sourcePoint;
-            m_driveTrain = driveTrain;
-            m_elevator = elevator;
-            m_coralEffector = coralEffector;
-            m_pivot = pivot;
-            m_isProcessorSide = isProcessorSide;
+        Elevator elevator, CoralEffector coralEffector, AlgaeEffector algaeEffector, EndEffectorPivot pivot, boolean isProcessorSide) {
+            super(startPoint, sourcePoint, reefPoints, driveTrain, elevator, coralEffector, algaeEffector, pivot, isProcessorSide);
+
             
         if (Robot.isSimulation()) {
             CORAL_PICKUP_WAIT_TIME = 1.0;
