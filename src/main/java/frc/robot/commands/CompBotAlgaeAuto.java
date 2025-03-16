@@ -63,10 +63,12 @@ public class CompBotAlgaeAuto extends ReefscapeAbstractAuto {
                 new MoveEndEffector(Constants.Position.L3_ALGAE, elevator, pivot, LOWER_ELEVATOR_WAIT_TIME)));
             addCommands(new StartEndCommand(algaeEffector::runIntake, algaeEffector::stop, algaeEffector).until(algaeEffector::hasAlgae).withTimeout(ALGAE_PICKUP_WAIT_TIME));
             addCommands(m_driveTrain.followPath(PathFactory.getPath("AlgaeGH to Barge", false)).alongWith(
-                new MoveEndEffector(Constants.Position.BARGE, elevator, pivot, LOWER_ELEVATOR_WAIT_TIME)));
+                new WaitCommand(0.2).andThen(new MoveEndEffector(Constants.Position.BARGE, elevator, pivot, LOWER_ELEVATOR_WAIT_TIME))));
             addCommands(new StartEndCommand(algaeEffector::score, algaeEffector::stop, algaeEffector).withTimeout(2.0));
             
-
+            Pose2d bargeBackupSpot = new Pose2d(7.0, 5.02, Rotation2d.fromDegrees(180.0));
+            addCommands(m_driveTrain.pathFindToPose(FieldConstants.flipPose(bargeBackupSpot), constraints));
+            addCommands(new MoveEndEffector(Constants.Position.BACK_INTAKE, elevator, pivot, LOWER_ELEVATOR_WAIT_TIME));
    
             
         } catch (Exception e) {
