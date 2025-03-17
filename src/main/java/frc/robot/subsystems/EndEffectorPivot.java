@@ -24,7 +24,6 @@ import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.trajectory.TrapezoidProfile.State;
-import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
@@ -144,10 +143,10 @@ public class EndEffectorPivot extends SubsystemBase {
     public void periodic() {
         double elevHeight = m_elevatorHeight.getAsDouble();
 
-        double oldGoalClipped = m_goalClipped.getDegrees();
+        // double oldGoalClipped = m_goalClipped.getDegrees();
         m_goalClipped = limitPivotAngle(m_goal, elevHeight);
 
-        boolean goalChanged = Math.abs(m_goalClipped.getDegrees() - oldGoalClipped) > 5.0;
+        // boolean goalChanged = Math.abs(m_goalClipped.getDegrees() - oldGoalClipped) > 5.0;
 
         // double feedforward = -K_GRAVITY * Math.sin(angle.getRadians() - GRAVITY_ZERO);
         State goalState = new State(m_goalClipped.getRotations(), 0);

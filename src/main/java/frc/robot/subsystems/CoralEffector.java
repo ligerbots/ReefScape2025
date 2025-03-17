@@ -140,11 +140,10 @@ public class CoralEffector extends SubsystemBase {
 
     public void runOuttake() {
         double elevatorH = m_elevatorHeight.getAsDouble();
-        if(elevatorH == MoveEndEffector.L1_HEIGHT){
+        if (elevatorH == MoveEndEffector.L1_HEIGHT) {
             m_motor.set(OUTTAKE_L1);
-        }
-        else{
-        m_motor.set(OUTTAKE_SPEED);
+        } else {
+            m_motor.set(OUTTAKE_SPEED);
         }
 
         m_state = State.OUTTAKE;
