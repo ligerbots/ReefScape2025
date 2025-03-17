@@ -12,12 +12,14 @@ import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.config.LimitSwitchConfig;
 import com.revrobotics.spark.config.SparkMaxConfig;
 import com.revrobotics.spark.config.LimitSwitchConfig.Type;
+import com.revrobotics.RelativeEncoder;
 import com.revrobotics.spark.SparkLimitSwitch;
 
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
+import frc.robot.subsystems.ValueThreshold.Direction;
 
 public class AlgaeEffector extends SubsystemBase {
 
@@ -36,6 +38,7 @@ public class AlgaeEffector extends SubsystemBase {
 
     private final SparkMax m_motor;
     private final SparkLimitSwitch m_limitSwitch;
+    private final RelativeEncoder m_encoder;
 
     // State
     private enum State {
@@ -45,6 +48,8 @@ public class AlgaeEffector extends SubsystemBase {
     private State m_state = State.IDLE;
 
     private final DoubleSupplier m_elevatorHeight;
+
+    private final ValueThreshold m_speedThres = new ValueThreshold(Direction.FALLING, STALL_VELOCITY_LIMIT);
 
     public AlgaeEffector(DoubleSupplier elevatorHeight) {
         m_elevatorHeight = elevatorHeight;
@@ -71,6 +76,7 @@ public class AlgaeEffector extends SubsystemBase {
         config.apply(lsConfig);
 
         m_motor.configure(config, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
+        m_encoder = m_motor.getEncoder();
 
         // Get the reverse limit switch
         m_limitSwitch = m_motor.getReverseLimitSwitch();
@@ -84,15 +90,16 @@ public class AlgaeEffector extends SubsystemBase {
             m_state = State.HOLD;        
         }
 
-        double velocity = m_motor.getEncoder().getVelocity();
-        if (m_state == State.INTAKE && Math.abs(velocity) < STALL_VELOCITY_LIMIT) {
+        double velocity = m_encoder.getVelocity();
+        boolean stalled = m_speedThres.compute(Math.abs(velocity));
+        if (m_state == State.INTAKE && stalled) {
             m_motor.setVoltage(HOLD_VOLTAGE);
             m_state = State.HOLD;        
         }
 
         SmartDashboard.putString("algaeEffector/state", m_state.toString());
         SmartDashboard.putBoolean("algaeEffector/limitSwitch", pressed);
-        SmartDashboard.putNumber("algaeEffector/speed", m_motor.get());
+        SmartDashboard.putNumber("algaeEffector/setSpeed", m_motor.get());
         SmartDashboard.putNumber("algaeEffector/current", m_motor.getOutputCurrent());
         SmartDashboard.putNumber("algaeEffector/velocity", velocity);
     }

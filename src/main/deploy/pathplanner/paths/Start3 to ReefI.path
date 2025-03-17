@@ -3,25 +3,25 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 7.197,
-        "y": 5.054523026315789
+        "x": 7.0926470588235295,
+        "y": 5.148161764705882
       },
       "prevControl": null,
       "nextControl": {
-        "x": 6.129302322140333,
-        "y": 5.054523026315789
+        "x": 5.7965044820127,
+        "y": 5.1573470127408765
       },
       "isLocked": false,
       "linkedName": "start3"
     },
     {
       "anchor": {
-        "x": 5.272697368421052,
-        "y": 5.054523026315789
+        "x": 5.314705882352942,
+        "y": 5.148161764705882
       },
       "prevControl": {
-        "x": 5.686430921052631,
-        "y": 5.246957236842105
+        "x": 5.763279269784679,
+        "y": 5.15045091480313
       },
       "nextControl": null,
       "isLocked": false,
@@ -36,7 +36,7 @@
       "maxWaypointRelativePos": 1.0,
       "constraints": {
         "maxVelocity": 2.0,
-        "maxAcceleration": 2.0,
+        "maxAcceleration": 2.75,
         "maxAngularVelocity": 540.0,
         "maxAngularAcceleration": 720.0,
         "nominalVoltage": 12.0,
@@ -45,17 +45,10 @@
     }
   ],
   "pointTowardsZones": [],
-  "eventMarkers": [
-    {
-      "name": "raiseElevatorBeforeReef",
-      "waypointRelativePos": 0.4021543985637344,
-      "endWaypointRelativePos": null,
-      "command": null
-    }
-  ],
+  "eventMarkers": [],
   "globalConstraints": {
-    "maxVelocity": 3.0,
-    "maxAcceleration": 3.0,
+    "maxVelocity": 4.0,
+    "maxAcceleration": 3.5,
     "maxAngularVelocity": 540.0,
     "maxAngularAcceleration": 720.0,
     "nominalVoltage": 12.0,

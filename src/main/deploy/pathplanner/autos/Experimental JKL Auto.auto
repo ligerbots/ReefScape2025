@@ -19,7 +19,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Source2Center to ReefK"
+            "pathName": "Source2Center to ReefAreaKL"
           }
         },
         {
@@ -31,19 +31,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Source2Center to ReefL"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "ReefL to Source2Center"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "Source2Center to ReefApproachA"
+            "pathName": "Source2Center to ReefAreaKL"
           }
         }
       ]

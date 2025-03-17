@@ -7,6 +7,8 @@ package frc.robot;
 import java.util.Objects;
 import java.util.Set;
 
+import com.pathplanner.lib.auto.NamedCommands;
+
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -21,8 +23,7 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.StartEndCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandJoystick;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
-// import edu.wpi.first.wpilibj2.command.button.POVButton;
-
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.commands.*;
 import frc.robot.subsystems.*;
 
@@ -39,8 +40,8 @@ public class CompRobotContainer extends RobotContainer {
 
     private final Elevator m_elevator = new Elevator();
     private final EndEffectorPivot m_pivot = new EndEffectorPivot(() -> m_elevator.getHeight());
-    private final CoralEffector m_coralEffector = new CoralEffector();
-    private final AlgaeEffector m_algaeEffector = new AlgaeEffector(() -> m_elevator.getHeight());
+    private final CoralEffector m_coralEffector = new CoralEffector(()-> m_elevator.getGoal());
+    private final AlgaeEffector m_algaeEffector = new AlgaeEffector(() -> m_elevator.getGoal());
 
     private final Climber m_climber = new Climber();
 
@@ -75,25 +76,31 @@ public class CompRobotContainer extends RobotContainer {
             DriverStation.silenceJoystickConnectionWarning(true);
         }
         
-        m_driverController.leftBumper().onTrue(new InstantCommand(m_driveTrain::lock, m_driveTrain));
-        // m_driverController.back().onTrue(new InstantCommand(m_driveTrain::zeroHeading, m_driveTrain));
-        
         m_driverController.leftTrigger().whileTrue(
                 new ConditionalCommand(
                         new StartEndCommand(m_coralEffector::runIntake, m_coralEffector::stop, m_coralEffector),
                         new StartEndCommand(m_algaeEffector::runIntake, m_algaeEffector::stop, m_algaeEffector),
                         () -> m_coralMode)
         );
-        
+
         m_driverController.rightTrigger().whileTrue(
                 new ConditionalCommand(
                         new StartEndCommand(m_coralEffector::runOuttake, m_coralEffector::stop, m_coralEffector),
                         new StartEndCommand(m_algaeEffector::score, m_algaeEffector::stop, m_algaeEffector),
                         () -> m_coralMode)
         );
+
+        Trigger coralRumble = new Trigger(() -> m_coralEffector.hasCoral());
+
+        coralRumble.onTrue(new InstantCommand(() -> m_driverRumble.rumble()));
+        Trigger algaeRumble = new Trigger(() -> m_algaeEffector.hasAlgae());
+        algaeRumble.onTrue(new InstantCommand(() -> m_driverRumble.rumble()));
         
         // m_driverController.rightBumper().onTrue(new MoveEndEffector(Constants.Position.STOW, m_elevator, m_pivot).andThen().finallyDo(() -> m_coralMode = true));
         
+        m_driverController.rightBumper().onTrue(new DeferredCommand(new ReefTractorBeam(m_driveTrain, false, m_coralEffector::hasCoral), Set.of(m_driveTrain)));
+        m_driverController.leftBumper().onTrue(new DeferredCommand(new ReefTractorBeam(m_driveTrain, true, m_coralEffector::hasCoral), Set.of(m_driveTrain)));
+
         // Algae Scoring
         m_driverController.a().onTrue(new MoveEndEffector(Constants.Position.L2_ALGAE, m_elevator, m_pivot).alongWith(new InstantCommand(() -> m_coralMode = false)));
         m_driverController.x().onTrue(new MoveEndEffector(Constants.Position.L3_ALGAE, m_elevator, m_pivot).alongWith(new InstantCommand(() -> m_coralMode = false)));
@@ -101,20 +108,11 @@ public class CompRobotContainer extends RobotContainer {
         m_driverController.b().onTrue(new MoveEndEffector(Constants.Position.PROCESSOR, m_elevator, m_pivot).alongWith(new InstantCommand(() -> m_coralMode = false)));
 
         // Coral Scoring
-        // POVButton dpadLeft = new POVButton(m_driverController.getHID(), 270);   // Test before removing
         m_driverController.pov(270).onTrue(new MoveEndEffector(Constants.Position.L4, m_elevator, m_pivot).alongWith(new InstantCommand(() -> m_coralMode = true)));
-        
-        // POVButton dpadRight = new POVButton(m_driverController.getHID(), 90);
         m_driverController.pov(90).onTrue(new MoveEndEffector(Constants.Position.BACK_INTAKE, m_elevator, m_pivot).alongWith(new InstantCommand(() -> m_coralMode = true)));
-        
-        // POVButton dpadDown = new POVButton(m_driverController.getHID(), 0);
         m_driverController.pov(0).onTrue(new MoveEndEffector(Constants.Position.L3, m_elevator, m_pivot).alongWith(new InstantCommand(() -> m_coralMode = true)));
-        
-        // POVButton dpadUp = new POVButton(m_driverController.getHID(), 180);
         m_driverController.pov(180).onTrue(new MoveEndEffector(Constants.Position.L2, m_elevator, m_pivot).alongWith(new InstantCommand(() -> m_coralMode = true)));
                 
-        // m_driverController.leftBumper().onTrue(new InstantCommand(() -> m_coralMode = !m_coralMode));
-        
         // Climber
         m_driverController.start().onTrue(new InstantCommand(m_climber::climb));
         m_driverController.back().onTrue(new InstantCommand(m_climber::deploy));
@@ -126,15 +124,22 @@ public class CompRobotContainer extends RobotContainer {
         m_farm.button(2).onTrue(new MoveEndEffector(Constants.Position.CLIMB, m_elevator, m_pivot, 0));
 
         // Miscellaneous
-        m_farm.button(12).whileTrue(new InstantCommand(m_elevator::zeroElevator));
+        m_farm.button(6).onTrue(new InstantCommand(m_driveTrain::lock, m_driveTrain));
+        
+        m_farm.button(21).onTrue(new MoveEndEffector(Constants.Position.L1, m_elevator, m_pivot));
+        // note: farm 7 is robot-centric
+        m_farm.button(8).onTrue(new InstantCommand(m_driveTrain::zeroHeading, m_driveTrain));
+        m_farm.button(11).onTrue(new InstantCommand(() -> m_coralMode = !m_coralMode));
+        m_farm.button(5).whileTrue(new InstantCommand(m_elevator::zeroElevator));
+        m_farm.button(12).onTrue(new DeferredCommand(new ReefTractorBeam(m_driveTrain, false, ()->false), Set.of(m_driveTrain)));
 
-       m_driverController.rightBumper().onTrue(new DeferredCommand(new ReefTractorBeam(m_driveTrain), Set.of(m_driveTrain)));
+        // schedule Drive command, which will cancel other control of Drivetrain, ie active heading
+        m_farm.button(16).onTrue(new InstantCommand(() -> m_driveTrain.getDefaultCommand().schedule()));
 
         // Testing commands
 
-        m_farm.button(5).onTrue(new InstantCommand(() -> m_elevator.setHeight(Units.inchesToMeters(SmartDashboard.getNumber("elevator/testGoal", 0)))));
-
-        m_farm.button(10).onTrue(new InstantCommand(() -> m_pivot.setAngle(Rotation2d.fromDegrees(SmartDashboard.getNumber("pivot/testAngle", 0.0)))));
+        m_farm.button(22).onTrue(new InstantCommand(() -> m_elevator.setHeight(Units.inchesToMeters(SmartDashboard.getNumber("elevator/testGoal", 0)))));
+        m_farm.button(23).onTrue(new InstantCommand(() -> m_pivot.setAngle(Rotation2d.fromDegrees(SmartDashboard.getNumber("pivot/testAngle", 0.0)))));
     }
     
     private void configureAutos() {
@@ -142,15 +147,21 @@ public class CompRobotContainer extends RobotContainer {
             
         // new MoveEndEffector(Constants.Position.L4, m_elevator, m_pivot, CompBotGenericAutoBase.RAISE_ELEVATOR_WAIT_TIME));
         
+        // NamedCommands.registerCommand("raiseElevatorBeforeReef", Commands.print("Running raiseElevatorBeforeReef-- holy cow!")
+        //                                 .andThen(new MoveEndEffector(Constants.Position.L4, m_elevator, m_pivot, ReefscapeAbstractAuto.RAISE_ELEVATOR_WAIT_TIME)));
+
         Pose2d[] reefPoints = {FieldConstants.REEF_I, FieldConstants.REEF_J, FieldConstants.REEF_K};
 
         m_chosenReefPoints.addOption("IJK  (aka FED)", reefPoints);
 
-        Pose2d[] reefPoints2 = {FieldConstants.REEF_J, FieldConstants.REEF_K, FieldConstants.REEF_L};
-        m_chosenReefPoints.setDefaultOption("JKL  (aka EDC)", reefPoints2);
+        Pose2d[] reefPoints2 = {FieldConstants.REEF_J, FieldConstants.REEF_K, FieldConstants.REEF_L, FieldConstants.REEF_A};
+        m_chosenReefPoints.setDefaultOption("JKLA (aka EDCB)", reefPoints2);
  
         Pose2d[] reefPoints3 = { FieldConstants.REEF_H };
         m_chosenReefPoints.addOption("H only  (aka G only) Center auto", reefPoints3);
+
+        Pose2d[] reefPoints4 = { FieldConstants.REEF_H, FieldConstants.REEF_ALGAE_GH };
+        m_chosenReefPoints.addOption("H coral score, then grab GH Algae", reefPoints4);
 
         m_chosenFieldSide.setDefaultOption("Processor Side", "Processor Side");
         m_chosenFieldSide.addOption("Barge Side", "Barge Side");
@@ -158,8 +169,11 @@ public class CompRobotContainer extends RobotContainer {
         m_chosenStartPoint.setDefaultOption("3rd cage-- usual spot", FieldConstants.ROBOT_START_3);
         m_chosenStartPoint.addOption("Field Center", FieldConstants.ROBOT_START_2);
 
-        m_chosenAutoFlavor.setDefaultOption("Granite State", "Granite State");
+        // m_chosenAutoFlavor.addOption("Granite State", "Granite State");
         m_chosenAutoFlavor.addOption("Experimental", "Experimental");
+        m_chosenAutoFlavor.addOption("Algae", "Algae");
+        m_chosenAutoFlavor.setDefaultOption("Refactor", "Refactor");
+
 
         // m_chosenSourcePickup.setDefaultOption("Center", FieldConstants.SOURCE_2_CENTER);
         // m_chosenSourcePickup.addOption("Inside", FieldConstants.SOURCE_2_IN);
@@ -180,12 +194,21 @@ public class CompRobotContainer extends RobotContainer {
             String autoFlavor = m_chosenAutoFlavor.getSelected();
             if(autoFlavor.equals("Granite State")) {
                 m_autoCommand = new CompBotGraniteStateAuto(m_chosenStartPoint.getSelected(), FieldConstants.SOURCE_2_CENTER, m_chosenReefPoints.getSelected(), 
-                    m_driveTrain, m_elevator, m_coralEffector, m_pivot, m_chosenFieldSide.getSelected().equals("Processor Side"));
+                    m_driveTrain, m_elevator, m_coralEffector, m_algaeEffector, m_pivot, m_chosenFieldSide.getSelected().equals("Processor Side"));
             } 
 
             if(autoFlavor.equals("Experimental")) { 
                 m_autoCommand = new CompBotExperimentalAuto(m_chosenStartPoint.getSelected(), FieldConstants.SOURCE_2_CENTER, m_chosenReefPoints.getSelected(), 
-                        m_driveTrain, m_elevator, m_coralEffector, m_pivot, m_chosenFieldSide.getSelected().equals("Processor Side"));
+                        m_driveTrain, m_elevator, m_coralEffector, m_algaeEffector, m_pivot, m_chosenFieldSide.getSelected().equals("Processor Side"));
+            }
+
+            if(autoFlavor.equals("Algae")) { 
+                m_autoCommand = new CompBotAlgaeAuto(m_chosenStartPoint.getSelected(), m_chosenStartPoint.getSelected(), m_chosenReefPoints.getSelected(), 
+                        m_driveTrain, m_elevator, m_coralEffector, m_algaeEffector, m_pivot, m_chosenFieldSide.getSelected().equals("Processor Side"));
+            }
+            if(autoFlavor.equals("Refactor")) { 
+                m_autoCommand = new CompBotExperimentalAutoRefactor(m_chosenStartPoint.getSelected(), FieldConstants.SOURCE_2_CENTER, m_chosenReefPoints.getSelected(), 
+                        m_driveTrain, m_elevator, m_coralEffector, m_algaeEffector, m_pivot, m_chosenFieldSide.getSelected().equals("Processor Side"));
             }
             
             m_autoSelectionCode = currentAutoSelectionCode;
@@ -204,14 +227,13 @@ public class CompRobotContainer extends RobotContainer {
         // Left stick Y axis -> forward and backwards movement
         // Left stick X axis -> left and right movement
         // Right stick X axis -> rotation
-        // note: "rightBumper()"" is a Trigger which is a BooleanSupplier
         return m_driveTrain.driveCommand(
             () -> -conditionAxis(m_driverController.getLeftY()),
             () -> -conditionAxis(m_driverController.getLeftX()),
             () -> -conditionAxis(m_driverController.getRightX()),
             // if you have a Logitech controller:
             // () -> -conditionAxis(m_driverController.getRawAxis(2)),
-            m_driverController.rightBumper());
+            m_farm.button(7));
     }
     
     private double conditionAxis(double value) {
@@ -225,6 +247,7 @@ public class CompRobotContainer extends RobotContainer {
     public void resetAllGoals() {
         m_pivot.resetGoal();
         m_elevator.resetGoal();
+        m_climber.resetGoal();
     }
 
     public DriveTrain getDriveTrain() {
