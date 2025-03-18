@@ -56,16 +56,17 @@ public class DriverRumble extends SubsystemBase {
     
     @Override
     public void periodic() {
+        if (!DriverStation.isTeleopEnabled()) {
+            // not in Teleop and/or not Enabled
+            // nothing to do - don't rumble
+            m_xbox.setRumble(RumbleType.kBothRumble, 0);
+            return;
+        }
+        
         Pose2d robotPose = m_robotPositionSupplier.get();
         boolean rumble = false;
         double rumbleValue = 0;
 
-        if (!DriverStation.isTeleopEnabled()) {
-            // not in Teleop and/or not Enabled
-            // nothing to do - don't rumble
-            return;
-        }
-        
         if (m_timer.isRunning()) {
             if (!m_timer.hasElapsed(RUMBLING_WAIT_TIME)) {
                 rumbleValue = 1;
@@ -91,19 +92,19 @@ public class DriverRumble extends SubsystemBase {
 
             rumbleValue = xBlue - BARGE_LINE_MIN_BLUE;
             rumble = rumble || (xBlue >= BARGE_LINE_MIN_BLUE && xBlue < BARGE_LINE_MAX_BLUE);
-        } else if (m_climberDeployed.getAsBoolean()) {
-            // check if correct place for a climb
-            double xMax = 0.5 * FieldConstants.FIELD_LENGTH;
-            double xMin = xMax - CLIMB_LOCATION_FROM_CENTER;
+        // } else if (m_climberDeployed.getAsBoolean()) {
+        //     // check if correct place for a climb
+        //     double xMax = 0.5 * FieldConstants.FIELD_LENGTH;
+        //     double xMin = xMax - CLIMB_LOCATION_FROM_CENTER;
 
-            double xBlue = robotPose.getX();
-            if (FieldConstants.isRedAlliance())
-                xBlue = FieldConstants.FIELD_LENGTH - xBlue;
+        //     double xBlue = robotPose.getX();
+        //     if (FieldConstants.isRedAlliance())
+        //         xBlue = FieldConstants.FIELD_LENGTH - xBlue;
 
-            rumbleValue = xBlue - xMin;
-            rumble = rumble || (xBlue >= xMin && xBlue <= xMax);
-        } else if (m_readyToClimb.getAsBoolean() && m_climberDeployed.getAsBoolean()){
-            rumble = m_readyToClimb.getAsBoolean();
+        //     rumbleValue = xBlue - xMin;
+        //     rumble = rumble || (xBlue >= xMin && xBlue <= xMax);
+        } else if (m_climberDeployed.getAsBoolean()){
+            rumble = rumble || m_readyToClimb.getAsBoolean();
         }
 
         m_xbox.setRumble(RumbleType.kBothRumble, rumble ? RUMBLE_INTENSITY : 0);
