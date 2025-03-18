@@ -58,8 +58,8 @@ public class CoralGroundIntake extends SubsystemBase {
   private final double DEPLOYED_ANGLE = 0.0; //FIXME: Find the angle
   private final double SCORING_ANGLE = 0.0; //FIXME: Find the angle
 
-  private final double ROLLER_INTAKE_SPEED = 0.0; //FIXME: Find the speed
-  private final double ROLLER_OUTTAKE_SPEED = 0.0; //FIXME: Find the speed
+  private final double ROLLER_INTAKE_SPEED_PRECENT = 0.0; //FIXME: Find the speed
+  private final double ROLLER_OUTTAKE_SPEED_PRECENT = 0.0; //FIXME: Find the speed
 
   private static final double STALL_VELOCITY_LIMIT = 2000; //TODO: Find a good value
   private final ValueThreshold m_speedThres = new ValueThreshold(Direction.FALLING, STALL_VELOCITY_LIMIT);
@@ -113,24 +113,24 @@ public class CoralGroundIntake extends SubsystemBase {
     switch (m_state) {
       case STOWED:
         setPivotAngle(Rotation2d.fromDegrees(STOWED_ANGLE));
-        setRollerSpeed(0); //Note: This may want to be a activly intaking number so the coral does not fall out.
+        setRollerSpeedPrecent(0); //Note: This may want to be a activly intaking number so the coral does not fall out.
         break;
       case DEPLOYED:
         boolean stalled = m_speedThres.compute(Math.abs(getRollerSpeed().getRadians()));
         if (stalled) {
-          setRollerSpeed(0);
+          setRollerSpeedPrecent(0);
           m_state = CoralGroundIntakeState.STOWED;
         } else {
-          setRollerSpeed(ROLLER_INTAKE_SPEED);
+          setRollerSpeedPrecent(ROLLER_INTAKE_SPEED_PRECENT);
           setPivotAngle(Rotation2d.fromDegrees(DEPLOYED_ANGLE));
         }
         break;
       case SCORING:
         setPivotAngle(Rotation2d.fromDegrees(SCORING_ANGLE));
         if (ANGLE_TOLERANCE_DEG > Math.abs(getPivotAngle().getDegrees() - SCORING_ANGLE)) {
-          setRollerSpeed(ROLLER_OUTTAKE_SPEED);
+          setRollerSpeedPrecent(ROLLER_OUTTAKE_SPEED_PRECENT);
         } else {
-          setRollerSpeed(0);
+          setRollerSpeedPrecent(0);
         }
 
         break;
@@ -146,15 +146,14 @@ public class CoralGroundIntake extends SubsystemBase {
     return Rotation2d.fromRotations(m_pivot_motor.getEncoder().getPosition());
   }
 
-
   public void setPivotAngle(Rotation2d angle) {
     m_pivotController.setReference(angle.getRotations(), SparkBase.ControlType.kPosition, ClosedLoopSlot.kSlot0);
     // SmartDashboard.putNumber("pivot/goal", m_goal.getDegrees());
   }
 
   // set the speed of the roller in RPM
-  public void setRollerSpeed(double speed) {
-    m_rollerController.setReference(speed, SparkBase.ControlType.kVelocity, ClosedLoopSlot.kSlot0);
+  public void setRollerSpeedPrecent(double speed) {
+    m_roller_motor.set(speed);
   }
 
   // needs to be public so that commands can get the restricted angle
