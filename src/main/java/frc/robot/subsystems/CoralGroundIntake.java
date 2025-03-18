@@ -26,7 +26,7 @@ import frc.robot.subsystems.ValueThreshold.Direction;
 
 public class CoralGroundIntake extends SubsystemBase {
     public enum CoralGroundIntakeState {
-        STOWED, DEPLOYED, SCORING
+        STOW, DEPLOY, SCORE
     }
 
     // NOTE: All constants were taken from the 2023 arm
@@ -59,11 +59,12 @@ public class CoralGroundIntake extends SubsystemBase {
 
     private final double ROLLER_INTAKE_SPEED_PRECENT = 0.0; // FIXME: Find the speed
     private final double ROLLER_OUTTAKE_SPEED_PRECENT = 0.0; // FIXME: Find the speed
+    private final double ROLLER_HOLD_SPEED_PERCENT = 0.0; // FIXME: Find the speed
 
     private static final double STALL_VELOCITY_LIMIT = 2000; // TODO: Find a good value
     private final ValueThreshold m_speedThres = new ValueThreshold(Direction.FALLING, STALL_VELOCITY_LIMIT);
 
-    public CoralGroundIntakeState m_state = CoralGroundIntakeState.STOWED;
+    public CoralGroundIntakeState m_state = CoralGroundIntakeState.STOW;
 
     // Construct a new shooterPivot subsystem
     public CoralGroundIntake() {
@@ -109,26 +110,27 @@ public class CoralGroundIntake extends SubsystemBase {
         // 5.0;
 
         switch (m_state) {
-            case STOWED:
+            case STOW:
                 setPivotAngle(Rotation2d.fromDegrees(STOWED_ANGLE));
-                setRollerSpeedPercent(0); // Note: This may want to be a actively intaking number so the coral does not fall out.
+                setRollerSpeedPercent(ROLLER_HOLD_SPEED_PERCENT); // Note: This may want to be a actively intaking number so the coral does not fall out.
                 break;
-            case DEPLOYED:
+            case DEPLOY:
                 boolean stalled = m_speedThres.compute(Math.abs(getRollerSpeed().getRadians()));
                 if (stalled) {
-                    setRollerSpeedPercent(0);
-                    m_state = CoralGroundIntakeState.STOWED;
+                    setRollerSpeedPercent(ROLLER_HOLD_SPEED_PERCENT);
+                    m_state = CoralGroundIntakeState.STOW;
                 } else {
                     setRollerSpeedPercent(ROLLER_INTAKE_SPEED_PRECENT);
                     setPivotAngle(Rotation2d.fromDegrees(DEPLOYED_ANGLE));
                 }
                 break;
-            case SCORING:
+            case SCORE:
+                // TODO: Detect if a coral is scored, then automatically switch to stow
                 setPivotAngle(Rotation2d.fromDegrees(SCORING_ANGLE));
                 if (ANGLE_TOLERANCE_DEG > Math.abs(getPivotAngle().getDegrees() - SCORING_ANGLE)) {
                     setRollerSpeedPercent(ROLLER_OUTTAKE_SPEED_PRECENT);
                 } else {
-                    setRollerSpeedPercent(0);
+                    setRollerSpeedPercent(ROLLER_HOLD_SPEED_PERCENT);
                 }
                 break;
         }
@@ -157,5 +159,18 @@ public class CoralGroundIntake extends SubsystemBase {
     public Rotation2d limitPivotAngle(Rotation2d angle) {
         double angleClamped = MathUtil.clamp(angle.getDegrees(), MIN_ANGLE, MAX_ANGLE);
         return Rotation2d.fromDegrees(angleClamped);
+    }
+
+    // state changes
+    public void stow() {
+        m_state = CoralGroundIntakeState.STOW;
+    }
+
+    public void deploy() {
+        m_state = CoralGroundIntakeState.DEPLOY;
+    }
+
+    public void score() {
+        m_state = CoralGroundIntakeState.SCORE;
     }
 }

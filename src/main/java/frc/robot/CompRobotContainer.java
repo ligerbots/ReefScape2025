@@ -42,6 +42,7 @@ public class CompRobotContainer extends RobotContainer {
     private final EndEffectorPivot m_pivot = new EndEffectorPivot(() -> m_elevator.getHeight());
     private final CoralEffector m_coralEffector = new CoralEffector(()-> m_elevator.getGoal());
     private final AlgaeEffector m_algaeEffector = new AlgaeEffector(() -> m_elevator.getGoal());
+    private final CoralGroundIntake m_coralGroundIntake = new CoralGroundIntake();
 
     private final Climber m_climber = new Climber();
 
@@ -137,6 +138,9 @@ public class CompRobotContainer extends RobotContainer {
         m_farm.button(16).onTrue(new InstantCommand(() -> m_driveTrain.getDefaultCommand().schedule()));
 
         // Testing commands
+        m_farm.button(18).onTrue(new InstantCommand(m_coralGroundIntake::stow));
+        m_farm.button(19).onTrue(new InstantCommand(m_coralGroundIntake::deploy));
+        m_farm.button(20).onTrue(new InstantCommand(m_coralGroundIntake::score));
 
         m_farm.button(22).onTrue(new InstantCommand(() -> m_elevator.setHeight(Units.inchesToMeters(SmartDashboard.getNumber("elevator/testGoal", 0)))));
         m_farm.button(23).onTrue(new InstantCommand(() -> m_pivot.setAngle(Rotation2d.fromDegrees(SmartDashboard.getNumber("pivot/testAngle", 0.0)))));
