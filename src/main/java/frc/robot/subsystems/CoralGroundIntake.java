@@ -76,7 +76,7 @@ public class CoralGroundIntake extends SubsystemBase {
         pivotMotorConfig.inverted(true);
         pivotMotorConfig.idleMode(IdleMode.kBrake);
         pivotMotorConfig.smartCurrentLimit(CURRENT_LIMIT);
-        pivotMotorConfig.encoder.positionConversionFactor(GEAR_RATIO / 360.0); // convert rotations to degrees
+        pivotMotorConfig.encoder.positionConversionFactor(GEAR_RATIO);
 
         pivotMotorConfig.closedLoop.p(K_P).i(K_I).d(K_D);
 
