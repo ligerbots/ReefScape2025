@@ -52,7 +52,6 @@ public class CoralGroundIntake extends SubsystemBase {
 
   // private final RelativeEncoder m_encoder;
   private final SparkClosedLoopController m_pivotController;
-  private final SparkClosedLoopController m_rollerController;
 
   private final double STOWED_ANGLE = 0.0; //FIXME: Find the angle
   private final double DEPLOYED_ANGLE = 0.0; //FIXME: Find the angle
@@ -99,7 +98,6 @@ public class CoralGroundIntake extends SubsystemBase {
 
     // controller for PID control
     m_pivotController = m_pivot_motor.getClosedLoopController();
-    m_rollerController = m_roller_motor.getClosedLoopController();
   }
 
   @Override
