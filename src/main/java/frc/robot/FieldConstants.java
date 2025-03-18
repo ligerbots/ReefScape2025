@@ -44,6 +44,15 @@ public class FieldConstants {
     public static final Pose2d REEF_ALGAE_IJ = new Pose2d(5.140, 5.148, Rotation2d.fromDegrees(-120.0));
     public static final Pose2d REEF_ALGAE_KL = new Pose2d(3.839, 5.148, Rotation2d.fromDegrees(-60.0));
 
+    // Algae robot drive back positions - these positions are 12.0 inches back from pickup
+
+    public static final Pose2d REEF_ALGAE_BACK_AB = new Pose2d(2.883, 4.021, Rotation2d.fromDegrees(0.0));
+    public static final Pose2d REEF_ALGAE_BACK_CD = new Pose2d(3.686, 2.630, Rotation2d.fromDegrees(60.0));
+    public static final Pose2d REEF_ALGAE_BACK_EF = new Pose2d(5.293, 2.630, Rotation2d.fromDegrees(120.0));
+    public static final Pose2d REEF_ALGAE_BACK_GH = new Pose2d(6.096, 4.021, Rotation2d.fromDegrees(180.0));
+    public static final Pose2d REEF_ALGAE_BACK_IJ = new Pose2d(5.293, 5.412, Rotation2d.fromDegrees(-120.0));
+    public static final Pose2d REEF_ALGAE_BACK_KL = new Pose2d(3.686, 5.412, Rotation2d.fromDegrees(-60.0));
+
     // Coral Slot robot locations - these positions push 2.0 inches into the wall
 
     public static final Pose2d SOURCE_1_SLOT1 = new Pose2d(0.425, 1.452, Rotation2d.fromDegrees(54.0));

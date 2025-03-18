@@ -14,9 +14,11 @@ reef_offset = 13.0 / 2
 # have the Algae position back 4 inches from touching the Reef,
 #   so we can move the EE first
 center_algae_offset = 1.0
+algae_drive_back = 12.0
 
 letter = 'A'
 algae = []
+algae_back = []
 
 print(f"    // Reef pole robot positions")
 print()
@@ -35,6 +37,11 @@ for i in range(-3, 3):
                  meters(point1[1] + math.sin(rad)*center_algae_offset))
     algae.append(f"    public static final Pose2d REEF_ALGAE_{letter}{letter2} = new Pose2d({algae_pos[0]:0.3f}, {algae_pos[1]:0.3f}, Rotation2d.fromDegrees({robot_angle}));")
 
+
+    algae_pos = (algae_pos[0] + meters(math.cos(rad)*algae_drive_back),
+                 algae_pos[1] + meters(math.sin(rad)*algae_drive_back))
+    algae_back.append(f"    public static final Pose2d REEF_ALGAE_BACK_{letter}{letter2} = new Pose2d({algae_pos[0]:0.3f}, {algae_pos[1]:0.3f}, Rotation2d.fromDegrees({robot_angle}));")
+
     for j in (-1, 1):
         rad2 = math.radians(angle + j * 90.0)
         point2 = (meters(point1[0] + math.cos(rad2)*reef_offset),
@@ -47,6 +54,12 @@ print()
 print(f"    // Algae robot positions - these positions are {center_algae_offset} inches short of the wall")
 print()
 for m in algae:
+    print(m)
+
+print()
+print(f"    // Algae robot drive back positions - these positions are {algae_drive_back} inches back from pickup")
+print()
+for m in algae_back:
     print(m)
 
 # TODO: add the CoralStation positions
