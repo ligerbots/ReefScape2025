@@ -80,7 +80,6 @@ public class CoralGroundIntake extends SubsystemBase {
     pivotMotorConfig.closedLoop.p(K_P).i(K_I).d(K_D);
 
     pivotMotorConfig.closedLoop.outputRange(-1, 1);
-    pivotMotorConfig.closedLoop.feedbackSensor(FeedbackSensor.kAbsoluteEncoder);
     pivotMotorConfig.closedLoop.positionWrappingEnabled(false); // don't treat it as a circle
 
     m_pivot_motor.configure(pivotMotorConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
@@ -93,8 +92,6 @@ public class CoralGroundIntake extends SubsystemBase {
     rollerMotor.closedLoop.p(K_P).i(K_I).d(K_D);
 
     rollerMotor.closedLoop.outputRange(-1, 1);
-    rollerMotor.closedLoop.feedbackSensor(FeedbackSensor.kAbsoluteEncoder);
-    rollerMotor.closedLoop.positionWrappingEnabled(false); // don't treat it as a circle
     m_roller_motor.configure(rollerMotor, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
 
     // motor encoder - set calibration and offset to match absolute encoder
