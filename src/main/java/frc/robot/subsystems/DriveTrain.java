@@ -334,6 +334,8 @@ public class DriveTrain extends SubsystemBase {
             // need to add the pipeline result
             m_aprilTagVision.updateOdometry(m_swerveDrive);
             SmartDashboard.putBoolean("driveTrain/readyToClimb", readyToClimb());
+            SmartDashboard.putNumber("driveTrain/pitch", getPitch().getDegrees());
+            SmartDashboard.putNumber("driveTrain/yaw", getYaw().getDegrees());
         }
     
         @Override
@@ -484,6 +486,9 @@ public class DriveTrain extends SubsystemBase {
     public Rotation2d getRoll() {
         return m_swerveDrive.getRoll();
     }
+     public Rotation2d getYaw() {
+        return m_swerveDrive.getYaw();
+     }
 
 
     /**
