@@ -57,8 +57,8 @@ public class CoralGroundIntake extends SubsystemBase {
     private final double DEPLOYED_ANGLE = 0.0; // FIXME: Find the angle
     private final double SCORING_ANGLE = 0.0; // FIXME: Find the angle
 
-    private final double ROLLER_INTAKE_SPEED_PERCENT = 0.0; // FIXME: Find the speed
-    private final double ROLLER_OUTTAKE_SPEED_PERCENT = 0.0; // FIXME: Find the speed
+    private final double ROLLER_INTAKE_SPEED_PRECENT = 0.0; // FIXME: Find the speed
+    private final double ROLLER_OUTTAKE_SPEED_PRECENT = 0.0; // FIXME: Find the speed
 
     private static final double STALL_VELOCITY_LIMIT = 2000; // TODO: Find a good value
     private final ValueThreshold m_speedThres = new ValueThreshold(Direction.FALLING, STALL_VELOCITY_LIMIT);
@@ -111,26 +111,25 @@ public class CoralGroundIntake extends SubsystemBase {
         switch (m_state) {
             case STOWED:
                 setPivotAngle(Rotation2d.fromDegrees(STOWED_ANGLE));
-                setRollerSpeedPrecent(0); // Note: This may want to be a activly intaking number so the coral does not fall out.
+                setRollerSpeedPercent(0); // Note: This may want to be a actively intaking number so the coral does not fall out.
                 break;
             case DEPLOYED:
                 boolean stalled = m_speedThres.compute(Math.abs(getRollerSpeed().getRadians()));
                 if (stalled) {
-                    setRollerSpeedPrecent(0);
+                    setRollerSpeedPercent(0);
                     m_state = CoralGroundIntakeState.STOWED;
                 } else {
-                    setRollerSpeedPrecent(ROLLER_INTAKE_SPEED_PERCENT);
+                    setRollerSpeedPercent(ROLLER_INTAKE_SPEED_PRECENT);
                     setPivotAngle(Rotation2d.fromDegrees(DEPLOYED_ANGLE));
                 }
                 break;
             case SCORING:
                 setPivotAngle(Rotation2d.fromDegrees(SCORING_ANGLE));
                 if (ANGLE_TOLERANCE_DEG > Math.abs(getPivotAngle().getDegrees() - SCORING_ANGLE)) {
-                    setRollerSpeedPrecent(ROLLER_OUTTAKE_SPEED_PERCENT);
+                    setRollerSpeedPercent(ROLLER_OUTTAKE_SPEED_PRECENT);
                 } else {
-                    setRollerSpeedPrecent(0);
+                    setRollerSpeedPercent(0);
                 }
-
                 break;
         }
     }
@@ -150,7 +149,7 @@ public class CoralGroundIntake extends SubsystemBase {
     }
 
     // set the speed of the roller in RPM
-    public void setRollerSpeedPrecent(double speed) {
+    public void setRollerSpeedPercent(double speed) {
         m_roller_motor.set(speed);
     }
 
