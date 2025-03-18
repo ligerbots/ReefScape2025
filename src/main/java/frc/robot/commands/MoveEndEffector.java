@@ -51,10 +51,10 @@ public class MoveEndEffector extends Command {
     private static final double BACK_INTAKE_HEIGHT = Units.inchesToMeters(4.5);
     private static final double BACK_INTAKE_ANGLE = 127.5;
     
-    private static final double L2_ALGAE_HEIGHT= Units.inchesToMeters(3.5);
+    public static final double L2_ALGAE_HEIGHT= Units.inchesToMeters(3.5);
     private static final double L2_ALGAE_ANGLE = 325.0;
     
-    private static final double L3_ALGAE_HEIGHT= Units.inchesToMeters(25);
+    public static final double L3_ALGAE_HEIGHT= Units.inchesToMeters(25);
     private static final double L3_ALGAE_ANGLE = 335.0;    
 
     private static final double PROCESSOR_HEIGHT = Units.inchesToMeters(0);
