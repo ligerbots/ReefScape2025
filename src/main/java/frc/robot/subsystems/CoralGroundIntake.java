@@ -20,6 +20,7 @@ import com.revrobotics.spark.config.SparkMaxConfig;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.subsystems.ValueThreshold.Direction;
@@ -108,32 +109,33 @@ public class CoralGroundIntake extends SubsystemBase {
 
         // boolean goalChanged = Math.abs(m_goalClipped.getDegrees() - oldGoalClipped) >
         // 5.0;
+        SmartDashboard.putNumber("coralGroundIntake/velocity", getPivotAngle().getDegrees());
 
-        switch (m_state) {
-            case STOW:
-                setPivotAngle(Rotation2d.fromDegrees(STOWED_ANGLE));
-                setRollerSpeedPercent(ROLLER_HOLD_SPEED_PERCENT); // Note: This may want to be a actively intaking number so the coral does not fall out.
-                break;
-            case DEPLOY:
-                boolean stalled = m_speedThres.compute(Math.abs(getRollerSpeed().getRadians()));
-                if (stalled) {
-                    setRollerSpeedPercent(ROLLER_HOLD_SPEED_PERCENT);
-                    m_state = CoralGroundIntakeState.STOW;
-                } else {
-                    setRollerSpeedPercent(ROLLER_INTAKE_SPEED_PRECENT);
-                    setPivotAngle(Rotation2d.fromDegrees(DEPLOYED_ANGLE));
-                }
-                break;
-            case SCORE:
-                // TODO: Detect if a coral is scored, then automatically switch to stow
-                setPivotAngle(Rotation2d.fromDegrees(SCORING_ANGLE));
-                if (ANGLE_TOLERANCE_DEG > Math.abs(getPivotAngle().getDegrees() - SCORING_ANGLE)) {
-                    setRollerSpeedPercent(ROLLER_OUTTAKE_SPEED_PRECENT);
-                } else {
-                    setRollerSpeedPercent(ROLLER_HOLD_SPEED_PERCENT);
-                }
-                break;
-        }
+        // switch (m_state) {
+        //     case STOW:
+        //         setPivotAngle(Rotation2d.fromDegrees(STOWED_ANGLE));
+        //         setRollerSpeedPercent(ROLLER_HOLD_SPEED_PERCENT); // Note: This may want to be a actively intaking number so the coral does not fall out.
+        //         break;
+        //     case DEPLOY:
+        //         boolean stalled = m_speedThres.compute(Math.abs(getRollerSpeed().getRadians()));
+        //         if (stalled) {
+        //             setRollerSpeedPercent(ROLLER_HOLD_SPEED_PERCENT);
+        //             m_state = CoralGroundIntakeState.STOW;
+        //         } else {
+        //             setRollerSpeedPercent(ROLLER_INTAKE_SPEED_PRECENT);
+        //             setPivotAngle(Rotation2d.fromDegrees(DEPLOYED_ANGLE));
+        //         }
+        //         break;
+        //     case SCORE:
+        //         // TODO: Detect if a coral is scored, then automatically switch to stow
+        //         setPivotAngle(Rotation2d.fromDegrees(SCORING_ANGLE));
+        //         if (ANGLE_TOLERANCE_DEG > Math.abs(getPivotAngle().getDegrees() - SCORING_ANGLE)) {
+        //             setRollerSpeedPercent(ROLLER_OUTTAKE_SPEED_PRECENT);
+        //         } else {
+        //             setRollerSpeedPercent(ROLLER_HOLD_SPEED_PERCENT);
+        //         }
+        //         break;
+        // }
     }
 
     public Rotation2d getRollerSpeed() {
