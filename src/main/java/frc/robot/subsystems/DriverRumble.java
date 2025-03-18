@@ -39,16 +39,18 @@ public class DriverRumble extends SubsystemBase {
     private final BooleanSupplier m_hasCoral;
     private final BooleanSupplier m_hasAlgae;
     private final BooleanSupplier m_climberDeployed;
+    private final BooleanSupplier m_readyToClimb;
 
     Timer m_timer;
 
     public DriverRumble(XboxController xbox, Supplier<Pose2d> positionSupplier, 
-            BooleanSupplier hasCoral, BooleanSupplier hasAlgae, BooleanSupplier climberDeployed) {
+            BooleanSupplier hasCoral, BooleanSupplier hasAlgae, BooleanSupplier climberDeployed, BooleanSupplier readyToClimb) {
         m_xbox = xbox;
         m_robotPositionSupplier = positionSupplier;
         m_hasCoral = hasCoral;
         m_hasAlgae = hasAlgae;
         m_climberDeployed = climberDeployed;
+        m_readyToClimb = readyToClimb;
         m_timer = new Timer();
     }
     
@@ -100,6 +102,8 @@ public class DriverRumble extends SubsystemBase {
 
             rumbleValue = xBlue - xMin;
             rumble = rumble || (xBlue >= xMin && xBlue <= xMax);
+        } else if (m_readyToClimb.getAsBoolean() && m_climberDeployed.getAsBoolean()){
+            rumble = m_readyToClimb.getAsBoolean();
         }
 
         m_xbox.setRumble(RumbleType.kBothRumble, rumble ? RUMBLE_INTENSITY : 0);
