@@ -40,7 +40,7 @@ public class CoralGroundIntake extends SubsystemBase {
     private static final double MIN_ANGLE = -90.0; // FIXME: Update with real values
     private static final double MAX_ANGLE = 90.0; // FIXME: Update with real values
 
-    private static final double GEAR_RATIO = 0; // FIXME: Update with real values
+    private static final double GEAR_RATIO = 16/42 * 1/4; // FIXME: Update with real values
 
     // Constants for the pivot PID controller
     private static final double K_P = 5.0;
