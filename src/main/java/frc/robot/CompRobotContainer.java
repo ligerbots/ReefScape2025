@@ -170,9 +170,9 @@ public class CompRobotContainer extends RobotContainer {
         m_chosenStartPoint.addOption("Field Center", FieldConstants.ROBOT_START_2);
 
         // m_chosenAutoFlavor.addOption("Granite State", "Granite State");
-        m_chosenAutoFlavor.addOption("Experimental", "Experimental");
+        // m_chosenAutoFlavor.addOption("Experimental", "Experimental");
         m_chosenAutoFlavor.addOption("Algae", "Algae");
-        m_chosenAutoFlavor.setDefaultOption("Refactor", "Refactor");
+        m_chosenAutoFlavor.setDefaultOption("Primary Coral - Refactor", "Refactor");
 
 
         // m_chosenSourcePickup.setDefaultOption("Center", FieldConstants.SOURCE_2_CENTER);
@@ -180,9 +180,9 @@ public class CompRobotContainer extends RobotContainer {
         // m_chosenSourcePickup.addOption("Outside", FieldConstants.SOURCE_2_OUT);
 
         SmartDashboard.putData("Field Side", m_chosenFieldSide);
-        SmartDashboard.putData("Auto Start Point", m_chosenStartPoint);
+        // SmartDashboard.putData("Auto Start Point", m_chosenStartPoint);
         // SmartDashboard.putData("Source Pickup slot", m_chosenSourcePickup);
-        SmartDashboard.putData("Reef Points", m_chosenReefPoints);
+        // SmartDashboard.putData("Reef Points", m_chosenReefPoints);
         SmartDashboard.putData("Auto flavor", m_chosenAutoFlavor);
     }
     
