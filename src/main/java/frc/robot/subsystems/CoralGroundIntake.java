@@ -20,6 +20,7 @@ import com.revrobotics.spark.config.SparkMaxConfig;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
@@ -34,17 +35,17 @@ public class CoralGroundIntake extends SubsystemBase {
     // Note: Current values for limits are refrenced with the shooter being flat
     // facing fowards as zero.
     // As of writing the above note we still may want to change the limits
-    public static final double ANGLE_TOLERANCE_DEG = 1.0;
+    public static final double ANGLE_TOLERANCE_DEG = 3.0;
 
     private static final int CURRENT_LIMIT = 60;
 
     private static final double MIN_ANGLE = -90.0; // FIXME: Update with real values
     private static final double MAX_ANGLE = 90.0; // FIXME: Update with real values
 
-    private static final double GEAR_RATIO = 16/42 * 1/4; // FIXME: Update with real values
+    private static final double GEAR_RATIO = 16.0/42.0 * 1.0/4.0; 
 
     // Constants for the pivot PID controller
-    private static final double K_P = 5.0;
+    private static final double K_P = 1.0;
     private static final double K_I = 0.0;
     private static final double K_D = 0.0;
 
@@ -54,18 +55,20 @@ public class CoralGroundIntake extends SubsystemBase {
     // private final RelativeEncoder m_encoder;
     private final SparkClosedLoopController m_pivotController;
 
-    private final double STOWED_ANGLE = 0.0; // FIXME: Find the angle
+    private final double STOWED_ANGLE = 100.0; // FIXME: Find the angle
     private final double DEPLOYED_ANGLE = 0.0; // FIXME: Find the angle
-    private final double SCORING_ANGLE = 0.0; // FIXME: Find the angle
+    private final double SCORING_ANGLE = 80.0; // FIXME: Find the angle
 
-    private final double ROLLER_INTAKE_SPEED_PRECENT = 0.0; // FIXME: Find the speed
-    private final double ROLLER_OUTTAKE_SPEED_PRECENT = 0.0; // FIXME: Find the speed
-    private final double ROLLER_HOLD_SPEED_PERCENT = 0.0; // FIXME: Find the speed
+    private final double ROLLER_INTAKE_SPEED = 0.2; // FIXME: Find the speed
+    private final double ROLLER_OUTTAKE_SPEED = -0.2; // FIXME: Find the speed
+    private final double ROLLER_HOLD_SPEED = 0.0; // FIXME: Find the speed
 
     private static final double STALL_VELOCITY_LIMIT = 2000; // TODO: Find a good value
     private final ValueThreshold m_speedThres = new ValueThreshold(Direction.FALLING, STALL_VELOCITY_LIMIT);
 
-    public CoralGroundIntakeState m_state = CoralGroundIntakeState.STOW;
+    public CoralGroundIntakeState m_state = CoralGroundIntakeState.DEPLOY;
+
+    private Timer m_stallTime = new Timer();
 
     // Construct a new shooterPivot subsystem
     public CoralGroundIntake() {
@@ -80,19 +83,18 @@ public class CoralGroundIntake extends SubsystemBase {
 
         pivotMotorConfig.closedLoop.p(K_P).i(K_I).d(K_D);
 
+
         pivotMotorConfig.closedLoop.outputRange(-1, 1);
         pivotMotorConfig.closedLoop.positionWrappingEnabled(false); // don't treat it as a circle
 
         m_pivot_motor.configure(pivotMotorConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
+        m_pivot_motor.getEncoder().setPosition(0);
 
         SparkMaxConfig rollerMotor = new SparkMaxConfig();
         rollerMotor.inverted(true);
         rollerMotor.idleMode(IdleMode.kBrake);
         rollerMotor.smartCurrentLimit(CURRENT_LIMIT);
 
-        rollerMotor.closedLoop.p(K_P).i(K_I).d(K_D);
-
-        rollerMotor.closedLoop.outputRange(-1, 1);
         m_roller_motor.configure(rollerMotor, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
 
         // motor encoder - set calibration and offset to match absolute encoder
@@ -109,33 +111,37 @@ public class CoralGroundIntake extends SubsystemBase {
 
         // boolean goalChanged = Math.abs(m_goalClipped.getDegrees() - oldGoalClipped) >
         // 5.0;
-        SmartDashboard.putNumber("coralGroundIntake/velocity", getPivotAngle().getDegrees());
+        SmartDashboard.putNumber("coralGroundIntake/angle", getPivotAngle().getDegrees());
 
-        // switch (m_state) {
-        //     case STOW:
-        //         setPivotAngle(Rotation2d.fromDegrees(STOWED_ANGLE));
-        //         setRollerSpeedPercent(ROLLER_HOLD_SPEED_PERCENT); // Note: This may want to be a actively intaking number so the coral does not fall out.
-        //         break;
-        //     case DEPLOY:
-        //         boolean stalled = m_speedThres.compute(Math.abs(getRollerSpeed().getRadians()));
-        //         if (stalled) {
-        //             setRollerSpeedPercent(ROLLER_HOLD_SPEED_PERCENT);
-        //             m_state = CoralGroundIntakeState.STOW;
-        //         } else {
-        //             setRollerSpeedPercent(ROLLER_INTAKE_SPEED_PRECENT);
-        //             setPivotAngle(Rotation2d.fromDegrees(DEPLOYED_ANGLE));
-        //         }
-        //         break;
-        //     case SCORE:
-        //         // TODO: Detect if a coral is scored, then automatically switch to stow
-        //         setPivotAngle(Rotation2d.fromDegrees(SCORING_ANGLE));
-        //         if (ANGLE_TOLERANCE_DEG > Math.abs(getPivotAngle().getDegrees() - SCORING_ANGLE)) {
-        //             setRollerSpeedPercent(ROLLER_OUTTAKE_SPEED_PRECENT);
-        //         } else {
-        //             setRollerSpeedPercent(ROLLER_HOLD_SPEED_PERCENT);
-        //         }
-        //         break;
-        // }
+        switch (m_state) {
+            case STOW:
+                setPivotAngle(Rotation2d.fromDegrees(STOWED_ANGLE));
+                setRollerSpeedPercent(ROLLER_HOLD_SPEED); // Note: This may want to be a actively intaking number so the coral does not fall out.
+                break;
+            case DEPLOY:
+                boolean stalled = m_speedThres.compute(Math.abs(getRollerSpeed().getRadians()));
+                if (stalled) {
+                    m_stallTime.reset();
+                    System.out.println("Coral pivot stalled");
+                } else if (m_stallTime.hasElapsed(0.5)) {
+                    setRollerSpeedPercent(ROLLER_HOLD_SPEED);
+                    m_state = CoralGroundIntakeState.STOW;
+                    m_stallTime.reset();
+                } else {
+                    setRollerSpeedPercent(ROLLER_INTAKE_SPEED);
+                    setPivotAngle(Rotation2d.fromDegrees(DEPLOYED_ANGLE));
+                }
+                break;
+            case SCORE:
+                // TODO: Detect if a coral is scored, then automatically switch to stow
+                setPivotAngle(Rotation2d.fromDegrees(SCORING_ANGLE));
+                if (ANGLE_TOLERANCE_DEG > Math.abs(getPivotAngle().getDegrees() - SCORING_ANGLE)) {
+                    setRollerSpeedPercent(ROLLER_OUTTAKE_SPEED);
+                } else {
+                    setRollerSpeedPercent(ROLLER_HOLD_SPEED);
+                }
+                break;
+        }
     }
 
     public Rotation2d getRollerSpeed() {

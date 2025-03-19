@@ -29,7 +29,7 @@ public class KitbotRobotContainer extends RobotContainer {
     // private final Leds m_leds = new Leds();
     // private final CoralEffector m_coralEndEffector = new CoralEffector();
     // private final AlgaeEffector m_algaeEndEffector = new AlgaeEffector();
-    private final NeoClimber m_climber = new NeoClimber();
+    // private final NeoClimber m_climber = new NeoClimber();
 
     private final SendableChooser<Command> m_chosenAuto = new SendableChooser<>();
     private final CoralGroundIntake m_coralGroundIntake = new CoralGroundIntake();
@@ -57,8 +57,8 @@ public class KitbotRobotContainer extends RobotContainer {
         m_driverController.a().onTrue(new InstantCommand(m_coralGroundIntake::deploy));
         m_driverController.x().onTrue(new InstantCommand(m_coralGroundIntake::score));
 
-        m_driverController.start().whileTrue(new StartEndCommand(() -> m_climber.run(0.4), m_climber::hold, m_climber));
-        m_driverController.back().whileTrue(new StartEndCommand(() -> m_climber.run(-0.4), m_climber::hold, m_climber));
+        // m_driverController.start().whileTrue(new StartEndCommand(() -> m_climber.run(0.4), m_climber::hold, m_climber));
+        // m_driverController.back().whileTrue(new StartEndCommand(() -> m_climber.run(-0.4), m_climber::hold, m_climber));
     }
     
     private void configureAutos() {
