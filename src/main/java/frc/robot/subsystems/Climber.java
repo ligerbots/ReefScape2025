@@ -137,8 +137,8 @@ public class Climber extends SubsystemBase {
         return speed;
     }
     
-    public void run(double climbSpeed) {
-        m_climberMotor.set(limitWinch(climbSpeed));
+    public void run(double speed) {
+        m_climberMotor.set(limitWinch(speed));
         // m_climberMotor.set( climbSpeed);
     }
     
@@ -178,7 +178,7 @@ public class Climber extends SubsystemBase {
 
     public boolean isDeployed() {
         // be generous. Only used in feedback rumble
-        return m_climberState != ClimberState.IDLE;
+        return true; //m_climberState != ClimberState.IDLE;
     }
 
     public void resetGoal() {

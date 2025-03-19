@@ -12,6 +12,7 @@ import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Filesystem;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Config;
@@ -80,7 +81,8 @@ public class DriveTrain extends SubsystemBase {
     private final double m_maxRotationSpeed;
     private static final double PRECISION_MODE_SCALE_FACTOR = 1.0 / 6.0;
     private static final double OUTREACH_MODE_SCALE_FACTOR = 0.5;
-
+    private static final double READYTOCLIMBDEGREES = 5;
+    
     // Swerve drive object
     private final SwerveDrive m_swerveDrive;
 
@@ -331,6 +333,10 @@ public class DriveTrain extends SubsystemBase {
         // Have the vision system update based on the Apriltags, if seen
         // need to add the pipeline result
         m_aprilTagVision.updateOdometry(m_swerveDrive);
+        
+        SmartDashboard.putBoolean("driveTrain/readyToClimb", readyToClimb());
+        SmartDashboard.putNumber("driveTrain/pitch", getPitch().getDegrees());
+        SmartDashboard.putNumber("driveTrain/yaw", getYaw().getDegrees());
     }
 
     @Override
@@ -444,6 +450,10 @@ public class DriveTrain extends SubsystemBase {
         return m_swerveDrive.swerveController;
     }
 
+    public boolean readyToClimb(){
+        return Math.abs(getPitch().getDegrees()) >= READYTOCLIMBDEGREES;
+    }
+
     /**
      * Get the {@link SwerveDriveConfiguration} object.
      *
@@ -477,6 +487,9 @@ public class DriveTrain extends SubsystemBase {
     public Rotation2d getRoll() {
         return m_swerveDrive.getRoll();
     }
+     public Rotation2d getYaw() {
+        return m_swerveDrive.getYaw();
+     }
 
 
     /**
