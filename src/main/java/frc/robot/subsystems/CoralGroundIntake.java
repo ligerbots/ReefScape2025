@@ -31,6 +31,8 @@ public class CoralGroundIntake extends SubsystemBase {
         STOW, DEPLOY, SCORE
     }
 
+    //IMPORTANT NOTE: All angles are relitive to deployed which is zero in the code.
+
     // NOTE: All constants were taken from the 2023 arm
     // Note: Current values for limits are refrenced with the shooter being flat
     // facing fowards as zero.
@@ -38,8 +40,8 @@ public class CoralGroundIntake extends SubsystemBase {
     public static final double ANGLE_TOLERANCE_DEG = 3.0;
 
     private static final int CURRENT_LIMIT = 60;
-
-    private static final double MIN_ANGLE = -90.0; // FIXME: Update with real values
+ 
+    private static final double MIN_ANGLE = 0; // FIXME: Update with real values
     private static final double MAX_ANGLE = 90.0; // FIXME: Update with real values
 
     private static final double GEAR_RATIO = 16.0/42.0 * 1.0/4.0; 
@@ -49,13 +51,13 @@ public class CoralGroundIntake extends SubsystemBase {
     private static final double K_I = 0.0;
     private static final double K_D = 0.0;
 
-    private final SparkMax m_pivot_motor;
-    private final SparkFlex m_roller_motor;
+    private final SparkMax m_pivotMotor;
+    private final SparkFlex m_rollerMotor;
 
     // private final RelativeEncoder m_encoder;
     private final SparkClosedLoopController m_pivotController;
 
-    private final double STOWED_ANGLE = 100.0; // FIXME: Find the angle
+    private final double STOWED_ANGLE = 120.0; // FIXME: Find the angle
     private final double DEPLOYED_ANGLE = 0.0; // FIXME: Find the angle
     private final double SCORING_ANGLE = 80.0; // FIXME: Find the angle
 
@@ -72,8 +74,8 @@ public class CoralGroundIntake extends SubsystemBase {
 
     // Construct a new shooterPivot subsystem
     public CoralGroundIntake() {
-        m_pivot_motor = new SparkMax(Constants.CORAL_GROUND_PIVOT_ID, MotorType.kBrushless);
-        m_roller_motor = new SparkFlex(Constants.CORAL_GROUND_ROLLER_ID, MotorType.kBrushless);
+        m_pivotMotor = new SparkMax(Constants.CORAL_GROUND_PIVOT_ID, MotorType.kBrushless);
+        m_rollerMotor = new SparkFlex(Constants.CORAL_GROUND_ROLLER_ID, MotorType.kBrushless);
 
         SparkMaxConfig pivotMotorConfig = new SparkMaxConfig();
         pivotMotorConfig.inverted(true);
@@ -83,25 +85,24 @@ public class CoralGroundIntake extends SubsystemBase {
 
         pivotMotorConfig.closedLoop.p(K_P).i(K_I).d(K_D);
 
-
         pivotMotorConfig.closedLoop.outputRange(-1, 1);
         pivotMotorConfig.closedLoop.positionWrappingEnabled(false); // don't treat it as a circle
 
-        m_pivot_motor.configure(pivotMotorConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
-        m_pivot_motor.getEncoder().setPosition(0);
+        m_pivotMotor.configure(pivotMotorConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
+        m_pivotMotor.getEncoder().setPosition(0);
 
         SparkMaxConfig rollerMotor = new SparkMaxConfig();
         rollerMotor.inverted(true);
         rollerMotor.idleMode(IdleMode.kBrake);
         rollerMotor.smartCurrentLimit(CURRENT_LIMIT);
 
-        m_roller_motor.configure(rollerMotor, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
+        m_rollerMotor.configure(rollerMotor, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
 
         // motor encoder - set calibration and offset to match absolute encoder
         // m_encoder = m_motor.getEncoder();
 
         // controller for PID control
-        m_pivotController = m_pivot_motor.getClosedLoopController();
+        m_pivotController = m_pivotMotor.getClosedLoopController();
     }
 
     @Override
@@ -112,29 +113,27 @@ public class CoralGroundIntake extends SubsystemBase {
         // boolean goalChanged = Math.abs(m_goalClipped.getDegrees() - oldGoalClipped) >
         // 5.0;
         SmartDashboard.putNumber("coralGroundIntake/angle", getPivotAngle().getDegrees());
-
+      //TODO: Add feedfowards for scoring & deployed.
         switch (m_state) {
             case STOW:
-                setPivotAngle(Rotation2d.fromDegrees(STOWED_ANGLE));
+                setPivotAngle(Rotation2d.fromDegrees(STOWED_ANGLE), 0);
                 setRollerSpeedPercent(ROLLER_HOLD_SPEED); // Note: This may want to be a actively intaking number so the coral does not fall out.
                 break;
             case DEPLOY:
                 boolean stalled = m_speedThres.compute(Math.abs(getRollerSpeed().getRadians()));
-                if (stalled) {
-                    m_stallTime.reset();
-                    System.out.println("Coral pivot stalled");
+                if (stalled && !m_stallTime.isRunning()) {
+                    m_stallTime.restart();
                 } else if (m_stallTime.hasElapsed(0.5)) {
-                    setRollerSpeedPercent(ROLLER_HOLD_SPEED);
-                    m_state = CoralGroundIntakeState.STOW;
-                    m_stallTime.reset();
+                    stow();
+                    m_stallTime.stop();
                 } else {
                     setRollerSpeedPercent(ROLLER_INTAKE_SPEED);
-                    setPivotAngle(Rotation2d.fromDegrees(DEPLOYED_ANGLE));
+                    setPivotAngle(Rotation2d.fromDegrees(DEPLOYED_ANGLE), 1);
                 }
                 break;
             case SCORE:
                 // TODO: Detect if a coral is scored, then automatically switch to stow
-                setPivotAngle(Rotation2d.fromDegrees(SCORING_ANGLE));
+                setPivotAngle(Rotation2d.fromDegrees(SCORING_ANGLE), 2);
                 if (ANGLE_TOLERANCE_DEG > Math.abs(getPivotAngle().getDegrees() - SCORING_ANGLE)) {
                     setRollerSpeedPercent(ROLLER_OUTTAKE_SPEED);
                 } else {
@@ -145,22 +144,22 @@ public class CoralGroundIntake extends SubsystemBase {
     }
 
     public Rotation2d getRollerSpeed() {
-        return Rotation2d.fromRotations(m_roller_motor.getEncoder().getVelocity());
+        return Rotation2d.fromRotations(m_rollerMotor.getEncoder().getVelocity());
     }
 
     // get the current pivot angle
     public Rotation2d getPivotAngle() {
-        return Rotation2d.fromRotations(m_pivot_motor.getEncoder().getPosition());
+        return Rotation2d.fromRotations(m_pivotMotor.getEncoder().getPosition());
     }
 
-    public void setPivotAngle(Rotation2d angle) {
-        m_pivotController.setReference(angle.getRotations(), SparkBase.ControlType.kPosition, ClosedLoopSlot.kSlot0);
+    public void setPivotAngle(Rotation2d angle, double feedForward) {
+        m_pivotController.setReference(angle.getRotations(), SparkBase.ControlType.kPosition, ClosedLoopSlot.kSlot0, feedForward); //TODO: Add feedfowards as last param
         // SmartDashboard.putNumber("pivot/goal", m_goal.getDegrees());
     }
 
     // set the speed of the roller in RPM
     public void setRollerSpeedPercent(double speed) {
-        m_roller_motor.set(speed);
+        m_rollerMotor.set(speed);
     }
 
     // needs to be public so that commands can get the restricted angle
