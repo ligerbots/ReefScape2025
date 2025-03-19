@@ -58,8 +58,8 @@ public class CoralGroundIntake extends SubsystemBase {
     private final SparkClosedLoopController m_pivotController;
 
     private final double STOWED_ANGLE = 120.0; // FIXME: Find the angle
-    private final double DEPLOYED_ANGLE = 0.0; // FIXME: Find the angle
     private final double SCORING_ANGLE = 80.0; // FIXME: Find the angle
+    private final double DEPLOYED_ANGLE = 0.0; // FIXME: Find the angle
 
     private final double ROLLER_INTAKE_SPEED = 0.2; // FIXME: Find the speed
     private final double ROLLER_OUTTAKE_SPEED = -0.2; // FIXME: Find the speed
@@ -107,13 +107,7 @@ public class CoralGroundIntake extends SubsystemBase {
 
     @Override
     public void periodic() {
-
-        // double oldGoalClipped = m_goalClipped.getDegrees();
-
-        // boolean goalChanged = Math.abs(m_goalClipped.getDegrees() - oldGoalClipped) >
-        // 5.0;
         SmartDashboard.putNumber("coralGroundIntake/angle", getPivotAngle().getDegrees());
-      //TODO: Add feedfowards for scoring & deployed.
         switch (m_state) {
             case STOW:
                 setPivotAngle(Rotation2d.fromDegrees(STOWED_ANGLE), 0);
