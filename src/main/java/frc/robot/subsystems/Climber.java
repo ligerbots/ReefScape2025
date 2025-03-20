@@ -21,11 +21,11 @@ public class Climber extends SubsystemBase {
     // private final RelativeEncoder m_climberMotorEncoder;
     
     // Constants to be used in this class
-    private static final double DEPLOYED_ROTATIONS = -30.0;
-    private static final double CLIMB_ROTATIONS = 200; 
+    private static final double DEPLOYED_ROTATIONS = 10.0;
+    private static final double CLIMB_ROTATIONS = 155.0; 
     
     // Protection values
-    private static final double MAX_ROTATIONS_ALLOWED = 220.0;
+    private static final double MAX_ROTATIONS_ALLOWED = 180.0;
     private static final double MAX_CURRENT = 100.0;
 
     // Current limit in the motor
@@ -33,9 +33,9 @@ public class Climber extends SubsystemBase {
 
     // Motion Magic limits
     // maxV=100, maxA=200 would be about 2.5 sec to climb
-    private static final double MAX_VEL_ROT_PER_SEC = 50.0;
-    private static final double MAX_ACC_ROT_PER_SEC_SQ = 100.0;
-    private static final double MAX_JERK_ROT_PER_SEC3 = 2000.0;
+    private static final double MAX_VEL_ROT_PER_SEC = 100.0;
+    private static final double MAX_ACC_ROT_PER_SEC_SQ = 200.0;
+    private static final double MAX_JERK_ROT_PER_SEC3 = 4000.0;
 
     // Winch motor speed values
     // private static final double DEPLOY_MAX_SPEED = -0.4;
@@ -178,7 +178,7 @@ public class Climber extends SubsystemBase {
 
     public boolean isDeployed() {
         // be generous. Only used in feedback rumble
-        return true; //m_climberState != ClimberState.IDLE;
+        return m_climberState != ClimberState.IDLE;
     }
 
     public void resetGoal() {
