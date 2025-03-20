@@ -1,0 +1,54 @@
+{
+  "version": "2025.0",
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 7.272431506849315,
+        "y": 5.580158390410959
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 6.949741558716537,
+        "y": 5.678814608153452
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 8.611430921052632,
+        "y": 5.148161764705882
+      },
+      "prevControl": {
+        "x": 8.84919505012642,
+        "y": 5.070907516112145
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": "TushPush"
+    }
+  ],
+  "rotationTargets": [],
+  "constraintZones": [],
+  "pointTowardsZones": [],
+  "eventMarkers": [],
+  "globalConstraints": {
+    "maxVelocity": 3.3,
+    "maxAcceleration": 2.0,
+    "maxAngularVelocity": 540.0,
+    "maxAngularAcceleration": 720.0,
+    "nominalVoltage": 12.0,
+    "unlimited": false
+  },
+  "goalEndState": {
+    "velocity": 0,
+    "rotation": 163.79717751295283
+  },
+  "reversed": false,
+  "folder": null,
+  "idealStartingState": {
+    "velocity": 0,
+    "rotation": 163.0
+  },
+  "useDefaultConstraints": false
+}

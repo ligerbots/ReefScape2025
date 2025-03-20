@@ -174,6 +174,7 @@ public class CompRobotContainer extends RobotContainer {
         // m_chosenAutoFlavor.addOption("Experimental", "Experimental");
         m_chosenAutoFlavor.addOption("Algae", "Algae");
         m_chosenAutoFlavor.setDefaultOption("Primary Coral - Refactor", "Refactor");
+        m_chosenAutoFlavor.addOption("TushPush then Primary Coral", "TushPush");
 
 
         // m_chosenSourcePickup.setDefaultOption("Center", FieldConstants.SOURCE_2_CENTER);
@@ -209,7 +210,11 @@ public class CompRobotContainer extends RobotContainer {
             }
             if(autoFlavor.equals("Refactor")) { 
                 m_autoCommand = new CompBotExperimentalAutoRefactor(m_chosenStartPoint.getSelected(), FieldConstants.SOURCE_2_CENTER, m_chosenReefPoints.getSelected(), 
-                        m_driveTrain, m_elevator, m_coralEffector, m_algaeEffector, m_pivot, m_chosenFieldSide.getSelected().equals("Processor Side"));
+                        m_driveTrain, m_elevator, m_coralEffector, m_algaeEffector, m_pivot, m_chosenFieldSide.getSelected().equals("Processor Side"), false);
+            }
+            if(autoFlavor.equals("TushPush")) { 
+                m_autoCommand = new CompBotExperimentalAutoRefactor(m_chosenStartPoint.getSelected(), FieldConstants.SOURCE_2_CENTER, m_chosenReefPoints.getSelected(), 
+                        m_driveTrain, m_elevator, m_coralEffector, m_algaeEffector, m_pivot, m_chosenFieldSide.getSelected().equals("Processor Side"), true);
             }
             
             m_autoSelectionCode = currentAutoSelectionCode;

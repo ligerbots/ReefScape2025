@@ -26,13 +26,13 @@ import frc.robot.subsystems.EndEffectorPivot;
 public class CompBotExperimentalAutoRefactor extends ReefscapeAbstractAuto {
 
     private final double CORAL_PICKUP_WAIT_TIME;
-
+    
     PathConstraints constraints =  new PathConstraints(
     4.0, 2.0,
     Math.toRadians(540), Math.toRadians(720));
     
     public CompBotExperimentalAutoRefactor(Pose2d startPoint, Pose2d sourcePoint, Pose2d[] reefPoints, DriveTrain driveTrain, 
-        Elevator elevator, CoralEffector coralEffector, AlgaeEffector algaeEffector, EndEffectorPivot pivot, boolean isProcessorSide) {
+        Elevator elevator, CoralEffector coralEffector, AlgaeEffector algaeEffector, EndEffectorPivot pivot, boolean isProcessorSide, boolean doTushPush) {
             super(startPoint, sourcePoint, reefPoints, driveTrain, elevator, coralEffector, algaeEffector, pivot, isProcessorSide);
 
             
@@ -43,11 +43,21 @@ public class CompBotExperimentalAutoRefactor extends ReefscapeAbstractAuto {
             CORAL_PICKUP_WAIT_TIME = 5.0;
         }
         try {
-            PathPlannerPath startPath = PathFactory.getPath(startPoint, reefPoints[0], isProcessorSide);
+
+            PathPlannerPath firstCoralPath = PathFactory.getPath(startPoint, reefPoints[0], isProcessorSide);
+
+            if(doTushPush) {
+                PathPlannerPath tushPushPath = PathFactory.getPath("StartX to TushPush", isProcessorSide);
+                PathPlannerPath driveBackToOriginalStart = PathFactory.getPath("TushPush to Start3", isProcessorSide);
+
+                addCommands(m_driveTrain.followPath(tushPushPath), m_driveTrain.followPath(driveBackToOriginalStart));
+
+                m_initPose = tushPushPath.getStartingDifferentialPose();
+            } else {
+                m_initPose = firstCoralPath.getStartingDifferentialPose();
+            }
             
-            m_initPose = startPath.getStartingDifferentialPose();
-            
-            addCommands(m_driveTrain.followPath(startPath).alongWith(
+            addCommands(m_driveTrain.followPath(firstCoralPath).alongWith(
                 new WaitCommand(.5).andThen(
                     new MoveEndEffector(Constants.Position.L4, elevator, pivot, RAISE_ELEVATOR_WAIT_TIME))));
             addCommands(new StartEndCommand(coralEffector::runOuttake, coralEffector::stop, coralEffector).withTimeout(CORAL_SCORE_WAIT_TIME));  
@@ -90,8 +100,4 @@ public class CompBotExperimentalAutoRefactor extends ReefscapeAbstractAuto {
                 );
     }
 
-    @Override
-    public Pose2d getInitialPose() {
-        return FieldConstants.flipPose(m_initPose);
-    }
 }
