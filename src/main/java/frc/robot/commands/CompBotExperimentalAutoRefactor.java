@@ -4,6 +4,8 @@
 
 package frc.robot.commands;
 
+import java.util.Optional;
+
 import com.pathplanner.lib.path.PathConstraints;
 import com.pathplanner.lib.path.PathPlannerPath;
 
@@ -48,13 +50,14 @@ public class CompBotExperimentalAutoRefactor extends ReefscapeAbstractAuto {
 
             if(doTushPush) {
                 PathPlannerPath tushPushPath = PathFactory.getPath("StartX to TushPush", isProcessorSide);
+                m_initPose = tushPushPath.getStartingHolonomicPose().get();
+
                 PathPlannerPath driveBackToOriginalStart = PathFactory.getPath("TushPush to Start3", isProcessorSide);
 
                 addCommands(m_driveTrain.followPath(tushPushPath), m_driveTrain.followPath(driveBackToOriginalStart));
 
-                m_initPose = tushPushPath.getStartingDifferentialPose();
-            } else {
-                m_initPose = firstCoralPath.getStartingDifferentialPose();
+            } else { 
+                m_initPose = firstCoralPath.getStartingHolonomicPose().get();
             }
             
             addCommands(m_driveTrain.followPath(firstCoralPath).alongWith(
