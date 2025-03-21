@@ -11,7 +11,7 @@
         "x": 4.048815789473684,
         "y": 6.195401315789473
       },
-      "isLocked": false,
+      "isLocked": true,
       "linkedName": "scoreReefJ"
     },
     {
@@ -24,7 +24,7 @@
         "y": 6.515513738390092
       },
       "nextControl": null,
-      "isLocked": false,
+      "isLocked": true,
       "linkedName": "source2Center"
     }
   ],
