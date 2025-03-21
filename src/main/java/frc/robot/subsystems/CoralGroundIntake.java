@@ -47,7 +47,7 @@ public class CoralGroundIntake extends SubsystemBase {
     private static final double GEAR_RATIO = 16.0/42.0 * 1.0/4.0; 
 
     // Constants for the pivot PID controller
-    private static final double K_P = 1.0;
+    private static final double K_P = 1;
     private static final double K_I = 0.0;
     private static final double K_D = 0.0;
 
@@ -57,9 +57,9 @@ public class CoralGroundIntake extends SubsystemBase {
     // private final RelativeEncoder m_encoder;
     private final SparkClosedLoopController m_pivotController;
 
-    private final double STOWED_ANGLE = 120.0; // FIXME: Find the angle
-    private final double SCORING_ANGLE = 80.0; // FIXME: Find the angle
-    private final double DEPLOYED_ANGLE = 0.0; // FIXME: Find the angle
+    private final double STOWED_ANGLE = 130.0; // FIXME: Find the angle
+    private final double SCORING_ANGLE = 100.0; // FIXME: Find the angle
+    private final double DEPLOYED_ANGLE = 2.0; // FIXME: Find the angle
 
     private final double ROLLER_INTAKE_SPEED = 0.2; // FIXME: Find the speed
     private final double ROLLER_OUTTAKE_SPEED = -0.2; // FIXME: Find the speed
@@ -69,6 +69,8 @@ public class CoralGroundIntake extends SubsystemBase {
     private final ValueThreshold m_speedThres = new ValueThreshold(Direction.FALLING, STALL_VELOCITY_LIMIT);
 
     public CoralGroundIntakeState m_state = CoralGroundIntakeState.DEPLOY;
+
+    private double m_goalAngle; //Used for readout in elastic only
 
     private Timer m_stallTime = new Timer();
 
@@ -107,10 +109,10 @@ public class CoralGroundIntake extends SubsystemBase {
 
     @Override
     public void periodic() {
-        SmartDashboard.putNumber("coralGroundIntake/angle", getPivotAngle().getDegrees());
+        SmartDashboard.putNumber("coralGroundIntake/angleOffFromGoal", m_goalAngle - getPivotAngle().getDegrees());
         switch (m_state) {
             case STOW:
-                setPivotAngle(Rotation2d.fromDegrees(STOWED_ANGLE), 0);
+                setPivotAngle(Rotation2d.fromDegrees(STOWED_ANGLE), -.5);
                 setRollerSpeedPercent(ROLLER_HOLD_SPEED); // Note: This may want to be a actively intaking number so the coral does not fall out.
                 break;
             case DEPLOY:
@@ -119,7 +121,9 @@ public class CoralGroundIntake extends SubsystemBase {
                     m_stallTime.restart();
                 } else if (m_stallTime.hasElapsed(0.5)) {
                     stow();
+                    m_stallTime.reset();
                     m_stallTime.stop();
+                    System.out.println("Stalled, intaking");
                 } else {
                     setRollerSpeedPercent(ROLLER_INTAKE_SPEED);
                     setPivotAngle(Rotation2d.fromDegrees(DEPLOYED_ANGLE), 1);
@@ -127,7 +131,7 @@ public class CoralGroundIntake extends SubsystemBase {
                 break;
             case SCORE:
                 // TODO: Detect if a coral is scored, then automatically switch to stow
-                setPivotAngle(Rotation2d.fromDegrees(SCORING_ANGLE), 2);
+                setPivotAngle(Rotation2d.fromDegrees(SCORING_ANGLE), .4);
                 if (ANGLE_TOLERANCE_DEG > Math.abs(getPivotAngle().getDegrees() - SCORING_ANGLE)) {
                     setRollerSpeedPercent(ROLLER_OUTTAKE_SPEED);
                 } else {
@@ -147,6 +151,7 @@ public class CoralGroundIntake extends SubsystemBase {
     }
 
     public void setPivotAngle(Rotation2d angle, double feedForward) {
+        m_goalAngle = angle.getDegrees();
         m_pivotController.setReference(angle.getRotations(), SparkBase.ControlType.kPosition, ClosedLoopSlot.kSlot0, feedForward); //TODO: Add feedfowards as last param
         // SmartDashboard.putNumber("pivot/goal", m_goal.getDegrees());
     }
