@@ -88,6 +88,8 @@ public class DriveTrain extends SubsystemBase {
 
     private final AprilTagVision m_aprilTagVision;
 
+    private boolean m_brakeMode = true;
+
     /**
      * Initialize {@link SwerveDrive} with the directory provided.
      *
@@ -98,7 +100,7 @@ public class DriveTrain extends SubsystemBase {
         // objects being created.
         // Turn off for competition??
         // SwerveDriveTelemetry.verbosity = TelemetryVerbosity.HIGH;
-        
+
         try {
             File jsonDir = new File(Filesystem.getDeployDirectory(), jsonPath);
 
@@ -407,10 +409,15 @@ public class DriveTrain extends SubsystemBase {
     /**
      * Sets the drive motors to brake/coast mode.
      *
+     * Warning: for Kraken/Falcon, changing mode is a blocking call
+     * 
      * @param brake True to set motors to brake mode, false for coast.
      */
     public void setBrakeMode(boolean brake) {
-        m_swerveDrive.setMotorIdleMode(brake);
+        if (m_brakeMode != brake) {
+            m_swerveDrive.setMotorIdleMode(brake);
+            m_brakeMode = brake;
+        }
     }
 
     /**

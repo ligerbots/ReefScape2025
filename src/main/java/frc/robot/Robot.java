@@ -123,6 +123,10 @@ public class Robot extends TimedRobot {
         // drivetrain might be null when testing code. So check
         DriveTrain driveTrain = m_robotContainer.getDriveTrain();
 
+        // set drive motor to brake mode. The config change is blocking on the motors
+        //   so only do this when disabled. But DriveTrain function check if the change is needed.
+        // driveTrain.setBrakeMode(true);
+
         if (isSimulation()) {
             // YAGSL bug fix (Nov 2024)
             // The simulation needs to be told the drive speed every loop, even when disabled 
