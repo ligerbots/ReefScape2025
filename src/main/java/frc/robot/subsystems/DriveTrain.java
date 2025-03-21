@@ -96,7 +96,9 @@ public class DriveTrain extends SubsystemBase {
     public DriveTrain(String jsonPath, AprilTagVision apriltagVision) {
         // Configure the Telemetry before creating the SwerveDrive to avoid unnecessary
         // objects being created.
-        SwerveDriveTelemetry.verbosity = TelemetryVerbosity.HIGH;
+        // Turn off for competition??
+        // SwerveDriveTelemetry.verbosity = TelemetryVerbosity.HIGH;
+        
         try {
             File jsonDir = new File(Filesystem.getDeployDirectory(), jsonPath);
 
