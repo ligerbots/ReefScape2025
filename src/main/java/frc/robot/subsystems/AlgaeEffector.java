@@ -27,7 +27,7 @@ public class AlgaeEffector extends SubsystemBase {
    
     static final double INTAKE_VOLTAGE = -6.0;
     static final double PROCESSOR_VOLTAGE = 6.0;
-    static final double BARGE_VOLTAGE = 12.0;
+    static final double BARGE_VOLTAGE = 10.0;
     static final double HOLD_VOLTAGE = -6.0;
 
     // Max velocity indicating the motor has stalled

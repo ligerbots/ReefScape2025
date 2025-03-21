@@ -49,7 +49,7 @@ public class CompRobotContainer extends RobotContainer {
     private final DriverRumble m_driverRumble = new DriverRumble(
         m_driverController.getHID(), () -> m_driveTrain.getPose(), 
         () -> m_coralEffector.hasCoral(), () -> m_algaeEffector.hasAlgae(),
-        () -> m_climber.isDeployed());
+        () -> m_climber.isDeployed(), () -> m_driveTrain.readyToClimb());
     
     private boolean m_coralMode = true;
     
@@ -119,9 +119,10 @@ public class CompRobotContainer extends RobotContainer {
         m_driverController.back().onTrue(new MoveEndEffector(Constants.Position.CLIMB, m_elevator, m_pivot, 0));
 
         m_farm.button(1).whileTrue(new StartEndCommand(() -> m_climber.run(Climber.MANUAL_SPEED), m_climber::hold, m_climber));
+        m_farm.button(1).onTrue(new MoveEndEffector(Constants.Position.CLIMB, m_elevator, m_pivot, 0));
 
-        m_farm.button(2).whileTrue(new StartEndCommand(() -> m_climber.run(-Climber.MANUAL_SPEED), m_climber::hold, m_climber));
-        m_farm.button(2).onTrue(new MoveEndEffector(Constants.Position.CLIMB, m_elevator, m_pivot, 0));
+        // m_farm.button(2).whileTrue(new StartEndCommand(() -> m_climber.run(-Climber.MANUAL_SPEED), m_climber::hold, m_climber));
+        // m_farm.button(2).onTrue(new MoveEndEffector(Constants.Position.CLIMB, m_elevator, m_pivot, 0));
 
         // Miscellaneous
         m_farm.button(6).onTrue(new InstantCommand(m_driveTrain::lock, m_driveTrain));
@@ -170,9 +171,10 @@ public class CompRobotContainer extends RobotContainer {
         m_chosenStartPoint.addOption("Field Center", FieldConstants.ROBOT_START_2);
 
         // m_chosenAutoFlavor.addOption("Granite State", "Granite State");
-        m_chosenAutoFlavor.addOption("Experimental", "Experimental");
+        // m_chosenAutoFlavor.addOption("Experimental", "Experimental");
         m_chosenAutoFlavor.addOption("Algae", "Algae");
-        m_chosenAutoFlavor.setDefaultOption("Refactor", "Refactor");
+        m_chosenAutoFlavor.setDefaultOption("Primary Coral - Refactor", "Refactor");
+        m_chosenAutoFlavor.addOption("TushPush then Primary Coral", "TushPush");
 
 
         // m_chosenSourcePickup.setDefaultOption("Center", FieldConstants.SOURCE_2_CENTER);
@@ -180,9 +182,9 @@ public class CompRobotContainer extends RobotContainer {
         // m_chosenSourcePickup.addOption("Outside", FieldConstants.SOURCE_2_OUT);
 
         SmartDashboard.putData("Field Side", m_chosenFieldSide);
-        SmartDashboard.putData("Auto Start Point", m_chosenStartPoint);
+        // SmartDashboard.putData("Auto Start Point", m_chosenStartPoint);
         // SmartDashboard.putData("Source Pickup slot", m_chosenSourcePickup);
-        SmartDashboard.putData("Reef Points", m_chosenReefPoints);
+        // SmartDashboard.putData("Reef Points", m_chosenReefPoints);
         SmartDashboard.putData("Auto flavor", m_chosenAutoFlavor);
     }
     
@@ -208,7 +210,11 @@ public class CompRobotContainer extends RobotContainer {
             }
             if(autoFlavor.equals("Refactor")) { 
                 m_autoCommand = new CompBotExperimentalAutoRefactor(m_chosenStartPoint.getSelected(), FieldConstants.SOURCE_2_CENTER, m_chosenReefPoints.getSelected(), 
-                        m_driveTrain, m_elevator, m_coralEffector, m_algaeEffector, m_pivot, m_chosenFieldSide.getSelected().equals("Processor Side"));
+                        m_driveTrain, m_elevator, m_coralEffector, m_algaeEffector, m_pivot, m_chosenFieldSide.getSelected().equals("Processor Side"), false);
+            }
+            if(autoFlavor.equals("TushPush")) { 
+                m_autoCommand = new CompBotExperimentalAutoRefactor(m_chosenStartPoint.getSelected(), FieldConstants.SOURCE_2_CENTER, m_chosenReefPoints.getSelected(), 
+                        m_driveTrain, m_elevator, m_coralEffector, m_algaeEffector, m_pivot, m_chosenFieldSide.getSelected().equals("Processor Side"), true);
             }
             
             m_autoSelectionCode = currentAutoSelectionCode;
