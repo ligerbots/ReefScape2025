@@ -3,13 +3,13 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 8.082236842105262,
-        "y": 6.353453947368421
+        "x": 7.6685032894736835,
+        "y": 5.949342105263157
       },
       "prevControl": null,
       "nextControl": {
-        "x": 7.7935855263157885,
-        "y": 5.679934210526316
+        "x": 7.683078674861052,
+        "y": 5.699767350648814
       },
       "isLocked": false,
       "linkedName": "TushPush"
@@ -20,8 +20,8 @@
         "y": 5.148161764705882
       },
       "prevControl": {
-        "x": 7.832072368421052,
-        "y": 5.564473684210526
+        "x": 7.321771198046086,
+        "y": 5.236417806060281
       },
       "nextControl": null,
       "isLocked": false,
@@ -42,7 +42,7 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 180.0
+    "rotation": -136.63340402589714
   },
   "reversed": false,
   "folder": null,
