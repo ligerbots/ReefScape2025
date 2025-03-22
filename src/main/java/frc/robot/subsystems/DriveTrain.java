@@ -99,7 +99,7 @@ public class DriveTrain extends SubsystemBase {
         // Configure the Telemetry before creating the SwerveDrive to avoid unnecessary
         // objects being created.
         // Turn off for competition??
-        // SwerveDriveTelemetry.verbosity = TelemetryVerbosity.HIGH;
+        SwerveDriveTelemetry.verbosity = TelemetryVerbosity.HIGH;
 
         try {
             File jsonDir = new File(Filesystem.getDeployDirectory(), jsonPath);
