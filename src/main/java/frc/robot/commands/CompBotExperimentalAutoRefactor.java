@@ -4,8 +4,6 @@
 
 package frc.robot.commands;
 
-import java.util.Optional;
-
 import com.pathplanner.lib.path.PathConstraints;
 import com.pathplanner.lib.path.PathPlannerPath;
 
@@ -13,6 +11,7 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.StartEndCommand;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.Constants;
@@ -103,4 +102,24 @@ public class CompBotExperimentalAutoRefactor extends ReefscapeAbstractAuto {
                 );
     }
 
+    private Command pickupCorralThenScoreL4Coast(Pose2d driveStartPoint, String approachPath, Pose2d targetScore) {
+        targetScore = mirrorIfNeeded(targetScore);
+        return Commands.sequence(
+                    Commands.parallel(new MoveEndEffector(Constants.Position.BACK_INTAKE, m_elevator, m_pivot, LOWER_ELEVATOR_WAIT_TIME),
+                        Commands.parallel(m_driveTrain.followPath(PathFactory.getPath(driveStartPoint, m_sourcePoint, m_isProcessorSide))
+                                                .andThen(new InstantCommand(() -> m_driveTrain.setBrakeMode(false))),
+                                          new WaitCommand(START_INTAKE_AFTER_PATH_START).andThen(
+                                              new StartEndCommand(m_coralEffector::runIntake, m_coralEffector::stop, m_coralEffector)
+                                                    .until(m_coralEffector::hasCoral).withTimeout(CORAL_PICKUP_WAIT_TIME))
+                            )
+                        ),
+                    Commands.parallel(
+                        Commands.sequence(m_driveTrain.followPath(PathFactory.getPath(approachPath, m_isProcessorSide)),
+                                        m_driveTrain.pathFindToPose(FieldConstants.flipPose(targetScore), constraints)
+                                        ),
+                        new WaitCommand(RAISE_ELEVATOR_AFTER_PATH_START).andThen(new MoveEndEffector(Constants.Position.L4, m_elevator, m_pivot, RAISE_ELEVATOR_WAIT_TIME))
+                    ),
+                    new StartEndCommand(m_coralEffector::runOuttake, m_coralEffector::stop, m_coralEffector).withTimeout(CORAL_SCORE_WAIT_TIME)
+                );
+    }
 }
