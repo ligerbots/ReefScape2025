@@ -11,20 +11,20 @@
         "x": 4.048815789473684,
         "y": 6.195401315789473
       },
-      "isLocked": false,
+      "isLocked": true,
       "linkedName": "scoreReefJ"
     },
     {
       "anchor": {
-        "x": 1.1661764705882351,
-        "y": 7.179411764705882
+        "x": 1.008,
+        "y": 7.171
       },
       "prevControl": {
-        "x": 2.6286764705882337,
-        "y": 6.515513738390092
+        "x": 2.4704999999999977,
+        "y": 6.50710197368421
       },
       "nextControl": null,
-      "isLocked": false,
+      "isLocked": true,
       "linkedName": "source2Center"
     }
   ],
