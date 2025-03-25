@@ -4,6 +4,9 @@
 
 package frc.robot.commands;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import com.pathplanner.lib.path.PathConstraints;
 import com.pathplanner.lib.path.PathPlannerPath;
 
@@ -32,6 +35,13 @@ public class CompBotExperimentalAutoRefactor extends ReefscapeAbstractAuto {
     4.0, 2.0,
     Math.toRadians(540), Math.toRadians(720));
     
+    static Map<Pose2d, String> approachPathNames = new HashMap<>();
+    static {
+        approachPathNames.put(FieldConstants.REEF_K, "Source2Center to ReefApproachK");
+        approachPathNames.put(FieldConstants.REEF_L, "Source2Center to ReefApproachL");
+        approachPathNames.put(FieldConstants.REEF_A, "Source2Center to ReefApproachA");
+    }
+
     public CompBotExperimentalAutoRefactor(Pose2d startPoint, Pose2d sourcePoint, Pose2d[] reefPoints, DriveTrain driveTrain, 
         Elevator elevator, CoralEffector coralEffector, AlgaeEffector algaeEffector, EndEffectorPivot pivot, boolean isProcessorSide, boolean doTushPush) {
             super(startPoint, sourcePoint, reefPoints, driveTrain, elevator, coralEffector, algaeEffector, pivot, isProcessorSide);
@@ -66,9 +76,9 @@ public class CompBotExperimentalAutoRefactor extends ReefscapeAbstractAuto {
 
             if (reefPoints.length > 1) {
                 addCommands(
-                    pickupCorralThenScoreL4(reefPoints[0], "Source2Center to ReefApproachK", reefPoints[1]),
-                    pickupCorralThenScoreL4(reefPoints[1], "Source2Center to ReefApproachL", reefPoints[2]),
-                    pickupCorralThenScoreL4(reefPoints[2], "Source2Center to ReefApproachA", reefPoints[3])
+                    pickupCorralThenScoreL4(reefPoints[0], approachPathNames.get(reefPoints[1]), reefPoints[1]),
+                    pickupCorralThenScoreL4(reefPoints[1], approachPathNames.get(reefPoints[2]), reefPoints[2]),
+                    pickupCorralThenScoreL4(reefPoints[2], approachPathNames.get(reefPoints[3]), reefPoints[3])
                 );
             }
             
