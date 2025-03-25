@@ -51,13 +51,13 @@ public class CoralGroundIntake extends SubsystemBase {
     // private final RelativeEncoder m_encoder;
     private final SparkClosedLoopController m_pivotController;
 
-    private final double STOWED_ANGLE = 120.0; // FIXME: Find the angle on the real robot
-    private final double SCORING_ANGLE = 100.0; // FIXME: Find the angle on the real robot
-    private final double DEPLOYED_ANGLE = 2.0; // FIXME: Find the angle on the real robot
+    private final double STOWED_ANGLE = 120.0; // TODO: Find the angle on the real robot
+    private final double SCORING_ANGLE = 100.0; // TODO: Find the angle on the real robot
+    private final double DEPLOYED_ANGLE = 2.0; // TODO: Find the angle on the real robot
 
     private final double ROLLER_INTAKE_SPEED = 0.4;
-    private final double ROLLER_OUTTAKE_SPEED = -0.2; // FIXME: See if we need to up this to score better/over other coral
-    private final double ROLLER_HOLD_SPEED = 0.2; // FIXME: See if we need this stronger for odd positons
+    private final double ROLLER_OUTTAKE_SPEED = -0.2; // TODO: See if we need to up this to score better/over other coral
+    private final double ROLLER_HOLD_SPEED = 0.2; // TODO: See if we need this stronger for odd positons
 
     // This is RPM
     private static final double STALL_VELOCITY_LIMIT = 10; // TODO: Find a good value
