@@ -22,13 +22,13 @@ public class KitbotRobotContainer extends RobotContainer {
 
     private final CommandXboxController m_driverController = new CommandXboxController(0);
 
-    // private final AprilTagVision m_aprilTagVision = new AprilTagVision();
-    private final DriveTrain m_driveTrain = null; // new DriveTrain("swerve/kitbot", m_aprilTagVision);
+    private final AprilTagVision m_aprilTagVision = new AprilTagVision();
+    private final DriveTrain m_driveTrain = new DriveTrain("swerve/kitbot", m_aprilTagVision);
     // private final KitbotRoller m_kitbotRoller = new KitbotRoller();
     // private final Leds m_leds = new Leds();
     // private final CoralEffector m_coralEndEffector = new CoralEffector();
     // private final AlgaeEffector m_algaeEndEffector = new AlgaeEffector();
-    private final NeoClimber m_climber = new NeoClimber();
+    // private final NeoClimber m_climber = new NeoClimber();
 
     private final SendableChooser<Command> m_chosenAuto = new SendableChooser<>();
 
@@ -36,7 +36,7 @@ public class KitbotRobotContainer extends RobotContainer {
         configureBindings();
         configureAutos();
 
-        // m_driveTrain.setDefaultCommand(getDriveCommand());
+        m_driveTrain.setDefaultCommand(getDriveCommand());
     }
             
     private void configureBindings() {
@@ -50,8 +50,8 @@ public class KitbotRobotContainer extends RobotContainer {
         // m_driverController.rightTrigger().whileTrue(new StartEndCommand(m_kitbotRoller::runRollerOut, m_kitbotRoller::stop, m_kitbotRoller));
         // m_driverController.leftTrigger().whileTrue(new StartEndCommand(m_kitbotRoller::runRollerBack, m_kitbotRoller::stop, m_kitbotRoller));
 
-        m_driverController.start().whileTrue(new StartEndCommand(() -> m_climber.run(0.4), m_climber::hold, m_climber));
-        m_driverController.back().whileTrue(new StartEndCommand(() -> m_climber.run(-0.4), m_climber::hold, m_climber));
+        // m_driverController.start().whileTrue(new StartEndCommand(() -> m_climber.run(0.4), m_climber::hold, m_climber));
+        // m_driverController.back().whileTrue(new StartEndCommand(() -> m_climber.run(-0.4), m_climber::hold, m_climber));
     }
     
     private void configureAutos() {
