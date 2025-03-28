@@ -51,13 +51,13 @@ public class CoralGroundIntake extends SubsystemBase {
     // private final RelativeEncoder m_encoder;
     private final SparkClosedLoopController m_pivotController;
 
-    private final double STOWED_ANGLE = 0.0;
-    private final double SCORING_ANGLE = -22.0; 
-    private final double DEPLOYED_ANGLE = -115.0; // TODO: Find the angle on the real robot
+    private final Rotation2d STOWED_ANGLE = Rotation2d.fromDegrees(0.0);
+    private final Rotation2d SCORING_ANGLE = Rotation2d.fromDegrees(22.0); 
+    private final Rotation2d DEPLOYED_ANGLE = Rotation2d.fromDegrees(115.0); 
 
     private final double ROLLER_INTAKE_SPEED = 0.6;
-    private final double ROLLER_OUTTAKE_SPEED = -0.8; // TODO: See if we need to up this to score better/over other coral
-    private final double ROLLER_HOLD_SPEED = 0.4; // TODO: See if we need this stronger for odd positons
+    private final double ROLLER_OUTTAKE_SPEED = -0.8; 
+    private final double ROLLER_HOLD_SPEED = 0.4; 
 
     // This is RPM
     private static final double STALL_VELOCITY_LIMIT = 10; 
@@ -78,14 +78,13 @@ public class CoralGroundIntake extends SubsystemBase {
     // Used for detecting if we have coral based on speed. Size should be: 1 / robot loop period(0.02 seconds) * 2 * Duration before we decide we have coral
    private final MedianFilter m_coralHoldFilter = new MedianFilter(10);
 
-
     // Construct a new shooterPivot subsystem
     public CoralGroundIntake() {
         m_pivotMotor = new SparkMax(Constants.CORAL_GROUND_PIVOT_ID, MotorType.kBrushless);
         m_rollerMotor = new SparkFlex(Constants.CORAL_GROUND_ROLLER_ID, MotorType.kBrushless);
 
         SparkMaxConfig pivotMotorConfig = new SparkMaxConfig();
-        pivotMotorConfig.inverted(true);
+        pivotMotorConfig.inverted(false);
         pivotMotorConfig.idleMode(IdleMode.kBrake);
         pivotMotorConfig.smartCurrentLimit(CURRENT_LIMIT);
         pivotMotorConfig.encoder.positionConversionFactor(GEAR_RATIO);
@@ -111,33 +110,33 @@ public class CoralGroundIntake extends SubsystemBase {
 
     @Override
     public void periodic() {
-
-        SmartDashboard.putNumber("coralGroundIntake/angleOffFromGoal", m_goalAngle - getPivotAngle().getDegrees());
         boolean stalled = m_coralHoldFilter.calculate(Math.abs(getRollerSpeed().getRotations())) < STALL_VELOCITY_LIMIT;
+        SmartDashboard.putNumber("coralGroundIntake/goalAngle", m_goalAngle);
+        SmartDashboard.putNumber("coralGroundIntake/angleOffFromGoal", m_goalAngle - getPivotAngle().getDegrees());
         SmartDashboard.putBoolean("coralGroundIntake/isStalled", stalled);
-        SmartDashboard.putNumber("coralGroundIntake/angleGoal", getPivotAngle().getDegrees());
+        SmartDashboard.putNumber("coralGroundIntake/currentAngle", getPivotAngle().getDegrees());
         //Use triggers to intake/outtake
         switch (m_state) {
             case STOW:
-                setAngleWithProfile(Rotation2d.fromDegrees(STOWED_ANGLE));
+                setAngleWithProfile(STOWED_ANGLE);
                 setRollerSpeedPercent(0);
                 break;
             case DEPLOY:
                 setRollerSpeedPercent(ROLLER_INTAKE_SPEED);
-                setAngleWithProfile(Rotation2d.fromDegrees(DEPLOYED_ANGLE));
+                setAngleWithProfile(DEPLOYED_ANGLE);
 
-                if ((ANGLE_TOLERANCE_DEG > Math.abs(getPivotAngle().getDegrees() - DEPLOYED_ANGLE)) && stalled) {
+                if ((0 <= (getPivotAngle().getDegrees() - DEPLOYED_ANGLE.getDegrees() + ANGLE_TOLERANCE_DEG)) && stalled) {
                     goToScoreAngle();
                     System.out.println("Stalled, intaking");
                 }
                 break;
             case SCORE_ANGLE:
                 // Just moves to score angle
-                setAngleWithProfile(Rotation2d.fromDegrees(SCORING_ANGLE));
+                setAngleWithProfile(SCORING_ANGLE);
                 setRollerSpeedPercent(ROLLER_HOLD_SPEED);
                 break;
             case SCORE_OUT:
-                setAngleWithProfile(Rotation2d.fromDegrees(SCORING_ANGLE));
+                setAngleWithProfile(SCORING_ANGLE);
                 setRollerSpeedPercent(ROLLER_OUTTAKE_SPEED);
                 break;
         }
