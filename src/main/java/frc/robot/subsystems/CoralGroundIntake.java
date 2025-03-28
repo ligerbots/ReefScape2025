@@ -25,7 +25,7 @@ import frc.robot.Constants;
 
 public class CoralGroundIntake extends SubsystemBase {
     public enum CoralGroundIntakeState {
-        STOW, DEPLOY, SCORE
+        STOW, DEPLOY, SCORE_ANGLE, SCORE_OUT
     }
 
     //IMPORTANT NOTE: All angles are relitive to deployed which is zero in the code.
@@ -116,33 +116,29 @@ public class CoralGroundIntake extends SubsystemBase {
         boolean stalled = m_coralHoldFilter.calculate(Math.abs(getRollerSpeed().getRotations())) < STALL_VELOCITY_LIMIT;
         SmartDashboard.putBoolean("coralGroundIntake/isStalled", stalled);
         SmartDashboard.putNumber("coralGroundIntake/angleGoal", getPivotAngle().getDegrees());
-
+        //Use triggers to intake/outtake
         switch (m_state) {
             case STOW:
                 setAngleWithProfile(Rotation2d.fromDegrees(STOWED_ANGLE));
-                if (stalled) {
-                    setRollerSpeedPercent(ROLLER_HOLD_SPEED); 
-                } else {
-                    setRollerSpeedPercent(0);
-                }
+                setRollerSpeedPercent(0);
                 break;
             case DEPLOY:
                 setRollerSpeedPercent(ROLLER_INTAKE_SPEED);
                 setAngleWithProfile(Rotation2d.fromDegrees(DEPLOYED_ANGLE));
 
                 if ((ANGLE_TOLERANCE_DEG > Math.abs(getPivotAngle().getDegrees() - DEPLOYED_ANGLE)) && stalled) {
-                    stow();
+                    score();
                     System.out.println("Stalled, intaking");
                 }
                 break;
-            case SCORE:
-                // TODO: Detect if a coral is scored, then automatically switch to stow
+            case SCORE_ANGLE:
+                // Just moves to score angle
                 setAngleWithProfile(Rotation2d.fromDegrees(SCORING_ANGLE));
-                if (ANGLE_TOLERANCE_DEG > Math.abs(getPivotAngle().getDegrees() - SCORING_ANGLE)) {
-                    setRollerSpeedPercent(ROLLER_OUTTAKE_SPEED);
-                } else {
-                    setRollerSpeedPercent(ROLLER_HOLD_SPEED);
-                }
+                setRollerSpeedPercent(ROLLER_HOLD_SPEED);
+                break;
+            case SCORE_OUT:
+                setAngleWithProfile(Rotation2d.fromDegrees(SCORING_ANGLE));
+                setRollerSpeedPercent(ROLLER_OUTTAKE_SPEED);
                 break;
         }
     }
@@ -188,6 +184,10 @@ public class CoralGroundIntake extends SubsystemBase {
     }
 
     public void score() {
-        m_state = CoralGroundIntakeState.SCORE;
+        m_state = CoralGroundIntakeState.SCORE_OUT;
+    }
+
+    public void goToScoreAngle() {
+        m_state = CoralGroundIntakeState.SCORE_ANGLE;
     }
 }
