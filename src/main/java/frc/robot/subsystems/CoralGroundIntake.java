@@ -34,7 +34,7 @@ public class CoralGroundIntake extends SubsystemBase {
     // Note: Current values for limits are refrenced with the shooter being flat
     // facing fowards as zero.
     // As of writing the above note we still may want to change the limits
-    public static final double ANGLE_TOLERANCE_DEG = 3.0;
+    public static final double ANGLE_TOLERANCE_DEG = 5.0;
 
     private static final int CURRENT_LIMIT = 60;
 
@@ -127,7 +127,7 @@ public class CoralGroundIntake extends SubsystemBase {
                 setAngleWithProfile(Rotation2d.fromDegrees(DEPLOYED_ANGLE));
 
                 if ((ANGLE_TOLERANCE_DEG > Math.abs(getPivotAngle().getDegrees() - DEPLOYED_ANGLE)) && stalled) {
-                    score();
+                    goToScoreAngle();
                     System.out.println("Stalled, intaking");
                 }
                 break;

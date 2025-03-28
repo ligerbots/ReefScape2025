@@ -20,7 +20,7 @@ public class ScoreL1 extends Command {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    m_coralGroundIntake.goToScoreAngle();
+    m_coralGroundIntake.score();
   }
 
   // Called every time the scheduler runs while the command is scheduled.
