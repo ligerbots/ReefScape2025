@@ -34,14 +34,14 @@ public class CoralGroundIntake extends SubsystemBase {
     // Note: Current values for limits are refrenced with the shooter being flat
     // facing fowards as zero.
     // As of writing the above note we still may want to change the limits
-    public static final double ANGLE_TOLERANCE_DEG = 5.0;
+    public static final double ANGLE_TOLERANCE_DEG = 8.0;
 
     private static final int CURRENT_LIMIT = 60;
 
     private static final double GEAR_RATIO = 16.0/42.0 * 1.0/4.0; 
 
     // Constants for the pivot PID controller
-    private static final double K_P = 3;
+    private static final double K_P = 5;
     private static final double K_I = 0.0;
     private static final double K_D = 0.0;
 
@@ -56,7 +56,7 @@ public class CoralGroundIntake extends SubsystemBase {
     private final double DEPLOYED_ANGLE = -115.0; // TODO: Find the angle on the real robot
 
     private final double ROLLER_INTAKE_SPEED = 0.6;
-    private final double ROLLER_OUTTAKE_SPEED = -0.6; // TODO: See if we need to up this to score better/over other coral
+    private final double ROLLER_OUTTAKE_SPEED = -0.8; // TODO: See if we need to up this to score better/over other coral
     private final double ROLLER_HOLD_SPEED = 0.4; // TODO: See if we need this stronger for odd positons
 
     // This is RPM
@@ -76,7 +76,7 @@ public class CoralGroundIntake extends SubsystemBase {
     private State m_currentState = new State();
 
     // Used for detecting if we have coral based on speed. Size should be: 1 / robot loop period(0.02 seconds) * 2 * Duration before we decide we have coral
-   private final MedianFilter m_coralHoldFilter = new MedianFilter(30);
+   private final MedianFilter m_coralHoldFilter = new MedianFilter(10);
 
 
     // Construct a new shooterPivot subsystem
