@@ -52,8 +52,8 @@ public class CoralGroundIntake extends SubsystemBase {
     private final SparkClosedLoopController m_pivotController;
 
     private final double STOWED_ANGLE = 0.0; // TODO: Find the angle on the real robot
-    private final double SCORING_ANGLE = 35.0; // TODO: Find the angle on the real robot
-    private final double DEPLOYED_ANGLE = 120.0; // TODO: Find the angle on the real robot
+    private final double SCORING_ANGLE = -35.0; // TODO: Find the angle on the real robot
+    private final double DEPLOYED_ANGLE = -120.0; // TODO: Find the angle on the real robot
 
     private final double ROLLER_INTAKE_SPEED = 0.4;
     private final double ROLLER_OUTTAKE_SPEED = -0.2; // TODO: See if we need to up this to score better/over other coral
@@ -115,6 +115,7 @@ public class CoralGroundIntake extends SubsystemBase {
         SmartDashboard.putNumber("coralGroundIntake/angleOffFromGoal", m_goalAngle - getPivotAngle().getDegrees());
         boolean stalled = m_coralHoldFilter.calculate(Math.abs(getRollerSpeed().getRotations())) < STALL_VELOCITY_LIMIT;
         SmartDashboard.putBoolean("coralGroundIntake/isStalled", stalled);
+        SmartDashboard.putNumber("coralGroundIntake/angleGoal", getPivotAngle().getDegrees());
 
         switch (m_state) {
             case STOW:
