@@ -52,7 +52,7 @@ public class CoralGroundIntake extends SubsystemBase {
     private final SparkClosedLoopController m_pivotController;
 
     private final double STOWED_ANGLE = 0.0; // TODO: Find the angle on the real robot
-    private final double SCORING_ANGLE = -35.0; // TODO: Find the angle on the real robot
+    private final double SCORING_ANGLE = -22.0; // TODO: Find the angle on the real robot
     private final double DEPLOYED_ANGLE = -120.0; // TODO: Find the angle on the real robot
 
     private final double ROLLER_INTAKE_SPEED = 0.4;
