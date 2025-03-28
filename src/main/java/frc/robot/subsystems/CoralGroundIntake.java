@@ -41,7 +41,7 @@ public class CoralGroundIntake extends SubsystemBase {
     private static final double GEAR_RATIO = 16.0/42.0 * 1.0/4.0; 
 
     // Constants for the pivot PID controller
-    private static final double K_P = 2.5;
+    private static final double K_P = 3;
     private static final double K_I = 0.0;
     private static final double K_D = 0.0;
 
@@ -51,16 +51,16 @@ public class CoralGroundIntake extends SubsystemBase {
     // private final RelativeEncoder m_encoder;
     private final SparkClosedLoopController m_pivotController;
 
-    private final double STOWED_ANGLE = 0.0; // TODO: Find the angle on the real robot
-    private final double SCORING_ANGLE = -22.0; // TODO: Find the angle on the real robot
-    private final double DEPLOYED_ANGLE = -120.0; // TODO: Find the angle on the real robot
+    private final double STOWED_ANGLE = 0.0;
+    private final double SCORING_ANGLE = -22.0; 
+    private final double DEPLOYED_ANGLE = -115.0; // TODO: Find the angle on the real robot
 
-    private final double ROLLER_INTAKE_SPEED = 0.4;
-    private final double ROLLER_OUTTAKE_SPEED = -0.2; // TODO: See if we need to up this to score better/over other coral
-    private final double ROLLER_HOLD_SPEED = 0.2; // TODO: See if we need this stronger for odd positons
+    private final double ROLLER_INTAKE_SPEED = 0.6;
+    private final double ROLLER_OUTTAKE_SPEED = -0.6; // TODO: See if we need to up this to score better/over other coral
+    private final double ROLLER_HOLD_SPEED = 0.4; // TODO: See if we need this stronger for odd positons
 
     // This is RPM
-    private static final double STALL_VELOCITY_LIMIT = 10; // TODO: Find a good value
+    private static final double STALL_VELOCITY_LIMIT = 10; 
 
     public CoralGroundIntakeState m_state = CoralGroundIntakeState.STOW;
 
