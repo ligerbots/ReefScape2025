@@ -128,7 +128,7 @@ public class CompRobotContainer extends RobotContainer {
         // Miscellaneous
         m_farm.button(6).onTrue(new InstantCommand(m_driveTrain::lock, m_driveTrain));
         
-        m_farm.button(21).onTrue(new MoveEndEffector(Constants.Position.L1, m_elevator, m_pivot));
+        // m_farm.button(21).onTrue(new MoveEndEffector(Constants.Position.L1, m_elevator, m_pivot));
         // note: farm 7 is robot-centric
         m_farm.button(8).onTrue(new InstantCommand(m_driveTrain::zeroHeading, m_driveTrain));
         m_farm.button(11).onTrue(new InstantCommand(() -> m_coralMode = !m_coralMode));
@@ -146,8 +146,8 @@ public class CompRobotContainer extends RobotContainer {
         m_farm.button(22).onTrue(new InstantCommand(() -> m_elevator.setHeight(Units.inchesToMeters(SmartDashboard.getNumber("elevator/testGoal", 0)))));
         m_farm.button(23).onTrue(new InstantCommand(() -> m_pivot.setAngle(Rotation2d.fromDegrees(SmartDashboard.getNumber("pivot/testAngle", 0.0)))));
     
-        m_farm.button(2).onTrue(new InstantCommand(m_coralGroundIntake::deploy));
-        m_farm.button(3).whileTrue(new ScoreL1(m_coralGroundIntake));
+        m_farm.button(21).onTrue(new InstantCommand(m_coralGroundIntake::deploy));
+        m_farm.button(8).whileTrue(new ScoreL1(m_coralGroundIntake));
     }
     
     private void configureAutos() {

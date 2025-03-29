@@ -56,7 +56,7 @@ public class CoralGroundIntake extends SubsystemBase {
     private final Rotation2d DEPLOYED_ANGLE = Rotation2d.fromDegrees(115.0); 
 
     private final double ROLLER_INTAKE_SPEED = 0.6;
-    private final double ROLLER_OUTTAKE_SPEED = -0.8; 
+    private final double ROLLER_OUTTAKE_SPEED = -1.0; 
     private final double ROLLER_HOLD_SPEED = 0.4; 
 
     // This is RPM
