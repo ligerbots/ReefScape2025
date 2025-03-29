@@ -67,8 +67,8 @@ public class CoralGroundIntake extends SubsystemBase {
     private double m_goalAngle; //Used for readout in elastic only
 
     //Trapisoidl:
-    private static final double MAX_VEL_ROT_PER_SEC = 1.5;
-    private static final double MAX_ACC_ROT_PER_SEC2 = 1.5;
+    private static final double MAX_VEL_ROT_PER_SEC = 3;
+    private static final double MAX_ACC_ROT_PER_SEC2 = 3;
     private static final double ROBOT_LOOP_PERIOD = 0.02;
 
     // Trapezoid Profile
