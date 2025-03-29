@@ -115,6 +115,7 @@ public class CoralGroundIntake extends SubsystemBase {
         SmartDashboard.putNumber("coralGroundIntake/angleOffFromGoal", m_goalAngle - getPivotAngle().getDegrees());
         SmartDashboard.putBoolean("coralGroundIntake/isStalled", stalled);
         SmartDashboard.putNumber("coralGroundIntake/currentAngle", getPivotAngle().getDegrees());
+        SmartDashboard.putString("coralGroundIntake/state", m_state.toString());
         //Use triggers to intake/outtake
         switch (m_state) {
             case STOW:
