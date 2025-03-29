@@ -4,6 +4,7 @@
 
 package frc.robot.commands;
 
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.CoralGroundIntake;
 import frc.robot.subsystems.CoralGroundIntake.CoralGroundIntakeState;
@@ -12,6 +13,8 @@ import frc.robot.subsystems.CoralGroundIntake.CoralGroundIntakeState;
 public class CoralGround extends Command {
   /** Creates a new scoreL1. */
   private final CoralGroundIntake m_coralGroundIntake;
+  private boolean m_finished = false;
+  private final Timer m_timer = new Timer();
 
   public CoralGround(CoralGroundIntake CoralGroundIntake) {
     // Use addRequirements() here to declare subsystem dependencies.
@@ -32,7 +35,13 @@ public class CoralGround extends Command {
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
-  public void execute() {}
+  public void execute() {
+    if (!m_timer.isRunning()) {
+      m_finished = true;
+    } else if (m_timer.get() > 1) { //Can update with amount of time to shoot
+      m_finished = true;
+    }
+  }
 
   // Called once the command ends or is interrupted.
   @Override
@@ -40,10 +49,11 @@ public class CoralGround extends Command {
     if (m_coralGroundIntake.m_state == CoralGroundIntakeState.SCORE_OUT) {
       m_coralGroundIntake.stow();
     }
-    }
+  }
+
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return false;
+    return m_finished;
   }
 }
