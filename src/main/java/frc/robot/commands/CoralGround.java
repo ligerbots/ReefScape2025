@@ -26,6 +26,7 @@ public class CoralGround extends Command {
   public void initialize() {
     if (m_coralGroundIntake.m_state == CoralGroundIntakeState.SCORE_ANGLE) {
       m_coralGroundIntake.score();
+      m_timer.reset();
     } else if (m_coralGroundIntake.m_state == CoralGroundIntakeState.DEPLOY) {
       m_coralGroundIntake.stow();
     } else if (m_coralGroundIntake.m_state == CoralGroundIntakeState.STOW) {
@@ -36,20 +37,22 @@ public class CoralGround extends Command {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
+    // Score, intake again incase the first time did not work & try again.
     if (!m_timer.isRunning()) {
       m_finished = true;
-    } else if (m_timer.get() > 1) { //Can update with amount of time to shoot
+    } else if (m_timer.get() > .5) {
+      m_coralGroundIntake.goToScoreAngle();
+    } else if (m_timer.get() > 1) {
+      m_coralGroundIntake.score();
+    } else if (m_timer.get() > 1.5) {
+      m_coralGroundIntake.stow();
       m_finished = true;
     }
   }
 
   // Called once the command ends or is interrupted.
   @Override
-  public void end(boolean interrupted) {
-    if (m_coralGroundIntake.m_state == CoralGroundIntakeState.SCORE_OUT) {
-      m_coralGroundIntake.stow();
-    }
-  }
+  public void end(boolean interrupted) {}
 
   // Returns true when the command should end.
   @Override
