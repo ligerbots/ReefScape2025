@@ -30,7 +30,8 @@ public class CoralGround extends Command {
   @Override
   public void initialize() {
     // if (m_endEffectorHasCoral.getAsBoolean()) {m_finished = true; return;}
-    m_finished = false;
+    m_finished = false; 
+    System.out.println("Run! deploy angle intake thingey");
     SmartDashboard.putBoolean("coralGroundIntake/running", true);
     if (m_coralGroundIntake.m_state == CoralGroundIntakeState.SCORE_ANGLE) {
       m_coralGroundIntake.score();
@@ -51,12 +52,12 @@ public class CoralGround extends Command {
     // Score, intake again incase the first time did not work & try again.
     if (!m_timer.isRunning()) {
       m_finished = true;
-    } else if (m_timer.get() > 1.5) {
+    } else if (m_timer.get() > 2) {
       m_coralGroundIntake.stow();
       m_finished = true;
-    } else if (m_timer.get() > 1.0 && m_timer.get() < 1.5) {
+    } else if (m_timer.get() > 1.5 && m_timer.get() < 2) {
       m_coralGroundIntake.score();
-    } else if (m_timer.get() > .5 && m_timer.get() < 1.0) {
+    } else if (m_timer.get() > .5 && m_timer.get() < 1.5) {
       m_coralGroundIntake.goToScoreAngle();
     }
     SmartDashboard.putNumber("coralGroundIntake/timer", m_timer.get());

@@ -41,7 +41,7 @@ public class CoralGroundIntake extends SubsystemBase {
     private static final double GEAR_RATIO = 16.0/42.0 * 1.0/4.0; 
 
     // Constants for the pivot PID controller
-    private static final double K_P = 5;
+    private static final double K_P = 4;
     private static final double K_I = 0.0;
     private static final double K_D = 0.0;
 
@@ -68,7 +68,7 @@ public class CoralGroundIntake extends SubsystemBase {
 
     //Trapisoidl:
     private static final double MAX_VEL_ROT_PER_SEC = 3;
-    private static final double MAX_ACC_ROT_PER_SEC2 = 3;
+    private static final double MAX_ACC_ROT_PER_SEC2 = 2;
     private static final double ROBOT_LOOP_PERIOD = 0.02;
 
     // Trapezoid Profile
