@@ -4,6 +4,8 @@
 
 package frc.robot.commands;
 
+import java.util.function.BooleanSupplier;
+
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.CoralGroundIntake;
@@ -13,17 +15,21 @@ import frc.robot.subsystems.CoralGroundIntake.CoralGroundIntakeState;
 public class CoralGround extends Command {
   /** Creates a new scoreL1. */
   private final CoralGroundIntake m_coralGroundIntake;
+  private final BooleanSupplier m_endEffectorHasCoral;
   private boolean m_finished = false;
   private final Timer m_timer = new Timer();
 
-  public CoralGround(CoralGroundIntake CoralGroundIntake) {
+  public CoralGround(CoralGroundIntake CoralGroundIntake, BooleanSupplier hasCoral) {
     // Use addRequirements() here to declare subsystem dependencies.
+    m_endEffectorHasCoral = hasCoral;
     m_coralGroundIntake = CoralGroundIntake;
   }
 
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
+    if (m_endEffectorHasCoral.getAsBoolean()) {m_finished = true; return;}
+
     if (m_coralGroundIntake.m_state == CoralGroundIntakeState.SCORE_ANGLE) {
       m_coralGroundIntake.score();
       m_timer.reset();
@@ -53,7 +59,10 @@ public class CoralGround extends Command {
 
   // Called once the command ends or is interrupted.
   @Override
-  public void end(boolean interrupted) {}
+  public void end(boolean interrupted) {
+    m_timer.reset();
+    m_timer.stop();
+  }
 
   // Returns true when the command should end.
   @Override
