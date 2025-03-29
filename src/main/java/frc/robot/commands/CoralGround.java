@@ -27,6 +27,7 @@ public class CoralGround extends Command {
     if (m_coralGroundIntake.m_state == CoralGroundIntakeState.SCORE_ANGLE) {
       m_coralGroundIntake.score();
       m_timer.reset();
+      m_timer.start();
     } else if (m_coralGroundIntake.m_state == CoralGroundIntakeState.DEPLOY) {
       m_coralGroundIntake.stow();
     } else if (m_coralGroundIntake.m_state == CoralGroundIntakeState.STOW) {
