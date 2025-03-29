@@ -6,13 +6,14 @@ package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.CoralGroundIntake;
+import frc.robot.subsystems.CoralGroundIntake.CoralGroundIntakeState;
 
 /* You should consider using the more terse Command factories API instead https://docs.wpilib.org/en/stable/docs/software/commandbased/organizing-command-based.html#defining-commands */
-public class ScoreL1 extends Command {
+public class CoralGround extends Command {
   /** Creates a new scoreL1. */
   private final CoralGroundIntake m_coralGroundIntake;
 
-  public ScoreL1(CoralGroundIntake CoralGroundIntake) {
+  public CoralGround(CoralGroundIntake CoralGroundIntake) {
     // Use addRequirements() here to declare subsystem dependencies.
     m_coralGroundIntake = CoralGroundIntake;
   }
@@ -20,7 +21,13 @@ public class ScoreL1 extends Command {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    m_coralGroundIntake.score();
+    if (m_coralGroundIntake.m_state == CoralGroundIntakeState.SCORE_ANGLE) {
+      m_coralGroundIntake.score();
+    } else if (m_coralGroundIntake.m_state == CoralGroundIntakeState.DEPLOY) {
+      m_coralGroundIntake.stow();
+    } else if (m_coralGroundIntake.m_state == CoralGroundIntakeState.STOW) {
+      m_coralGroundIntake.deploy();
+    }
   }
 
   // Called every time the scheduler runs while the command is scheduled.
@@ -30,9 +37,10 @@ public class ScoreL1 extends Command {
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-    m_coralGroundIntake.stow();
-  }
-
+    if (m_coralGroundIntake.m_state == CoralGroundIntakeState.SCORE_OUT) {
+      m_coralGroundIntake.stow();
+    }
+    }
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
