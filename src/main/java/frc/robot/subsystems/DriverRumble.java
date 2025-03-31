@@ -83,12 +83,13 @@ public class DriverRumble extends SubsystemBase {
             // See if we are aligned with a Reef pole
             Pose2d targetPose = getClosestScoringLocation();
 
-            //Put on smart dashboard if we think we are close enoguh to auto align
-            double distanceToAutoAlignLocation = m_robotPositionSupplier.get().getTranslation().getDistance(targetPose.getTranslation());
-            SmartDashboard.putBoolean("autoAlign/withinSafeDistance", distanceToAutoAlignLocation < SAFE_AUTO_ALIGN_DISTANCE_METER && distanceToAutoAlignLocation > TOO_CLOSE_TO_AUTO_ALIGN_DISTANCE_METER);
-            
             // Relative pose rotated to the target pose
             Pose2d relativePose = robotPose.relativeTo(targetPose); 
+
+            //Put on smart dashboard if we think we are close enoguh to auto align
+            double distanceToAutoAlignLocation = relativePose.getTranslation().getNorm();
+            SmartDashboard.putBoolean("autoAlign/withinSafeDistance", distanceToAutoAlignLocation < SAFE_AUTO_ALIGN_DISTANCE_METER && distanceToAutoAlignLocation > TOO_CLOSE_TO_AUTO_ALIGN_DISTANCE_METER);
+
             
             // Calculate lateral offset in meters (positive means left, negative means right)
             rumbleValue = relativePose.getY();
