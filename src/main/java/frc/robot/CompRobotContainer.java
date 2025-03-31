@@ -149,6 +149,8 @@ public class CompRobotContainer extends RobotContainer {
         m_farm.button(23).onTrue(new InstantCommand(() -> m_pivot.setAngle(Rotation2d.fromDegrees(SmartDashboard.getNumber("pivot/testAngle", 0.0)))));
     
         m_farm.button(21).onTrue(new CoralGround(m_coralGroundIntake, m_coralEffector::hasCoral));
+        //Flip end effector to stow
+        m_farm.button(21).onTrue(new MoveEndEffector(Constants.Position.BACK_INTAKE, m_elevator, m_pivot).alongWith(new InstantCommand(() -> m_coralMode = true)));
     }
     
     private void configureAutos() {
