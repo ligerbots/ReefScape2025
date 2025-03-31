@@ -29,7 +29,7 @@ public class CoralGround extends Command {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    // if (m_endEffectorHasCoral.getAsBoolean()) {m_finished = true; return;}
+    if (m_endEffectorHasCoral.getAsBoolean()) {m_finished = true; return;}
     m_finished = false; 
     System.out.println("Run! deploy angle intake thingey");
     SmartDashboard.putBoolean("coralGroundIntake/running", true);
