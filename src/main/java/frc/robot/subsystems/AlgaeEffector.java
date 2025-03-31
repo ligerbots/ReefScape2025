@@ -99,6 +99,7 @@ public class AlgaeEffector extends SubsystemBase {
 
         SmartDashboard.putString("algaeEffector/state", m_state.toString());
         SmartDashboard.putBoolean("algaeEffector/limitSwitch", pressed);
+        SmartDashboard.putBoolean("algaeEffector/stalled", stalled);
         SmartDashboard.putNumber("algaeEffector/setSpeed", m_motor.get());
         SmartDashboard.putNumber("algaeEffector/current", m_motor.getOutputCurrent());
         SmartDashboard.putNumber("algaeEffector/velocity", velocity);
