@@ -55,7 +55,7 @@ station_tag_x = 33.51
 station_tag_y = 25.80
 slot_distance = 8.0
 # push a bit further into the wall
-push_into_wall = 7.0
+push_into_wall = 2.0
 
 # ACTUAL orig path point Source2Center
 # x:1.166 y:7.179 angle:141.66
