@@ -22,14 +22,15 @@ public class Climber extends SubsystemBase {
     
     // Constants to be used in this class
     private static final double DEPLOYED_ROTATIONS = 14.0;
-    private static final double CLIMB_ROTATIONS = 237.5; 
+    private static final double CLIMB_ROTATIONS = 245.0; 
     
     // Protection values
-    private static final double MAX_ROTATIONS_ALLOWED = 240.0;
+    private static final double MAX_ROTATIONS_ALLOWED = 250.0;
     private static final double MAX_CURRENT = 100.0;
 
     // Current limit in the motor
-    private static final double CURRENT_LIMIT = 40;
+    private static final double SUPPLY_CURRENT_LIMIT = 40;
+    private static final double STATOR_CURRENT_LIMIT = 60;
 
     // Motion Magic limits
     // maxV=100, maxA=200 would be about 2.5 sec to climb
@@ -69,7 +70,8 @@ public class Climber extends SubsystemBase {
         mco.NeutralMode = NeutralModeValue.Brake;
         mco.Inverted = InvertedValue.CounterClockwise_Positive;
 
-        talonFXConfigs.CurrentLimits.SupplyCurrentLimit = CURRENT_LIMIT;
+        talonFXConfigs.CurrentLimits.SupplyCurrentLimit = SUPPLY_CURRENT_LIMIT;
+        talonFXConfigs.CurrentLimits.StatorCurrentLimit = STATOR_CURRENT_LIMIT;
         
         // set slot 0 gains
         Slot0Configs slot0configs = talonFXConfigs.Slot0;
