@@ -29,19 +29,21 @@ public class CoralGround extends Command {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
+    //Check if we have coral in the end effector. If we do, abort as we can't grab ground coral at the same time.
     if (m_endEffectorHasCoral.getAsBoolean()) {m_finished = true; return;}
+
     m_finished = false; 
-    System.out.println("Run! deploy angle intake thingey");
     SmartDashboard.putBoolean("coralGroundIntake/running", true);
-    if (m_coralGroundIntake.m_state == CoralGroundIntakeState.SCORE_ANGLE) {
+    final CoralGroundIntakeState currentState = m_coralGroundIntake.getState();
+    if (currentState == CoralGroundIntakeState.SCORE_ANGLE) {
       m_coralGroundIntake.score();
       m_timer.reset();
       m_timer.start();
-    } else if (m_coralGroundIntake.m_state == CoralGroundIntakeState.DEPLOY) {
+    } else if (currentState == CoralGroundIntakeState.DEPLOY) {
       m_coralGroundIntake.stow();
-    } else if (m_coralGroundIntake.m_state == CoralGroundIntakeState.STOW) {
+    } else if (currentState == CoralGroundIntakeState.STOW) {
       m_coralGroundIntake.deploy();
-    } else if (m_coralGroundIntake.m_state == CoralGroundIntakeState.SCORE_OUT) {
+    } else if (currentState == CoralGroundIntakeState.SCORE_OUT) {
       m_coralGroundIntake.stow();
     }
   }

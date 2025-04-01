@@ -28,13 +28,9 @@ public class CoralGroundIntake extends SubsystemBase {
         STOW, DEPLOY, SCORE_ANGLE, SCORE_OUT
     }
 
-    //IMPORTANT NOTE: All angles are relitive to deployed which is zero in the code.
+    //IMPORTANT NOTE: All angles are relitive to stowed which is zero in the code.
 
-    // NOTE: All constants were taken from the 2023 arm
-    // Note: Current values for limits are refrenced with the shooter being flat
-    // facing fowards as zero.
-    // As of writing the above note we still may want to change the limits
-    public static final double ANGLE_TOLERANCE_DEG = 8.0;
+    private static final double ANGLE_TOLERANCE_DEG = 8.0;
 
     private static final int CURRENT_LIMIT = 60;
 
@@ -62,7 +58,7 @@ public class CoralGroundIntake extends SubsystemBase {
     // This is RPM
     private static final double STALL_VELOCITY_LIMIT = 10; 
 
-    public CoralGroundIntakeState m_state = CoralGroundIntakeState.STOW;
+    private CoralGroundIntakeState m_state = CoralGroundIntakeState.STOW;
 
     private double m_goalAngle; //Used for readout in elastic only
 
@@ -128,7 +124,7 @@ public class CoralGroundIntake extends SubsystemBase {
 
                 if ((0 <= (getPivotAngle().getDegrees() - DEPLOYED_ANGLE.getDegrees() + ANGLE_TOLERANCE_DEG)) && stalled) {
                     goToScoreAngle();
-                    System.out.println("Stalled, intaking");
+                    // System.out.println("Stalled, intaking");
                 }
                 break;
             case SCORE_ANGLE:
@@ -189,5 +185,9 @@ public class CoralGroundIntake extends SubsystemBase {
 
     public void goToScoreAngle() {
         m_state = CoralGroundIntakeState.SCORE_ANGLE;
+    }
+
+    public CoralGroundIntakeState getState() {
+        return m_state;
     }
 }
