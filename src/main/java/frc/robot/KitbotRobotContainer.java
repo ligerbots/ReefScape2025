@@ -10,6 +10,7 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.StartEndCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 
@@ -28,9 +29,10 @@ public class KitbotRobotContainer extends RobotContainer {
     // private final Leds m_leds = new Leds();
     // private final CoralEffector m_coralEndEffector = new CoralEffector();
     // private final AlgaeEffector m_algaeEndEffector = new AlgaeEffector();
-    private final NeoClimber m_climber = new NeoClimber();
+    // private final NeoClimber m_climber = new NeoClimber();
 
     private final SendableChooser<Command> m_chosenAuto = new SendableChooser<>();
+    private final CoralGroundIntake m_coralGroundIntake = new CoralGroundIntake();
 
     public KitbotRobotContainer() {
         configureBindings();
@@ -44,14 +46,19 @@ public class KitbotRobotContainer extends RobotContainer {
             DriverStation.silenceJoystickConnectionWarning(true);
         }
 
+
         // m_driverController.start().onTrue(new InstantCommand(m_driveTrain::lock, m_driveTrain));
         // m_driverController.back().onTrue(new InstantCommand(m_driveTrain::zeroHeading, m_driveTrain));
 
         // m_driverController.rightTrigger().whileTrue(new StartEndCommand(m_kitbotRoller::runRollerOut, m_kitbotRoller::stop, m_kitbotRoller));
         // m_driverController.leftTrigger().whileTrue(new StartEndCommand(m_kitbotRoller::runRollerBack, m_kitbotRoller::stop, m_kitbotRoller));
+        // Testing commands
+        m_driverController.y().onTrue(new InstantCommand(m_coralGroundIntake::stow));
+        m_driverController.a().onTrue(new InstantCommand(m_coralGroundIntake::deploy));
+        m_driverController.x().onTrue(new InstantCommand(m_coralGroundIntake::score));
 
-        m_driverController.start().whileTrue(new StartEndCommand(() -> m_climber.run(0.4), m_climber::hold, m_climber));
-        m_driverController.back().whileTrue(new StartEndCommand(() -> m_climber.run(-0.4), m_climber::hold, m_climber));
+        // m_driverController.start().whileTrue(new StartEndCommand(() -> m_climber.run(0.4), m_climber::hold, m_climber));
+        // m_driverController.back().whileTrue(new StartEndCommand(() -> m_climber.run(-0.4), m_climber::hold, m_climber));
     }
     
     private void configureAutos() {

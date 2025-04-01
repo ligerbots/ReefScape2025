@@ -20,6 +20,8 @@ public final class Constants {
     public static final int CORAL_EFFECTOR_INTAKE_ID = 7;
     public static final int ALGAE_EFFECTOR_INTAKE_ID = 8;
     public static final int ELEVATOR_CAN_ID = 5;  // Falcon500
+    public static final int CORAL_GROUND_PIVOT_ID = 10; 
+    public static final int CORAL_GROUND_ROLLER_ID = 11; 
     
     public static double MAX_VOLTAGE = 12.0;
     

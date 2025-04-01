@@ -50,11 +50,13 @@ public class PathFactory {
         } 
         return mirrorPath ? path.mirrorPath() : path;
     }
-    
-    public static PathPlannerPath getPath(Pose2d start, Pose2d end, boolean mirrorPath) {
+    public static String getPathName(Pose2d start, Pose2d end) {
         StringBuilder sb = new StringBuilder(40);
-        String pathName =  sb.append(pointNames.get(start)).append(" to ").append(pointNames.get(end)).toString();
-        
+        return sb.append(pointNames.get(start)).append(" to ").append(pointNames.get(end)).toString();
+    }
+
+    public static PathPlannerPath getPath(Pose2d start, Pose2d end, boolean mirrorPath) {
+        String pathName = getPathName(start, end);        
         return getPath(pathName, mirrorPath);
     }
 

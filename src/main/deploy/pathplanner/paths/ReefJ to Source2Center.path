@@ -8,20 +8,20 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 4.048815789473684,
-        "y": 6.195401315789473
+        "x": 3.2460064082601123,
+        "y": 6.118923081899639
       },
-      "isLocked": true,
+      "isLocked": false,
       "linkedName": "scoreReefJ"
     },
     {
       "anchor": {
-        "x": 1.008,
-        "y": 7.171
+        "x": 1.112,
+        "y": 7.027
       },
       "prevControl": {
-        "x": 2.4704999999999977,
-        "y": 6.50710197368421
+        "x": 1.5471954797962142,
+        "y": 6.758990236279492
       },
       "nextControl": null,
       "isLocked": true,
@@ -32,7 +32,7 @@
   "constraintZones": [
     {
       "name": "Constraints Zone",
-      "minWaypointRelativePos": 0.5999677263191867,
+      "minWaypointRelativePos": 0.59996,
       "maxWaypointRelativePos": 1.0,
       "constraints": {
         "maxVelocity": 2.0,

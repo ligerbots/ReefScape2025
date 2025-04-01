@@ -3,16 +3,16 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 3.71,
-        "y": 5.035279605263158
+        "x": 3.213,
+        "y": 4.186
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.119169784122093,
-        "y": 6.418186006419868
+        "x": 2.109924601743823,
+        "y": 5.590096821867915
       },
       "isLocked": false,
-      "linkedName": "scoreReefL"
+      "linkedName": null
     },
     {
       "anchor": {
@@ -20,8 +20,8 @@
         "y": 7.027
       },
       "prevControl": {
-        "x": 1.9526073888290172,
-        "y": 6.3623146994491355
+        "x": 1.3450429852706551,
+        "y": 6.710408034332657
       },
       "nextControl": null,
       "isLocked": false,
@@ -62,7 +62,7 @@
   "folder": null,
   "idealStartingState": {
     "velocity": 0,
-    "rotation": -59.99999999999999
+    "rotation": 0.0
   },
   "useDefaultConstraints": false
 }
