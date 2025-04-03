@@ -38,9 +38,9 @@ public class CompBotExperimentalAutoRefactor extends ReefscapeAbstractAuto {
         private static Map<Pose2d, Double> elevatorRaiseTime = new HashMap<>();
         static {
             elevatorRaiseTime.put(FieldConstants.REEF_J, 1.0);
-            elevatorRaiseTime.put(FieldConstants.REEF_K, 0.9);
-            elevatorRaiseTime.put(FieldConstants.REEF_L, 0.9);
-            elevatorRaiseTime.put(FieldConstants.REEF_A, 1.0);
+            elevatorRaiseTime.put(FieldConstants.REEF_K, 0.8);
+            elevatorRaiseTime.put(FieldConstants.REEF_L, 0.8);
+            elevatorRaiseTime.put(FieldConstants.REEF_A, 0.9);
         }
         
         private static Map<Pose2d, String> approachPathNames = new HashMap<>();
