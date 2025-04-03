@@ -7,7 +7,7 @@ def meters(inches):
 
 center = (176.75, 158.3)
 # offset: (half-width of Reef) + (1/2 robot perimeter) + (bumpers)
-robot_offset = 28.0 / 2.0 + 3.5
+robot_offset = 28.0 / 2.0 + 3.0
 center_offset = 32.75 + robot_offset
 reef_offset = 13.0 / 2
 
