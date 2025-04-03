@@ -54,13 +54,9 @@ public class CoralGround extends Command {
     // Score, intake again incase the first time did not work & try again.
     if (!m_timer.isRunning()) {
       m_finished = true;
-    } else if (m_timer.get() > 2) {
+    } else if (m_timer.get() > .75) {
       m_coralGroundIntake.stow();
       m_finished = true;
-    } else if (m_timer.get() > 1.5 && m_timer.get() < 2) {
-      m_coralGroundIntake.score();
-    } else if (m_timer.get() > .5 && m_timer.get() < 1.5) {
-      m_coralGroundIntake.goToScoreAngle();
     }
     SmartDashboard.putNumber("coralGroundIntake/timer", m_timer.get());
   }
