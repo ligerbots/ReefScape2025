@@ -101,8 +101,8 @@ public class CompBotExperimentalAutoRefactor extends ReefscapeAbstractAuto {
         }
         
         private Command pickupCorralThenScoreL4(Pose2d driveStartPoint, String approachPath, Pose2d targetScore) {
+            double raiseElevatorBeforeReef = elevatorRaiseTime.get(targetScore);
             targetScore = mirrorIfNeeded(targetScore);
-            double raiseElevatorBeforeReef = 1.0; //elevatorRaiseTime.get(targetScore);
         return Commands.sequence(
                     Commands.parallel(new MoveEndEffector(Constants.Position.BACK_INTAKE, m_elevator, m_pivot, LOWER_ELEVATOR_WAIT_TIME),
                         Commands.parallel(m_driveTrain.followPath(PathFactory.getPath(driveStartPoint, m_sourcePoint, m_isProcessorSide)),
