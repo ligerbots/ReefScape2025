@@ -13,7 +13,7 @@ import frc.robot.subsystems.EndEffectorPivot;
 public abstract class ReefscapeAbstractAuto extends AutoCommandInterface {
 
     protected static final double CORAL_SCORE_WAIT_TIME = 0.1;
-    public static final double RAISE_ELEVATOR_WAIT_TIME = 2.0;
+    public static final double RAISE_ELEVATOR_WAIT_TIME = 1.8;
     protected static final double LOWER_ELEVATOR_WAIT_TIME = 0.5;  // maybe can be lower
     protected static final double RAISE_ELEVATOR_AFTER_PATH_START = 1.0;
     protected static final double START_INTAKE_AFTER_PATH_START = 0.5;
