@@ -55,7 +55,7 @@ station_tag_x = 33.51
 station_tag_y = 25.80
 slot_distance = 8.0
 # push a bit further into the wall
-push_into_wall = 1.0
+push_into_wall = 3.0
 
 #public static final Pose2d SOURCE_2_SLOT5 = new Pose2d(1.112, 7.027, Rotation2d.fromDegrees(-54.0));
 #public static final Pose2d SOURCE_2_SLOT6 = new Pose2d(1.277, 7.147, Rotation2d.fromDegrees(-54.0));
@@ -71,7 +71,10 @@ push_into_wall = 1.0
 #    public static final Pose2d SOURCE_2_SLOT5 = new Pose2d(1.090, 7.058, Rotation2d.fromDegrees(-54.0));
 #    public static final Pose2d SOURCE_2_SLOT6 = new Pose2d(1.254, 7.177, Rotation2d.fromDegrees(-54.0));
  
- 
+# 3 inches into wall
+# public static final Pose2d SOURCE_2_SLOT5 = new Pose2d(1.060, 7.099, Rotation2d.fromDegrees(-54.0));
+# public static final Pose2d SOURCE_2_SLOT6 = new Pose2d(1.225, 7.218, Rotation2d.fromDegrees(-54.0));
+
 field_width_meters = 8.042  # Andymark field
 #field_width_meters = 8.052  # Welded
 
