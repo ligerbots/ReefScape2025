@@ -7,7 +7,7 @@ def meters(inches):
 
 center = (176.75, 158.3)
 # offset: (half-width of Reef) + (1/2 robot perimeter) + (bumpers)
-robot_offset = 28.0 / 2.0 + 3.5
+robot_offset = 28.0 / 2.0 + 3.0
 center_offset = 32.75 + robot_offset
 reef_offset = 13.0 / 2
 
@@ -55,7 +55,7 @@ station_tag_x = 33.51
 station_tag_y = 25.80
 slot_distance = 8.0
 # push a bit further into the wall
-push_into_wall = 0.0
+push_into_wall = 3.0
 
 #public static final Pose2d SOURCE_2_SLOT5 = new Pose2d(1.112, 7.027, Rotation2d.fromDegrees(-54.0));
 #public static final Pose2d SOURCE_2_SLOT6 = new Pose2d(1.277, 7.147, Rotation2d.fromDegrees(-54.0));
@@ -67,18 +67,14 @@ push_into_wall = 0.0
 # public static final Pose2d SOURCE_2_SLOT5 = new Pose2d(1.083, 7.068, Rotation2d.fromDegrees(-54.0));
 # public static final Pose2d SOURCE_2_SLOT6 = new Pose2d(1.247, 7.188, Rotation2d.fromDegrees(-54.0));
 
-# AFTER, 4 inches into push_into_wall
-#  public static final Pose2d SOURCE_2_SLOT5 = new Pose2d(1.053, 7.109, Rotation2d.fromDegrees(-54.0));
-#     public static final Pose2d SOURCE_2_SLOT6 = new Pose2d(1.217, 7.229, Rotation2d.fromDegrees(-54.0));
-
-# AFTER, 5 inches into push_into_wall
-#    public static final Pose2d SOURCE_2_SLOT5 = new Pose2d(1.038, 7.130, Rotation2d.fromDegrees(-54.0));
-#    public static final Pose2d SOURCE_2_SLOT6 = new Pose2d(1.202, 7.249, Rotation2d.fromDegrees(-54.0));
-
-# AFTER, 7 inches into push_into_wall
-#  public static final Pose2d SOURCE_2_SLOT5 = new Pose2d(1.008, 7.171, Rotation2d.fromDegrees(-54.0));
-#    public static final Pose2d SOURCE_2_SLOT6 = new Pose2d(1.172, 7.290, Rotation2d.fromDegrees(-54.0));
+# 1 inch into wall
+#    public static final Pose2d SOURCE_2_SLOT5 = new Pose2d(1.090, 7.058, Rotation2d.fromDegrees(-54.0));
+#    public static final Pose2d SOURCE_2_SLOT6 = new Pose2d(1.254, 7.177, Rotation2d.fromDegrees(-54.0));
  
+# 3 inches into wall
+# public static final Pose2d SOURCE_2_SLOT5 = new Pose2d(1.060, 7.099, Rotation2d.fromDegrees(-54.0));
+# public static final Pose2d SOURCE_2_SLOT6 = new Pose2d(1.225, 7.218, Rotation2d.fromDegrees(-54.0));
+
 field_width_meters = 8.042  # Andymark field
 #field_width_meters = 8.052  # Welded
 

@@ -35,13 +35,13 @@ public class CompBotExperimentalAutoRefactor extends ReefscapeAbstractAuto {
     4.0, 2.0,
     Math.toRadians(540), Math.toRadians(720));
     
-        private static Map<Pose2d, Double> elevatorRaiseTime = new HashMap<>();
-        static {
-            elevatorRaiseTime.put(FieldConstants.REEF_J, 1.0);
-            elevatorRaiseTime.put(FieldConstants.REEF_K, 1.0);
-            elevatorRaiseTime.put(FieldConstants.REEF_L, 1.0);
-            elevatorRaiseTime.put(FieldConstants.REEF_A, 1.0);
-        }
+        // private static Map<Pose2d, Double> elevatorRaiseTime = new HashMap<>();
+        // static {
+        //     elevatorRaiseTime.put(FieldConstants.REEF_J, 1.0);
+        //     elevatorRaiseTime.put(FieldConstants.REEF_K, 0.8);
+        //     elevatorRaiseTime.put(FieldConstants.REEF_L, 0.8);
+        //     elevatorRaiseTime.put(FieldConstants.REEF_A, 0.9);
+        // }
         
         private static Map<Pose2d, String> approachPathNames = new HashMap<>();
         static {
@@ -101,8 +101,8 @@ public class CompBotExperimentalAutoRefactor extends ReefscapeAbstractAuto {
         }
         
         private Command pickupCorralThenScoreL4(Pose2d driveStartPoint, String approachPath, Pose2d targetScore) {
+            double raiseElevatorBeforeReef = RAISE_ELEVATOR_AFTER_PATH_START; //elevatorRaiseTime.get(targetScore);
             targetScore = mirrorIfNeeded(targetScore);
-            double raiseElevatorBeforeReef = 1.0; //elevatorRaiseTime.get(targetScore);
         return Commands.sequence(
                     Commands.parallel(new MoveEndEffector(Constants.Position.BACK_INTAKE, m_elevator, m_pivot, LOWER_ELEVATOR_WAIT_TIME),
                         Commands.parallel(m_driveTrain.followPath(PathFactory.getPath(driveStartPoint, m_sourcePoint, m_isProcessorSide)),
