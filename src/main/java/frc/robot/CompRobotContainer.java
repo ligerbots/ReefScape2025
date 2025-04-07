@@ -23,6 +23,7 @@ import edu.wpi.first.wpilibj2.command.button.CommandJoystick;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.commands.*;
+import frc.robot.commands.experementalReefAutoAlign.ReefTractorBeamDecider;
 import frc.robot.subsystems.*;
 
 public class CompRobotContainer extends RobotContainer {
@@ -110,8 +111,8 @@ public class CompRobotContainer extends RobotContainer {
         
         //FIXME after testing: Uncomment following line and comment lines after it
         // m_driverController.y().onTrue(new MoveEndEffector(Constants.Position.BARGE, m_elevator, m_pivot).alongWith(new InstantCommand(() -> m_coralMode = false)));
-        m_driverController.y().onTrue(new DeferredCommand(new ReefTractorBeamWithDirectPath(m_driveTrain, false, ()->false), Set.of(m_driveTrain)));
-        
+        m_driverController.y().onTrue(new DeferredCommand(new ReefTractorBeamDecider(m_driveTrain, false, ()->false, true), Set.of(m_driveTrain)));
+
 
 
         m_driverController.b().onTrue(new MoveEndEffector(Constants.Position.PROCESSOR, m_elevator, m_pivot).alongWith(new InstantCommand(() -> m_coralMode = false)));
