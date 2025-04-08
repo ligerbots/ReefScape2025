@@ -1,0 +1,102 @@
+// Copyright (c) FIRST and other WPILib contributors.
+// Open Source Software; you can modify and/or share it under the terms of
+// the WPILib BSD license file in the root directory of this project.
+
+package frc.robot.commands.experementalReefAutoAlign;
+
+
+import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Transform2d;
+import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import edu.wpi.first.math.trajectory.TrapezoidProfile;
+import edu.wpi.first.math.trajectory.TrapezoidProfile.State;
+import edu.wpi.first.wpilibj2.command.Command;
+import frc.robot.subsystems.DriveTrain;
+
+/* You should consider using the more terse Command factories API instead https://docs.wpilib.org/en/stable/docs/software/commandbased/organizing-command-based.html#defining-commands */
+public class TractorBeamTrapizoidal extends Command {
+    /** Creates a new ReefTractorBeamPID. */
+    private final DriveTrain m_driveTrain;
+    private final double m_P = 0.5;
+    private final double m_I = 0;
+    private final double m_D = 0;
+    private final PIDController m_pid = new PIDController(m_P, m_I, m_D);
+    private double m_distanceFromGoal;
+    private Pose2d m_currentPose;
+    private static final double DISTANCE_TOLORINCE_METERS = 1.5/39.37;
+
+    private final Pose2d m_goalPose;
+
+    //Trapisoidl:
+    private static final double MAX_VEL_PER_SEC = 6;
+    private static final double MAX_ACC_PER_SEC2 = 2.5;
+    private static final double ROBOT_LOOP_PERIOD = 0.02;
+
+    // Trapezoid Profile
+    private final TrapezoidProfile m_profile = new TrapezoidProfile(new TrapezoidProfile.Constraints(MAX_VEL_PER_SEC, MAX_ACC_PER_SEC2));
+    private State m_currentState = new State();
+
+    public TractorBeamTrapizoidal(DriveTrain drivetrain, Pose2d goalPose) {
+        // Use addRequirements() here to declare subsystem dependencies.
+        addRequirements(drivetrain);
+        m_driveTrain = drivetrain;
+        m_goalPose = goalPose;
+    }
+
+    // Called when the command is initially scheduled.
+    @Override
+    public void initialize() {
+        m_currentPose = m_driveTrain.getPose();
+        Translation2d fieldCentricRelativePose = m_currentPose.minus(m_goalPose).getTranslation();
+        double distanceToGoal = fieldCentricRelativePose.getNorm();
+        // Get actual robot velocity
+        ChassisSpeeds robotVelocity = m_driveTrain.getFieldVelocity();
+        double currentSpeed = Math.hypot(robotVelocity.vxMetersPerSecond, robotVelocity.vyMetersPerSecond);
+        
+        // Set current state based on actual robot position and velocity
+        m_currentState = new State(distanceToGoal, currentSpeed);
+    }
+
+    // Called every time the scheduler runs while the command is scheduled.
+    @Override
+    public void execute() {
+        m_currentPose = m_driveTrain.getPose();
+        
+        Translation2d fieldCentricRelativePose = m_currentPose.minus(m_goalPose).getTranslation();
+        double distanceToGoal = fieldCentricRelativePose.getNorm();
+        
+        // Set goal state to reach the target (position = 0)
+        State goalState = new State(0, 0);
+        
+        // Calculate profile
+        m_currentState = m_profile.calculate(ROBOT_LOOP_PERIOD, m_currentState, goalState);
+        
+        // Use the profiled velocity to determine magnitude of movement
+        double profiledSpeed = m_pid.calculate(distanceToGoal, m_currentState.position);
+        
+        // Get direction as a normalized vector
+        Rotation2d goalVector = new Rotation2d(fieldCentricRelativePose.getX(), fieldCentricRelativePose.getY());
+        
+        // Apply speed in the direction of the goal (splits the vector into two XY components that add up to the profiled distance to travel)
+        double translationX = profiledSpeed * goalVector.getCos();
+        double translationY = profiledSpeed * goalVector.getSin();
+        
+        m_distanceFromGoal = distanceToGoal;
+        
+        m_driveTrain.driveWithSpeeds(translationX, translationY, m_driveTrain.getDriveHeadingSpeed(m_goalPose.getRotation().getRadians()), false);
+    }
+
+    // Called once the command ends or is interrupted.
+    @Override
+    public void end(boolean interrupted) {}
+
+    // Returns true when the command should end.
+    @Override
+    public boolean isFinished() {
+        boolean isWithinTolorence = m_distanceFromGoal <= DISTANCE_TOLORINCE_METERS;
+        return isWithinTolorence;
+    }
+}
