@@ -23,7 +23,7 @@ import edu.wpi.first.wpilibj2.command.button.CommandJoystick;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.commands.*;
-import frc.robot.commands.experementalReefAutoAlign.ReefTractorBeamDecider;
+import frc.robot.commands.ReefTractorBeamDecider;
 import frc.robot.subsystems.*;
 
 public class CompRobotContainer extends RobotContainer {
@@ -102,19 +102,13 @@ public class CompRobotContainer extends RobotContainer {
         
         // m_driverController.rightBumper().onTrue(new MoveEndEffector(Constants.Position.STOW, m_elevator, m_pivot).andThen().finallyDo(() -> m_coralMode = true));
         
-        m_driverController.rightBumper().onTrue(new DeferredCommand(new ReefTractorBeamDecider(m_driveTrain, false, m_coralEffector::hasCoral, true), Set.of(m_driveTrain)));
-        m_driverController.leftBumper().onTrue(new DeferredCommand(new ReefTractorBeamDecider(m_driveTrain, true, m_coralEffector::hasCoral, true), Set.of(m_driveTrain)));
+        m_driverController.rightBumper().onTrue(new DeferredCommand(new ReefTractorBeamDecider(m_driveTrain, false, m_coralEffector::hasCoral), Set.of(m_driveTrain)));
+        m_driverController.leftBumper().onTrue(new DeferredCommand(new ReefTractorBeamDecider(m_driveTrain, true, m_coralEffector::hasCoral), Set.of(m_driveTrain)));
 
         // Algae Scoring
         m_driverController.a().onTrue(new MoveEndEffector(Constants.Position.L2_ALGAE, m_elevator, m_pivot).alongWith(new InstantCommand(() -> m_coralMode = false)));
         m_driverController.x().onTrue(new MoveEndEffector(Constants.Position.L3_ALGAE, m_elevator, m_pivot).alongWith(new InstantCommand(() -> m_coralMode = false)));
-        
-        //FIXME after testing: Uncomment following line and comment lines after it
-        // m_driverController.y().onTrue(new MoveEndEffector(Constants.Position.BARGE, m_elevator, m_pivot).alongWith(new InstantCommand(() -> m_coralMode = false)));
-        m_driverController.y().onTrue(new DeferredCommand(new ReefTractorBeamDecider(m_driveTrain, false, ()->false, true), Set.of(m_driveTrain)));
-
-
-
+        m_driverController.y().onTrue(new MoveEndEffector(Constants.Position.BARGE, m_elevator, m_pivot).alongWith(new InstantCommand(() -> m_coralMode = false)));
         m_driverController.b().onTrue(new MoveEndEffector(Constants.Position.PROCESSOR, m_elevator, m_pivot).alongWith(new InstantCommand(() -> m_coralMode = false)));
 
         // Coral Scoring
@@ -142,7 +136,7 @@ public class CompRobotContainer extends RobotContainer {
         m_farm.button(8).onTrue(new InstantCommand(m_driveTrain::zeroHeading, m_driveTrain));
         m_farm.button(11).onTrue(new InstantCommand(() -> m_coralMode = !m_coralMode));
         m_farm.button(5).whileTrue(new InstantCommand(m_elevator::zeroElevator));
-        m_farm.button(12).onTrue(new DeferredCommand(new ReefTractorBeam(m_driveTrain, false, ()->false), Set.of(m_driveTrain)));
+        m_farm.button(12).onTrue(new DeferredCommand(new ReefTractorBeamDecider(m_driveTrain, false, ()->false), Set.of(m_driveTrain)));
 
         // schedule Drive command, which will cancel other control of Drivetrain, ie active heading
         m_farm.button(16).onTrue(new InstantCommand(() -> m_driveTrain.getDefaultCommand().schedule()));

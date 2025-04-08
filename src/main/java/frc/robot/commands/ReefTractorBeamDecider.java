@@ -1,4 +1,4 @@
-package frc.robot.commands.experementalReefAutoAlign;
+package frc.robot.commands;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -11,7 +11,6 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj2.command.Command;
 
 import frc.robot.FieldConstants;
-import frc.robot.commands.ReefTractorBeam;
 import frc.robot.subsystems.DriveTrain;
 
 public class ReefTractorBeamDecider implements Supplier<Command> {
@@ -37,14 +36,10 @@ public class ReefTractorBeamDecider implements Supplier<Command> {
     private final BooleanSupplier m_hasCoral;
     private static final double PATHFIND_TIMEOUT = 2.0;
 
-    private final boolean m_useDirectPath;
-
-
-    public ReefTractorBeamDecider(DriveTrain driveTrain, boolean goLeft, BooleanSupplier hasCoral, boolean useDirectPath) {
+    public ReefTractorBeamDecider(DriveTrain driveTrain, boolean goLeft, BooleanSupplier hasCoral) {
         m_driveTrain = driveTrain;
         m_goLeft = goLeft;
         m_hasCoral = hasCoral;
-        m_useDirectPath = useDirectPath; // allows us to choose between the direct path or the normal pathfinding more easly for on the fly testing
         
         // do not Require the drivetrain - the outside command handles that
     }
@@ -64,19 +59,8 @@ public class ReefTractorBeamDecider implements Supplier<Command> {
             destination = m_goLeft ? coralLeftRight.getFirst() : coralLeftRight.getSecond();
         }
 
-        double distanceToGoal = destination.getTranslation().minus(currentPose.getTranslation()).getNorm();
-
         destination = FieldConstants.flipPose(destination); // flip back over from calculations
-        // if (distanceToGoal <= 0.5) {
-            // use PID to get to the goal
-            // return new TractorBeamPID(m_driveTrain, destination).withTimeout(PATHFIND_TIMEOUT); 
-        // } else {
-            //Use path planner methods as we are far enough away for them to work
-            // if (false) {
-                return new TractorBeamWithDirectPath(m_driveTrain, destination).get().withTimeout(PATHFIND_TIMEOUT); 
-            // } else {
-            //     return new ReefTractorBeam(m_driveTrain, m_goLeft, m_hasCoral).get().withTimeout(PATHFIND_TIMEOUT); 
-            // }
-        // }
+
+        return new TractorBeamWithDirectPath(m_driveTrain, destination).get().withTimeout(PATHFIND_TIMEOUT); 
     }
 }
