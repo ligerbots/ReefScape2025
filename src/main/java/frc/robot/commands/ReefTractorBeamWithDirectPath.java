@@ -6,14 +6,21 @@ import java.util.List;
 import java.util.function.BooleanSupplier;
 import java.util.function.Supplier;
 
+import com.pathplanner.lib.path.GoalEndState;
+import com.pathplanner.lib.path.PathConstraints;
+import com.pathplanner.lib.path.PathPlannerPath;
+import com.pathplanner.lib.path.Waypoint;
+
 import edu.wpi.first.math.Pair;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj2.command.Command;
 
 import frc.robot.FieldConstants;
 import frc.robot.subsystems.DriveTrain;
 
-public class ReefTractorBeamDecider implements Supplier<Command> {
+public class ReefTractorBeamWithDirectPath implements Supplier<Command> {
 
     private static final HashMap<Pose2d, Pair<Pose2d, Pose2d>> REEF_POSITIONS = new HashMap<Pose2d, Pair<Pose2d, Pose2d>>()
     {
@@ -36,7 +43,11 @@ public class ReefTractorBeamDecider implements Supplier<Command> {
     private final BooleanSupplier m_hasCoral;
     private static final double PATHFIND_TIMEOUT = 2.0;
 
-    public ReefTractorBeamDecider(DriveTrain driveTrain, boolean goLeft, BooleanSupplier hasCoral) {
+    private final PathConstraints m_constraints = new PathConstraints(
+            3.0, 2.5,
+            Math.toRadians(540), Math.toRadians(720));
+
+    public ReefTractorBeamWithDirectPath(DriveTrain driveTrain, boolean goLeft, BooleanSupplier hasCoral) {
         m_driveTrain = driveTrain;
         m_goLeft = goLeft;
         m_hasCoral = hasCoral;
@@ -45,7 +56,11 @@ public class ReefTractorBeamDecider implements Supplier<Command> {
     }
 
     @Override
-    public Command get() {  // getDriveToNearestPole
+    public Command get() {
+        return getPathPlannerCommand(getTargetPose()).withTimeout(PATHFIND_TIMEOUT); 
+    }
+
+    private Pose2d getTargetPose() {
         Pose2d currentPose = FieldConstants.flipPose(m_driveTrain.getPose());
 
         Pose2d nearestAlgae = currentPose.nearest(REEF_ALGAE_POSES);
@@ -60,7 +75,32 @@ public class ReefTractorBeamDecider implements Supplier<Command> {
         }
 
         destination = FieldConstants.flipPose(destination); // flip back over from calculations
+        return destination;
+    }
 
-        return new TractorBeamWithDirectPath(m_driveTrain, destination).get().withTimeout(PATHFIND_TIMEOUT); 
+    private Command getPathPlannerCommand(Pose2d goalPose) {
+
+        Pose2d currentPose = m_driveTrain.getPose();
+
+        Translation2d fieldCentricRelativePose = goalPose.getTranslation().minus(currentPose.getTranslation());
+        Rotation2d angleToGoal = new Rotation2d(fieldCentricRelativePose.getX(), fieldCentricRelativePose.getY());
+        // The rotation component of the pose should be the direction of travel. Do not use holonomic(field centric) rotation.
+        List<Waypoint> waypoints = PathPlannerPath.waypointsFromPoses(
+                new Pose2d(currentPose.getX(), currentPose.getY(), angleToGoal),
+                new Pose2d(goalPose.getX(), goalPose.getY(), angleToGoal)); // Start pose, then end pose
+
+        // Create the path using the waypoints created above
+        PathPlannerPath path = new PathPlannerPath(
+                waypoints,
+                m_constraints,
+                null,
+                // Goal end state. You can set a holonomic rotation here. If using a differential drive>train, the rotation will have no effect.
+                new GoalEndState(0.0, goalPose.getRotation()) 
+        );
+
+        // Prevent the path from being flipped if the coordinates are already correct
+        path.preventFlipping = true;
+
+        return m_driveTrain.followPath(path);
     }
 }
