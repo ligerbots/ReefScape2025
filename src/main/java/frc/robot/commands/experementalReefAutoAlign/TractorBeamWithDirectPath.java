@@ -11,6 +11,7 @@ import com.pathplanner.lib.path.Waypoint;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj2.command.Command;
 
 import frc.robot.subsystems.DriveTrain;
@@ -35,11 +36,13 @@ public class TractorBeamWithDirectPath implements Supplier<Command> {
     public Command get() { // getDriveToNearestPole
         Pose2d currentPose = m_driveTrain.getPose();
 
+        Translation2d fieldCentricRelativePose = m_goalPose.getTranslation().minus(currentPose.getTranslation());
+        Rotation2d angleToGoal = new Rotation2d(fieldCentricRelativePose.getX(), fieldCentricRelativePose.getY());
         // The rotation component of the pose should be the direction of travel. Do not
         // use holonomic(field centric) rotation.
         List<Waypoint> waypoints = PathPlannerPath.waypointsFromPoses(
-                new Pose2d(currentPose.getX(), currentPose.getY(), Rotation2d.fromDegrees(0)),
-                new Pose2d(m_goalPose.getX(), m_goalPose.getY(), Rotation2d.fromDegrees(0))); // Start pose, then end pose
+                new Pose2d(currentPose.getX(), currentPose.getY(), angleToGoal),
+                new Pose2d(m_goalPose.getX(), m_goalPose.getY(), angleToGoal)); // Start pose, then end pose
 
         // Create the path using the waypoints created above
         PathPlannerPath path = new PathPlannerPath(
