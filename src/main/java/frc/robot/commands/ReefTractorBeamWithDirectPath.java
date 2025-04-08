@@ -15,6 +15,7 @@ import edu.wpi.first.math.Pair;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj2.command.Command;
 
 import frc.robot.FieldConstants;
@@ -82,11 +83,14 @@ public class ReefTractorBeamWithDirectPath implements Supplier<Command> {
 
         Pose2d currentPose = m_driveTrain.getPose();
 
+        ChassisSpeeds driveTrainSpeeds = m_driveTrain.getFieldVelocity();
+        Rotation2d speedAngle = new Rotation2d(driveTrainSpeeds.vxMetersPerSecond, driveTrainSpeeds.vyMetersPerSecond);
+
         Translation2d fieldCentricRelativePose = goalPose.getTranslation().minus(currentPose.getTranslation());
         Rotation2d angleToGoal = new Rotation2d(fieldCentricRelativePose.getX(), fieldCentricRelativePose.getY());
         // The rotation component of the pose should be the direction of travel. Do not use holonomic(field centric) rotation.
         List<Waypoint> waypoints = PathPlannerPath.waypointsFromPoses(
-                new Pose2d(currentPose.getX(), currentPose.getY(), angleToGoal),
+                new Pose2d(currentPose.getX(), currentPose.getY(), speedAngle),
                 new Pose2d(goalPose.getX(), goalPose.getY(), angleToGoal)); // Start pose, then end pose
 
         // Create the path using the waypoints created above
