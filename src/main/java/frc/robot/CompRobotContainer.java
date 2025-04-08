@@ -102,8 +102,8 @@ public class CompRobotContainer extends RobotContainer {
         
         // m_driverController.rightBumper().onTrue(new MoveEndEffector(Constants.Position.STOW, m_elevator, m_pivot).andThen().finallyDo(() -> m_coralMode = true));
         
-        m_driverController.rightBumper().onTrue(new DeferredCommand(new ReefTractorBeam(m_driveTrain, false, m_coralEffector::hasCoral), Set.of(m_driveTrain)));
-        m_driverController.leftBumper().onTrue(new DeferredCommand(new ReefTractorBeam(m_driveTrain, true, m_coralEffector::hasCoral), Set.of(m_driveTrain)));
+        m_driverController.rightBumper().onTrue(new DeferredCommand(new ReefTractorBeamDecider(m_driveTrain, false, m_coralEffector::hasCoral, true), Set.of(m_driveTrain)));
+        m_driverController.leftBumper().onTrue(new DeferredCommand(new ReefTractorBeamDecider(m_driveTrain, true, m_coralEffector::hasCoral, true), Set.of(m_driveTrain)));
 
         // Algae Scoring
         m_driverController.a().onTrue(new MoveEndEffector(Constants.Position.L2_ALGAE, m_elevator, m_pivot).alongWith(new InstantCommand(() -> m_coralMode = false)));

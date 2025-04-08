@@ -14,13 +14,13 @@ import frc.robot.subsystems.DriveTrain;
 public class TractorBeamPID extends Command {
     /** Creates a new ReefTractorBeamPID. */
     private final DriveTrain m_driveTrain;
-    private final double m_P = 0.5;
+    private final double m_P = 1.0;
     private final double m_I = 0;
     private final double m_D = 0;
     private final PIDController m_pid = new PIDController(m_P, m_I, m_D);
     private double m_distanceFromGoal;
     private Pose2d m_currentPose;
-    private static final double DISTANCE_TOLORINCE_METERS = 1.5/39.37;
+    private static final double DISTANCE_TOLORINCE_METERS = 1/39.37;
 
     private final Pose2d m_goalPose;
 

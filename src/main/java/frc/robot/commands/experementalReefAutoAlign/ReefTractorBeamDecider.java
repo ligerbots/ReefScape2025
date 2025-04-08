@@ -67,16 +67,16 @@ public class ReefTractorBeamDecider implements Supplier<Command> {
         double distanceToGoal = destination.getTranslation().minus(currentPose.getTranslation()).getNorm();
 
         destination = FieldConstants.flipPose(destination); // flip back over from calculations
-        if (distanceToGoal <= 0.5) {
+        // if (distanceToGoal <= 0.5) {
             // use PID to get to the goal
-            return new TractorBeamPID(m_driveTrain, destination).withTimeout(PATHFIND_TIMEOUT); 
-        } else {
+            // return new TractorBeamPID(m_driveTrain, destination).withTimeout(PATHFIND_TIMEOUT); 
+        // } else {
             //Use path planner methods as we are far enough away for them to work
-            if (m_useDirectPath) {
+            // if (false) {
                 return new TractorBeamWithDirectPath(m_driveTrain, destination).get().withTimeout(PATHFIND_TIMEOUT); 
-            } else {
-                return new ReefTractorBeam(m_driveTrain, m_goLeft, m_hasCoral).get().withTimeout(PATHFIND_TIMEOUT); 
-            }
-        }
+            // } else {
+            //     return new ReefTractorBeam(m_driveTrain, m_goLeft, m_hasCoral).get().withTimeout(PATHFIND_TIMEOUT); 
+            // }
+        // }
     }
 }

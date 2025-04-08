@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.function.Supplier;
 
 import com.pathplanner.lib.path.GoalEndState;
+import com.pathplanner.lib.path.IdealStartingState;
 import com.pathplanner.lib.path.PathConstraints;
 import com.pathplanner.lib.path.PathPlannerPath;
 import com.pathplanner.lib.path.Waypoint;
@@ -48,8 +49,8 @@ public class TractorBeamWithDirectPath implements Supplier<Command> {
         PathPlannerPath path = new PathPlannerPath(
                 waypoints,
                 m_constraints,
-                null, 
-                // Goal end state. You can set a holonomic rotation here. If using a differential drivetrain, the rotation will have no effect.
+                null,
+                // Goal end state. You can set a holonomic rotation here. If using a differential drive>train, the rotation will have no effect.
                 new GoalEndState(0.0, m_goalPose.getRotation()) 
         );
 
