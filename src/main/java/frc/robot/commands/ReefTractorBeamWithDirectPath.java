@@ -1,10 +1,14 @@
 package frc.robot.commands;
 
+import java.io.StringWriter;
+import java.io.Writer;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.function.BooleanSupplier;
 import java.util.function.Supplier;
+
+import org.json.simple.JSONValue;
 
 import com.pathplanner.lib.path.GoalEndState;
 import com.pathplanner.lib.path.IdealStartingState;
@@ -107,6 +111,15 @@ public class ReefTractorBeamWithDirectPath implements Supplier<Command> {
         // Prevent the path from being flipped if the coordinates are already correct
         path.preventFlipping = true;
 
+        Writer jsonWriter = new StringWriter();
+        try {
+        JSONValue.writeJSONString(path, jsonWriter);
+        System.out.println(jsonWriter.toString());
+        } catch (Exception e) {
+            System.out.println("Unable to write JSON for path: " + e.getMessage());
+        } 
         return m_driveTrain.followPath(path);
-    }
+    }   
+        
+        
 }
