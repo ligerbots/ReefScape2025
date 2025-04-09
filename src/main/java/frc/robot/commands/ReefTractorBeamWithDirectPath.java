@@ -46,7 +46,7 @@ public class ReefTractorBeamWithDirectPath implements Supplier<Command> {
     private static final double PATHFIND_TIMEOUT = 2.0;
 
     private final PathConstraints m_constraints = new PathConstraints(
-            3.0, 2.5,
+            4.0, 2.5,
             Math.toRadians(540), Math.toRadians(720));
 
     public ReefTractorBeamWithDirectPath(DriveTrain driveTrain, boolean goLeft, BooleanSupplier hasCoral) {

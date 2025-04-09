@@ -4,6 +4,21 @@
 
 package frc.robot.subsystems;
 
+import java.io.File;
+import java.util.function.BooleanSupplier;
+import java.util.function.DoubleSupplier;
+
+import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
+import com.ctre.phoenix6.hardware.TalonFX;
+import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.commands.PathfindingCommand;
+import com.pathplanner.lib.config.PIDConstants;
+import com.pathplanner.lib.config.RobotConfig;
+import com.pathplanner.lib.controllers.PPHolonomicDriveController;
+import com.pathplanner.lib.path.PathConstraints;
+import com.pathplanner.lib.path.PathPlannerPath;
+import com.revrobotics.spark.SparkMax;
+
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
@@ -16,21 +31,8 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Config;
-
-import java.io.File;
-import java.util.function.BooleanSupplier;
-import java.util.function.DoubleSupplier;
-
-import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
-import com.ctre.phoenix6.hardware.TalonFX;
-import com.pathplanner.lib.auto.AutoBuilder;
-import com.pathplanner.lib.commands.PathfindingCommand;
-import com.pathplanner.lib.config.RobotConfig;
-import com.pathplanner.lib.controllers.PPHolonomicDriveController;
-import com.pathplanner.lib.path.PathConstraints;
-import com.pathplanner.lib.path.PathPlannerPath;
-import com.pathplanner.lib.config.PIDConstants;
-
+import frc.robot.Constants;
+import frc.robot.FieldConstants;
 import swervelib.SwerveController;
 import swervelib.SwerveDrive;
 import swervelib.SwerveDriveTest;
@@ -41,16 +43,13 @@ import swervelib.parser.SwerveParser;
 import swervelib.telemetry.SwerveDriveTelemetry;
 import swervelib.telemetry.SwerveDriveTelemetry.TelemetryVerbosity;
 
-import frc.robot.Constants;
-import frc.robot.FieldConstants;
-
 public class DriveTrain extends SubsystemBase {
 
     public static final double MAX_SPEED = Units.feetToMeters(15);
     
     public static final double ANGLE_TOLERANCE_RADIANS = Math.toRadians(2.0);
 
-    private static final double DRIVE_STATOR_LIMIT = 40;
+    private static final double DRIVE_STATOR_LIMIT = 70;
 
     // private static final double STEER_GEAR_RATIO = (50.0 / 14.0) * (60.0 / 10.0);
 
@@ -129,6 +128,8 @@ public class DriveTrain extends SubsystemBase {
         for (SwerveModule swerveModule : m_swerveDrive.getModules()) {
             ((TalonFX) swerveModule.getDriveMotor().getMotor()).getConfigurator().apply(configs);
         }
+        
+        
 
         m_aprilTagVision = apriltagVision;
         
@@ -341,6 +342,15 @@ public class DriveTrain extends SubsystemBase {
         SmartDashboard.putBoolean("driveTrain/readyToClimb", readyToClimb());
         SmartDashboard.putNumber("driveTrain/pitch", getPitch().getDegrees());
         SmartDashboard.putNumber("driveTrain/yaw", getYaw().getDegrees());
+        
+        for (SwerveModule swerveModule : m_swerveDrive.getModules()) {
+            SmartDashboard.putNumber("drivetrain/driveCurrent", ((TalonFX) swerveModule.getDriveMotor().getMotor()).getStatorCurrent().getValueAsDouble());
+        }
+
+         
+        // for (SwerveModule swerveModule : m_swerveDrive.getModules()) {
+        //     SmartDashboard.putNumber("drivetrain/turnCurrent", ((SparkMax) swerveModule.getDriveMotor().getMotor()).getOutputCurrent());
+        // }
     }
 
     @Override
