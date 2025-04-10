@@ -25,7 +25,7 @@ public class AlgaeEffector extends SubsystemBase {
 
     static final int MOTOR_CURRENT_LIMIT = 30;
    
-    static final double INTAKE_VOLTAGE = -6.0;
+    static final double INTAKE_VOLTAGE = -8.0;
     static final double PROCESSOR_VOLTAGE = 6.0;
     static final double BARGE_VOLTAGE = 10.0;
     static final double HOLD_VOLTAGE = -6.0;

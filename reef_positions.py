@@ -55,7 +55,11 @@ station_tag_x = 33.51
 station_tag_y = 25.80
 slot_distance = 8.0
 # push a bit further into the wall
-push_into_wall = 3.0
+push_into_wall = 0.0
+
+# 0 inches in
+# public static final Pose2d SOURCE_2_SLOT5 = new Pose2d(1.105, 7.037, Rotation2d.fromDegrees(-54.0));
+# public static final Pose2d SOURCE_2_SLOT6 = new Pose2d(1.269, 7.157, Rotation2d.fromDegrees(-54.0));
 
 #public static final Pose2d SOURCE_2_SLOT5 = new Pose2d(1.112, 7.027, Rotation2d.fromDegrees(-54.0));
 #public static final Pose2d SOURCE_2_SLOT6 = new Pose2d(1.277, 7.147, Rotation2d.fromDegrees(-54.0));

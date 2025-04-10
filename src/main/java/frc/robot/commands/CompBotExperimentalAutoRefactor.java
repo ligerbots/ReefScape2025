@@ -32,7 +32,7 @@ public class CompBotExperimentalAutoRefactor extends ReefscapeAbstractAuto {
     private final double CORAL_PICKUP_WAIT_TIME;
     
     PathConstraints constraints =  new PathConstraints(
-    4.0, 2.0,
+    4.0, 3.0,
     Math.toRadians(540), Math.toRadians(720));
     
         // private static Map<Pose2d, Double> elevatorRaiseTime = new HashMap<>();
