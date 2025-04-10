@@ -185,6 +185,8 @@ public class CompRobotContainer extends RobotContainer {
         m_chosenAutoFlavor.setDefaultOption("Primary Coral - JK-L", "Primary");
         m_chosenAutoFlavor.addOption("Secondary Coral - JK-A", "Secondary");
         m_chosenAutoFlavor.addOption("TushPush then Primary Coral", "TushPush");
+        m_chosenAutoFlavor.addOption("SingleL4+PickupAlgae", "AlgaeAlt");
+
 
         SmartDashboard.putData("Field Side", m_chosenFieldSide);
         SmartDashboard.putData("Auto flavor", m_chosenAutoFlavor);
@@ -217,6 +219,12 @@ public class CompRobotContainer extends RobotContainer {
                 m_autoCommand = new CompBotExperimentalAutoRefactor(FieldConstants.ROBOT_START_3, FieldConstants.SOURCE_2_CENTER, REEF_POINTS_JKLA, 
                         m_driveTrain, m_elevator, m_coralEffector, m_algaeEffector, m_pivot, m_chosenFieldSide.getSelected().equals("Processor Side"), true);
             }
+
+            if(autoFlavor.equals("AlgaeAlt")) { 
+                m_autoCommand = new CompBotAlgaePickupAuto(FieldConstants.ROBOT_START_2, FieldConstants.ROBOT_START_2, REEF_POINTS_H, 
+                        m_driveTrain, m_elevator, m_coralEffector, m_algaeEffector, m_pivot, m_chosenFieldSide.getSelected().equals("Processor Side"));
+            }
+            
             
             m_autoSelectionCode = currentAutoSelectionCode;
         } 
