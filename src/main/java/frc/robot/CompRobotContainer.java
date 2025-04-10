@@ -125,6 +125,16 @@ public class CompRobotContainer extends RobotContainer {
         m_farm.button(1).whileTrue(new StartEndCommand(() -> m_climber.run(Climber.MANUAL_SPEED), m_climber::hold, m_climber));
         m_farm.button(1).onTrue(new MoveEndEffector(Constants.Position.CLIMB, m_elevator, m_pivot, 0));
 
+        m_farm.button(2).whileTrue(new StartEndCommand(() -> m_climber.run(Climber.MANUAL_SPEED), m_climber::hold, m_climber));
+        m_farm.button(2).onTrue(new MoveEndEffector(Constants.Position.CLIMB, m_elevator, m_pivot, 0));
+
+        m_farm.button(6).whileTrue(new StartEndCommand(() -> m_climber.run(Climber.MANUAL_SPEED), m_climber::hold, m_climber));
+        m_farm.button(6).onTrue(new MoveEndEffector(Constants.Position.CLIMB, m_elevator, m_pivot, 0));
+
+        m_farm.button(7).whileTrue(new StartEndCommand(() -> m_climber.run(Climber.MANUAL_SPEED), m_climber::hold, m_climber));
+        m_farm.button(7).onTrue(new MoveEndEffector(Constants.Position.CLIMB, m_elevator, m_pivot, 0));
+
+
         // m_farm.button(2).whileTrue(new StartEndCommand(() -> m_climber.run(-Climber.MANUAL_SPEED), m_climber::hold, m_climber));
         // m_farm.button(2).onTrue(new MoveEndEffector(Constants.Position.CLIMB, m_elevator, m_pivot, 0));
 
@@ -140,6 +150,7 @@ public class CompRobotContainer extends RobotContainer {
 
         // schedule Drive command, which will cancel other control of Drivetrain, ie active heading
         m_farm.button(16).onTrue(new InstantCommand(() -> m_driveTrain.getDefaultCommand().schedule()));
+        m_farm.button(14).onTrue(new MoveEndEffector(Constants.Position.FRONT_INTAKE, m_elevator, m_pivot).alongWith(new InstantCommand(() -> m_coralMode = true)));
 
         // Testing commands
         m_farm.button(18).onTrue(new InstantCommand(m_coralGroundIntake::stow));
