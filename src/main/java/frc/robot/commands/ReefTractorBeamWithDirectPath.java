@@ -111,15 +111,14 @@ public class ReefTractorBeamWithDirectPath implements Supplier<Command> {
         // Prevent the path from being flipped if the coordinates are already correct
         path.preventFlipping = true;
 
-        Writer jsonWriter = new StringWriter();
-        try {
-        JSONValue.writeJSONString(path, jsonWriter);
-        System.out.println(jsonWriter.toString());
-        } catch (Exception e) {
-            System.out.println("Unable to write JSON for path: " + e.getMessage());
-        } 
+        // Writer jsonWriter = new StringWriter();
+        // try {
+        // JSONValue.writeJSONString(path, jsonWriter);
+        // System.out.println(jsonWriter.toString());
+        // } catch (Exception e) {
+        //     System.out.println("Unable to write JSON for path: " + e.getMessage());
+        // } 
+
         return m_driveTrain.followPath(path);
     }   
-        
-        
 }
