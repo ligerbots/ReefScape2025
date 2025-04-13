@@ -23,7 +23,6 @@ import edu.wpi.first.wpilibj2.command.button.CommandJoystick;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.commands.*;
-import frc.robot.commands.ReefTractorBeamWithDirectPath;
 import frc.robot.subsystems.*;
 
 public class CompRobotContainer extends RobotContainer {
