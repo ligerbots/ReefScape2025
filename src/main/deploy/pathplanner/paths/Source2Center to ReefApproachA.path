@@ -3,13 +3,13 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 1.09,
-        "y": 7.058
+        "x": 1.105,
+        "y": 7.037
       },
       "prevControl": null,
       "nextControl": {
-        "x": 1.4367152679893727,
-        "y": 6.069897803857698
+        "x": 2.7194898941289702,
+        "y": 6.8838426371511074
       },
       "isLocked": false,
       "linkedName": "source2Center"
@@ -30,7 +30,18 @@
   ],
   "rotationTargets": [],
   "constraintZones": [],
-  "pointTowardsZones": [],
+  "pointTowardsZones": [
+    {
+      "fieldPosition": {
+        "x": 1.2,
+        "y": 5.82
+      },
+      "rotationOffset": 180.0,
+      "minWaypointRelativePos": 0.3718309859154928,
+      "maxWaypointRelativePos": 0.6873239436619719,
+      "name": "Point Towards Zone"
+    }
+  ],
   "eventMarkers": [
     {
       "name": "RaiseElevatorMarker A",
@@ -40,8 +51,8 @@
     }
   ],
   "globalConstraints": {
-    "maxVelocity": 4.0,
-    "maxAcceleration": 3.5,
+    "maxVelocity": 4.5,
+    "maxAcceleration": 3.0,
     "maxAngularVelocity": 540.0,
     "maxAngularAcceleration": 720.0,
     "nominalVoltage": 12.0,

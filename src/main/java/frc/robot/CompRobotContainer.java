@@ -101,8 +101,8 @@ public class CompRobotContainer extends RobotContainer {
         
         // m_driverController.rightBumper().onTrue(new MoveEndEffector(Constants.Position.STOW, m_elevator, m_pivot).andThen().finallyDo(() -> m_coralMode = true));
         
-        m_driverController.rightBumper().onTrue(new DeferredCommand(new ReefTractorBeam(m_driveTrain, false, m_coralEffector::hasCoral), Set.of(m_driveTrain)));
-        m_driverController.leftBumper().onTrue(new DeferredCommand(new ReefTractorBeam(m_driveTrain, true, m_coralEffector::hasCoral), Set.of(m_driveTrain)));
+        m_driverController.rightBumper().onTrue(new DeferredCommand(new ReefTractorBeamWithDirectPath(m_driveTrain, false, m_coralEffector::hasCoral), Set.of(m_driveTrain)));
+        m_driverController.leftBumper().onTrue(new DeferredCommand(new ReefTractorBeamWithDirectPath(m_driveTrain, true, m_coralEffector::hasCoral), Set.of(m_driveTrain)));
 
         // Algae Scoring
         m_driverController.a().onTrue(new MoveEndEffector(Constants.Position.L2_ALGAE, m_elevator, m_pivot).alongWith(new InstantCommand(() -> m_coralMode = false)));
@@ -121,24 +121,36 @@ public class CompRobotContainer extends RobotContainer {
         m_driverController.back().onTrue(new InstantCommand(m_climber::deploy));
         m_driverController.back().onTrue(new MoveEndEffector(Constants.Position.CLIMB, m_elevator, m_pivot, 0));
 
+        //these are the 4 buttons in the square on the top of the farm controller to make sure the command gets run even if Zach misses the button. 
         m_farm.button(1).whileTrue(new StartEndCommand(() -> m_climber.run(Climber.MANUAL_SPEED), m_climber::hold, m_climber));
         m_farm.button(1).onTrue(new MoveEndEffector(Constants.Position.CLIMB, m_elevator, m_pivot, 0));
+
+        m_farm.button(2).whileTrue(new StartEndCommand(() -> m_climber.run(Climber.MANUAL_SPEED), m_climber::hold, m_climber));
+        m_farm.button(2).onTrue(new MoveEndEffector(Constants.Position.CLIMB, m_elevator, m_pivot, 0));
+
+        m_farm.button(6).whileTrue(new StartEndCommand(() -> m_climber.run(Climber.MANUAL_SPEED), m_climber::hold, m_climber));
+        m_farm.button(6).onTrue(new MoveEndEffector(Constants.Position.CLIMB, m_elevator, m_pivot, 0));
+
+        m_farm.button(7).whileTrue(new StartEndCommand(() -> m_climber.run(Climber.MANUAL_SPEED), m_climber::hold, m_climber));
+        m_farm.button(7).onTrue(new MoveEndEffector(Constants.Position.CLIMB, m_elevator, m_pivot, 0));
+
 
         // m_farm.button(2).whileTrue(new StartEndCommand(() -> m_climber.run(-Climber.MANUAL_SPEED), m_climber::hold, m_climber));
         // m_farm.button(2).onTrue(new MoveEndEffector(Constants.Position.CLIMB, m_elevator, m_pivot, 0));
 
         // Miscellaneous
-        m_farm.button(6).onTrue(new InstantCommand(m_driveTrain::lock, m_driveTrain));
+        // m_farm.button(6).onTrue(new InstantCommand(m_driveTrain::lock, m_driveTrain));
         
         // m_farm.button(21).onTrue(new MoveEndEffector(Constants.Position.L1, m_elevator, m_pivot));
         // note: farm 7 is robot-centric
         m_farm.button(8).onTrue(new InstantCommand(m_driveTrain::zeroHeading, m_driveTrain));
         m_farm.button(11).onTrue(new InstantCommand(() -> m_coralMode = !m_coralMode));
         m_farm.button(5).whileTrue(new InstantCommand(m_elevator::zeroElevator));
-        m_farm.button(12).onTrue(new DeferredCommand(new ReefTractorBeam(m_driveTrain, false, ()->false), Set.of(m_driveTrain)));
+        m_farm.button(12).onTrue(new DeferredCommand(new ReefTractorBeamWithDirectPath(m_driveTrain, false, ()->false), Set.of(m_driveTrain)));
 
         // schedule Drive command, which will cancel other control of Drivetrain, ie active heading
         m_farm.button(16).onTrue(new InstantCommand(() -> m_driveTrain.getDefaultCommand().schedule()));
+        m_farm.button(14).onTrue(new MoveEndEffector(Constants.Position.FRONT_INTAKE, m_elevator, m_pivot).alongWith(new InstantCommand(() -> m_coralMode = true)));
 
         // Testing commands
         m_farm.button(18).onTrue(new InstantCommand(m_coralGroundIntake::stow));
@@ -173,6 +185,8 @@ public class CompRobotContainer extends RobotContainer {
         m_chosenAutoFlavor.setDefaultOption("Primary Coral - JK-L", "Primary");
         m_chosenAutoFlavor.addOption("Secondary Coral - JK-A", "Secondary");
         m_chosenAutoFlavor.addOption("TushPush then Primary Coral", "TushPush");
+        m_chosenAutoFlavor.addOption("SingleL4+PickupAlgae", "AlgaeAlt");
+
 
         SmartDashboard.putData("Field Side", m_chosenFieldSide);
         SmartDashboard.putData("Auto flavor", m_chosenAutoFlavor);
@@ -205,6 +219,12 @@ public class CompRobotContainer extends RobotContainer {
                 m_autoCommand = new CompBotExperimentalAutoRefactor(FieldConstants.ROBOT_START_3, FieldConstants.SOURCE_2_CENTER, REEF_POINTS_JKLA, 
                         m_driveTrain, m_elevator, m_coralEffector, m_algaeEffector, m_pivot, m_chosenFieldSide.getSelected().equals("Processor Side"), true);
             }
+
+            if(autoFlavor.equals("AlgaeAlt")) { 
+                m_autoCommand = new CompBotAlgaePickupAuto(FieldConstants.ROBOT_START_2, FieldConstants.ROBOT_START_2, REEF_POINTS_H, 
+                        m_driveTrain, m_elevator, m_coralEffector, m_algaeEffector, m_pivot, m_chosenFieldSide.getSelected().equals("Processor Side"));
+            }
+            
             
             m_autoSelectionCode = currentAutoSelectionCode;
         } 
