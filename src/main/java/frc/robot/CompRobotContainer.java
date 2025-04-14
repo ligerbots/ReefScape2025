@@ -121,6 +121,7 @@ public class CompRobotContainer extends RobotContainer {
         m_driverController.back().onTrue(new InstantCommand(m_climber::deploy));
         m_driverController.back().onTrue(new MoveEndEffector(Constants.Position.CLIMB, m_elevator, m_pivot, 0));
 
+        //these are the 4 buttons in the square on the top of the farm controller to make sure the command gets run even if Zach misses the button. 
         m_farm.button(1).whileTrue(new StartEndCommand(() -> m_climber.run(Climber.MANUAL_SPEED), m_climber::hold, m_climber));
         m_farm.button(1).onTrue(new MoveEndEffector(Constants.Position.CLIMB, m_elevator, m_pivot, 0));
 
@@ -138,7 +139,7 @@ public class CompRobotContainer extends RobotContainer {
         // m_farm.button(2).onTrue(new MoveEndEffector(Constants.Position.CLIMB, m_elevator, m_pivot, 0));
 
         // Miscellaneous
-        m_farm.button(6).onTrue(new InstantCommand(m_driveTrain::lock, m_driveTrain));
+        // m_farm.button(6).onTrue(new InstantCommand(m_driveTrain::lock, m_driveTrain));
         
         // m_farm.button(21).onTrue(new MoveEndEffector(Constants.Position.L1, m_elevator, m_pivot));
         // note: farm 7 is robot-centric
