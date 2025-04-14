@@ -29,11 +29,11 @@ public class CompBotAlgaePickupAuto extends ReefscapeAbstractAuto {
 
     private DriveTrain m_driveTrain;
     
-    PathConstraints constraints =  new PathConstraints(
-    4.0, 2.0,
-    Math.toRadians(540), Math.toRadians(720));
+    PathConstraints constraints = new PathConstraints(
+            4.0, 2.0,
+            Math.toRadians(540), Math.toRadians(720));
 
-    /** Creates a new NoteAuto. */
+    /** Creates a new CompBotAlgaePickupAuto. */
     public CompBotAlgaePickupAuto(Pose2d startPoint, Pose2d sourcePoint, Pose2d[] reefPoints, DriveTrain driveTrain, 
     Elevator elevator, CoralEffector coralEffector, AlgaeEffector algaeEffector, EndEffectorPivot pivot, boolean isProcessorSide) {
         super(startPoint, sourcePoint, reefPoints, driveTrain, elevator, coralEffector, algaeEffector, pivot, isProcessorSide);
@@ -53,11 +53,12 @@ public class CompBotAlgaePickupAuto extends ReefscapeAbstractAuto {
             
             m_initPose = startPath.getStartingDifferentialPose();
             
-            addCommands(new WaitCommand(5).andThen(m_driveTrain.followPath(startPath).alongWith(
-                new MoveEndEffector(Constants.Position.L4, elevator, pivot, RAISE_ELEVATOR_WAIT_TIME))));
+            addCommands(new WaitCommand(5));
+
+            addCommands(m_driveTrain.followPath(startPath).alongWith(
+                new MoveEndEffector(Constants.Position.L4, elevator, pivot, RAISE_ELEVATOR_WAIT_TIME)));
 
             addCommands(new StartEndCommand(coralEffector::runOuttake, coralEffector::stop, coralEffector).withTimeout(CORAL_SCORE_WAIT_TIME));                
-
 
             addCommands(m_driveTrain.followPath(PathFactory.getPath("Algae backup path", isProcessorSide)));
             addCommands(m_driveTrain.pathFindToPose(FieldConstants.flipPose(REEF_ALGAE_GH_AUTO_PICKUP), constraints).alongWith(
