@@ -71,7 +71,7 @@ public class CompBotAlgaeAuto extends ReefscapeAbstractAuto {
             addCommands(
                     m_driveTrain.followPath(PathFactory.getPath("Barge to AlgaeApproachIJ", false)).alongWith(
                         new WaitCommand(.1).andThen(
-                        new MoveEndEffector(Constants.Position.STOW, elevator, pivot, RAISE_ELEVATOR_WAIT_TIME))));
+                        new MoveEndEffector(Constants.Position.L3_ALGAE, elevator, pivot, RAISE_ELEVATOR_WAIT_TIME))));
 
             addCommands(
                 Commands.sequence(
