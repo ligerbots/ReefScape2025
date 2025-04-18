@@ -67,23 +67,30 @@ public class CompBotAlgaeAuto extends ReefscapeAbstractAuto {
             addCommands(new StartEndCommand(algaeEffector::runIntake, algaeEffector::stop, algaeEffector).until(algaeEffector::hasAlgae).withTimeout(ALGAE_PICKUP_WAIT_TIME));
             addCommands(m_driveTrain.followPath(PathFactory.getPath("AlgaeGH to Barge", false)).alongWith(
                 new WaitCommand(0.2).andThen(new MoveEndEffector(Constants.Position.BARGE, elevator, pivot, LOWER_ELEVATOR_WAIT_TIME))));              
-            addCommands(new StartEndCommand(algaeEffector::score, algaeEffector::stop, algaeEffector).withTimeout(2.0));
-            
+            addCommands(new StartEndCommand(algaeEffector::score, algaeEffector::stop, algaeEffector).withTimeout(0.5));
             addCommands(
-                Commands.sequence(
-                    m_driveTrain.followPath(PathFactory.getPath("Barge to AlgaeApproachIJ", false)),
-                    m_driveTrain.pathFindToPose(FieldConstants.flipPose(REEF_ALGAE_IJ_AUTO_PICKUP), constraints),
+                    m_driveTrain.followPath(PathFactory.getPath("Barge to AlgaeApproachIJ", false)).alongWith(
+                        new WaitCommand(.1).andThen(
+                        new MoveEndEffector(Constants.Position.STOW, elevator, pivot, RAISE_ELEVATOR_WAIT_TIME))));
 
-                    new MoveEndEffector(Constants.Position.L3_ALGAE, elevator, pivot, LOWER_ELEVATOR_WAIT_TIME),
-                    new StartEndCommand(algaeEffector::runIntake, algaeEffector::stop, algaeEffector).until(algaeEffector::hasAlgae).withTimeout(ALGAE_PICKUP_WAIT_TIME),
+            // addCommands(
+            //     Commands.sequence(
+            //         m_driveTrain.followPath(PathFactory.getPath("Barge to AlgaeApproachIJ", false)).alongWith(
+            //             new WaitCommand(.1).andThen(
+            //             new MoveEndEffector(Constants.Position.STOW, elevator, pivot, RAISE_ELEVATOR_WAIT_TIME))),
+                
+                    // m_driveTrain.pathFindToPose(FieldConstants.flipPose(REEF_ALGAE_IJ_AUTO_PICKUP), constraints).alongWith(
+                    //     new MoveEndEffector(Constants.Position.L3_ALGAE, elevator, pivot, LOWER_ELEVATOR_WAIT_TIME)),
+
+                    // new StartEndCommand(algaeEffector::runIntake, algaeEffector::stop, algaeEffector).until(algaeEffector::hasAlgae).withTimeout(ALGAE_PICKUP_WAIT_TIME),
             
-                    m_driveTrain.followPath(PathFactory.getPath("AlgaeIJ to Barge", false)).alongWith(
-                        new WaitCommand(.5).andThen(
-                        new MoveEndEffector(Constants.Position.BARGE, elevator, pivot, RAISE_ELEVATOR_WAIT_TIME))),
+                    // m_driveTrain.followPath(PathFactory.getPath("AlgaeIJ to Barge", false)).alongWith(
+                    //     new WaitCommand(.5).andThen(
+                    //     new MoveEndEffector(Constants.Position.BARGE, elevator, pivot, RAISE_ELEVATOR_WAIT_TIME))),
 
-                    new StartEndCommand(algaeEffector::score, algaeEffector::stop, algaeEffector).withTimeout(2.0)
+                    // new StartEndCommand(algaeEffector::score, algaeEffector::stop, algaeEffector).withTimeout(2.0)
 
-                    ));
+                    // ));
             
             
             // addCommands(m_driveTrain.followPath(PathFactory.getPath("Barge to AlgaeApproachIJ", false)));
@@ -95,9 +102,9 @@ public class CompBotAlgaeAuto extends ReefscapeAbstractAuto {
             //     new WaitCommand(0.2).andThen(new MoveEndEffector(Constants.Position.BARGE, elevator, pivot, LOWER_ELEVATOR_WAIT_TIME))));
             // addCommands(new StartEndCommand(algaeEffector::score, algaeEffector::stop, algaeEffector).withTimeout(2.0));
     
-            Pose2d bargeBackupSpot = new Pose2d(7.0, 5.02, Rotation2d.fromDegrees(180.0));
-            addCommands(m_driveTrain.pathFindToPose(FieldConstants.flipPose(bargeBackupSpot), constraints));
-            addCommands(new MoveEndEffector(Constants.Position.BACK_INTAKE, elevator, pivot, LOWER_ELEVATOR_WAIT_TIME));
+            // Pose2d bargeBackupSpot = new Pose2d(7.0, 5.02, Rotation2d.fromDegrees(180.0));
+            // addCommands(m_driveTrain.pathFindToPose(FieldConstants.flipPose(bargeBackupSpot), constraints));
+            // addCommands(new MoveEndEffector(Constants.Position.BACK_INTAKE, elevator, pivot, LOWER_ELEVATOR_WAIT_TIME));
 
    
             
