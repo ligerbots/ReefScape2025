@@ -27,7 +27,7 @@ import frc.robot.Constants;
 public class Elevator extends SubsystemBase {
     public static final double HEIGHT_LOW_RANGE = Units.inchesToMeters(2.0);
 
-    private static final double GEAR_REDUCTION = 12.0;  // 15:1 planetary
+    private static final double GEAR_REDUCTION = 5.0;  // 5:1 planetary
     // diameter of final 18 tooth gear
     private static final double FINAL_GEAR_DIAMETER = Units.inchesToMeters(1.504);  // TODO fix me
     // calibration: (circumference of 18T gear) * (2 for 2nd stage) / (motor gear reduction)
@@ -59,7 +59,8 @@ public class Elevator extends SubsystemBase {
     // private final double POTENTIOMETER_OFFSET = 2.51; //TODO: Find inital value and update
     
     // Define the motor and encoders
-    private final TalonFX m_motor;
+    private final TalonFX m_motorLeft;
+    private final TalonFX m_motorRight;
 
     // private final AnalogPotentiometer m_stringPotentiometer;
     
@@ -69,8 +70,10 @@ public class Elevator extends SubsystemBase {
     private BooleanSupplier m_pivotOutsideLowRange = null;
 
     /** Creates a new Elevator. */
+    @SuppressWarnings("removal")
     public Elevator() {
-        m_motor = new TalonFX(Constants.ELEVATOR_CAN_ID);
+        m_motorLeft = new TalonFX(Constants.ELEVATOR_LEFT_CAN_ID);
+        m_motorRight = new TalonFX(Constants.ELEVATOR_RIGHT_CAN_ID);
 
         TalonFXConfiguration talonFXConfigs = new TalonFXConfiguration();
         
@@ -97,10 +100,16 @@ public class Elevator extends SubsystemBase {
             .withStatorCurrentLimit(CURRENT_LIMIT);
         talonFXConfigs.withCurrentLimits(currentLimits);
         
-        m_motor.getConfigurator().apply(talonFXConfigs);
+        m_motorLeft.getConfigurator().apply(talonFXConfigs);
         
         // enable brake mode (after main config)
-        m_motor.setNeutralMode(NeutralModeValue.Brake);
+        m_motorLeft.setNeutralMode(NeutralModeValue.Brake);
+       
+        m_motorRight.getConfigurator().apply(talonFXConfigs);
+        
+        // enable brake mode (after main config)
+        m_motorRight.setNeutralMode(NeutralModeValue.Brake);
+        m_motorRight.setInverted(true); //TODO CHECK THIS BEFORE CONNECTING THE CHAIN 
         
         // No potentiometer at this time
         // m_stringPotentiometer = new AnalogPotentiometer(POTENTIOMETER_CHANNEL, POTENTIOMETER_RANGE_METERS, POTENTIOMETER_OFFSET);
@@ -125,20 +134,30 @@ public class Elevator extends SubsystemBase {
         // if basically at the bottom, turn off the motor
         double height = getHeight();
         if (goalClipped < MIN_HEIGHT_TURN_OFF && height < MIN_HEIGHT_TURN_OFF) {
-            m_motor.setControl(new VoltageOut(0));
+            m_motorLeft.setControl(new VoltageOut(0));
+            m_motorRight.setControl(new VoltageOut(0));
+
         } else {
-            m_motor.setControl(new MotionMagicVoltage(heightToRotations(goalClipped)));    
+            m_motorLeft.setControl(new MotionMagicVoltage(heightToRotations(goalClipped)));    
+            m_motorRight.setControl(new MotionMagicVoltage(heightToRotations(goalClipped)));    
+
         }
         
         SmartDashboard.putNumber("elevator/height", Units.metersToInches(height));
         SmartDashboard.putBoolean("elevator/onGoal", lengthWithinTolerance());
         SmartDashboard.putNumber("elevator/currentGoal", 
-            Units.metersToInches(rotationsToHeight(m_motor.getClosedLoopReference().getValueAsDouble())));
-        SmartDashboard.putNumber("elevator/voltage", m_motor.getMotorVoltage().getValueAsDouble());
-        SmartDashboard.putNumber("elevator/supplyCurrent", m_motor.getSupplyCurrent().getValueAsDouble());
-        SmartDashboard.putNumber("elevator/statorCurrent", m_motor.getStatorCurrent().getValueAsDouble());
-        SmartDashboard.putNumber("elevator/dutyCycle", m_motor.getDutyCycle().getValueAsDouble());
-        SmartDashboard.putNumber("elevator/velocity", m_motor.getVelocity().getValueAsDouble());
+            Units.metersToInches(rotationsToHeight(m_motorLeft.getClosedLoopReference().getValueAsDouble())));
+        SmartDashboard.putNumber("elevator/leftVoltage", m_motorLeft.getMotorVoltage().getValueAsDouble());
+        SmartDashboard.putNumber("elevator/leftSupplyCurrent", m_motorLeft.getSupplyCurrent().getValueAsDouble());
+        SmartDashboard.putNumber("elevator/leftStatorCurrent", m_motorLeft.getStatorCurrent().getValueAsDouble());
+        SmartDashboard.putNumber("elevator/leftDutyCycle", m_motorLeft.getDutyCycle().getValueAsDouble());
+        SmartDashboard.putNumber("elevator/leftVelocity", m_motorLeft.getVelocity().getValueAsDouble());
+
+        SmartDashboard.putNumber("elevator/rightVoltage", m_motorRight.getMotorVoltage().getValueAsDouble());
+        SmartDashboard.putNumber("elevator/rightSupplyCurrent", m_motorRight.getSupplyCurrent().getValueAsDouble());
+        SmartDashboard.putNumber("elevator/rightStatorCurrent", m_motorRight.getStatorCurrent().getValueAsDouble());
+        SmartDashboard.putNumber("elevator/rightDutyCycle", m_motorRight.getDutyCycle().getValueAsDouble());
+        SmartDashboard.putNumber("elevator/rightVelocity", m_motorRight.getVelocity().getValueAsDouble());
     }
     
     // set elevator length in meters
@@ -148,7 +167,7 @@ public class Elevator extends SubsystemBase {
     }
     
     public double getHeight() {
-        return rotationsToHeight(m_motor.getPosition().getValueAsDouble());
+        return rotationsToHeight(m_motorLeft.getPosition().getValueAsDouble());
         // return m_stringPotentiometer.get();  
     }
 
@@ -157,7 +176,7 @@ public class Elevator extends SubsystemBase {
     }
     
     public void zeroElevator() {
-        m_motor.setPosition(heightToRotations(OFFSET_METER));
+        m_motorLeft.setPosition(heightToRotations(OFFSET_METER));
         // updateMotorEncoderOffset();
     }
     
