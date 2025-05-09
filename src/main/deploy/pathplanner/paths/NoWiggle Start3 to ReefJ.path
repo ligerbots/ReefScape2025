@@ -3,29 +3,29 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 5.79,
-        "y": 4.02
+        "x": 6.588,
+        "y": 5.148161764705882
       },
       "prevControl": null,
       "nextControl": {
-        "x": 6.011318399057252,
-        "y": 4.1362676491494295
+        "x": 5.5162230761474556,
+        "y": 5.148161764705882
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 7.302,
-        "y": 5.026
+        "x": 4.9725,
+        "y": 5.1754999999999995
       },
       "prevControl": {
-        "x": 7.081333889088991,
-        "y": 4.908499074491259
+        "x": 5.4150413285157235,
+        "y": 5.505264029920765
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "bargeScore"
+      "linkedName": "scoreReefJ"
     }
   ],
   "rotationTargets": [],
@@ -33,7 +33,7 @@
   "pointTowardsZones": [],
   "eventMarkers": [],
   "globalConstraints": {
-    "maxVelocity": 2.0,
+    "maxVelocity": 3.3,
     "maxAcceleration": 2.0,
     "maxAngularVelocity": 540.0,
     "maxAngularAcceleration": 720.0,
@@ -42,13 +42,13 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 178.431
+    "rotation": -119.99999999999999
   },
   "reversed": false,
   "folder": null,
   "idealStartingState": {
     "velocity": 0,
-    "rotation": 180.0
+    "rotation": -136.63340402589714
   },
   "useDefaultConstraints": false
 }

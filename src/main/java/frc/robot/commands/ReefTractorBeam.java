@@ -24,9 +24,9 @@ public class ReefTractorBeam implements Supplier<Command> {
             // Note that left/right is from the *Driver's* perspective
             put(FieldConstants.REEF_ALGAE_AB, new Pair<>(FieldConstants.REEF_A, FieldConstants.REEF_B));
             put(FieldConstants.REEF_ALGAE_CD, new Pair<>(FieldConstants.REEF_C, FieldConstants.REEF_D));
-            put(FieldConstants.REEF_ALGAE_EF, new Pair<>(FieldConstants.REEF_F, FieldConstants.REEF_E));
+            put(FieldConstants.REEF_ALGAE_EF, new Pair<>(FieldConstants.REEF_E, FieldConstants.REEF_F));
             put(FieldConstants.REEF_ALGAE_GH, new Pair<>(FieldConstants.REEF_H, FieldConstants.REEF_G));
-            put(FieldConstants.REEF_ALGAE_IJ, new Pair<>(FieldConstants.REEF_J, FieldConstants.REEF_I));
+            put(FieldConstants.REEF_ALGAE_IJ, new Pair<>(FieldConstants.REEF_I, FieldConstants.REEF_J));
             put(FieldConstants.REEF_ALGAE_KL, new Pair<>(FieldConstants.REEF_K, FieldConstants.REEF_L));
         }
     };    
