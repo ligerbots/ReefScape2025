@@ -29,11 +29,11 @@ public class Elevator extends SubsystemBase {
 
     private static final double GEAR_REDUCTION = 5.0;  // 5:1 planetary
     // diameter of final 18 tooth gear
-    private static final double FINAL_GEAR_DIAMETER = Units.inchesToMeters(1.504);  // TODO fix me
+    private static final double FINAL_GEAR_DIAMETER = Units.inchesToMeters(1.504); 
     // calibration: (circumference of 18T gear) * (2 for 2nd stage) / (motor gear reduction)
     private static final double METER_PER_REVOLUTION = Math.PI * FINAL_GEAR_DIAMETER * 2.0 / GEAR_REDUCTION;
     
-    private static final double MAX_LENGTH_METERS = Units.inchesToMeters(63.0); // TODO fix me
+    private static final double MAX_LENGTH_METERS = Units.inchesToMeters(63.0);
     private static final double MIN_LENGTH_METERS = Units.inchesToMeters(0.25);
     // private static int m_lengthAdjustment = 1;
     
@@ -49,7 +49,6 @@ public class Elevator extends SubsystemBase {
     private static final int CURRENT_LIMIT = 60;
     
     private static final double OFFSET_METER = 0.0;
-
 
     private static final double GRAVITY_VOLTAGE = 0.6;
     private static final double K_P = 2.0;
@@ -70,7 +69,7 @@ public class Elevator extends SubsystemBase {
     private BooleanSupplier m_pivotOutsideLowRange = null;
 
     /** Creates a new Elevator. */
-    @SuppressWarnings("removal")
+    @SuppressWarnings("removal")   // ignore deprecation warning
     public Elevator() {
         m_motorLeft = new TalonFX(Constants.ELEVATOR_LEFT_CAN_ID);
         m_motorRight = new TalonFX(Constants.ELEVATOR_RIGHT_CAN_ID);
@@ -104,6 +103,7 @@ public class Elevator extends SubsystemBase {
         
         // enable brake mode (after main config)
         m_motorLeft.setNeutralMode(NeutralModeValue.Brake);
+        m_motorLeft.setInverted(false); //TODO CHECK THIS BEFORE CONNECTING THE CHAIN 
        
         m_motorRight.getConfigurator().apply(talonFXConfigs);
         
@@ -134,19 +134,22 @@ public class Elevator extends SubsystemBase {
         // if basically at the bottom, turn off the motor
         double height = getHeight();
         if (goalClipped < MIN_HEIGHT_TURN_OFF && height < MIN_HEIGHT_TURN_OFF) {
-            m_motorLeft.setControl(new VoltageOut(0));
-            m_motorRight.setControl(new VoltageOut(0));
-
+            // create 1 and re-use - save a *little* bit of garbage collection
+            VoltageOut zero = new VoltageOut(0);
+            m_motorLeft.setControl(zero);
+            m_motorRight.setControl(zero);
         } else {
-            m_motorLeft.setControl(new MotionMagicVoltage(heightToRotations(goalClipped)));    
-            m_motorRight.setControl(new MotionMagicVoltage(heightToRotations(goalClipped)));    
-
+            // create 1 and re-use - save a *little* bit of garbage collection
+            MotionMagicVoltage setpt = new MotionMagicVoltage(heightToRotations(goalClipped));
+            m_motorLeft.setControl(setpt);    
+            m_motorRight.setControl(setpt);    
         }
         
         SmartDashboard.putNumber("elevator/height", Units.metersToInches(height));
         SmartDashboard.putBoolean("elevator/onGoal", lengthWithinTolerance());
         SmartDashboard.putNumber("elevator/currentGoal", 
             Units.metersToInches(rotationsToHeight(m_motorLeft.getClosedLoopReference().getValueAsDouble())));
+
         SmartDashboard.putNumber("elevator/leftVoltage", m_motorLeft.getMotorVoltage().getValueAsDouble());
         SmartDashboard.putNumber("elevator/leftSupplyCurrent", m_motorLeft.getSupplyCurrent().getValueAsDouble());
         SmartDashboard.putNumber("elevator/leftStatorCurrent", m_motorLeft.getStatorCurrent().getValueAsDouble());
@@ -167,7 +170,9 @@ public class Elevator extends SubsystemBase {
     }
     
     public double getHeight() {
-        return rotationsToHeight(m_motorLeft.getPosition().getValueAsDouble());
+        // use the average from the two sides
+        double avgH = 0.5 * (m_motorLeft.getPosition().getValueAsDouble() + m_motorRight.getPosition().getValueAsDouble());
+        return rotationsToHeight(avgH);
         // return m_stringPotentiometer.get();  
     }
 
@@ -177,6 +182,7 @@ public class Elevator extends SubsystemBase {
     
     public void zeroElevator() {
         m_motorLeft.setPosition(heightToRotations(OFFSET_METER));
+        m_motorRight.setPosition(heightToRotations(OFFSET_METER));
         // updateMotorEncoderOffset();
     }
     
