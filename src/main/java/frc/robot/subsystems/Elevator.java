@@ -103,13 +103,13 @@ public class Elevator extends SubsystemBase {
         
         // enable brake mode (after main config)
         m_motorLeft.setNeutralMode(NeutralModeValue.Brake);
-        m_motorLeft.setInverted(false); //TODO CHECK THIS BEFORE CONNECTING THE CHAIN 
+        m_motorLeft.setInverted(true);
        
         m_motorRight.getConfigurator().apply(talonFXConfigs);
         
         // enable brake mode (after main config)
         m_motorRight.setNeutralMode(NeutralModeValue.Brake);
-        m_motorRight.setInverted(true); //TODO CHECK THIS BEFORE CONNECTING THE CHAIN 
+        m_motorRight.setInverted(false);
         
         // No potentiometer at this time
         // m_stringPotentiometer = new AnalogPotentiometer(POTENTIOMETER_CHANNEL, POTENTIOMETER_RANGE_METERS, POTENTIOMETER_OFFSET);
