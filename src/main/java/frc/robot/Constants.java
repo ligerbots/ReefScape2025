@@ -26,6 +26,9 @@ public final class Constants {
     public static final int CORAL_GROUND_PIVOT_ID = 10; 
     public static final int CORAL_GROUND_ROLLER_ID = 11; 
     
+    public static final int END_EFFECTOR_WRIST_CAN_ID = 14;
+    public static final int CLAW_CAN_ID = 13;
+
     public static double MAX_VOLTAGE = 12.0;
     
     public enum Position {
@@ -46,4 +49,5 @@ public final class Constants {
     
     // if true, save the settings into the controllers after init
     public static final boolean SPARKMAX_PERSIST_PARAMETERS = false;
+
 }
