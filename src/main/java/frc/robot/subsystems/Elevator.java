@@ -9,6 +9,7 @@ import java.util.function.BooleanSupplier;
 import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
 import com.ctre.phoenix6.configs.MotionMagicConfigs;
 import com.ctre.phoenix6.configs.Slot0Configs;
+import com.ctre.phoenix6.configs.Slot1Configs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.MotionMagicVoltage;
 import com.ctre.phoenix6.controls.VoltageOut;
@@ -52,7 +53,7 @@ public class Elevator extends SubsystemBase {
 
     private static final double GRAVITY_VOLTAGE = 0.6;
     private static final double K_P = 3.0;
-
+    private static final double K_P_DOWN = 1.0;
 
     // private final int POTENTIOMETER_CHANNEL = 2; //TODO: Update with actual value
     // private final double POTENTIOMETER_RANGE_METERS = -2.625; // meters, the string potentiometer on takes in range in integers TODO: update to correct value
@@ -88,6 +89,17 @@ public class Elevator extends SubsystemBase {
         slot0configs.kI = 0.0; // no output for integrated error
         slot0configs.kD = 0.0; // A velocity error of 1 rps results in 0.1 V output
 
+        // set slot 1 gains
+        Slot1Configs slot1configs = talonFXConfigs.Slot1;
+        slot1configs.kS = 0;
+        slot1configs.kG = GRAVITY_VOLTAGE; // overcome gravity
+        slot1configs.GravityType = GravityTypeValue.Elevator_Static;
+        slot1configs.kV = 0.0; // A velocity target of 1 rps results in 0.12 V output
+        slot1configs.kA = 0.0; // An acceleration of 1 rps/s requires 0.01 V output
+        slot1configs.kP = K_P_DOWN; // start small!!!
+        slot1configs.kI = 0.0; // no output for integrated error
+        slot1configs.kD = 0.0; // A velocity error of 1 rps results in 0.1 V output
+        
         // set Motion Magic settings
         MotionMagicConfigs magicConfigs = talonFXConfigs.MotionMagic;
         
@@ -142,6 +154,9 @@ public class Elevator extends SubsystemBase {
         } else {
             // create 1 and re-use - save a *little* bit of garbage collection
             MotionMagicVoltage setpt = new MotionMagicVoltage(heightToRotations(goalClipped));
+            // if going down, need to use Slot1
+            boolean goingDown = goalClipped < height;
+            setpt.Slot = goingDown ? 1 : 0;
             m_motorLeft.setControl(setpt);    
             m_motorRight.setControl(setpt);    
         }
