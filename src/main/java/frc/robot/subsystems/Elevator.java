@@ -42,16 +42,17 @@ public class Elevator extends SubsystemBase {
 
     private static final double MIN_HEIGHT_TURN_OFF = Units.inchesToMeters(1.0);
 
-    private static final double MAX_VEL_METER_PER_SEC = Units.inchesToMeters(300.0);
-    private static final double MAX_ACC_METER_PER_SEC_SQ = Units.inchesToMeters(750.0);
-    private static final double MAX_JERK_METER_PER_SEC3 = Units.inchesToMeters(5000.0);
+    private static final double MAX_VEL_METER_PER_SEC = Units.inchesToMeters(1000.0);
+    private static final double MAX_ACC_METER_PER_SEC_SQ = Units.inchesToMeters(2500.0);
+    private static final double MAX_JERK_METER_PER_SEC3 = Units.inchesToMeters(12500.0);
     
-    private static final int CURRENT_LIMIT = 60;
+    private static final int CURRENT_LIMIT = 100;
     
     private static final double OFFSET_METER = 0.0;
 
     private static final double GRAVITY_VOLTAGE = 0.6;
-    private static final double K_P = 2.0;
+    private static final double K_P = 3.0;
+
 
     // private final int POTENTIOMETER_CHANNEL = 2; //TODO: Update with actual value
     // private final double POTENTIOMETER_RANGE_METERS = -2.625; // meters, the string potentiometer on takes in range in integers TODO: update to correct value
