@@ -118,7 +118,7 @@ public class EndEffectorWrist extends SubsystemBase {
 
         config.closedLoop.outputRange(-1, 1);
         config.closedLoop.feedbackSensor(FeedbackSensor.kAbsoluteEncoder);
-        config.closedLoop.positionWrappingEnabled(false);  // don't treat it as a circle
+        config.closedLoop.positionWrappingEnabled(true);  // don't treat it as a circle
         // config.closedLoop.positionWrappingInputRange(0,1.0);
                         
         m_motor.configure(config, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
@@ -186,7 +186,7 @@ public class EndEffectorWrist extends SubsystemBase {
         // SmartDashboard.putNumber("pivot/accel", accel);
     }
 
-    // get the current pivot angle
+    // get the current wrist angle
     public Rotation2d getAngle() {
         return Rotation2d.fromRotations(m_absoluteEncoder.getPosition());
     }

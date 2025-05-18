@@ -85,18 +85,14 @@ public class CompRobotContainerRedesign extends RobotContainer {
         }
         
         m_driverController.leftTrigger().whileTrue(
-                new ConditionalCommand(
-                        new StartEndCommand(m_coralGroundIntake::deploy, m_coralGroundIntake::TransferCoral, m_coralGroundIntake),
-                        
-                        new StartEndCommand(m_claw::runIntake, m_claw::stop, m_claw),
-                        () -> m_coralMode)
+                        new StartEndCommand(m_coralGroundIntake::deploy, m_coralGroundIntake::TransferCoral, m_coralGroundIntake)
         );
 
         m_driverController.rightTrigger().whileTrue(
                 new ConditionalCommand(
                 new Score(currRobotAction, m_pivot, m_wrist, m_elevator, m_claw, ()->m_elevator.getHeight()),
 
-                new StartEndCommand(m_algaeEffector::score, m_algaeEffector::stop, m_algaeEffector),
+                new StartEndCommand(m_claw::runOuttake, m_claw::stop, m_claw),
                         () -> m_coralMode)
         );
 
@@ -109,19 +105,21 @@ public class CompRobotContainerRedesign extends RobotContainer {
         // m_driverController.rightBumper().onTrue(new MoveEndEffector(Constants.Position.STOW, m_elevator, m_pivot).andThen().finallyDo(() -> m_coralMode = true));
         
         m_driverController.rightBumper().onTrue(new DeferredCommand(new ReefTractorBeamWithDirectPath(m_driveTrain, false, m_coralEffector::hasCoral), Set.of(m_driveTrain)));
-        m_driverController.leftBumper().onTrue(new DeferredCommand(new ReefTractorBeamWithDirectPath(m_driveTrain, true, m_coralEffector::hasCoral), Set.of(m_driveTrain)));
+        m_driverController.leftBumper().onTrue(new ConditionalCommand(new DeferredCommand(new ReefTractorBeamWithDirectPath(m_driveTrain, true, m_coralEffector::hasCoral), Set.of(m_driveTrain)), new StartEndCommand(m_claw::runIntake, m_claw::stop, m_claw), ()->m_coralMode));
 
         // Algae Scoring
-        m_driverController.a().onTrue(new MoveEndEffectorRedesign(Constants.Position.L2_ALGAE, m_elevator, m_pivot, m_wrist).alongWith(new InstantCommand(() -> m_coralMode = false)));
-        m_driverController.x().onTrue(new MoveEndEffectorRedesign(Constants.Position.L3_ALGAE, m_elevator, m_pivot, m_wrist).alongWith(new InstantCommand(() -> m_coralMode = false)));
-        m_driverController.y().onTrue(new MoveEndEffectorRedesign(Constants.Position.BARGE, m_elevator, m_pivot, m_wrist).alongWith(new InstantCommand(() -> m_coralMode = false)));
-        m_driverController.b().onTrue(new MoveEndEffectorRedesign(Constants.Position.PROCESSOR, m_elevator, m_pivot, m_wrist ).alongWith(new InstantCommand(() -> m_coralMode = false)));
+        m_driverController.a().onTrue(new MoveEndEffectorRedesign(Constants.Position.L2_ALGAE, m_elevator, m_pivot, m_wrist).alongWith(new InstantCommand(()-> currRobotAction = Position.L2_ALGAE)).alongWith(new InstantCommand(() -> m_coralMode = false)));
+        m_driverController.x().onTrue(new MoveEndEffectorRedesign(Constants.Position.L3_ALGAE, m_elevator, m_pivot, m_wrist).alongWith(new InstantCommand(()-> currRobotAction = Position.L3_ALGAE)).alongWith(new InstantCommand(() -> m_coralMode = false)));
+        m_driverController.y().onTrue(new MoveEndEffectorRedesign(Constants.Position.BARGE, m_elevator, m_pivot, m_wrist).alongWith(new InstantCommand(()-> currRobotAction = Position.BARGE)).alongWith(new InstantCommand(() -> m_coralMode = false)));
+        m_driverController.b().onTrue(new MoveEndEffectorRedesign(Constants.Position.STOW, m_elevator, m_pivot, m_wrist ).alongWith(new InstantCommand(()-> currRobotAction = Position.STOW)));
+
+        // m_driverController.b().onTrue(new MoveEndEffectorRedesign(Constants.Position.PROCESSOR, m_elevator, m_pivot, m_wrist ).alongWith(new InstantCommand(() -> m_coralMode = false)));
 
         // Coral Scoring
         m_driverController.pov(270).onTrue(new MoveEndEffectorRedesign(Constants.Position.L4_PREP, m_elevator, m_pivot, m_wrist).alongWith(new InstantCommand(()-> currRobotAction = Position.L4_PREP)).alongWith(new InstantCommand(() -> m_coralMode = true)));
         m_driverController.pov(0).onTrue(new MoveEndEffectorRedesign(Constants.Position.L3_PREP, m_elevator, m_pivot, m_wrist).alongWith(new InstantCommand(()-> currRobotAction = Position.L3_PREP)).alongWith(new InstantCommand(() -> m_coralMode = true)));
         m_driverController.pov(180).onTrue(new MoveEndEffectorRedesign(Constants.Position.L2_PREP, m_elevator, m_pivot, m_wrist).alongWith(new InstantCommand(()-> currRobotAction = Position.L2_PREP)).alongWith(new InstantCommand(() -> m_coralMode = true)));
-                
+        
 
         m_driverController.pov(90).onTrue(new MoveEndEffectorRedesign(Constants.Position.BACK_INTAKE, m_elevator, m_pivot, m_wrist).alongWith(new InstantCommand(() -> m_coralMode = true)));
         

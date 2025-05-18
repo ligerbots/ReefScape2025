@@ -38,7 +38,8 @@ public final class Constants {
         L2_ALGAE, L3_ALGAE, 
         STOW,
         PROCESSOR,
-        CLIMB
+        CLIMB, L2_PREP, L3_PREP, L4_PREP,
+        TRANSFER, TRANSFER_WAIT
     }
     
     public static boolean OUTREACH_MODE = false;

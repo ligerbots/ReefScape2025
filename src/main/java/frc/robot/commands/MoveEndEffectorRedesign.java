@@ -39,47 +39,50 @@ public class MoveEndEffectorRedesign extends Command {
     private static final double L1_WRIST_ANGLE = 310.0;
 
 
-    private static final double L2_PIVOT_ANGLE = 280;
-    public static final double L2_HEIGHT = Units.inchesToMeters(1.5);
+    private static final double L2_PIVOT_ANGLE = 270;
+    public static final double L2_HEIGHT = Units.inchesToMeters(0);
     private static final double L2_WRIST_ANGLE = 0;
 
-    private static final double L3_PIVOT_ANGLE = 275;
-    public static final double L3_HEIGHT = Units.inchesToMeters(17.0);
+    private static final double L3_PIVOT_ANGLE = 270;
+    public static final double L3_HEIGHT = Units.inchesToMeters(13.35);
     private static final double L3_WRIST_ANGLE = 0;
 
-    private static final double L4_PIVOT_ANGLE = 318.0;
-    public static final double L4_HEIGHT = Units.inchesToMeters(59.0);
+    private static final double L4_PIVOT_ANGLE = 270.0;
+    public static final double L4_HEIGHT = Units.inchesToMeters(35.0);
     private static final double L4_WRIST_ANGLE = 0;
 
-    private static final double L2_PIVOT_ANGLE_PREP = 280;
-    public static final double L2_HEIGHT_PREP = Units.inchesToMeters(1.5);
+    private static final double L2_PIVOT_ANGLE_PREP = 245;
+    public static final double L2_HEIGHT_PREP = Units.inchesToMeters(0);
     private static final double L2_WRIST_ANGLE_PREP = 0;
 
-    private static final double L3_PIVOT_ANGLE_PREP = 275;
-    public static final double L3_HEIGHT_PREP = Units.inchesToMeters(17.0);
+    private static final double L3_PIVOT_ANGLE_PREP = 245.0;
+    public static final double L3_HEIGHT_PREP = Units.inchesToMeters(15.35);
     private static final double L3_WRIST_ANGLE_PREP = 0;
 
-    private static final double L4_PIVOT_ANGLE_PREP = 318.0;
-    private static final double L4_HEIGHT_PREP = Units.inchesToMeters(59.0);
+    private static final double L4_PIVOT_ANGLE_PREP = 256.0;
+    private static final double L4_HEIGHT_PREP = Units.inchesToMeters(42.6);
     private static final double L4_WRIST_ANGLE_PREP = 0;
 
+    private static final double TRANSFER_PIVOT_ANGLE_WAIT = 0;
+    private static final double TRANSFER_HEIGHT_WAIT = Units.inchesToMeters(6.0);
+    private static final double TRANSFER_WRIST_ANGLE_WAIT = 90;
 
 
-    private static final double STOW_PIVOT_ANGLE = 138.0;
+    private static final double STOW_PIVOT_ANGLE = 180;
     private static final double STOW_HEIGHT = 0.0;
     private static final double STOW_WRIST_ANGLE = 0;
 
-    private static final double TRANSFER_PIVOT_ANGLE = 138.0;
-    private static final double TRANSFER_HEIGHT = 0.0;
-    private static final double TRANSFER_WRIST_ANGLE = 0;
+    private static final double TRANSFER_PIVOT_ANGLE = 0;
+    private static final double TRANSFER_HEIGHT = 4.5;
+    private static final double TRANSFER_WRIST_ANGLE = 90;
 
 
     private static final double BARGE_HEIGHT = Units.inchesToMeters(62.0);
     private static final double BARGE_PIVOT_ANGLE = 300.0;
     private static final double BARGE_WRIST_ANGLE = 0;
 
-    private static final double ALT_BARGE_HEIGHT = Units.inchesToMeters(63.0);  //TODO FIX ME
-    private static final double ALT_BARGE_PIVOT_ANGLE = 200.0;
+    private static final double ALT_BARGE_HEIGHT = Units.inchesToMeters(36.4);  //TODO FIX ME
+    private static final double ALT_BARGE_PIVOT_ANGLE = 136;
     private static final double ALT_BARGE_WRIST_ANGLE = 0;
     
     private static final double FRONT_INTAKE_HEIGHT = 0;
@@ -91,20 +94,20 @@ public class MoveEndEffectorRedesign extends Command {
     private static final double BACK_INTAKE_PIVOT_ANGLE = 127.5;
     private static final double BACK_INTAKE_WRIST_ANGLE = 0;
     
-    private static final double L2_ALGAE_HEIGHT= Units.inchesToMeters(3.5);
-    private static final double L2_ALGAE_PIVOT_ANGLE = 325.0;
+    private static final double L2_ALGAE_HEIGHT= Units.inchesToMeters(3.1);
+    private static final double L2_ALGAE_PIVOT_ANGLE = 270.0;
     private static final double L2_ALGAE_WRIST_ANGLE = 0;
     
-    private static final double L3_ALGAE_HEIGHT= Units.inchesToMeters(25);
-    private static final double L3_ALGAE_PIVOT_ANGLE = 335.0;    
+    private static final double L3_ALGAE_HEIGHT= Units.inchesToMeters(19.0);
+    private static final double L3_ALGAE_PIVOT_ANGLE = 270;    
     private static final double L3_ALGAE_WRITST_ANGLE = 0;
 
     private static final double PROCESSOR_HEIGHT = Units.inchesToMeters(0);
-    private static final double PROCESSOR_PIVOT_ANGLE = 140;
-    private static final double PROCESSOR_WIRST_ANGLE = 0;
+    private static final double PROCESSOR_PIVOT_ANGLE = 300;
+    private static final double PROCESSOR_WIRST_ANGLE = 90;
 
-    private static final double CLIMB_PIVOT_ANGLE = 296.0;
-    private static final double CLIMB_HEIGHT = 0.0;
+    private static final double CLIMB_PIVOT_ANGLE = 0;
+    private static final double CLIMB_HEIGHT = 4.5;
     private static final double CLIMB_WRIST_ANGLE = 0;
 
 
@@ -134,6 +137,7 @@ public class MoveEndEffectorRedesign extends Command {
             put(Position.PROCESSOR, new Triplet<Double, Double,Double>(PROCESSOR_HEIGHT, PROCESSOR_PIVOT_ANGLE, PROCESSOR_WIRST_ANGLE));
             put(Position.CLIMB, new Triplet<Double, Double,Double>(CLIMB_HEIGHT, CLIMB_PIVOT_ANGLE, CLIMB_WRIST_ANGLE));
             put(Position.TRANSFER, new Triplet<Double,Double,Double>(TRANSFER_HEIGHT, TRANSFER_PIVOT_ANGLE, TRANSFER_WRIST_ANGLE));
+            put(Position.TRANSFER_WAIT, new Triplet<Double,Double,Double>(TRANSFER_HEIGHT_WAIT, TRANSFER_PIVOT_ANGLE_WAIT, TRANSFER_WRIST_ANGLE_WAIT));
         }
     };
     
