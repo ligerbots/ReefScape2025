@@ -42,8 +42,6 @@ public class EndEffectorWrist extends SubsystemBase {
     // As of writing the above note we still may want to change the limits
     public static final double ANGLE_TOLERANCE_DEG = 1.0;
 
-    private static final double GEAR_RATIO = 5/1*5/1*72/20;
-
     private static final int CURRENT_LIMIT = 60;
 
 
@@ -107,7 +105,6 @@ public class EndEffectorWrist extends SubsystemBase {
         absEncConfig.velocityConversionFactor(1/60.0);   // convert rpm to rps
         absEncConfig.zeroOffset(ABS_ENCODER_ZERO_OFFSET);
         absEncConfig.inverted(false);
-        absEncConfig.positionConversionFactor(GEAR_RATIO);
         // absEncConfig.setSparkMaxDataPortConfig();
         config.apply(absEncConfig);
         
@@ -118,7 +115,7 @@ public class EndEffectorWrist extends SubsystemBase {
 
         config.closedLoop.outputRange(-1, 1);
         config.closedLoop.feedbackSensor(FeedbackSensor.kAbsoluteEncoder);
-        config.closedLoop.positionWrappingEnabled(true);  // don't treat it as a circle
+        config.closedLoop.positionWrappingEnabled(false);  // don't treat it as a circle
         // config.closedLoop.positionWrappingInputRange(0,1.0);
                         
         m_motor.configure(config, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
@@ -188,7 +185,7 @@ public class EndEffectorWrist extends SubsystemBase {
 
     // get the current wrist angle
     public Rotation2d getAngle() {
-        return Rotation2d.fromRotations(m_absoluteEncoder.getPosition());
+        return Rotation2d.fromRotations(m_absoluteEncoder.getPosition()/2);
     }
 
     public Rotation2d getVelocity() {
