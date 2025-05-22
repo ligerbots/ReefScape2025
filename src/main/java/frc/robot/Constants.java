@@ -39,7 +39,7 @@ public final class Constants {
         STOW,
         PROCESSOR,
         CLIMB, L2_PREP, L3_PREP, L4_PREP,
-        TRANSFER, TRANSFER_WAIT
+        TRANSFER, TRANSFER_WAIT, ALGAE_TRANSFER
     }
     
     public static boolean OUTREACH_MODE = false;
@@ -50,5 +50,6 @@ public final class Constants {
     
     // if true, save the settings into the controllers after init
     public static final boolean SPARKMAX_PERSIST_PARAMETERS = false;
+    public static final int ALGAE_GROUND_PIVOT_ID = 0;
 
 }

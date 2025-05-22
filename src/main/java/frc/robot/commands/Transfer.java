@@ -42,9 +42,10 @@ public class Transfer extends SequentialCommandGroup {
     addCommands(
       new InstantCommand(m_coralGround::goToTransferPose).alongWith(new MoveEndEffectorRedesign(Constants.Position.TRANSFER, elevator, pivot, wrist)),
       new InstantCommand(m_claw::runIntake),
+      new WaitCommand(.1),
       new InstantCommand(m_coralGround::TransferCoral),
       new WaitCommand(transferTime),
-      new InstantCommand(m_coralGround::stow).alongWith(new MoveEndEffectorRedesign(Constants.Position.STOW, elevator, pivot, wrist))
+      new InstantCommand(m_coralGround::stow).alongWith(new InstantCommand(m_claw::stop)).alongWith(new MoveEndEffectorRedesign(Constants.Position.STOW, elevator, pivot, wrist))
     );
 
   };

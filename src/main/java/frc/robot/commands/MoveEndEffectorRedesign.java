@@ -110,6 +110,10 @@ public class MoveEndEffectorRedesign extends Command {
     private static final double CLIMB_HEIGHT = 4.5;
     private static final double CLIMB_WRIST_ANGLE = 0;
 
+    private static final double ALGAE_TRANSFER_HEIGHT = Units.inchesToMeters(0.0);
+    private static final double ALGAE_TRANSFER_PIVOT_ANGLE = 0.0;
+    private static final double ALGAE_TRANSFER_WRIST_ANGLE = 0.0;
+
 
 
     // support delaying the elevator motion for a little bit
@@ -138,6 +142,8 @@ public class MoveEndEffectorRedesign extends Command {
             put(Position.CLIMB, new Triplet<Double, Double,Double>(CLIMB_HEIGHT, CLIMB_PIVOT_ANGLE, CLIMB_WRIST_ANGLE));
             put(Position.TRANSFER, new Triplet<Double,Double,Double>(TRANSFER_HEIGHT, TRANSFER_PIVOT_ANGLE, TRANSFER_WRIST_ANGLE));
             put(Position.TRANSFER_WAIT, new Triplet<Double,Double,Double>(TRANSFER_HEIGHT_WAIT, TRANSFER_PIVOT_ANGLE_WAIT, TRANSFER_WRIST_ANGLE_WAIT));
+            put(Position.ALGAE_TRANSFER, new Triplet<Double,Double,Double>(ALGAE_TRANSFER_HEIGHT, ALGAE_TRANSFER_PIVOT_ANGLE, ALGAE_TRANSFER_WRIST_ANGLE));
+
         }
     };
     

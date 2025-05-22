@@ -4,8 +4,6 @@
 
 package frc.robot.subsystems;
 
-import javax.crypto.spec.PBEKeySpec;
-
 import com.revrobotics.spark.ClosedLoopSlot;
 import com.revrobotics.spark.SparkBase;
 import com.revrobotics.spark.SparkBase.PersistMode;
@@ -27,7 +25,7 @@ import frc.robot.Constants;
 
 public class CoralGroundIntakeRedesign extends SubsystemBase {
     public enum CoralGroundIntakeState {
-        STOW, DEPLOY, SCORE_ANGLE, SCORE_OUT, TRANSFER_POSE, TRANSFER_SHOOT
+        STOW, DEPLOY, SCORE_ANGLE, SCORE_OUT, TRANSFER_POSE, TRANSFER_SHOOT, ALGAE_TRANSFER
     }
 
     //IMPORTANT NOTE: All angles are relitive to stowed which is zero in the code.
@@ -53,6 +51,7 @@ public class CoralGroundIntakeRedesign extends SubsystemBase {
     private static final Rotation2d SCORING_ANGLE = Rotation2d.fromDegrees(22.0); 
     private static final Rotation2d DEPLOYED_ANGLE = Rotation2d.fromDegrees(115.0); 
     private static final Rotation2d TRANSFER_ANGLE = Rotation2d.fromDegrees(0.0);
+    private static final Rotation2d ALGAE_TRANSFER_ANGLE = Rotation2d.fromDegrees(0.0);
 
 
     private final double ROLLER_INTAKE_SPEED = 0.6;
@@ -147,6 +146,10 @@ public class CoralGroundIntakeRedesign extends SubsystemBase {
                 case TRANSFER_SHOOT:
                     setRollerSpeedPercent(ROLLER_OUTTAKE_SPEED);
                     break;
+                case ALGAE_TRANSFER:
+                    setRollerSpeedPercent(ROLLER_OUTTAKE_SPEED);
+                    setAngleWithProfile(ALGAE_TRANSFER_ANGLE);
+
         }
     }
 
@@ -204,6 +207,9 @@ public class CoralGroundIntakeRedesign extends SubsystemBase {
 
     public void TransferCoral(){
         m_state = CoralGroundIntakeState.TRANSFER_SHOOT;
+    }
+    public void ALGAE_TRANSFER(){
+        m_state = CoralGroundIntakeState.ALGAE_TRANSFER;
     }
     public CoralGroundIntakeState getState() {
         return m_state;

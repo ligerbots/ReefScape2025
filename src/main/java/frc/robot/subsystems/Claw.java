@@ -27,6 +27,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.commands.MoveEndEffector;
+import frc.robot.commands.MoveEndEffectorRedesign;
 import frc.robot.subsystems.ValueThreshold.Direction;
 
 public class Claw extends SubsystemBase {
@@ -133,7 +134,7 @@ public class Claw extends SubsystemBase {
 
     public void runOuttake() {
         double elevatorH = m_elevatorHeight.getAsDouble();
-        if (Math.abs(elevatorH - MoveEndEffector.L1_HEIGHT) < 0.01) {
+        if (Math.abs(elevatorH - MoveEndEffectorRedesign.L1_HEIGHT) < 0.01) {
             m_motor.set(OUTTAKE_L1_SPEED);
         } else {
             m_motor.set(OUTTAKE_SPEED);
