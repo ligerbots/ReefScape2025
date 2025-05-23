@@ -62,7 +62,7 @@ public class EndEffectorWrist extends SubsystemBase {
     private static final double ROBOT_LOOP_PERIOD = 0.02;
 
     // Zero point of the absolute encoder
-    private static final double ABS_ENCODER_ZERO_OFFSET = (225.1-180.0)/360.0;
+    private static final double ABS_ENCODER_ZERO_OFFSET = 0.0;
     //0.5/360.0; //(135.2+180)/360.0; 
 
     // Constants for the pivot PID controller
@@ -187,6 +187,8 @@ public class EndEffectorWrist extends SubsystemBase {
         SmartDashboard.putBoolean("wrist/onGoal", angleWithinTolerance());
         SmartDashboard.putNumber("wrist/appliedOutput", m_motor.getAppliedOutput());
         SmartDashboard.putNumber("wrist/velocity", getVelocity().getDegrees());
+
+        SmartDashboard.putNumber("wrist/rawAngle", getRawAngle());
         // SmartDashboard.putNumber("pivot/feedforward", feedforward);
         // SmartDashboard.putNumber("pivot/accel", accel);
     }
@@ -194,6 +196,10 @@ public class EndEffectorWrist extends SubsystemBase {
     // get the current wrist angle
     public Rotation2d getAngle() {
         return Rotation2d.fromRotations(m_cancoder.getPosition().getValueAsDouble()/2);
+    }
+
+    public double getRawAngle(){
+        return m_cancoder.getPosition().getValueAsDouble();
     }
 
     public Rotation2d getVelocity() {

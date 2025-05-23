@@ -186,7 +186,7 @@ public class CompRobotContainerRedesign extends RobotContainer {
         m_farm.button(22).onTrue(new InstantCommand(() -> m_elevator.setHeight(Units.inchesToMeters(SmartDashboard.getNumber("elevator/testGoal", 0)))));
         m_farm.button(23).onTrue(new InstantCommand(() -> m_pivot.setAngle(Rotation2d.fromDegrees(SmartDashboard.getNumber("pivot/testAngle", 0.0)))));
             //Flip end effector to stow
-        m_farm.button(21).onTrue(new MoveEndEffector(Constants.Position.BACK_INTAKE, m_elevator, m_pivot).alongWith(new InstantCommand(() -> m_coralMode = true)));
+        m_farm.button(21).onTrue(new InstantCommand(() -> m_wrist.setAngle(Rotation2d.fromDegrees(SmartDashboard.getNumber("wirst/testAngle", 0.0)))));
     }
     
     private void configureAutos() {
