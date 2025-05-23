@@ -6,6 +6,10 @@ package frc.robot.subsystems;
 
 import java.util.function.DoubleSupplier;
 
+import com.ctre.phoenix6.CANBus;
+import com.ctre.phoenix6.configs.CANcoderConfiguration;
+import com.ctre.phoenix6.hardware.CANcoder;
+import com.ctre.phoenix6.signals.SensorDirectionValue;
 import com.revrobotics.sim.SparkAbsoluteEncoderSim;
 import com.revrobotics.spark.ClosedLoopSlot;
 import com.revrobotics.spark.SparkAbsoluteEncoder;
@@ -73,8 +77,10 @@ public class EndEffectorWrist extends SubsystemBase {
 
     private final SparkMax m_motor;
     // private final RelativeEncoder m_encoder;
-    private final SparkAbsoluteEncoder m_absoluteEncoder;
-    private final SparkAbsoluteEncoderSim m_absoluteEncoderSim;
+    private final CANBus m_kCANBus;
+    private final CANcoder m_cancoder;
+    private final CANcoderConfiguration m_encoderConfig;
+
     private final SparkClosedLoopController m_controller;
 
     // Used for checking if on goal
@@ -93,7 +99,8 @@ public class EndEffectorWrist extends SubsystemBase {
     // Construct a new shooterPivot subsystem
     public EndEffectorWrist(DoubleSupplier elevatorHeight) {
         m_elevatorHeight = elevatorHeight;
-        
+        m_kCANBus = new CANBus("rio");
+        m_cancoder = new CANcoder(Constants.WRIST_CANCODER_CAN_ID ,m_kCANBus);
         m_motor = new SparkMax(Constants.END_EFFECTOR_WRIST_CAN_ID, MotorType.kBrushless);
 
         SparkMaxConfig config = new SparkMaxConfig();
@@ -107,6 +114,10 @@ public class EndEffectorWrist extends SubsystemBase {
         absEncConfig.inverted(false);
         // absEncConfig.setSparkMaxDataPortConfig();
         config.apply(absEncConfig);
+
+        m_encoderConfig = new CANcoderConfiguration();
+        m_encoderConfig.MagnetSensor.withMagnetOffset(ABS_ENCODER_ZERO_OFFSET);
+        m_encoderConfig.MagnetSensor.withSensorDirection(SensorDirectionValue.Clockwise_Positive);
         
         // set up the PID for MAX Motion
         // config.closedLoop.pidf(K_P, K_I, K_D, K_FF);
@@ -123,9 +134,6 @@ public class EndEffectorWrist extends SubsystemBase {
         // motor encoder - set calibration and offset to match absolute encoder
         // m_encoder = m_motor.getEncoder();
 
-        m_absoluteEncoder = m_motor.getAbsoluteEncoder();
-        m_absoluteEncoderSim = new SparkAbsoluteEncoderSim(m_motor);
-        m_absoluteEncoderSim.setZeroOffset(ABS_ENCODER_ZERO_OFFSET);
 
         // controller for PID control
         m_controller = m_motor.getClosedLoopController();
@@ -185,12 +193,12 @@ public class EndEffectorWrist extends SubsystemBase {
 
     // get the current wrist angle
     public Rotation2d getAngle() {
-        return Rotation2d.fromRotations(m_absoluteEncoder.getPosition()/2);
+        return Rotation2d.fromRotations(m_cancoder.getPosition().getValueAsDouble()/2);
     }
 
     public Rotation2d getVelocity() {
         // Encoder returns RPM
-        return Rotation2d.fromRotations(m_absoluteEncoder.getVelocity() * 60);
+        return Rotation2d.fromRotations(m_cancoder.getPosition().getValueAsDouble() * 60);
     }
 
     public void run(double speed) {
