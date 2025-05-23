@@ -29,6 +29,8 @@ public final class Constants {
     public static final int END_EFFECTOR_WRIST_CAN_ID = 14;
     public static final int CLAW_CAN_ID = 13;
 
+    public static final int WRIST_CANCODER_CAN_ID = 5;
+    
     public static double MAX_VOLTAGE = 12.0;
     
     public enum Position {
