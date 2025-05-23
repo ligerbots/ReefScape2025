@@ -34,6 +34,8 @@ public class CoralGroundIntakeRedesign extends SubsystemBase {
 
     private static final int CURRENT_LIMIT = 60;
 
+    private boolean hasCoral = false;
+
     private static final double GEAR_RATIO = 16.0/42.0 * 1.0/4.0; 
 
     // Constants for the pivot PID controller
@@ -129,6 +131,7 @@ public class CoralGroundIntakeRedesign extends SubsystemBase {
                     if ((0 <= (getPivotAngle().getDegrees() - DEPLOYED_ANGLE.getDegrees() + ANGLE_TOLERANCE_DEG)) && stalled) {
                         goToScoreAngle();
                         // System.out.println("Stalled, intaking");
+                        hasCoral = true;
                     }
                     break;
                 case SCORE_ANGLE:
@@ -139,12 +142,14 @@ public class CoralGroundIntakeRedesign extends SubsystemBase {
                 case SCORE_OUT:
                     setAngleWithProfile(SCORING_ANGLE);
                     setRollerSpeedPercent(ROLLER_OUTTAKE_SPEED);
+                    hasCoral = false;
                     break;
                 case TRANSFER_POSE:
                     setAngleWithProfile(TRANSFER_ANGLE);
                     break;
                 case TRANSFER_SHOOT:
                     setRollerSpeedPercent(ROLLER_OUTTAKE_SPEED);
+                    hasCoral = false;
                     break;
                 case ALGAE_TRANSFER:
                     setRollerSpeedPercent(ROLLER_OUTTAKE_SPEED);
@@ -209,6 +214,10 @@ public class CoralGroundIntakeRedesign extends SubsystemBase {
     }
     public void ALGAE_TRANSFER(){
         m_state = CoralGroundIntakeState.ALGAE_TRANSFER;
+    }
+
+    public boolean HasCoral(){
+        return hasCoral;
     }
     public CoralGroundIntakeState getState() {
         return m_state;
