@@ -25,6 +25,10 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.Position;
 import frc.robot.commands.*;
+import frc.robot.commands.redesign.GoToAlgaeTransfer;
+import frc.robot.commands.redesign.MoveEndEffectorRedesign;
+import frc.robot.commands.redesign.Score;
+import frc.robot.commands.redesign.TransferWithPos;
 import frc.robot.subsystems.*;
 
 public class CompRobotContainerRedesign extends RobotContainer {
@@ -115,9 +119,7 @@ public class CompRobotContainerRedesign extends RobotContainer {
         m_driverController.y().onTrue(new MoveEndEffectorRedesign(Constants.Position.BARGE, m_elevator, m_pivot, m_wrist).alongWith(new InstantCommand(()-> currRobotAction = Position.BARGE)).alongWith(new InstantCommand(() -> m_coralMode = false)));
         m_driverController.b().onTrue(new MoveEndEffectorRedesign(Constants.Position.STOW, m_elevator, m_pivot, m_wrist ).alongWith(new InstantCommand(()-> currRobotAction = Position.STOW)));
 
-        m_driverController.leftStick().onTrue(new GoToAlgaeTransfer(m_pivot, m_wrist, m_elevator, m_claw, m_coralGroundIntake, m_algaeGroundIntake)
-            .alongWith(new InstantCommand(m_algaeGroundIntake::Transfer))
-            .alongWith(new InstantCommand(m_coralGroundIntake::stow)));
+        m_driverController.leftStick().onTrue(new GoToAlgaeTransfer(m_pivot, m_wrist, m_elevator, m_claw, m_coralGroundIntake, m_algaeGroundIntake));
         
         m_driverController.leftStick().onFalse(new MoveEndEffectorRedesign(Constants.Position.STOW, m_elevator, m_pivot, m_wrist));
         
@@ -130,7 +132,7 @@ public class CompRobotContainerRedesign extends RobotContainer {
         m_driverController.pov(180).onTrue(new MoveEndEffectorRedesign(Constants.Position.L2_PREP, m_elevator, m_pivot, m_wrist).alongWith(new InstantCommand(()-> currRobotAction = Position.L2_PREP)).alongWith(new InstantCommand(() -> m_coralMode = true)));
         
 
-        m_driverController.pov(90).onTrue(new Transfer(m_pivot, m_wrist, m_elevator, m_claw, ()-> m_elevator.getHeight(), m_coralGroundIntake).alongWith(new InstantCommand(() -> m_coralMode = true)));
+        m_driverController.pov(90).onTrue(new TransferWithPos(m_pivot, m_wrist, m_elevator, m_claw, ()-> m_elevator.getHeight(), m_coralGroundIntake, Position.STOW).alongWith(new InstantCommand(() -> m_coralMode = true)));
         
         // Climber
         m_driverController.start().onTrue(new InstantCommand(m_climber::climb));

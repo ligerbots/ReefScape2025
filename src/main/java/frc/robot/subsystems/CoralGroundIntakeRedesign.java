@@ -183,7 +183,6 @@ public class CoralGroundIntakeRedesign extends SubsystemBase {
     public void setRollerSpeedPercent(double speed) {
         m_rollerMotor.set(speed);
     }
-
     // state changes
     public void stow() {
         m_state = CoralGroundIntakeState.STOW;

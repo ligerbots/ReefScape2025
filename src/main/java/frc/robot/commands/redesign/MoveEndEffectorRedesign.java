@@ -2,7 +2,7 @@
 // Open Source Software; you can modify and/or share it under the terms of
 // the WPILib BSD license file in the root directory of this project.
 
-package frc.robot.commands;
+package frc.robot.commands.redesign;
 
 import java.util.HashMap;
 
@@ -147,8 +147,8 @@ public class MoveEndEffectorRedesign extends Command {
         }
     };
     
-    public MoveEndEffectorRedesign(Constants.Position position, Elevator elevator, EndEffectorPivot pivot, EndEffectorWrist wrist) {
-        this(position, elevator, pivot, wrist, DEFAULT_TIMEOUT);
+    public MoveEndEffectorRedesign(Constants.Position position, Elevator elevator, EndEffectorPivot pivot, EndEffectorWrist m_wrist2) {
+
     }
 
     public MoveEndEffectorRedesign(Constants.Position position, Elevator elevator, EndEffectorPivot pivot, EndEffectorWrist wrist, double timeout) {

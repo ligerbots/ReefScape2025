@@ -2,7 +2,7 @@
 // Open Source Software; you can modify and/or share it under the terms of
 // the WPILib BSD license file in the root directory of this project.
 
-package frc.robot.commands;
+package frc.robot.commands.redesign;
 
 import java.util.function.DoubleSupplier;
 
@@ -46,7 +46,7 @@ public class GoToAlgaeTransfer extends SequentialCommandGroup {
     addCommands(
       new InstantCommand(m_coralGround::ALGAE_TRANSFER),
       new WaitCommand(coralGroundMoveTime),
-      new MoveEndEffectorRedesign(Constants.Position.ALGAE_TRANSFER, elevator, pivot, wrist).alongWith(new InstantCommand(m_algaeGround::Transfer))
+      new MoveEndEffectorRedesign(Constants.Position.ALGAE_TRANSFER, elevator, pivot, wrist).alongWith(new InstantCommand(m_algaeGround::Transfer)).alongWith(new InstantCommand(claw::runIntake))
     );
   }
 }

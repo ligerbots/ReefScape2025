@@ -27,7 +27,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.commands.MoveEndEffector;
-import frc.robot.commands.MoveEndEffectorRedesign;
+import frc.robot.commands.redesign.MoveEndEffectorRedesign;
 import frc.robot.subsystems.ValueThreshold.Direction;
 
 public class Claw extends SubsystemBase {
