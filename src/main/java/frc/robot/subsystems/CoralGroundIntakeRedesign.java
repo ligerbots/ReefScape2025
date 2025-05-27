@@ -20,6 +20,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.trajectory.TrapezoidProfile.State;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 
@@ -187,6 +188,13 @@ public class CoralGroundIntakeRedesign extends SubsystemBase {
     // set the speed of the roller in RPM
     public void setRollerSpeedPercent(double speed) {
         m_rollerMotor.set(speed);
+    }
+
+    public void setMax(){
+        m_rollerMotor.set(1);
+    }
+    public void set0(){
+        m_rollerMotor.set(0);
     }
     // state changes
     public void stow() {

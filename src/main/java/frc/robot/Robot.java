@@ -29,7 +29,7 @@ public class Robot extends TimedRobot {
     public static final String TESTBENCH_SERIAL_NUMBER = "123";
 
     public enum RobotType {
-        KITBOT, COMP_V1, TESTBENCH
+        KITBOT, COMP_V1, TESTBENCH, REDESIGN
     }
     // we want this to be static so that it is easy for subsystems to query the robot type
     private static RobotType m_robotType;
@@ -66,7 +66,7 @@ public class Robot extends TimedRobot {
         if (serialNum.equals(KITBOT_SERIAL_NUMBER)) {
             m_robotType = RobotType.KITBOT;
         } else if (serialNum.equals(COMP_V1_SERIAL_NUMBER)) {
-            m_robotType = RobotType.COMP_V1;
+            m_robotType = RobotType.REDESIGN;
         } else if (serialNum.equals(TESTBENCH_SERIAL_NUMBER)) {
             m_robotType = RobotType.TESTBENCH;
         } else {
@@ -81,9 +81,11 @@ public class Robot extends TimedRobot {
             m_robotContainer = new KitbotRobotContainer();
         } else if (m_robotType == RobotType.COMP_V1) {
             m_robotContainer = new CompRobotContainer();
-        } else {
+        } else if (m_robotType == RobotType.REDESIGN) {
+            m_robotContainer = new CompRobotContainerRedesign();
+       } else 
             m_robotContainer = new TestRobotContainer();
-        }
+        
 
         // update the Coral limit switch every 2ms
         CoralEffector coralE = m_robotContainer.getCoralEffector();

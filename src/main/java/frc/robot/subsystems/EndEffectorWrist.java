@@ -62,8 +62,7 @@ public class EndEffectorWrist extends SubsystemBase {
     private static final double ROBOT_LOOP_PERIOD = 0.02;
 
     // Zero point of the absolute encoder
-    private static final double ABS_ENCODER_ZERO_OFFSET = 0.0;
-    //0.5/360.0; //(135.2+180)/360.0; 
+    private static final double ABS_ENCODER_ZERO_OFFSET = -56.0/360.0;
 
     // Constants for the pivot PID controller
     private static final double K_P = 5.0;
@@ -99,6 +98,7 @@ public class EndEffectorWrist extends SubsystemBase {
     // Construct a new shooterPivot subsystem
     public EndEffectorWrist(DoubleSupplier elevatorHeight) {
         m_elevatorHeight = elevatorHeight;
+
         m_kCANBus = new CANBus("rio");
         m_cancoder = new CANcoder(Constants.WRIST_CANCODER_CAN_ID ,m_kCANBus);
         m_motor = new SparkMax(Constants.END_EFFECTOR_WRIST_CAN_ID, MotorType.kBrushless);
@@ -108,17 +108,12 @@ public class EndEffectorWrist extends SubsystemBase {
         config.idleMode(IdleMode.kBrake);
         config.smartCurrentLimit(CURRENT_LIMIT);
 
-        AbsoluteEncoderConfig absEncConfig = new AbsoluteEncoderConfig();
-        absEncConfig.velocityConversionFactor(1/60.0);   // convert rpm to rps
-        absEncConfig.zeroOffset(ABS_ENCODER_ZERO_OFFSET);
-        absEncConfig.inverted(false);
-        // absEncConfig.setSparkMaxDataPortConfig();
-        config.apply(absEncConfig);
-
         m_encoderConfig = new CANcoderConfiguration();
+        m_encoderConfig.MagnetSensor.withAbsoluteSensorDiscontinuityPoint(1);
         m_encoderConfig.MagnetSensor.withMagnetOffset(ABS_ENCODER_ZERO_OFFSET);
         m_encoderConfig.MagnetSensor.withSensorDirection(SensorDirectionValue.Clockwise_Positive);
-        
+        m_cancoder.getConfigurator().apply(m_encoderConfig);
+
         // set up the PID for MAX Motion
         // config.closedLoop.pidf(K_P, K_I, K_D, K_FF);
         config.closedLoop.p(K_P).i(K_I).d(K_D);
@@ -130,10 +125,6 @@ public class EndEffectorWrist extends SubsystemBase {
         // config.closedLoop.positionWrappingInputRange(0,1.0);
                         
         m_motor.configure(config, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
-
-        // motor encoder - set calibration and offset to match absolute encoder
-        // m_encoder = m_motor.getEncoder();
-
 
         // controller for PID control
         m_controller = m_motor.getClosedLoopController();
@@ -181,14 +172,14 @@ public class EndEffectorWrist extends SubsystemBase {
         // This also gets logged to the log file on the Rio and aids in replaying a match
         SmartDashboard.putNumber("wrist/statePosition", m_currentState.position * 360.0);
         SmartDashboard.putNumber("wrist/goalClipped", m_goalClipped.getDegrees());
-        SmartDashboard.putNumber("wrist/absoluteEncoder", angleDeg);
+        SmartDashboard.putNumber("wrist/motorEncoder", angleDeg);
         SmartDashboard.putNumber("wrist/outputCurrent", m_motor.getOutputCurrent());
         SmartDashboard.putNumber("wrist/busVoltage", m_motor.getBusVoltage());
         SmartDashboard.putBoolean("wrist/onGoal", angleWithinTolerance());
         SmartDashboard.putNumber("wrist/appliedOutput", m_motor.getAppliedOutput());
         SmartDashboard.putNumber("wrist/velocity", getVelocity().getDegrees());
 
-        SmartDashboard.putNumber("wrist/rawAngle", getRawAngle());
+        SmartDashboard.putNumber("wrist/rawAngle", getRawAngle().getDegrees());
         // SmartDashboard.putNumber("pivot/feedforward", feedforward);
         // SmartDashboard.putNumber("pivot/accel", accel);
     }
@@ -198,8 +189,8 @@ public class EndEffectorWrist extends SubsystemBase {
         return Rotation2d.fromRotations(m_cancoder.getPosition().getValueAsDouble()/2);
     }
 
-    public double getRawAngle(){
-        return m_cancoder.getPosition().getValueAsDouble();
+    public Rotation2d getRawAngle(){
+        return Rotation2d.fromRotations(m_cancoder.getPosition().getValueAsDouble());
     }
 
     public Rotation2d getVelocity() {

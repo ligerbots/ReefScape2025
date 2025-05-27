@@ -25,10 +25,7 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.Position;
 import frc.robot.commands.*;
-import frc.robot.commands.redesign.GoToAlgaeTransfer;
-import frc.robot.commands.redesign.MoveEndEffectorRedesign;
-import frc.robot.commands.redesign.Score;
-import frc.robot.commands.redesign.TransferWithPos;
+import frc.robot.commands.redesign.*;
 import frc.robot.subsystems.*;
 
 public class CompRobotContainerRedesign extends RobotContainer {
@@ -46,8 +43,6 @@ public class CompRobotContainerRedesign extends RobotContainer {
 
     private final Elevator m_elevator = new Elevator();
     private final EndEffectorPivot m_pivot = new EndEffectorPivot(() -> m_elevator.getHeight());
-    private final CoralEffector m_coralEffector = new CoralEffector(()-> m_elevator.getGoal());
-    private final AlgaeEffector m_algaeEffector = new AlgaeEffector(() -> m_elevator.getGoal());
     private final EndEffectorWrist m_wrist = new EndEffectorWrist(()-> m_elevator.getGoal());
     private final Claw m_claw = new Claw(()-> m_elevator.getGoal());
     private final CoralGroundIntakeRedesign m_coralGroundIntake = new CoralGroundIntakeRedesign();
@@ -55,11 +50,11 @@ public class CompRobotContainerRedesign extends RobotContainer {
 
     private final Climber m_climber = new Climber();
 
-    @SuppressWarnings("unused")
-    private final DriverRumble m_driverRumble = new DriverRumble(
-        m_driverController.getHID(), () -> m_driveTrain.getPose(), 
-        () -> m_coralEffector.hasCoral(), () -> m_algaeEffector.hasAlgae(),
-        () -> m_climber.isDeployed(), () -> m_driveTrain.readyToClimb());
+    // @SuppressWarnings("unused")
+    // private final DriverRumble m_driverRumble = new DriverRumble(
+    //     m_driverController.getHID(), () -> m_driveTrain.getPose(), 
+    //     () -> m_coralEffector.hasCoral(), () -> m_algaeEffector.hasAlgae(),
+    //     () -> m_climber.isDeployed(), () -> m_driveTrain.readyToClimb());
     
     private boolean m_coralMode = true;
     
@@ -69,7 +64,7 @@ public class CompRobotContainerRedesign extends RobotContainer {
     private final SendableChooser<String> m_chosenAutoFlavor = new SendableChooser<>(); 
     // private final SendableChooser<Pose2d[]> m_chosenReefPoints = new SendableChooser<>();
 
-    private ReefscapeAbstractAuto m_autoCommand;
+    private ReefscapeAbstractAutoRedesign m_autoCommand;
     private int m_autoSelectionCode = 0;
     
     private static final Pose2d[] REEF_POINTS_JKLA = {FieldConstants.REEF_J, FieldConstants.REEF_K, FieldConstants.REEF_L, FieldConstants.REEF_A};
@@ -102,16 +97,16 @@ public class CompRobotContainerRedesign extends RobotContainer {
                         () -> m_coralMode)
         );
 
-        Trigger coralRumble = new Trigger(() -> m_coralEffector.hasCoral());
+        // Trigger coralRumble = new Trigger(() -> m_coralEffector.hasCoral());
 
-        coralRumble.onTrue(new InstantCommand(() -> m_driverRumble.rumble()));
-        Trigger algaeRumble = new Trigger(() -> m_algaeEffector.hasAlgae());
-        algaeRumble.onTrue(new InstantCommand(() -> m_driverRumble.rumble()));
+        // coralRumble.onTrue(new InstantCommand(() -> m_driverRumble.rumble()));
+        // Trigger algaeRumble = new Trigger(() -> m_algaeEffector.hasAlgae());
+        // algaeRumble.onTrue(new InstantCommand(() -> m_driverRumble.rumble()));
         
         // m_driverController.rightBumper().onTrue(new MoveEndEffector(Constants.Position.STOW, m_elevator, m_pivot).andThen().finallyDo(() -> m_coralMode = true));
         
-        m_driverController.rightBumper().onTrue(new DeferredCommand(new ReefTractorBeamWithDirectPath(m_driveTrain, false, m_coralEffector::hasCoral), Set.of(m_driveTrain)));
-        m_driverController.leftBumper().onTrue(new ConditionalCommand(new DeferredCommand(new ReefTractorBeamWithDirectPath(m_driveTrain, true, m_coralEffector::hasCoral), Set.of(m_driveTrain)), new StartEndCommand(m_claw::runIntake, m_claw::stop, m_claw), ()->m_coralMode));
+        m_driverController.rightBumper().onTrue(new DeferredCommand(new ReefTractorBeamWithDirectPath(m_driveTrain, false, m_claw::hasCoral), Set.of(m_driveTrain)));
+        m_driverController.leftBumper().onTrue(new ConditionalCommand(new DeferredCommand(new ReefTractorBeamWithDirectPath(m_driveTrain, true, m_claw::hasCoral), Set.of(m_driveTrain)), new StartEndCommand(m_claw::runIntake, m_claw::stop, m_claw), ()->m_coralMode));
 
         // Algae Scoring
         m_driverController.a().onTrue(new MoveEndEffectorRedesign(Constants.Position.L2_ALGAE, m_elevator, m_pivot, m_wrist).alongWith(new InstantCommand(()-> currRobotAction = Position.L2_ALGAE)).alongWith(new InstantCommand(() -> m_coralMode = false)));
@@ -169,10 +164,13 @@ public class CompRobotContainerRedesign extends RobotContainer {
         
         // m_farm.button(21).onTrue(new MoveEndEffector(Constants.Position.L1, m_elevator, m_pivot));
         // note: farm 7 is robot-centric
-        m_farm.button(8).onTrue(new InstantCommand(m_driveTrain::zeroHeading, m_driveTrain));
-        m_farm.button(11).onTrue(new InstantCommand(() -> m_coralMode = !m_coralMode));
-        m_farm.button(5).whileTrue(new InstantCommand(m_elevator::zeroElevator));
-        m_farm.button(12).onTrue(new DeferredCommand(new ReefTractorBeamWithDirectPath(m_driveTrain, false, ()->false), Set.of(m_driveTrain)));
+        m_farm.button(8).whileTrue(new StartEndCommand(m_claw::runOuttake, m_claw::stop, m_claw));
+        m_farm.button(5).whileTrue(new StartEndCommand(m_coralGroundIntake::TransferCoral, m_coralGroundIntake::stow, m_coralGroundIntake));
+
+        
+        // m_farm.button(11).onTrue(new InstantCommand(() -> m_coralMode = !m_coralMode));
+        // m_farm.button(5).whileTrue(new InstantCommand(m_elevator::zeroElevator));
+        // m_farm.button(12).onTrue(new DeferredCommand(new ReefTractorBeamWithDirectPath(m_driveTrain, false, ()->false), Set.of(m_driveTrain)));
 
         // schedule Drive command, which will cancel other control of Drivetrain, ie active heading
         m_farm.button(16).onTrue(new InstantCommand(() -> m_driveTrain.getDefaultCommand().schedule()));
@@ -186,7 +184,7 @@ public class CompRobotContainerRedesign extends RobotContainer {
         m_farm.button(22).onTrue(new InstantCommand(() -> m_elevator.setHeight(Units.inchesToMeters(SmartDashboard.getNumber("elevator/testGoal", 0)))));
         m_farm.button(23).onTrue(new InstantCommand(() -> m_pivot.setAngle(Rotation2d.fromDegrees(SmartDashboard.getNumber("pivot/testAngle", 0.0)))));
             //Flip end effector to stow
-        m_farm.button(21).onTrue(new InstantCommand(() -> m_wrist.setAngle(Rotation2d.fromDegrees(SmartDashboard.getNumber("wirst/testAngle", 0.0)))));
+        m_farm.button(24).onTrue(new InstantCommand(() -> m_wrist.setAngle(Rotation2d.fromDegrees(SmartDashboard.getNumber("wrist/testAngle", 0.0)))));
     }
     
     private void configureAutos() {
@@ -226,28 +224,31 @@ public class CompRobotContainerRedesign extends RobotContainer {
         if (m_autoSelectionCode != currentAutoSelectionCode) {
             String autoFlavor = m_chosenAutoFlavor.getSelected();
 
-            if(autoFlavor.equals("Algae")) { 
-                m_autoCommand = new CompBotAlgaeAuto(FieldConstants.ROBOT_START_2, FieldConstants.ROBOT_START_2, REEF_POINTS_H, 
-                        m_driveTrain, m_elevator, m_coralEffector, m_algaeEffector, m_pivot, m_chosenFieldSide.getSelected().equals("Processor Side"));
-            }
-            if(autoFlavor.equals("Primary")) { 
-                m_autoCommand = new CompBotExperimentalAutoRefactor(FieldConstants.ROBOT_START_3, FieldConstants.SOURCE_2_CENTER, REEF_POINTS_JKLA, 
-                        m_driveTrain, m_elevator, m_coralEffector, m_algaeEffector, m_pivot, m_chosenFieldSide.getSelected().equals("Processor Side"), false);
-            }
-            if(autoFlavor.equals("Secondary")) { 
-                m_autoCommand = new CompBotExperimentalAutoRefactor(FieldConstants.ROBOT_START_3, FieldConstants.SOURCE_2_CENTER, REEF_POINTS_JKAL, 
-                        m_driveTrain, m_elevator, m_coralEffector, m_algaeEffector, m_pivot, m_chosenFieldSide.getSelected().equals("Processor Side"), false);
-            }
+            m_autoCommand = new CompBotRedesignAuto(FieldConstants.ROBOT_START_2, FieldConstants.ROBOT_START_2, REEF_POINTS_H, 
+                     m_driveTrain, m_elevator, m_claw , m_wrist, m_pivot, m_coralGroundIntake, m_chosenFieldSide.getSelected().equals("Processor Side"), false);
+            
+            // if(autoFlavor.equals("Algae")) { 
+            //     m_autoCommand = new CompBotAlgaeAuto(FieldConstants.ROBOT_START_2, FieldConstants.ROBOT_START_2, REEF_POINTS_H, 
+            //             m_driveTrain, m_elevator, m_coralEffector, m_algaeEffector, m_pivot, m_chosenFieldSide.getSelected().equals("Processor Side"));
+            // }
+            // if(autoFlavor.equals("Primary")) { 
+            //     m_autoCommand = new CompBotExperimentalAutoRefactor(FieldConstants.ROBOT_START_3, FieldConstants.SOURCE_2_CENTER, REEF_POINTS_JKLA, 
+            //             m_driveTrain, m_elevator, m_coralEffector, m_algaeEffector, m_pivot, m_chosenFieldSide.getSelected().equals("Processor Side"), false);
+            // }
+            // if(autoFlavor.equals("Secondary")) { 
+            //     m_autoCommand = new CompBotExperimentalAutoRefactor(FieldConstants.ROBOT_START_3, FieldConstants.SOURCE_2_CENTER, REEF_POINTS_JKAL, 
+            //             m_driveTrain, m_elevator, m_coralEffector, m_algaeEffector, m_pivot, m_chosenFieldSide.getSelected().equals("Processor Side"), false);
+            // }
 
-            if(autoFlavor.equals("TushPush")) { 
-                m_autoCommand = new CompBotExperimentalAutoRefactor(FieldConstants.ROBOT_START_3, FieldConstants.SOURCE_2_CENTER, REEF_POINTS_JKLA, 
-                        m_driveTrain, m_elevator, m_coralEffector, m_algaeEffector, m_pivot, m_chosenFieldSide.getSelected().equals("Processor Side"), true);
-            }
+            // if(autoFlavor.equals("TushPush")) { 
+            //     m_autoCommand = new CompBotExperimentalAutoRefactor(FieldConstants.ROBOT_START_3, FieldConstants.SOURCE_2_CENTER, REEF_POINTS_JKLA, 
+            //             m_driveTrain, m_elevator, m_coralEffector, m_algaeEffector, m_pivot, m_chosenFieldSide.getSelected().equals("Processor Side"), true);
+            // }
 
-            if(autoFlavor.equals("AlgaeAlt")) { 
-                m_autoCommand = new CompBotAlgaePickupAuto(FieldConstants.ROBOT_START_2, FieldConstants.ROBOT_START_2, REEF_POINTS_H, 
-                        m_driveTrain, m_elevator, m_coralEffector, m_algaeEffector, m_pivot, m_chosenFieldSide.getSelected().equals("Processor Side"));
-            }
+            // if(autoFlavor.equals("AlgaeAlt")) { 
+            //     m_autoCommand = new CompBotAlgaePickupAuto(FieldConstants.ROBOT_START_2, FieldConstants.ROBOT_START_2, REEF_POINTS_H, 
+            //             m_driveTrain, m_elevator, m_coralEffector, m_algaeEffector, m_pivot, m_chosenFieldSide.getSelected().equals("Processor Side"));
+            // }
             
             
             m_autoSelectionCode = currentAutoSelectionCode;
@@ -293,8 +294,8 @@ public class CompRobotContainerRedesign extends RobotContainer {
         return m_driveTrain;
     }
         
-    @Override
-    public CoralEffector getCoralEffector() {
-        return m_coralEffector;
-    }
+    // @Override
+    // public CoralEffector getCoralEffector() {
+    //     return m_coralEffector;
+    // }
 }

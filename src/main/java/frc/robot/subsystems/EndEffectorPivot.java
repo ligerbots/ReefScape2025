@@ -58,8 +58,7 @@ public class EndEffectorPivot extends SubsystemBase {
     private static final double ROBOT_LOOP_PERIOD = 0.02;
 
     // Zero point of the absolute encoder
-    private static final double ABS_ENCODER_ZERO_OFFSET = (225.1-180.0)/360.0;
-    //0.5/360.0; //(135.2+180)/360.0; 
+    private static final double ABS_ENCODER_ZERO_OFFSET = (301.16 - 26.7)/360.0;  //(225.1-180.0)/360.0;
 
     // Constants for the pivot PID controller
     private static final double K_P = 5.0;
@@ -97,14 +96,14 @@ public class EndEffectorPivot extends SubsystemBase {
         m_motor = new SparkMax(Constants.END_EFFECTOR_PIVOT_CAN_ID, MotorType.kBrushless);
 
         SparkMaxConfig config = new SparkMaxConfig();
-        config.inverted(true);
+        config.inverted(false);
         config.idleMode(IdleMode.kBrake);
         config.smartCurrentLimit(CURRENT_LIMIT);
 
         AbsoluteEncoderConfig absEncConfig = new AbsoluteEncoderConfig();
         absEncConfig.velocityConversionFactor(1/60.0);   // convert rpm to rps
         absEncConfig.zeroOffset(ABS_ENCODER_ZERO_OFFSET);
-        absEncConfig.inverted(false);
+        absEncConfig.inverted(true);
         // absEncConfig.setSparkMaxDataPortConfig();
         config.apply(absEncConfig);
         

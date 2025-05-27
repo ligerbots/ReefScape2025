@@ -26,8 +26,7 @@ import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
-import frc.robot.commands.MoveEndEffector;
-import frc.robot.commands.redesign.MoveEndEffectorRedesign;
+import frc.robot.commands.redesign.*;
 import frc.robot.subsystems.ValueThreshold.Direction;
 
 public class Claw extends SubsystemBase {
@@ -163,5 +162,7 @@ public class Claw extends SubsystemBase {
     public boolean hasCoral() {
         return m_state == State.HOLD || m_state == State.INTAKE_HAS_CORAL;
     }
+
+    
 
 }
