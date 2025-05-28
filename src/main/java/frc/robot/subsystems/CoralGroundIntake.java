@@ -32,7 +32,8 @@ public class CoralGroundIntake extends SubsystemBase {
 
     private static final double ANGLE_TOLERANCE_DEG = 8.0;
 
-    private static final int CURRENT_LIMIT = 60;
+    private static final int PIVOT_CURRENT_LIMIT = 40;
+    private static final int ROLLER_CURRENT_LIMIT = 60;
 
     private static final double GEAR_RATIO = 16.0/42.0 * 1.0/4.0; 
 
@@ -51,9 +52,9 @@ public class CoralGroundIntake extends SubsystemBase {
     private final Rotation2d SCORING_ANGLE = Rotation2d.fromDegrees(22.0); 
     private final Rotation2d DEPLOYED_ANGLE = Rotation2d.fromDegrees(115.0); 
 
-    private final double ROLLER_INTAKE_SPEED = 0.6;
-    private final double ROLLER_OUTTAKE_SPEED = -1.0; 
-    private final double ROLLER_HOLD_SPEED = 0.4; 
+    private final double ROLLER_INTAKE_SPEED = 0.6/2.0;
+    private final double ROLLER_OUTTAKE_SPEED = -1.0/2.0; 
+    private final double ROLLER_HOLD_SPEED = 0.5; 
 
     // This is RPM
     private static final double STALL_VELOCITY_LIMIT = 10; 
@@ -82,7 +83,7 @@ public class CoralGroundIntake extends SubsystemBase {
         SparkMaxConfig pivotMotorConfig = new SparkMaxConfig();
         pivotMotorConfig.inverted(false);
         pivotMotorConfig.idleMode(IdleMode.kBrake);
-        pivotMotorConfig.smartCurrentLimit(CURRENT_LIMIT);
+        pivotMotorConfig.smartCurrentLimit(PIVOT_CURRENT_LIMIT);
         pivotMotorConfig.encoder.positionConversionFactor(GEAR_RATIO);
 
         pivotMotorConfig.closedLoop.p(K_P).i(K_I).d(K_D);
@@ -96,7 +97,7 @@ public class CoralGroundIntake extends SubsystemBase {
         SparkMaxConfig rollerMotor = new SparkMaxConfig();
         rollerMotor.inverted(true);
         rollerMotor.idleMode(IdleMode.kBrake);
-        rollerMotor.smartCurrentLimit(CURRENT_LIMIT);
+        rollerMotor.smartCurrentLimit(ROLLER_CURRENT_LIMIT);
 
         m_rollerMotor.configure(rollerMotor, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
 
