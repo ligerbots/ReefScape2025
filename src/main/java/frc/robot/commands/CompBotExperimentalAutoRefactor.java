@@ -78,7 +78,7 @@ public class CompBotExperimentalAutoRefactor extends ReefscapeAbstractAuto {
                 }
                 
                 addCommands(m_driveTrain.followPath(firstCoralPath).alongWith(
-                    new WaitCommand(.5).andThen(
+                    new WaitCommand(1.0).andThen(
                         new MoveEndEffector(Constants.Position.L4, elevator, pivot, RAISE_ELEVATOR_WAIT_TIME))));
                 addCommands(new StartEndCommand(coralEffector::runOuttake, coralEffector::stop, coralEffector).withTimeout(CORAL_SCORE_WAIT_TIME));  
     

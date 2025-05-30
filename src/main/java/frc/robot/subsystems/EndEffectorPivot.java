@@ -62,7 +62,7 @@ public class EndEffectorPivot extends SubsystemBase {
     //0.5/360.0; //(135.2+180)/360.0; 
 
     // Constants for the pivot PID controller
-    private static final double K_P = 5.0;
+    private static final double K_P = 4.0;
     private static final double K_I = 0.0;
     private static final double K_D = 0.0;
 
