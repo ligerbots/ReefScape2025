@@ -36,7 +36,7 @@ public class MoveEndEffector extends Command {
     private static final double L3_ANGLE = 275;
     private static final double L3_HEIGHT = Units.inchesToMeters(17.0);
     private static final double L4_ANGLE = 318.0;
-    private static final double L4_HEIGHT = Units.inchesToMeters(59.0);
+    private static final double L4_HEIGHT = Units.inchesToMeters(58.0);
     
     private static final double STOW_ANGLE = 138.0;
     private static final double STOW_HEIGHT = 0.0;

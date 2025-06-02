@@ -4,6 +4,7 @@
 
 package frc.robot.subsystems;
 
+import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -34,6 +35,7 @@ import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -48,6 +50,8 @@ public class AprilTagVision extends SubsystemBase {
 
     static final AprilTagFields APRILTAG_FIELD = AprilTagFields.k2025ReefscapeWelded;
     // static final AprilTagFields APRILTAG_FIELD = AprilTagFields.k2025ReefscapeAndyMark;
+
+    static private final String CUSTOM_FIELD = "2025-reefscape-andymark_custom.json";
 
     // Use the multitag pose estimator
     static final PoseStrategy POSE_STRATEGY = PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR;
@@ -116,9 +120,14 @@ public class AprilTagVision extends SubsystemBase {
 
     public AprilTagVision() {
         try {
-            m_aprilTagFieldLayout = AprilTagFieldLayout.loadField(APRILTAG_FIELD);
-            SmartDashboard.putString("aprilTagVision/field", APRILTAG_FIELD.toString());
+            // m_aprilTagFieldLayout = AprilTagFieldLayout.loadField(APRILTAG_FIELD);
+            String fieldpath = Filesystem.getDeployDirectory().getPath() + "/" + CUSTOM_FIELD;
+            m_aprilTagFieldLayout = new AprilTagFieldLayout(fieldpath);
+            SmartDashboard.putString("aprilTagVision/field", CUSTOM_FIELD);
         } catch (UncheckedIOException e) {
+            System.out.println("Unable to load AprilTag layout " + e.getMessage());
+            m_aprilTagFieldLayout = null;
+        } catch (IOException e) {
             System.out.println("Unable to load AprilTag layout " + e.getMessage());
             m_aprilTagFieldLayout = null;
         }
@@ -237,6 +246,9 @@ public class AprilTagVision extends SubsystemBase {
                             // Make sure to use the timestamp of this result
                             Pose2d pose = estPose.get().estimatedPose.toPose2d();
 
+                            // double headingDiffDeg = Math.abs(robotPose.getRotation().minus(pose.getRotation()).getDegrees());
+
+                            // if (headingDiffDeg < )
                             swerve.addVisionMeasurement(pose, pipeRes.getTimestampSeconds(), estimateStdDev(pipeRes.targets));
                             // swerve.addVisionMeasurement(estPose.get().estimatedPose.toPose2d(), pipeRes.getTimestampSeconds());
 
