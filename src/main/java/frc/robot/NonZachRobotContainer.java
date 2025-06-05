@@ -107,14 +107,14 @@ public class NonZachRobotContainer extends RobotContainer {
         // Algae Scoring
         m_farm.button(10).onTrue(new MoveEndEffector(Constants.Position.L2_ALGAE, m_elevator, m_pivot).alongWith(new InstantCommand(() -> m_coralMode = false)));
         m_farm.button(5).onTrue(new MoveEndEffector(Constants.Position.L3_ALGAE, m_elevator, m_pivot).alongWith(new InstantCommand(() -> m_coralMode = false)));
-        m_farm.button(4).onTrue(new MoveEndEffector(Constants.Position.BARGE, m_elevator, m_pivot).alongWith(new InstantCommand(() -> m_coralMode = false)));
-        m_farm.button(9).onTrue(new MoveEndEffector(Constants.Position.PROCESSOR, m_elevator, m_pivot).alongWith(new InstantCommand(() -> m_coralMode = false)));
+        // m_farm.button(4).onTrue(new MoveEndEffector(Constants.Position.BARGE, m_elevator, m_pivot).alongWith(new InstantCommand(() -> m_coralMode = false)));
+        m_farm.button(7).onTrue(new MoveEndEffector(Constants.Position.PROCESSOR, m_elevator, m_pivot).alongWith(new InstantCommand(() -> m_coralMode = false)));
 
         // Coral Scoring
-        m_farm.button(1).onTrue(new MoveEndEffector(Constants.Position.L4, m_elevator, m_pivot).alongWith(new InstantCommand(() -> m_coralMode = true)));
+        // m_farm.button(1).onTrue(new MoveEndEffector(Constants.Position.L4, m_elevator, m_pivot).alongWith(new InstantCommand(() -> m_coralMode = true)));
         m_driverController.a().onTrue(new MoveEndEffector(Constants.Position.BACK_INTAKE, m_elevator, m_pivot).alongWith(new InstantCommand(() -> m_coralMode = true)));
-        m_farm.button(2).onTrue(new MoveEndEffector(Constants.Position.L3, m_elevator, m_pivot).alongWith(new InstantCommand(() -> m_coralMode = true)));
-        m_farm.button(3).onTrue(new MoveEndEffector(Constants.Position.L2, m_elevator, m_pivot).alongWith(new InstantCommand(() -> m_coralMode = true)));
+        m_farm.button(3).onTrue(new MoveEndEffector(Constants.Position.L3, m_elevator, m_pivot).alongWith(new InstantCommand(() -> m_coralMode = true)));
+        m_farm.button(1).onTrue(new MoveEndEffector(Constants.Position.L2, m_elevator, m_pivot).alongWith(new InstantCommand(() -> m_coralMode = true)));
                 
         // Climber
         m_driverController.start().onTrue(new InstantCommand(m_climber::climb));
