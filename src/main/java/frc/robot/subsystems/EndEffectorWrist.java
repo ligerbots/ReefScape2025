@@ -34,11 +34,7 @@ import frc.robot.Constants;
 
 public class EndEffectorWrist extends SubsystemBase {
     
-    private static final double MIN_ANGLE_LOW_DEG = 130.0;
-    private static final double MAX_ANGLE_LOW_DEG = 325.0;
 
-    private static final double MIN_ANGLE_HIGH_DEG = 110.0;
-    private static final double MAX_ANGLE_HIGH_DEG = 340.0;
 
     // NOTE: All constants were taken from the 2023 arm 
     // Note: Current values for limits are refrenced with the shooter being flat
@@ -220,18 +216,12 @@ public class EndEffectorWrist extends SubsystemBase {
 
     public boolean isOutsideLowRange() {
         double angle = getAngle().getDegrees();
-        return angle <= MIN_ANGLE_LOW_DEG || angle >= MAX_ANGLE_LOW_DEG;
+        return false;
     }
 
     // needs to be public so that commands can get the restricted angle
     public Rotation2d limitWristAngle(Rotation2d angle, double elevHeight) {
-        double angleClamped;
-        if (elevHeight <= Elevator.HEIGHT_LOW_RANGE)
-            angleClamped = MathUtil.clamp(angle.getDegrees(), MIN_ANGLE_LOW_DEG, MAX_ANGLE_LOW_DEG);
-        else
-            angleClamped = MathUtil.clamp(angle.getDegrees(), MIN_ANGLE_HIGH_DEG, MAX_ANGLE_HIGH_DEG);
-
-        return Rotation2d.fromDegrees(angleClamped);
+        return angle;
     }
 
     public boolean angleWithinTolerance() {
