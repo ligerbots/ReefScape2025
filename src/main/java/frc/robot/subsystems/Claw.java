@@ -38,8 +38,8 @@ public class Claw extends SubsystemBase {
     private static final double MOTOR_VOLTAGE_COMP = 10;
 
     // Speeds
-    private static final double INTAKE_SPEED = -0.4;
-    private static final double OUTTAKE_SPEED = 0.7;
+    private static final double INTAKE_SPEED = 0.4;
+    private static final double OUTTAKE_SPEED = -0.7;
     private static final double HOLD_SPEED = -0.05;
     private static final double OUTTAKE_L1_SPEED = 0.15;
 
