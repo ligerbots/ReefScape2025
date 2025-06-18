@@ -59,6 +59,10 @@ public class EndEffectorPivot extends SubsystemBase {
 
     // Zero point of the absolute encoder
     private static final double ABS_ENCODER_ZERO_OFFSET = (309.5-180)/360;
+<<<<<<< HEAD
+=======
+    //(341.1-180.0)/360.0;
+>>>>>>> preMaChamp
     //0.5/360.0; //(135.2+180)/360.0; 
 
     // Constants for the pivot PID controller
