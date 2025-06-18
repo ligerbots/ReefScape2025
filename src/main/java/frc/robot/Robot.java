@@ -81,7 +81,7 @@ public class Robot extends TimedRobot {
         if (m_robotType == RobotType.KITBOT) {
             m_robotContainer = new KitbotRobotContainer();
         } else if (m_robotType == RobotType.COMP_V1) {
-            m_robotContainer = new NonZachRobotContainer();
+            m_robotContainer = new CompRobotContainer();
         } else {
             m_robotContainer = new TestRobotContainer();
         }
