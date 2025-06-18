@@ -51,7 +51,7 @@ public class AprilTagVision extends SubsystemBase {
     static final AprilTagFields APRILTAG_FIELD = AprilTagFields.k2025ReefscapeWelded;
     // static final AprilTagFields APRILTAG_FIELD = AprilTagFields.k2025ReefscapeAndyMark;
 
-    static private final String CUSTOM_FIELD = "2025-reefscape-welded_custom.json";
+    static private final String CUSTOM_FIELD = "2025-reefscape-andymark_custom.json";
 
     // Use the multitag pose estimator
     static final PoseStrategy POSE_STRATEGY = PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR;
