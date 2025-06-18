@@ -36,7 +36,7 @@ public class MoveEndEffector extends Command {
     private static final double L3_ANGLE = 275;
     private static final double L3_HEIGHT = Units.inchesToMeters(17.0);
     private static final double L4_ANGLE = 318.0;
-    private static final double L4_HEIGHT = Units.inchesToMeters(59.0);
+    private static final double L4_HEIGHT = Units.inchesToMeters(58.0);
     
     private static final double STOW_ANGLE = 138.0;
     private static final double STOW_HEIGHT = 0.0;
@@ -48,8 +48,9 @@ public class MoveEndEffector extends Command {
     
     private static final double FRONT_INTAKE_HEIGHT = 0;
     private static final double FRONT_INTAKE_ANGLE = 245;
-    private static final double BACK_INTAKE_HEIGHT = Units.inchesToMeters(4.5);
+    private static final double BACK_INTAKE_HEIGHT = Units.inchesToMeters(4.25);
     private static final double BACK_INTAKE_ANGLE = 127.5;
+    
     
     private static final double L2_ALGAE_HEIGHT= Units.inchesToMeters(3.5);
     private static final double L2_ALGAE_ANGLE = 325.0;
