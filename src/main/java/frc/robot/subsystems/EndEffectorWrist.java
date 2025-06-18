@@ -6,10 +6,10 @@ package frc.robot.subsystems;
 
 import java.util.function.DoubleSupplier;
 
-import com.ctre.phoenix6.CANBus;
 import com.ctre.phoenix6.configs.CANcoderConfiguration;
 import com.ctre.phoenix6.hardware.CANcoder;
 import com.ctre.phoenix6.signals.SensorDirectionValue;
+import com.revrobotics.RelativeEncoder;
 import com.revrobotics.spark.ClosedLoopSlot;
 import com.revrobotics.spark.SparkBase;
 import com.revrobotics.spark.SparkBase.PersistMode;
@@ -29,58 +29,34 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 
 public class EndEffectorWrist extends SubsystemBase {
-    
-
-
-    // NOTE: All constants were taken from the 2023 arm 
-    // Note: Current values for limits are refrenced with the shooter being flat
-    // facing fowards as zero.
-    // As of writing the above note we still may want to change the limits
     public static final double ANGLE_TOLERANCE_DEG = 1.0;
 
     private static final int CURRENT_LIMIT = 40;
-
-
-    // position constants for commands
-    // private static final double ADJUSTMENT_STEP = Math.toRadians(1.0);
     
-    // 25:1 planetary plus 42:18 sprockets
-    private static final double GEAR_RATIO = 1/90.0;//1/(20.0*72.0*25.0);
-      
-    // Constants to limit the shooterPivot rotation speed
-    // max vel: 1 rotation = 10 seconds  and then gear_ratio
+    private static final double GEAR_RATIO = 1.0 / 90.0;
+
+    // Constants to limit the wrist rotation speed
     private static final double MAX_VEL_ROT_PER_SEC = 1.5;
     private static final double MAX_ACC_ROT_PER_SEC2 = 3.0;
     private static final double ROBOT_LOOP_PERIOD = 0.02;
 
     // Zero point of the absolute encoder
-    private static final double ABS_ENCODER_ZERO_OFFSET = -15.864257812499998/360;
+    private static final double ABS_ENCODER_ZERO_OFFSET = -15.86 / 360.0;
 
     // Constants for the pivot PID controller
     private static final double K_P = 10.0;
     private static final double K_I = 0.0;
     private static final double K_D = 0.0;
 
-    // // parameters for kicking the pivot to get it moving
-    // private static final double K_S = 0.0;//2.0;
-    // private final Timer m_kickTimer = new Timer();
-    // private static final double KICK_TIME = 0.04;
-
     private final SparkMax m_motor;
-
-    // private final RelativeEncoder m_encoder;
-    private final CANBus m_kCANBus;
-    private final CANcoder m_cancoder;
-    private final CANcoderConfiguration m_encoderConfig;
-
+    private final RelativeEncoder m_encoder;
     private final SparkClosedLoopController m_controller;
+
+    private final CANcoder m_cancoder;
 
     // Used for checking if on goal
     private Rotation2d m_goal = Rotation2d.fromDegrees(0);
     private Rotation2d m_goalClipped = Rotation2d.fromDegrees(0);
-
-    // adjustment offset. Starts at 0, but retained throughout a match
-    // private double m_angleAdjustment = Math.toRadians(0.0);
 
     // Trapezoid Profile
     private final TrapezoidProfile m_profile = new TrapezoidProfile(new TrapezoidProfile.Constraints(MAX_VEL_ROT_PER_SEC, MAX_ACC_ROT_PER_SEC2));
@@ -92,34 +68,25 @@ public class EndEffectorWrist extends SubsystemBase {
     public EndEffectorWrist(DoubleSupplier elevatorHeight) {
         m_elevatorHeight = elevatorHeight;
 
-        m_kCANBus = new CANBus("rio");
-        m_cancoder = new CANcoder(Constants.WRIST_CANCODER_CAN_ID ,m_kCANBus);
+        m_cancoder = new CANcoder(Constants.WRIST_CANCODER_CAN_ID, "rio");
         m_motor = new SparkMax(Constants.END_EFFECTOR_WRIST_CAN_ID, MotorType.kBrushless);
 
+        // Configure the CANcoder
+        CANcoderConfiguration cancoderConfig = new CANcoderConfiguration();
+        cancoderConfig.MagnetSensor.withAbsoluteSensorDiscontinuityPoint(1);
+        cancoderConfig.MagnetSensor.withMagnetOffset(ABS_ENCODER_ZERO_OFFSET);
+        cancoderConfig.MagnetSensor.withSensorDirection(SensorDirectionValue.Clockwise_Positive);
+        m_cancoder.getConfigurator().apply(cancoderConfig);
+
+        // Configure the SparkMax
         SparkMaxConfig config = new SparkMaxConfig();
         config.inverted(true);
         config.idleMode(IdleMode.kBrake);
         config.smartCurrentLimit(CURRENT_LIMIT);
-        // config.analogSensor.positionConversionFactor(GEAR_RATIO);
         config.encoder.positionConversionFactor(GEAR_RATIO);
 
-        m_encoderConfig = new CANcoderConfiguration();
-        m_encoderConfig.MagnetSensor.withAbsoluteSensorDiscontinuityPoint(1);
-        m_encoderConfig.MagnetSensor.withMagnetOffset(ABS_ENCODER_ZERO_OFFSET);
-        m_encoderConfig.MagnetSensor.withSensorDirection(SensorDirectionValue.Clockwise_Positive);
-        m_cancoder.getConfigurator().apply(m_encoderConfig);
-
-
-        m_motor.getEncoder().setPosition(m_cancoder.getAbsolutePosition().getValueAsDouble()/2);
-        
-
-
-        
-
         // set up the PID for MAX Motion
-        // config.closedLoop.pidf(K_P, K_I, K_D, K_FF);
         config.closedLoop.p(K_P).i(K_I).d(K_D);
-        //  K_FF);
 
         config.closedLoop.outputRange(-1, 1);
         config.closedLoop.feedbackSensor(FeedbackSensor.kPrimaryEncoder);
@@ -128,6 +95,9 @@ public class EndEffectorWrist extends SubsystemBase {
                         
         m_motor.configure(config, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
 
+        m_encoder = m_motor.getEncoder();
+        m_encoder.setPosition(m_cancoder.getAbsolutePosition().getValueAsDouble() / 2.0);
+        
         // controller for PID control
         m_controller = m_motor.getClosedLoopController();
 
@@ -146,10 +116,10 @@ public class EndEffectorWrist extends SubsystemBase {
 
         // double oldGoalClipped = m_goalClipped.getDegrees();
         m_goalClipped = limitWristAngle(m_goal, elevHeight);
+        // TODO: should find shortest turn to get to the desired angle, like with swerve modules
 
         // boolean goalChanged = Math.abs(m_goalClipped.getDegrees() - oldGoalClipped) > 5.0;
 
-        // double feedforward = -K_GRAVITY * Math.sin(angle.getRadians() - GRAVITY_ZERO);
         State goalState = new State(m_goalClipped.getRotations(), 0);
 
         // Trapezoid Profile
@@ -157,44 +127,33 @@ public class EndEffectorWrist extends SubsystemBase {
 
         double angleDeg = getAngle().getDegrees();
 
-        // feedforward in Volts
-        double feedforward = 0;
-        // if (goalChanged && (angleDeg > 290.0 || angleDeg < 160.0)) {
-        //     m_kickTimer.restart();
-        // }
-
-        // if (!m_kickTimer.hasElapsed(KICK_TIME)) {
-        //     // needs a kick to get started. Always kick physical down
-        //     feedforward = (angleDeg > 240 ? 1 : -1) * K_S;
-        // }
-
-        m_controller.setReference(m_currentState.position, SparkBase.ControlType.kPosition, ClosedLoopSlot.kSlot0, feedforward);
+        m_controller.setReference(m_currentState.position, SparkBase.ControlType.kPosition, ClosedLoopSlot.kSlot0);
 
         // Display current values on the SmartDashboard
         // This also gets logged to the log file on the Rio and aids in replaying a match
         SmartDashboard.putNumber("wrist/statePosition", m_currentState.position * 360.0);
         SmartDashboard.putNumber("wrist/goalClipped", m_goalClipped.getDegrees());
-        SmartDashboard.putNumber("wrist/motorEncoderAbs", angleDeg);
+        SmartDashboard.putNumber("wrist/motorEncoder", angleDeg);
+        SmartDashboard.putNumber("wrist/absEncoder", getAbsEncoderAngle().getDegrees());
+
+        // encoder values without wrapping (but Rotation2d does not actually wrap!)
+        // keep for debugging for now
+        SmartDashboard.putNumber("wrist/motorEncoderNoWrap", m_encoder.getPosition() * 360.0);
+        SmartDashboard.putNumber("wrist/absEncoderNoWrap", m_cancoder.getPosition().getValueAsDouble() * 360.0);
+
         SmartDashboard.putNumber("wrist/outputCurrent", m_motor.getOutputCurrent());
         SmartDashboard.putNumber("wrist/busVoltage", m_motor.getBusVoltage());
         SmartDashboard.putBoolean("wrist/onGoal", angleWithinTolerance());
         SmartDashboard.putNumber("wrist/appliedOutput", m_motor.getAppliedOutput());
         SmartDashboard.putNumber("wrist/velocity", getVelocity().getDegrees());
-
-        SmartDashboard.putNumber("wrist/rawAngle", getRawAngle().getDegrees());
-        SmartDashboard.putNumber("wrist/motorEncoder", m_motor.getEncoder().getPosition()*360.0);
-
-
-        // SmartDashboard.putNumber("pivot/feedforward", feedforward);
-        // SmartDashboard.putNumber("pivot/accel", accel);
     }
 
     // get the current wrist angle
     public Rotation2d getAngle() {
-        return Rotation2d.fromRotations(m_motor.getEncoder().getPosition());
+        return Rotation2d.fromRotations(m_encoder.getPosition());
     }
 
-    public Rotation2d getRawAngle(){
+    public Rotation2d getAbsEncoderAngle(){
         return Rotation2d.fromRotations(m_cancoder.getPosition().getValueAsDouble());
     }
 
@@ -203,46 +162,25 @@ public class EndEffectorWrist extends SubsystemBase {
         return Rotation2d.fromRotations(m_cancoder.getVelocity().getValueAsDouble());
     }
 
+    // debug use only
     public void run(double speed) {
         m_motor.set(speed);
     }
 
-    // set shooterPivot angle
+    // set wrist angle
     public void setAngle(Rotation2d angle) {
         m_goal = angle;
         SmartDashboard.putNumber("wrist/goal", m_goal.getDegrees());
     }
     
-    // get the angle from the absolute encoder
-    // public double getAbsEncoderAngleRadians() {
-    //     return TWO_PI * m_absoluteEncoder.getDistance();
-    // }
-
-    // // update the motor encoder offset to match the absolute encoder
-    // public void updateMotorEncoderOffset() {
-    //     m_encoder.setPosition(m_absoluteEncoder.getDistance());
-    // }
-
-    public boolean isOutsideLowRange() {
-        double angle = getAngle().getDegrees();
-        return false;
-    }
-
     // needs to be public so that commands can get the restricted angle
     public Rotation2d limitWristAngle(Rotation2d angle, double elevHeight) {
         return angle;
     }
 
     public boolean angleWithinTolerance() {
-        //TODO does MAXMotion provide this?
         return Math.abs(m_goalClipped.minus(getAngle()).getDegrees()) < ANGLE_TOLERANCE_DEG;
     }
-
-    // public void adjustAngle(boolean goUp) {
-    //     double adjust = (goUp ? 1 : -1) * ADJUSTMENT_STEP;
-    //     m_angleAdjustment += adjust;
-    //     setAngle(m_goalRadians + adjust, false);
-    // }
 
     public void resetGoal() {
         Rotation2d angle = getAngle();
