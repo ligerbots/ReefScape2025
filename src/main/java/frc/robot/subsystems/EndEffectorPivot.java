@@ -30,11 +30,11 @@ import frc.robot.Constants;
 
 public class EndEffectorPivot extends SubsystemBase {
     
-    private static final double MIN_ANGLE_LOW_DEG = 130.0;
-    private static final double MAX_ANGLE_LOW_DEG = 325.0;
+    private static final double MIN_ANGLE_LOW_DEG = 25.0;
+    private static final double MAX_ANGLE_LOW_DEG = 302;
 
-    private static final double MIN_ANGLE_HIGH_DEG = 110.0;
-    private static final double MAX_ANGLE_HIGH_DEG = 340.0;
+    private static final double MIN_ANGLE_HIGH_DEG = 0.0;
+    private static final double MAX_ANGLE_HIGH_DEG = 302;
 
     // NOTE: All constants were taken from the 2023 arm 
     // Note: Current values for limits are refrenced with the shooter being flat
@@ -53,12 +53,14 @@ public class EndEffectorPivot extends SubsystemBase {
       
     // Constants to limit the shooterPivot rotation speed
     // max vel: 1 rotation = 10 seconds  and then gear_ratio
-    private static final double MAX_VEL_ROT_PER_SEC = 1.5;
+    // private static final double MAX_VEL_ROT_PER_SEC = 1.5;
+    private static final double MAX_VEL_ROT_PER_SEC = 0.5;
+
     private static final double MAX_ACC_ROT_PER_SEC2 = 3.0;
     private static final double ROBOT_LOOP_PERIOD = 0.02;
 
     // Zero point of the absolute encoder
-    private static final double ABS_ENCODER_ZERO_OFFSET = (309.5-180)/360;
+    private static final double ABS_ENCODER_ZERO_OFFSET = 172.25/360.0;//142.05/360;
 
     // Constants for the pivot PID controller
     private static final double K_P = 4.0;

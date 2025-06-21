@@ -26,22 +26,26 @@ import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.trajectory.TrapezoidProfile.State;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import com.ctre.phoenix6.StatusCode;
+
 import frc.robot.Constants;
 
 public class EndEffectorWrist extends SubsystemBase {
-    public static final double ANGLE_TOLERANCE_DEG = 1.0;
+    public static final double ANGLE_TOLERANCE_DEG = 0.5;
 
     private static final int CURRENT_LIMIT = 40;
     
     private static final double GEAR_RATIO = 1.0 / 90.0;
 
     // Constants to limit the wrist rotation speed
-    private static final double MAX_VEL_ROT_PER_SEC = 1.5;
-    private static final double MAX_ACC_ROT_PER_SEC2 = 3.0;
+    // private static final double MAX_VEL_ROT_PER_SEC = 0.5;
+    private static final double MAX_VEL_ROT_PER_SEC = 0.5;
+
+    private static final double MAX_ACC_ROT_PER_SEC2 = 5.0;
     private static final double ROBOT_LOOP_PERIOD = 0.02;
 
     // Zero point of the absolute encoder
-    private static final double ABS_ENCODER_ZERO_OFFSET = -15.86 / 360.0;
+    private static final double ABS_ENCODER_ZERO_OFFSET = -36.0/360.0;//-15.86 / 360.0;
 
     // Constants for the pivot PID controller
     private static final double K_P = 10.0;
@@ -56,7 +60,9 @@ public class EndEffectorWrist extends SubsystemBase {
 
     // Used for checking if on goal
     private Rotation2d m_goal = Rotation2d.fromDegrees(0);
-    private Rotation2d m_goalClipped = Rotation2d.fromDegrees(0);
+    private Rotation2d m_goalClipped = Rotation2d.fromDegrees(37);
+
+    public boolean cancoderInitialized = false;
 
     // Trapezoid Profile
     private final TrapezoidProfile m_profile = new TrapezoidProfile(new TrapezoidProfile.Constraints(MAX_VEL_ROT_PER_SEC, MAX_ACC_ROT_PER_SEC2));
@@ -80,10 +86,12 @@ public class EndEffectorWrist extends SubsystemBase {
 
         // Configure the SparkMax
         SparkMaxConfig config = new SparkMaxConfig();
-        config.inverted(true);
+        config.inverted(false);
         config.idleMode(IdleMode.kBrake);
         config.smartCurrentLimit(CURRENT_LIMIT);
         config.encoder.positionConversionFactor(GEAR_RATIO);
+        
+
 
         // set up the PID for MAX Motion
         config.closedLoop.p(K_P).i(K_I).d(K_D);
@@ -96,14 +104,11 @@ public class EndEffectorWrist extends SubsystemBase {
         m_motor.configure(config, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
 
         m_encoder = m_motor.getEncoder();
-        m_encoder.setPosition(m_cancoder.getAbsolutePosition().getValueAsDouble() / 2.0);
         
         // controller for PID control
         m_controller = m_motor.getClosedLoopController();
 
         // updateMotorEncoderOffset();
-        resetGoal();
-
         SmartDashboard.putBoolean("wrist/coastMode", false);
         setCoastMode();
 
@@ -146,6 +151,17 @@ public class EndEffectorWrist extends SubsystemBase {
         SmartDashboard.putBoolean("wrist/onGoal", angleWithinTolerance());
         SmartDashboard.putNumber("wrist/appliedOutput", m_motor.getAppliedOutput());
         SmartDashboard.putNumber("wrist/velocity", getVelocity().getDegrees());
+        SmartDashboard.putNumber("wrist/goal", m_goal.getDegrees());
+
+
+
+
+        if (!cancoderInitialized){
+            StatusCode status = m_cancoder.getPosition().getStatus();
+            if (status == StatusCode.OK){
+                cancoderInitialized = true;
+            }
+        }
     }
 
     // get the current wrist angle
@@ -182,12 +198,6 @@ public class EndEffectorWrist extends SubsystemBase {
         return Math.abs(m_goalClipped.minus(getAngle()).getDegrees()) < ANGLE_TOLERANCE_DEG;
     }
 
-    public void resetGoal() {
-        Rotation2d angle = getAngle();
-        setAngle(angle);
-        m_currentState.position = angle.getRotations();
-        m_currentState.velocity = 0;
-    }
 
     public void setCoastMode() {
         boolean coastMode = SmartDashboard.getBoolean("wrist/coastMode", false);
@@ -197,4 +207,11 @@ public class EndEffectorWrist extends SubsystemBase {
         } else
         m_motor.configure(new SparkMaxConfig().idleMode(IdleMode.kBrake), ResetMode.kNoResetSafeParameters, PersistMode.kNoPersistParameters);
     }
+    public void initWristEncoder(){
+        if(cancoderInitialized = true){
+        m_encoder.setPosition(m_cancoder.getAbsolutePosition().getValueAsDouble() / 2.0);
+        Rotation2d angle = getAbsEncoderAngle().div(2.0); // Rotation2d.fromDegrees(m_cancoder.getAbsolutePosition().getValueAsDouble() / 2.0);
+        setAngle(angle);
+    }
+}
 }

@@ -167,6 +167,9 @@ public class CompRobotContainerRedesign extends RobotContainer {
         m_farm.button(8).whileTrue(new StartEndCommand(m_claw::runOuttake, m_claw::stop, m_claw));
         m_farm.button(5).whileTrue(new StartEndCommand(m_coralGroundIntake::TransferCoral, m_coralGroundIntake::stow, m_coralGroundIntake));
 
+        m_farm.button(4).onTrue(new MoveEndEffectorRedesign(Position.TRANSFER_WAIT, m_elevator, m_pivot, m_wrist));
+
+
         
         // m_farm.button(11).onTrue(new InstantCommand(() -> m_coralMode = !m_coralMode));
         // m_farm.button(5).whileTrue(new InstantCommand(m_elevator::zeroElevator));
@@ -288,6 +291,7 @@ public class CompRobotContainerRedesign extends RobotContainer {
         m_pivot.resetGoal();
         m_elevator.resetGoal();
         m_climber.resetGoal();
+        m_wrist.initWristEncoder();
     }
 
     public DriveTrain getDriveTrain() {
