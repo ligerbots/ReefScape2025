@@ -260,7 +260,7 @@ public class NonZachRobotContainer extends RobotContainer {
         
     @Override
     public void resetAllGoals() {
-        m_pivot.resetGoal();
+        m_pivot.initPivot();
         m_elevator.resetGoal();
         m_climber.resetGoal();
     }

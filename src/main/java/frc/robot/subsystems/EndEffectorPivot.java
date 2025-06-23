@@ -106,7 +106,7 @@ public class EndEffectorPivot extends SubsystemBase {
         config.inverted(false);
         config.idleMode(IdleMode.kBrake);
         config.smartCurrentLimit(CURRENT_LIMIT);
-        config.encoder.positionConversionFactor(1.0/25.0);
+        config.encoder.positionConversionFactor(GEAR_RATIO);
 
 
         AbsoluteEncoderConfig absEncConfig = new AbsoluteEncoderConfig();
@@ -143,7 +143,7 @@ public class EndEffectorPivot extends SubsystemBase {
         m_controller = m_motor.getClosedLoopController();
 
         // updateMotorEncoderOffset();
-        resetGoal();
+        initPivot();
 
         SmartDashboard.putBoolean("pivot/coastMode", false);
         setCoastMode();
@@ -252,9 +252,6 @@ public class EndEffectorPivot extends SubsystemBase {
     //     setAngle(m_goalRadians + adjust, false);
     // }
 
-    public void resetGoal() {
-        
-    }
 
     public void setCoastMode() {
         boolean coastMode = SmartDashboard.getBoolean("shooterPivot/coastMode", false);
@@ -266,7 +263,7 @@ public class EndEffectorPivot extends SubsystemBase {
     }
 
     public void initPivot(){
-        m_encoder.setPosition(m_absoluteEncoder.getPosition()*GEAR_RATIO);
+        m_encoder.setPosition(m_absoluteEncoder.getPosition());
         Rotation2d angle = getAngle();
         setAngle(angle);
         m_currentState.position = angle.getRotations();
