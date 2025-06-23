@@ -178,6 +178,7 @@ public class EndEffectorWrist extends SubsystemBase {
         return Rotation2d.fromRotations(m_cancoder.getVelocity().getValueAsDouble());
     }
 
+
     // debug use only
     public void run(double speed) {
         m_motor.set(speed);

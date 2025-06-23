@@ -288,10 +288,10 @@ public class CompRobotContainerRedesign extends RobotContainer {
         
     @Override
     public void resetAllGoals() {
-        m_pivot.resetGoal();
         m_elevator.resetGoal();
         m_climber.resetGoal();
         m_wrist.initWristEncoder();
+        m_pivot.initPivot();
     }
 
     public DriveTrain getDriveTrain() {

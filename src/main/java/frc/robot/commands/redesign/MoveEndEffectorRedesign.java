@@ -148,7 +148,7 @@ public class MoveEndEffectorRedesign extends Command {
     };
     
     public MoveEndEffectorRedesign(Constants.Position position, Elevator elevator, EndEffectorPivot pivot, EndEffectorWrist wrist) {
-        this(position, elevator, pivot, wrist, 2.0);
+       this(position, elevator, pivot, wrist, 2.0);
     }
 
     public MoveEndEffectorRedesign(Constants.Position position, Elevator elevator, EndEffectorPivot pivot, EndEffectorWrist wrist, double timeout) {

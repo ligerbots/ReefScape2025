@@ -6,6 +6,7 @@ package frc.robot.subsystems;
 
 import java.util.function.DoubleSupplier;
 
+import com.revrobotics.RelativeEncoder;
 import com.revrobotics.sim.SparkAbsoluteEncoderSim;
 import com.revrobotics.spark.ClosedLoopSlot;
 import com.revrobotics.spark.SparkAbsoluteEncoder;
@@ -44,6 +45,8 @@ public class EndEffectorPivot extends SubsystemBase {
 
     private static final int CURRENT_LIMIT = 60;
 
+    private static final double GEAR_RATIO = 18.0/42.0/25.0;
+
 
     // position constants for commands
     // private static final double ADJUSTMENT_STEP = Math.toRadians(1.0);
@@ -73,6 +76,8 @@ public class EndEffectorPivot extends SubsystemBase {
     // private static final double KICK_TIME = 0.04;
 
     private final SparkMax m_motor;
+    private final RelativeEncoder m_encoder;
+
     // private final RelativeEncoder m_encoder;
     private final SparkAbsoluteEncoder m_absoluteEncoder;
     private final SparkAbsoluteEncoderSim m_absoluteEncoderSim;
@@ -101,6 +106,8 @@ public class EndEffectorPivot extends SubsystemBase {
         config.inverted(false);
         config.idleMode(IdleMode.kBrake);
         config.smartCurrentLimit(CURRENT_LIMIT);
+        config.encoder.positionConversionFactor(1.0/25.0);
+
 
         AbsoluteEncoderConfig absEncConfig = new AbsoluteEncoderConfig();
         absEncConfig.velocityConversionFactor(1/60.0);   // convert rpm to rps
@@ -118,8 +125,12 @@ public class EndEffectorPivot extends SubsystemBase {
         config.closedLoop.feedbackSensor(FeedbackSensor.kAbsoluteEncoder);
         config.closedLoop.positionWrappingEnabled(false);  // don't treat it as a circle
         // config.closedLoop.positionWrappingInputRange(0,1.0);
-                        
+
+
         m_motor.configure(config, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
+        m_encoder = m_motor.getEncoder();
+
+
 
         // motor encoder - set calibration and offset to match absolute encoder
         // m_encoder = m_motor.getEncoder();
@@ -186,7 +197,7 @@ public class EndEffectorPivot extends SubsystemBase {
 
     // get the current pivot angle
     public Rotation2d getAngle() {
-        return Rotation2d.fromRotations(m_absoluteEncoder.getPosition());
+        return Rotation2d.fromRotations(m_encoder.getPosition());
     }
 
     public Rotation2d getVelocity() {
@@ -242,10 +253,7 @@ public class EndEffectorPivot extends SubsystemBase {
     // }
 
     public void resetGoal() {
-        Rotation2d angle = getAngle();
-        setAngle(angle);
-        m_currentState.position = angle.getRotations();
-        m_currentState.velocity = 0;
+        
     }
 
     public void setCoastMode() {
@@ -255,5 +263,13 @@ public class EndEffectorPivot extends SubsystemBase {
             m_motor.stopMotor();
         } else
         m_motor.configure(new SparkMaxConfig().idleMode(IdleMode.kBrake), ResetMode.kNoResetSafeParameters, PersistMode.kNoPersistParameters);
+    }
+
+    public void initPivot(){
+        m_encoder.setPosition(m_absoluteEncoder.getPosition()*GEAR_RATIO);
+        Rotation2d angle = getAngle();
+        setAngle(angle);
+        m_currentState.position = angle.getRotations();
+        m_currentState.velocity = 0;
     }
 }
