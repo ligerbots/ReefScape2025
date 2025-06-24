@@ -72,8 +72,8 @@ public class MoveEndEffectorRedesign extends Command {
     private static final double STOW_HEIGHT = 0.0;
     private static final double STOW_WRIST_ANGLE = 0;
 
-    private static final double TRANSFER_PIVOT_ANGLE = 0;
-    private static final double TRANSFER_HEIGHT = 4.5;
+    private static final double TRANSFER_PIVOT_ANGLE = 5;
+    private static final double TRANSFER_HEIGHT = Units.inchesToMeters(6.328);
     private static final double TRANSFER_WRIST_ANGLE = 90;
 
 
@@ -121,7 +121,8 @@ public class MoveEndEffectorRedesign extends Command {
     private static final double ELEVATOR_DELAY_HEIGHT = L4_HEIGHT - 0.1;
     private static final double ELEVATOR_DELAY_TIME = 0.1;
     private Timer m_elevatorTimer = new Timer();
-    private boolean m_elevatorSet = false;
+    private Timer m_wristTimer = new Timer();
+    private boolean m_wristSet = false;
 
     private static final HashMap<Position, Triplet<Double, Double, Double>> POSITIONS = new HashMap<Position, Triplet<Double, Double, Double>>() {
         {
@@ -171,31 +172,27 @@ public class MoveEndEffectorRedesign extends Command {
     // Called when the command is initially scheduled.
     @Override
     public void initialize() {
+        System.out.println("starting MoveEERedesign to " + m_position);
+        m_commandTimeout.restart();
+
         m_pivot.setAngle(m_desiredPivotAngle);
-        m_wrist.setAngle(m_desiredWristAngle);
+
         m_elevator.setHeight(m_desiredHeight);
 
         // figure out whether to set the elevator immediately, or delay a bit
-        // m_elevatorSet = true;
-        // double height = m_elevator.getHeight();
-        // if (height > ELEVATOR_DELAY_HEIGHT) {
-        //     // elevator is high. If the pivot only moves a bit, don't delay.
-        //     Rotation2d angle = m_pivot.getAngle();
-        //     m_elevatorSet = Math.abs(angle.minus(m_desiredPivotAngle).getDegrees()) < 90.0;
-        // }
-
-        // if (m_elevatorSet) {
-        //     m_elevator.setHeight(m_desiredHeight);
-        // } else {
-        //     m_elevatorTimer.restart();
-        // }
-
+        m_wristSet = false;
         // m_commandTimeout.restart();
     }
     
     // Called every time the scheduler runs while the command is scheduled.
     @Override
     public void execute() {
+        double pivotAngle = m_pivot.getAngle().getDegrees();
+        if (! m_wristSet && pivotAngle > 90 && pivotAngle < 270) {
+            m_wrist.setAngle(m_desiredWristAngle);
+            m_wristSet = true;
+        }
+
         // if (!m_elevatorSet && m_elevatorTimer.hasElapsed(ELEVATOR_DELAY_TIME)) {
         //     m_elevator.setHeight(m_desiredHeight);
         //     m_elevatorSet = true;

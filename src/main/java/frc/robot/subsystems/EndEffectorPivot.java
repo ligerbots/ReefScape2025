@@ -122,7 +122,7 @@ public class EndEffectorPivot extends SubsystemBase {
         //  K_FF);
 
         config.closedLoop.outputRange(-1, 1);
-        config.closedLoop.feedbackSensor(FeedbackSensor.kAbsoluteEncoder);
+        config.closedLoop.feedbackSensor(FeedbackSensor.kPrimaryEncoder);
         config.closedLoop.positionWrappingEnabled(false);  // don't treat it as a circle
         // config.closedLoop.positionWrappingInputRange(0,1.0);
 
@@ -191,6 +191,7 @@ public class EndEffectorPivot extends SubsystemBase {
         SmartDashboard.putBoolean("pivot/onGoal", angleWithinTolerance());
         SmartDashboard.putNumber("pivot/appliedOutput", m_motor.getAppliedOutput());
         SmartDashboard.putNumber("pivot/velocity", getVelocity().getDegrees());
+        SmartDashboard.putNumber("pivot/internalEncoder", getAngle().getDegrees());
         // SmartDashboard.putNumber("pivot/feedforward", feedforward);
         // SmartDashboard.putNumber("pivot/accel", accel);
     }

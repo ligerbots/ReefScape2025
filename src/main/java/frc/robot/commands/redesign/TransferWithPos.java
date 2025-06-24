@@ -6,9 +6,11 @@ package frc.robot.commands.redesign;
 
 import java.util.function.DoubleSupplier;
 
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.PrintCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.Constants;
@@ -44,6 +46,7 @@ public class TransferWithPos extends SequentialCommandGroup {
 
 
     addCommands(
+      new PrintCommand("Starting TransferWithPos"),
       new InstantCommand(m_coralGround::goToTransferPose).alongWith(new MoveEndEffectorRedesign(Constants.Position.TRANSFER, elevator, pivot, wrist)),
       new InstantCommand(m_claw::runIntake),
       new WaitCommand(.1),
