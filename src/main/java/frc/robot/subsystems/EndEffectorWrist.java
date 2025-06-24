@@ -206,7 +206,7 @@ public class EndEffectorWrist extends SubsystemBase {
     }
 
     public void initWristEncoder() {
-        if (cancoderInitialized = true) {
+        if (cancoderInitialized) {
             m_encoder.setPosition(m_cancoder.getAbsolutePosition().getValueAsDouble() / 2.0);
             Rotation2d angle = getAbsEncoderAngle().div(2.0);
             setAngle(angle);
