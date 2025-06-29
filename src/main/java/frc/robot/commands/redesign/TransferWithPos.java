@@ -33,7 +33,7 @@ public class TransferWithPos extends SequentialCommandGroup {
   Position m_pos;
   Timer m_commandTimeout = new Timer();
   double m_timeoutDelay = 2;
-  double transferTime = 0.5;
+  double transferTime = 0.1;
 
   public TransferWithPos(EndEffectorPivot pivot, EndEffectorWrist wrist, Elevator elevator, Claw claw, DoubleSupplier elevatorHeight, CoralGroundIntakeRedesign coralGround, Position pos) {
     m_pivot = pivot;
@@ -49,7 +49,7 @@ public class TransferWithPos extends SequentialCommandGroup {
       new PrintCommand("Starting TransferWithPos"),
       new InstantCommand(m_coralGround::goToTransferPose).alongWith(new MoveEndEffectorRedesign(Constants.Position.TRANSFER, elevator, pivot, wrist)),
       new InstantCommand(m_claw::runIntake),
-      new WaitCommand(.1),
+      new WaitCommand(.025),
       new InstantCommand(m_coralGround::TransferCoral),
       new WaitCommand(transferTime),
       new InstantCommand(m_coralGround::stow).alongWith(new InstantCommand(m_claw::stop)).alongWith(new MoveEndEffectorRedesign(m_pos, elevator, pivot, wrist))

@@ -31,7 +31,7 @@ import frc.robot.subsystems.*;
 public class CompRobotContainerRedesign extends RobotContainer {
     private static final double JOYSTICK_DEADBAND = 0.05;
 
-    private Position currRobotAction = Position.BACK_INTAKE;
+    public Position currRobotAction = Position.STOW;
     
     private final CommandXboxController m_driverController = new CommandXboxController(0);
     private final CommandJoystick m_farm = new CommandJoystick(1);
@@ -89,7 +89,7 @@ public class CompRobotContainerRedesign extends RobotContainer {
 
         m_driverController.rightTrigger().whileTrue(
                 new ConditionalCommand(
-                new Score(currRobotAction, m_pivot, m_wrist, m_elevator, m_claw, ()->m_elevator.getHeight()).alongWith(new PrintCommand(currRobotAction.name())),
+                new MoveEndEffectorRedesign(currRobotAction, m_elevator, m_pivot, m_wrist).alongWith(new PrintCommand(currRobotAction.name())),
 
                 new StartEndCommand(m_claw::runOuttake, m_claw::stop, m_claw),
                         () -> m_coralMode)
@@ -128,9 +128,12 @@ public class CompRobotContainerRedesign extends RobotContainer {
         new TransferWithPos(m_pivot, m_wrist, m_elevator, m_claw, ()-> m_elevator.getHeight(), m_coralGroundIntake, Position.L3_PREP).alongWith(new InstantCommand(() -> m_coralMode = true)),
          m_coralGroundIntake::HasCoral));
        
-        m_driverController.pov(180).onTrue(new ConditionalCommand(new MoveEndEffectorRedesign(Constants.Position.L2_PREP, m_elevator, m_pivot, m_wrist).alongWith(new InstantCommand(()-> currRobotAction = Position.L2_PREP)).alongWith(new InstantCommand(() -> m_coralMode = true)), 
+        m_driverController.pov(180).onTrue(new ConditionalCommand(new MoveEndEffectorRedesign(Constants.Position.L2_PREP, m_elevator, m_pivot, m_wrist).alongWith(new InstantCommand(() -> m_coralMode = true)), 
         new TransferWithPos(m_pivot, m_wrist, m_elevator, m_claw, ()-> m_elevator.getHeight(), m_coralGroundIntake, Position.L2_PREP).alongWith(new InstantCommand(() -> m_coralMode = true)),
-         m_coralGroundIntake::HasCoral));
+         m_coralGroundIntake::HasCoral).andThen(new PrintCommand("L2 Prep Finished")));
+
+
+        m_driverController.pov(180).onTrue(new InstantCommand(()-> currRobotAction = Position.L2).alongWith(new PrintCommand(currRobotAction.toString())));
         
 
         m_driverController.pov(90).onTrue(new TransferWithPos(m_pivot, m_wrist, m_elevator, m_claw, ()-> m_elevator.getHeight(), m_coralGroundIntake, Position.STOW).alongWith(new InstantCommand(() -> m_coralMode = true)));

@@ -42,37 +42,24 @@ public class Score extends Command {
 
 
     m_robotStateString = robotState.toString();
-    
-    switch (m_robotStateString){
-      case "L2_PREP":
-        m_wantedElevatorHeight = MoveEndEffectorRedesign.L2_HEIGHT;
-      case "L3_PREP":
-        m_wantedElevatorHeight = MoveEndEffectorRedesign.L3_HEIGHT;
-      case "L4_PREP":
-        m_wantedElevatorHeight = MoveEndEffectorRedesign.L4_HEIGHT;
-      
-    }
-
-  
-
-
   }
 
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    switch (m_robotstate) {
-      case L2_PREP:
+    switch (m_robotstate.toString()) {
+      case "L2_PREP":
         new MoveEndEffectorRedesign(Constants.Position.L2, m_elevator, m_pivot, m_wrist);
         break;
-      case L3 :
+      case "L3_PREP" :
         new MoveEndEffectorRedesign(Constants.Position.L3, m_elevator, m_pivot, m_wrist);
         break;
-      case L4:
+      case "L4_PREP":
         new MoveEndEffectorRedesign(Constants.Position.L4, m_elevator, m_pivot, m_wrist);
         break;
       default:
-        break;
+         new MoveEndEffectorRedesign(m_robotstate, m_elevator, m_pivot, m_wrist);
+;        break;
     }
     m_commandTimeout.restart();
 
@@ -89,7 +76,7 @@ public class Score extends Command {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return Math.abs(m_height.getAsDouble()-m_wantedElevatorHeight) <= 0.5
+    return m_elevator.lengthWithinTolerance() && m_pivot.angleWithinTolerance() && m_wrist.angleWithinTolerance()
     || m_commandTimeout.hasElapsed(m_timeoutDelay);
   }
 }

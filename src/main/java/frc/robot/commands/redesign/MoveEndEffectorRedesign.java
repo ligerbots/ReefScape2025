@@ -69,7 +69,7 @@ public class MoveEndEffectorRedesign extends Command {
 
 
     private static final double STOW_PIVOT_ANGLE = 180;
-    private static final double STOW_HEIGHT = 0.0;
+    private static final double STOW_HEIGHT = Units.inchesToMeters(0.0);
     private static final double STOW_WRIST_ANGLE = 0;
 
     private static final double TRANSFER_PIVOT_ANGLE = 5;
@@ -208,5 +208,7 @@ public class MoveEndEffectorRedesign extends Command {
     public boolean isFinished() {
         return (m_elevator.lengthWithinTolerance() && m_pivot.angleWithinTolerance() && m_wrist.angleWithinTolerance())
                 || m_commandTimeout.hasElapsed(m_timeoutDelay);
+
+        
     }
 }

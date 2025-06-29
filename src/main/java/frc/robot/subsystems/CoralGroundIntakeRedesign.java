@@ -53,7 +53,7 @@ public class CoralGroundIntakeRedesign extends SubsystemBase {
     private static final Rotation2d STOWED_ANGLE = Rotation2d.fromDegrees(0.0);
     private static final Rotation2d SCORING_ANGLE = Rotation2d.fromDegrees(22.0); 
     private static final Rotation2d DEPLOYED_ANGLE = Rotation2d.fromDegrees(115.0); 
-    private static final Rotation2d TRANSFER_ANGLE = Rotation2d.fromDegrees(5.0);
+    private static final Rotation2d TRANSFER_ANGLE = Rotation2d.fromDegrees(7.5);
     private static final Rotation2d ALGAE_TRANSFER_ANGLE = Rotation2d.fromDegrees(0.0);
 
 
