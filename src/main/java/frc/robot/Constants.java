@@ -41,7 +41,7 @@ public final class Constants {
         STOW,
         PROCESSOR,
         CLIMB, L2_PREP, L3_PREP, L4_PREP,
-        TRANSFER, TRANSFER_WAIT, ALGAE_TRANSFER
+        TRANSFER, TRANSFER_WAIT, ALGAE_TRANSFER, STARTING_CONFIG
     }
     
     public static boolean OUTREACH_MODE = false;

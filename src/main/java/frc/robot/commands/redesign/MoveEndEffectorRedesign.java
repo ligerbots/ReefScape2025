@@ -39,11 +39,11 @@ public class MoveEndEffectorRedesign extends Command {
     private static final double L1_WRIST_ANGLE = 310.0;
 
 
-    private static final double L2_PIVOT_ANGLE = 270;
+    private static final double L2_PIVOT_ANGLE = 280;
     public static final double L2_HEIGHT = Units.inchesToMeters(0);
     private static final double L2_WRIST_ANGLE = 0;
 
-    private static final double L3_PIVOT_ANGLE = 270;
+    private static final double L3_PIVOT_ANGLE = 280;
     public static final double L3_HEIGHT = Units.inchesToMeters(13.35);
     private static final double L3_WRIST_ANGLE = 0;
 
@@ -55,7 +55,7 @@ public class MoveEndEffectorRedesign extends Command {
     public static final double L2_HEIGHT_PREP = Units.inchesToMeters(0);
     private static final double L2_WRIST_ANGLE_PREP = 0;
 
-    private static final double L3_PIVOT_ANGLE_PREP = 245.0;
+    private static final double L3_PIVOT_ANGLE_PREP = 235.0;
     public static final double L3_HEIGHT_PREP = Units.inchesToMeters(15.35);
     private static final double L3_WRIST_ANGLE_PREP = 0;
 
@@ -66,6 +66,10 @@ public class MoveEndEffectorRedesign extends Command {
     private static final double TRANSFER_PIVOT_ANGLE_WAIT = 0;
     private static final double TRANSFER_HEIGHT_WAIT = Units.inchesToMeters(6.0);
     private static final double TRANSFER_WRIST_ANGLE_WAIT = 90;
+
+    private static final double STARTING_CONFIG_PIVOT_ANGLE = 301.5;
+    private static final double STARTING_CONFIG_HEIGHT = Units.inchesToMeters(0.0);
+    private static final double STARTING_CONFIG_WRIST_ANGLE = 0;
 
 
     private static final double STOW_PIVOT_ANGLE = 180;
@@ -144,6 +148,7 @@ public class MoveEndEffectorRedesign extends Command {
             put(Position.TRANSFER, new Triplet<Double,Double,Double>(TRANSFER_HEIGHT, TRANSFER_PIVOT_ANGLE, TRANSFER_WRIST_ANGLE));
             put(Position.TRANSFER_WAIT, new Triplet<Double,Double,Double>(TRANSFER_HEIGHT_WAIT, TRANSFER_PIVOT_ANGLE_WAIT, TRANSFER_WRIST_ANGLE_WAIT));
             put(Position.ALGAE_TRANSFER, new Triplet<Double,Double,Double>(ALGAE_TRANSFER_HEIGHT, ALGAE_TRANSFER_PIVOT_ANGLE, ALGAE_TRANSFER_WRIST_ANGLE));
+            put(Position.STARTING_CONFIG, new Triplet<Double,Double,Double>(STARTING_CONFIG_HEIGHT, STARTING_CONFIG_PIVOT_ANGLE, STARTING_CONFIG_WRIST_ANGLE));
 
         }
     };

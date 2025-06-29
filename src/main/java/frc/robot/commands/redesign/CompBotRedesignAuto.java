@@ -87,7 +87,7 @@ public class CompBotRedesignAuto extends ReefscapeAbstractAutoRedesign {
                 
                 addCommands(m_driveTrain.followPath(firstCoralPath).alongWith(
                         new MoveEndEffectorRedesign(Constants.Position.L4_PREP, m_elevator, m_pivot, m_wrist)));
-                addCommands(new Score(Position.L4, m_pivot, m_wrist, m_elevator, m_claw, ()->m_elevator.getHeight()).withTimeout(CORAL_SCORE_WAIT_TIME));  
+                addCommands(new Score(()->Position.L4, m_pivot, m_wrist, m_elevator, m_claw).withTimeout(CORAL_SCORE_WAIT_TIME));  
     
                 if (reefPoints.length > 1) {
                     addCommands(
@@ -141,8 +141,7 @@ public class CompBotRedesignAuto extends ReefscapeAbstractAutoRedesign {
                         ),
                 Commands.parallel(
                     Commands.sequence(m_driveTrain.pathFindToPose(FieldConstants.flipPose(targetScore), constraints),
-                                    new Score(Position.L4, m_pivot, m_wrist, m_elevator, m_claw, ()->m_elevator.getHeight()).withTimeout(CORAL_SCORE_WAIT_TIME)
-
+                                    new Score(()->Position.L4, m_pivot, m_wrist, m_elevator, m_claw).withTimeout(CORAL_SCORE_WAIT_TIME)
                                     ),
                                     new MoveEndEffectorRedesign(Constants.Position.L4_PREP, m_elevator, m_pivot, m_wrist)));
 }
