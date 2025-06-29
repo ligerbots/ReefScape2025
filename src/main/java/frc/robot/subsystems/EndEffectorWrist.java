@@ -153,9 +153,6 @@ public class EndEffectorWrist extends SubsystemBase {
         SmartDashboard.putNumber("wrist/velocity", getVelocity().getDegrees());
         SmartDashboard.putNumber("wrist/goal", m_goal.getDegrees());
 
-
-
-
         if (!cancoderInitialized){
             StatusCode status = m_cancoder.getPosition().getStatus();
             if (status == StatusCode.OK){
@@ -199,7 +196,6 @@ public class EndEffectorWrist extends SubsystemBase {
         return Math.abs(m_goalClipped.minus(getAngle()).getDegrees()) < ANGLE_TOLERANCE_DEG;
     }
 
-
     public void setCoastMode() {
         boolean coastMode = SmartDashboard.getBoolean("wrist/coastMode", false);
         if (coastMode) {
@@ -208,11 +204,12 @@ public class EndEffectorWrist extends SubsystemBase {
         } else
         m_motor.configure(new SparkMaxConfig().idleMode(IdleMode.kBrake), ResetMode.kNoResetSafeParameters, PersistMode.kNoPersistParameters);
     }
-    public void initWristEncoder(){
-        if(cancoderInitialized = true){
-        m_encoder.setPosition(m_cancoder.getAbsolutePosition().getValueAsDouble() / 2.0);
-        Rotation2d angle = getAbsEncoderAngle().div(2.0); // Rotation2d.fromDegrees(m_cancoder.getAbsolutePosition().getValueAsDouble() / 2.0);
-        setAngle(angle);
+
+    public void initWristEncoder() {
+        if (cancoderInitialized) {
+            m_encoder.setPosition(m_cancoder.getAbsolutePosition().getValueAsDouble() / 2.0);
+            Rotation2d angle = getAbsEncoderAngle().div(2.0);
+            setAngle(angle);
+        }
     }
-}
 }
