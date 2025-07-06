@@ -39,9 +39,9 @@ public class EndEffectorWrist extends SubsystemBase {
 
     // Constants to limit the wrist rotation speed
     // private static final double MAX_VEL_ROT_PER_SEC = 0.5;
-    private static final double MAX_VEL_ROT_PER_SEC = 0.5;
+    private static final double MAX_VEL_ROT_PER_SEC = 1.0;
 
-    private static final double MAX_ACC_ROT_PER_SEC2 = 5.0;
+    private static final double MAX_ACC_ROT_PER_SEC2 = 10.0;
     private static final double ROBOT_LOOP_PERIOD = 0.02;
 
     // Zero point of the absolute encoder

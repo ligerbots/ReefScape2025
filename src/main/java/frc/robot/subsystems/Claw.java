@@ -40,18 +40,18 @@ public class Claw extends SubsystemBase {
     // Speeds
     private static final double INTAKE_SPEED = 0.7;
     private static final double OUTTAKE_SPEED = -0.7;
-    private static final double HOLD_SPEED = 0.05;
+    private static final double HOLD_SPEED = 0.1;
     private static final double OUTTAKE_L1_SPEED = 0.15;
 
     // Max velocity indicating the motor has stalled
-    private final static double STALL_VELOCITY_LIMIT = 2000;
+    private final static double STALL_VELOCITY_LIMIT = 20;
 
     // Motor
     private final TalonFX m_motor;
 
 
     private final ValueThreshold m_speedThres = new ValueThreshold(Direction.FALLING, STALL_VELOCITY_LIMIT);
-    private static final double STOP_INTAKE_DELAY = 0.5;
+    private static final double STOP_INTAKE_DELAY = 1;
     private final Timer m_intakeStopTimer = new Timer();
     private final DoubleSupplier m_elevatorHeight;
     TalonFXConfiguration talonFXConfigs = new TalonFXConfiguration();
@@ -67,7 +67,7 @@ public class Claw extends SubsystemBase {
     //  OUTTAKE = run the motor for scoring
     //  HOLD = run intake at low speed to hold the coral in
     private enum State {
-        IDLE, INTAKE, INTAKE_HAS_CORAL, INTAKE_STOPPING, HOLD, OUTTAKE;
+        IDLE, INTAKE, INTAKE_HAS_CORAL, INTAKE_STOPPING, HOLD, OUTTAKE, INTAKE_HAS_ALGAE;
     }
 
     private State m_state = State.HOLD;
@@ -101,7 +101,7 @@ public class Claw extends SubsystemBase {
         // the button is let go
         if (m_state == State.INTAKE && (stalled)) {
             // leave motor running. This might be a stuck limit switch
-            m_state = State.INTAKE_HAS_CORAL;
+            m_state = State.INTAKE_HAS_ALGAE;
         }
 
         if (m_state == State.INTAKE_STOPPING) {
@@ -121,9 +121,10 @@ public class Claw extends SubsystemBase {
         }
 
 
-        SmartDashboard.putString("coralEffector/state", m_state.toString());
-        SmartDashboard.putNumber("coralEffector/setSpeed", m_motor.get());
-        SmartDashboard.putNumber("coralEffector/velocity", velocity);
+        SmartDashboard.putString("claw/state", m_state.toString());
+        SmartDashboard.putNumber("claw/setSpeed", m_motor.get());
+        SmartDashboard.putNumber("claw/velocity", velocity);
+
     }
 
     public void runIntake() {
@@ -143,7 +144,7 @@ public class Claw extends SubsystemBase {
     }
 
     public void stop() {
-        if (m_state == State.INTAKE_HAS_CORAL) {
+        if (m_state == State.INTAKE_HAS_ALGAE) {
             m_motor.set(HOLD_SPEED);
             m_state = State.HOLD;
         }
@@ -160,7 +161,11 @@ public class Claw extends SubsystemBase {
     }
 
     public boolean hasCoral() {
-        return m_state == State.HOLD || m_state == State.INTAKE_HAS_CORAL;
+        return m_state == State.INTAKE_HAS_CORAL;
+    }
+
+    public boolean hasAlgae(){
+        return m_state == State.INTAKE_HAS_ALGAE;
     }
 
     

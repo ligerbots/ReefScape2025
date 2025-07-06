@@ -98,11 +98,11 @@ public class MoveEndEffectorRedesign extends Command {
     private static final double BACK_INTAKE_PIVOT_ANGLE = 127.5;
     private static final double BACK_INTAKE_WRIST_ANGLE = 0;
     
-    private static final double L2_ALGAE_HEIGHT= Units.inchesToMeters(3.1);
+    private static final double L2_ALGAE_HEIGHT= Units.inchesToMeters(7.0);
     private static final double L2_ALGAE_PIVOT_ANGLE = 270.0;
     private static final double L2_ALGAE_WRIST_ANGLE = 0;
     
-    private static final double L3_ALGAE_HEIGHT= Units.inchesToMeters(19.0);
+    private static final double L3_ALGAE_HEIGHT= Units.inchesToMeters(24.0);
     private static final double L3_ALGAE_PIVOT_ANGLE = 270;    
     private static final double L3_ALGAE_WRITST_ANGLE = 0;
 
