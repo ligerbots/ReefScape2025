@@ -8,6 +8,7 @@ import com.pathplanner.lib.util.FlippingUtil;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 
@@ -81,6 +82,8 @@ public class FieldConstants {
         FieldConstants.REEF_G, FieldConstants.REEF_H, 
         FieldConstants.REEF_I, FieldConstants.REEF_J, 
         FieldConstants.REEF_K, FieldConstants.REEF_L);
+    //TODO get real center of reef 
+    public static final Pose2d REEF_CENTER = new Pose2d(FIELD_WIDTH/2 ,Units.feetToMeters(12.0), Rotation2d.fromDegrees(0)); 
 
     public static boolean isRedAlliance() {
         Optional<Alliance> alliance = DriverStation.getAlliance();

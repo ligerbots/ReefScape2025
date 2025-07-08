@@ -4,6 +4,7 @@
 
 package frc.robot.commands.redesign;
 
+import java.util.function.BooleanSupplier;
 import java.util.function.DoubleSupplier;
 
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -30,12 +31,13 @@ public class TransferWithPos extends SequentialCommandGroup {
   Claw m_claw;
   CoralGroundIntakeRedesign m_coralGround;
   DoubleSupplier m_height;
+  BooleanSupplier m_wantsAltMode;
   Position m_pos;
   Timer m_commandTimeout = new Timer();
   double m_timeoutDelay = 2;
   double transferTime = 0.1;
 
-  public TransferWithPos(EndEffectorPivot pivot, EndEffectorWrist wrist, Elevator elevator, Claw claw, DoubleSupplier elevatorHeight, CoralGroundIntakeRedesign coralGround, Position pos) {
+  public TransferWithPos(EndEffectorPivot pivot, EndEffectorWrist wrist, Elevator elevator, Claw claw, DoubleSupplier elevatorHeight, CoralGroundIntakeRedesign coralGround, Position pos, BooleanSupplier wantsAltMode) {
     m_pivot = pivot;
     m_claw = claw;
     m_elevator = elevator;
@@ -43,6 +45,7 @@ public class TransferWithPos extends SequentialCommandGroup {
     m_height = elevatorHeight;
     m_coralGround = coralGround;
     m_pos = pos;
+    m_wantsAltMode = wantsAltMode;
 
 
     addCommands(
@@ -52,7 +55,7 @@ public class TransferWithPos extends SequentialCommandGroup {
       new WaitCommand(.025),
       new InstantCommand(m_coralGround::TransferCoral),
       new WaitCommand(transferTime),
-      new InstantCommand(m_coralGround::stow).alongWith(new InstantCommand(m_claw::stop)).alongWith(new MoveEndEffectorRedesign(m_pos, elevator, pivot, wrist))
+      new InstantCommand(m_coralGround::stow).alongWith(new InstantCommand(m_claw::stop)).alongWith(new MoveEndEffectorRedesign(m_pos, elevator, pivot, wrist, 2.0 , wantsAltMode))
     );
 
   };

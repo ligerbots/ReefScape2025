@@ -136,7 +136,7 @@ public class CompBotRedesignAuto extends ReefscapeAbstractAutoRedesign {
                                       new WaitCommand(START_INTAKE_AFTER_PATH_START).andThen(
                                         new InstantCommand(m_coralGround::deploy),
                                         new WaitCommand(INTAKE_TIME),
-                                        new TransferWithPos(m_pivot, m_wrist, m_elevator, m_claw, ()->m_elevator.getHeight(), m_coralGround, Constants.Position.STOW))
+                                        new TransferWithPos(m_pivot, m_wrist, m_elevator, m_claw, ()->m_elevator.getHeight(), m_coralGround, Constants.Position.STOW, ()->false))
                     
                         ),
                 Commands.parallel(

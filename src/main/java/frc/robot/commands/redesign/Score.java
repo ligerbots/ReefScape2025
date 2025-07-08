@@ -47,6 +47,15 @@ public class Score extends Command {
           case L4_PREP:
               moveCommand = new MoveEndEffectorRedesign(Constants.Position.L4, m_elevator, m_pivot, m_wrist);
               break;
+            case L2_PREP_ALT:
+              moveCommand = new MoveEndEffectorRedesign(Constants.Position.L2_ALT, m_elevator, m_pivot, m_wrist);
+              break;
+          case L3_PREP_ALT:
+              moveCommand = new MoveEndEffectorRedesign(Constants.Position.L3_ALT, m_elevator, m_pivot, m_wrist);
+              break;
+          case L4_PREP_ALT:
+              moveCommand = new MoveEndEffectorRedesign(Constants.Position.L4_ALT, m_elevator, m_pivot, m_wrist);
+              break;
           default:
               moveCommand = new MoveEndEffectorRedesign(m_robotState, m_elevator, m_pivot, m_wrist);
               break;

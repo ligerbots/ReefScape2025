@@ -5,6 +5,9 @@
 package frc.robot.subsystems;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 import java.util.function.BooleanSupplier;
 import java.util.function.DoubleSupplier;
 
@@ -19,6 +22,7 @@ import com.pathplanner.lib.path.PathConstraints;
 import com.pathplanner.lib.path.PathPlannerPath;
 import com.revrobotics.spark.SparkMax;
 
+import edu.wpi.first.math.Pair;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
@@ -535,5 +539,24 @@ public class DriveTrain extends SubsystemBase {
                         new Config(),
                         this, m_swerveDrive),
                 3.0, 5.0, 3.0);
+    }
+
+    public boolean wantsAltMode() {
+    //     Translation2d reef = FieldConstants.flipPose(FieldConstants.REEF_CENTER).getTranslation();
+    //     Translation2d robot = getPose().getTranslation();
+    //     Rotation2d heading = getPose().getRotation();
+    
+    //     // Vector from robot to reef
+    //     double dx = reef.getX() - robot.getX();
+    //     double dy = reef.getY() - robot.getY();
+    //     double angleToReef = Math.toDegrees(Math.atan2(dy, dx));
+    
+    //     double robotHeading = heading.getDegrees();
+    //     double frontDiff = Math.IEEEremainder(angleToReef - robotHeading, 360.0);
+    //     double backDiff = Math.IEEEremainder(angleToReef - (robotHeading + 180.0), 360.0);
+    
+    //     // true = front face is more aligned
+    //     return !(Math.abs(frontDiff) < Math.abs(backDiff));
+    return false;//just for testing. 
     }
 }

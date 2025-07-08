@@ -35,12 +35,14 @@ public final class Constants {
     
     public enum Position {
         L1, L2, L3, L4, 
+        L2_ALT, L3_ALT, L4_ALT,
         BARGE,
         FRONT_INTAKE, BACK_INTAKE, 
         L2_ALGAE, L3_ALGAE, 
         STOW,
         PROCESSOR,
         CLIMB, L2_PREP, L3_PREP, L4_PREP,
+        L2_PREP_ALT, L3_PREP_ALT, L4_PREP_ALT,
         TRANSFER, TRANSFER_WAIT, ALGAE_TRANSFER, STARTING_CONFIG
     }
     

@@ -5,6 +5,7 @@
 package frc.robot.commands.redesign;
 
 import java.util.HashMap;
+import java.util.function.BooleanSupplier;
 
 import org.javatuples.Triplet;
 
@@ -23,6 +24,7 @@ public class MoveEndEffectorRedesign extends Command {
     EndEffectorPivot m_pivot;
     Elevator m_elevator;
     EndEffectorWrist m_wrist;
+    BooleanSupplier m_isAltMode;
     // boolean m_cancel;  // TODO some way to cancel the motion?
     
     Rotation2d m_desiredPivotAngle;
@@ -62,6 +64,31 @@ public class MoveEndEffectorRedesign extends Command {
     private static final double L4_PIVOT_ANGLE_PREP = 256.0;
     private static final double L4_HEIGHT_PREP = Units.inchesToMeters(42.6);
     private static final double L4_WRIST_ANGLE_PREP = 0;
+
+    //TODO need to set alt values 
+    private static final double L2_PIVOT_ANGLE_ALT = 280;
+    public static final double L2_HEIGHT_ALT = Units.inchesToMeters(0);
+    private static final double L2_WRIST_ANGLE_ALT = 0;
+
+    private static final double L3_PIVOT_ANGLE_ALT = 280;
+    public static final double L3_HEIGHT_ALT = Units.inchesToMeters(13.35);
+    private static final double L3_WRIST_ANGLE_ALT = 0;
+
+    private static final double L4_PIVOT_ANGLE_ALT = 270.0;
+    public static final double L4_HEIGHT_ALT = Units.inchesToMeters(35.0);
+    private static final double L4_WRIST_ANGLE_ALT = 0;
+
+    private static final double L2_PIVOT_ANGLE_PREP_ALT = 245;
+    public static final double L2_HEIGHT_PREP_ALT = Units.inchesToMeters(0);
+    private static final double L2_WRIST_ANGLE_PREP_ALT = 0;
+
+    private static final double L3_PIVOT_ANGLE_PREP_ALT = 235.0;
+    public static final double L3_HEIGHT_PREP_ALT = Units.inchesToMeters(15.35);
+    private static final double L3_WRIST_ANGLE_PREP_ALT = 0;
+
+    private static final double L4_PIVOT_ANGLE_PREP_ALT = 256.0;
+    private static final double L4_HEIGHT_PREP_ALT = Units.inchesToMeters(42.6);
+    private static final double L4_WRIST_ANGLE_PREP_ALT = 0;
 
     private static final double TRANSFER_PIVOT_ANGLE_WAIT = 0;
     private static final double TRANSFER_HEIGHT_WAIT = Units.inchesToMeters(6.0);
@@ -137,6 +164,15 @@ public class MoveEndEffectorRedesign extends Command {
             put(Position.L2_PREP, new Triplet<Double, Double,Double>(L2_HEIGHT_PREP, L2_PIVOT_ANGLE_PREP, L2_WRIST_ANGLE_PREP));
             put(Position.L3_PREP, new Triplet<Double, Double,Double>(L3_HEIGHT_PREP, L3_PIVOT_ANGLE_PREP, L3_WRIST_ANGLE_PREP));
             put(Position.L4_PREP, new Triplet<Double, Double,Double>(L4_HEIGHT_PREP, L4_PIVOT_ANGLE_PREP, L4_WRIST_ANGLE_PREP));
+
+            put(Position.L1, new Triplet<Double, Double,Double>(L1_HEIGHT, L1_PIVOT_ANGLE, L1_WRIST_ANGLE));
+            put(Position.L2_ALT, new Triplet<Double, Double,Double>(L2_HEIGHT_ALT, L2_PIVOT_ANGLE_ALT, L2_WRIST_ANGLE_ALT));
+            put(Position.L3_ALT, new Triplet<Double, Double,Double>(L3_HEIGHT_ALT, L3_PIVOT_ANGLE_ALT, L3_WRIST_ANGLE_ALT));
+            put(Position.L4_ALT, new Triplet<Double, Double,Double>(L4_HEIGHT_ALT, L4_PIVOT_ANGLE_ALT, L4_WRIST_ANGLE_ALT));
+            put(Position.L2_PREP_ALT, new Triplet<Double, Double,Double>(L2_HEIGHT_PREP_ALT, L2_PIVOT_ANGLE_PREP_ALT, L2_WRIST_ANGLE_PREP_ALT));
+            put(Position.L3_PREP_ALT, new Triplet<Double, Double,Double>(L3_HEIGHT_PREP_ALT, L3_PIVOT_ANGLE_PREP_ALT, L3_WRIST_ANGLE_PREP_ALT));
+            put(Position.L4_PREP_ALT, new Triplet<Double, Double,Double>(L4_HEIGHT_PREP_ALT, L4_PIVOT_ANGLE_PREP_ALT, L4_WRIST_ANGLE_PREP_ALT));
+
             put(Position.BARGE, new Triplet<Double, Double,Double>(ALT_BARGE_HEIGHT, ALT_BARGE_PIVOT_ANGLE, ALT_BARGE_WRIST_ANGLE));
             put(Position.FRONT_INTAKE, new Triplet<Double, Double,Double>(FRONT_INTAKE_HEIGHT, FRONT_INTAKE_PIVOT_ANGLE, FRONT_INTAKE_WRIST_ANGLE));
             put(Position.BACK_INTAKE, new Triplet<Double, Double,Double>(BACK_INTAKE_HEIGHT, BACK_INTAKE_PIVOT_ANGLE, BACK_INTAKE_WRIST_ANGLE));
@@ -154,17 +190,28 @@ public class MoveEndEffectorRedesign extends Command {
     };
     
     public MoveEndEffectorRedesign(Constants.Position position, Elevator elevator, EndEffectorPivot pivot, EndEffectorWrist wrist) {
-       this(position, elevator, pivot, wrist, 2.0);
+       this(position, elevator, pivot, wrist, 2.0, ()->false);
     }
 
-    public MoveEndEffectorRedesign(Constants.Position position, Elevator elevator, EndEffectorPivot pivot, EndEffectorWrist wrist, double timeout) {
+    public MoveEndEffectorRedesign(Constants.Position position, Elevator elevator, EndEffectorPivot pivot, EndEffectorWrist wrist, double timeout, BooleanSupplier isAltMode) {
         m_pivot = pivot;
         m_elevator = elevator;
         m_position = position;
         m_wrist = wrist;
         m_timeoutDelay = timeout;
+        m_isAltMode = isAltMode;
+        Triplet<Double, Double, Double> desiredPos;
 
-        Triplet<Double, Double, Double> desiredPos = POSITIONS.get(position);
+        if (isAltMode.getAsBoolean() == true){
+            String AltModeVal = m_position.toString();
+            Constants.Position altPos = Constants.Position.valueOf(AltModeVal.concat("_ALT"));
+             desiredPos = POSITIONS.get(altPos);
+        }
+        else {
+             desiredPos = POSITIONS.get(position);
+        }
+
+        
         
         m_desiredHeight = desiredPos.getValue0();
         m_desiredPivotAngle = Rotation2d.fromDegrees(desiredPos.getValue1());
