@@ -45,20 +45,20 @@ public class CoralGroundIntakeRedesign extends SubsystemBase {
     private static final double K_D = 0.0;
 
     private final SparkMax m_pivotMotor;
-    private final SparkFlex m_rollerMotor;
+    private final SparkMax m_rollerMotor;
 
     // private final RelativeEncoder m_encoder;
     private final SparkClosedLoopController m_pivotController;
 
     private static final Rotation2d STOWED_ANGLE = Rotation2d.fromDegrees(0.0);
     private static final Rotation2d SCORING_ANGLE = Rotation2d.fromDegrees(22.0); 
-    private static final Rotation2d DEPLOYED_ANGLE = Rotation2d.fromDegrees(115.0); 
+    private static final Rotation2d DEPLOYED_ANGLE = Rotation2d.fromDegrees(117.5); 
     private static final Rotation2d TRANSFER_ANGLE = Rotation2d.fromDegrees(7.5);
     private static final Rotation2d ALGAE_TRANSFER_ANGLE = Rotation2d.fromDegrees(0.0);
 
 
-    private final double ROLLER_INTAKE_SPEED = 0.6;
-    private final double ROLLER_OUTTAKE_SPEED = -0.5; 
+    private final double ROLLER_INTAKE_SPEED = 1.0;
+    private final double ROLLER_OUTTAKE_SPEED = -1.0; 
     private final double ROLLER_HOLD_SPEED = 0.4; 
 
     // This is RPM
@@ -69,8 +69,8 @@ public class CoralGroundIntakeRedesign extends SubsystemBase {
     private double m_goalAngle; //Used for readout in elastic only
 
     //Trapisoidl:
-    private static final double MAX_VEL_ROT_PER_SEC = 3;
-    private static final double MAX_ACC_ROT_PER_SEC2 = 2;
+    private static final double MAX_VEL_ROT_PER_SEC = 5;
+    private static final double MAX_ACC_ROT_PER_SEC2 = 4.5;
     private static final double ROBOT_LOOP_PERIOD = 0.02;
     
     
@@ -84,7 +84,7 @@ public class CoralGroundIntakeRedesign extends SubsystemBase {
         // Construct a new shooterPivot subsystem
         public CoralGroundIntakeRedesign() {
             m_pivotMotor = new SparkMax(Constants.CORAL_GROUND_PIVOT_ID, MotorType.kBrushless);
-            m_rollerMotor = new SparkFlex(Constants.CORAL_GROUND_ROLLER_ID, MotorType.kBrushless);
+            m_rollerMotor = new SparkMax(Constants.CORAL_GROUND_ROLLER_ID, MotorType.kBrushless);
     
             SparkMaxConfig pivotMotorConfig = new SparkMaxConfig();
             pivotMotorConfig.inverted(false);

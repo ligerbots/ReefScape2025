@@ -91,7 +91,7 @@ public class CompRobotContainerRedesign extends RobotContainer {
 
         m_driverController.rightTrigger().whileTrue(
                 new ConditionalCommand(
-                new Score(()->m_robotState.getRobotState(), m_pivot, m_wrist, m_elevator, m_claw).alongWith(new InstantCommand(m_robotState::setHasCoralInEEFalse)),
+                new Score(()->m_robotState.getRobotState(), m_pivot, m_wrist, m_elevator, m_claw).alongWith(new InstantCommand(m_robotState::setHasCoralInEEFalse)).alongWith(new InstantCommand(m_claw::trueStop)),
 
                 new StartEndCommand(m_claw::runOuttake, m_claw::stop, m_claw).alongWith(new InstantCommand(m_robotState::setHasAlgaeInEEFalse)),
                         m_robotState::hasCoralInEE)
@@ -128,34 +128,39 @@ public class CompRobotContainerRedesign extends RobotContainer {
         
         m_driverController.leftStick().onFalse(new MoveEndEffectorRedesign(Constants.Position.STOW, m_elevator, m_pivot, m_wrist));
         
-        m_driverController.rightStick().onTrue(new PrintCommand("right stick pressed"));
+        m_driverController.rightStick().onTrue(new ConditionalCommand(new MoveEndEffectorRedesign(Constants.Position.L1, m_elevator, m_pivot, m_wrist).andThen(m_robotState::setHasCoralInEETrue), 
+        new TransferWithPos(m_pivot, m_wrist, m_elevator, m_claw, ()-> m_elevator.getHeight(), m_coralGroundIntake, Position.L1, ()->true).alongWith(new InstantCommand(m_robotState::setHasCoralInEETrue)).alongWith(new InstantCommand(m_robotState::setHasCoralInGroundIntakeFalse)),
+        m_robotState::notHasCoralInGroundIntakeAndHasCoralInEE));
+
+        m_driverController.rightStick().onTrue(new ConditionalCommand(new InstantCommand(m_robotState::setRobotStateL1_ALT), new InstantCommand(m_robotState::setRobotStateL1), ()->true));
+
         // m_driverController.b().onTrue(new MoveEndEffectorRedesign(Constants.Position.PROCESSOR, m_elevator,sim m_pivot, m_wrist ).alongWith(new InstantCommand(() -> m_coralMode = false)));
 
         // Coral Scoring
         m_driverController.pov(270).onTrue(new ConditionalCommand(new MoveEndEffectorRedesign(Constants.Position.L4_PREP, m_elevator, m_pivot, m_wrist).andThen(m_robotState::setHasCoralInEETrue), 
-        new TransferWithPos(m_pivot, m_wrist, m_elevator, m_claw, ()-> m_elevator.getHeight(), m_coralGroundIntake, Position.L4_PREP, ()-> false).alongWith(new InstantCommand(m_robotState::setHasCoralInEETrue)).alongWith(new InstantCommand(m_robotState::setHasCoralInGroundIntakeFalse)),
+        new TransferWithPos(m_pivot, m_wrist, m_elevator, m_claw, ()-> m_elevator.getHeight(), m_coralGroundIntake, Position.L4_PREP, ()->true).alongWith(new InstantCommand(m_robotState::setHasCoralInEETrue)).alongWith(new InstantCommand(m_robotState::setHasCoralInGroundIntakeFalse)),
         m_robotState::notHasCoralInGroundIntakeAndHasCoralInEE));
 
-        m_driverController.pov(270).onTrue(new InstantCommand(m_robotState::setRobotStateL4_PREP));
+        m_driverController.pov(270).onTrue(new ConditionalCommand(new InstantCommand(m_robotState::setRobotStateL4_PREP_ALT), new InstantCommand(m_robotState::setRobotStateL4_PREP), ()->true));
        
         m_driverController.pov(0).onTrue(new ConditionalCommand(new MoveEndEffectorRedesign(Constants.Position.L3_PREP, m_elevator, m_pivot, m_wrist).andThen(m_robotState::setHasCoralInEETrue), 
-        new TransferWithPos(m_pivot, m_wrist, m_elevator, m_claw, ()-> m_elevator.getHeight(), m_coralGroundIntake, Position.L3_PREP, ()->false).alongWith(new InstantCommand(m_robotState::setHasCoralInEETrue)).alongWith(new InstantCommand(m_robotState::setHasCoralInGroundIntakeFalse)),
+        new TransferWithPos(m_pivot, m_wrist, m_elevator, m_claw, ()-> m_elevator.getHeight(), m_coralGroundIntake, Position.L3_PREP, ()->true).alongWith(new InstantCommand(m_robotState::setHasCoralInEETrue)).alongWith(new InstantCommand(m_robotState::setHasCoralInGroundIntakeFalse)),
          m_robotState::notHasCoralInGroundIntakeAndHasCoralInEE));
 
-        m_driverController.pov(0).onTrue(new InstantCommand(m_robotState::setRobotStateL3_PREP));
+        m_driverController.pov(0).onTrue(new ConditionalCommand(new InstantCommand(m_robotState::setRobotStateL3_PREP_ALT), new InstantCommand(m_robotState::setRobotStateL3_PREP), ()->true));
 
        
-        m_driverController.pov(180).onTrue(new ConditionalCommand(new MoveEndEffectorRedesign(Constants.Position.L2_PREP, m_elevator, m_pivot, m_wrist, 2.0, ()->m_driveTrain.wantsAltMode()).andThen(m_robotState::setHasCoralInEETrue),
-        new TransferWithPos(m_pivot, m_wrist, m_elevator, m_claw, ()-> m_elevator.getHeight(), m_coralGroundIntake, Position.L2_PREP, ()->m_driveTrain.wantsAltMode()).alongWith(new InstantCommand(m_robotState::setHasCoralInEETrue)).alongWith(new InstantCommand(m_robotState::setHasCoralInGroundIntakeFalse)),
+        m_driverController.pov(180).onTrue(new ConditionalCommand(new MoveEndEffectorRedesign(Constants.Position.L2_PREP, m_elevator, m_pivot, m_wrist, 2.0, ()->true).andThen(m_robotState::setHasCoralInEETrue),
+        new TransferWithPos(m_pivot, m_wrist, m_elevator, m_claw, ()-> m_elevator.getHeight(), m_coralGroundIntake, Position.L2_PREP, ()->true).alongWith(new InstantCommand(m_robotState::setHasCoralInEETrue)).alongWith(new InstantCommand(m_robotState::setHasCoralInGroundIntakeFalse)),
         m_robotState::notHasCoralInGroundIntakeAndHasCoralInEE));
 
-         m_driverController.pov(180).onTrue(new InstantCommand(m_robotState::setRobotStateL2_PREP));
+        m_driverController.pov(180).onTrue(new ConditionalCommand(new InstantCommand(m_robotState::setRobotStateL2_PREP_ALT), new InstantCommand(m_robotState::setRobotStateL2_PREP), ()->true));
 
 
 
         
 
-        m_driverController.pov(90).onTrue(new TransferWithPos(m_pivot, m_wrist, m_elevator, m_claw, ()-> m_elevator.getHeight(), m_coralGroundIntake, Position.STOW, ()-> false).alongWith(new InstantCommand(() -> m_coralMode = true)));
+        m_driverController.pov(90).onTrue(new TransferWithPos(m_pivot, m_wrist, m_elevator, m_claw, ()-> m_elevator.getHeight(), m_coralGroundIntake, Position.STOW, ()-> false).alongWith(new InstantCommand(m_robotState::setHasCoralInEETrue)).alongWith(new InstantCommand(m_robotState::setHasCoralInGroundIntakeFalse)));
         m_driverController.pov(90).onTrue(new InstantCommand(m_robotState::setRobotStateSTOW));
 
 
@@ -190,8 +195,10 @@ public class CompRobotContainerRedesign extends RobotContainer {
         m_farm.button(5).whileTrue(new StartEndCommand(m_coralGroundIntake::TransferCoral, m_coralGroundIntake::stow, m_coralGroundIntake));
 
         m_farm.button(4).onTrue(new MoveEndEffectorRedesign(Position.TRANSFER_WAIT, m_elevator, m_pivot, m_wrist));
+        m_farm.button(21).onTrue(new InstantCommand(m_robotState::setHasCoralInEETrue).alongWith(new InstantCommand(m_robotState::setHasCoralInGroundIntakeFalse)));
 
     
+
 
 
         

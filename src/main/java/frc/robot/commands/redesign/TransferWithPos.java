@@ -33,9 +33,10 @@ public class TransferWithPos extends SequentialCommandGroup {
   DoubleSupplier m_height;
   BooleanSupplier m_wantsAltMode;
   Position m_pos;
+  Position m_newPos;
   Timer m_commandTimeout = new Timer();
   double m_timeoutDelay = 2;
-  double transferTime = 0.1;
+  double transferTime = 0.2;
 
   public TransferWithPos(EndEffectorPivot pivot, EndEffectorWrist wrist, Elevator elevator, Claw claw, DoubleSupplier elevatorHeight, CoralGroundIntakeRedesign coralGround, Position pos, BooleanSupplier wantsAltMode) {
     m_pivot = pivot;
@@ -44,9 +45,17 @@ public class TransferWithPos extends SequentialCommandGroup {
     m_wrist = wrist;
     m_height = elevatorHeight;
     m_coralGround = coralGround;
-    m_pos = pos;
     m_wantsAltMode = wantsAltMode;
+    m_pos = pos;
 
+
+    try {
+      String AltModeVal = m_pos.toString();
+      m_newPos = Constants.Position.valueOf(AltModeVal + "_ALT");
+    } catch (IllegalArgumentException e) {
+      System.out.println("Invalid alt position: " + m_pos + "_ALT, using original");
+      m_newPos = m_pos;
+    }
 
     addCommands(
       new PrintCommand("Starting TransferWithPos"),
@@ -55,8 +64,10 @@ public class TransferWithPos extends SequentialCommandGroup {
       new WaitCommand(.025),
       new InstantCommand(m_coralGround::TransferCoral),
       new WaitCommand(transferTime),
-      new InstantCommand(m_coralGround::stow).alongWith(new InstantCommand(m_claw::stop)).alongWith(new MoveEndEffectorRedesign(m_pos, elevator, pivot, wrist, 2.0 , wantsAltMode))
-    );
+      new InstantCommand(m_coralGround::stow).alongWith(new MoveEndEffectorRedesign(m_newPos, elevator, pivot, wrist, 2.0 , wantsAltMode),
+      new WaitCommand(.5),
+      new InstantCommand(m_claw::hold)
+    ));
 
   };
 }

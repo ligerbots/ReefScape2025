@@ -44,10 +44,17 @@ public class Elevator extends SubsystemBase {
     private static final double MIN_HEIGHT_TURN_OFF = Units.inchesToMeters(1.0);
 
     // private static final double MAX_VEL_METER_PER_SEC = Units.inchesToMeters(100.0);
-    private static final double MAX_VEL_METER_PER_SEC = Units.inchesToMeters(100.0);
+    // private static final double MAX_VEL_METER_PER_SEC = Units.inchesToMeters(100.0);
 
-    private static final double MAX_ACC_METER_PER_SEC_SQ = Units.inchesToMeters(750.0);
+    // private static final double MAX_ACC_METER_PER_SEC_SQ = Units.inchesToMeters(750.0);
+    // private static final double MAX_JERK_METER_PER_SEC3 = Units.inchesToMeters(12500.0);
+
+    private static final double MAX_VEL_METER_PER_SEC = Units.inchesToMeters(25.0);
+
+    private static final double MAX_ACC_METER_PER_SEC_SQ = Units.inchesToMeters(150.0);
     private static final double MAX_JERK_METER_PER_SEC3 = Units.inchesToMeters(12500.0);
+
+
     
     private static final int CURRENT_LIMIT = 90;
     

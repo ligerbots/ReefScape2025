@@ -31,14 +31,15 @@ public class MoveEndEffectorRedesign extends Command {
     double m_desiredHeight;
     Rotation2d m_desiredWristAngle;
     Constants.Position m_position;
+    Constants.Position m_newPos;
     Timer m_commandTimeout = new Timer();
     double m_timeoutDelay;
 
     private static final double DEFAULT_TIMEOUT = 2.0;
     
-    private static final double L1_PIVOT_ANGLE = 310.0;
+    private static final double L1_PIVOT_ANGLE = 285.0;
     public static final double L1_HEIGHT = Units.inchesToMeters(2.0);
-    private static final double L1_WRIST_ANGLE = 310.0;
+    private static final double L1_WRIST_ANGLE = 90;
 
 
     private static final double L2_PIVOT_ANGLE = 280;
@@ -50,10 +51,10 @@ public class MoveEndEffectorRedesign extends Command {
     private static final double L3_WRIST_ANGLE = 0;
 
     private static final double L4_PIVOT_ANGLE = 270.0;
-    public static final double L4_HEIGHT = Units.inchesToMeters(35.0);
+    public static final double L4_HEIGHT = Units.inchesToMeters(32.0);
     private static final double L4_WRIST_ANGLE = 0;
 
-    private static final double L2_PIVOT_ANGLE_PREP = 245;
+    private static final double L2_PIVOT_ANGLE_PREP = 235;
     public static final double L2_HEIGHT_PREP = Units.inchesToMeters(0);
     private static final double L2_WRIST_ANGLE_PREP = 0;
 
@@ -62,10 +63,15 @@ public class MoveEndEffectorRedesign extends Command {
     private static final double L3_WRIST_ANGLE_PREP = 0;
 
     private static final double L4_PIVOT_ANGLE_PREP = 256.0;
-    private static final double L4_HEIGHT_PREP = Units.inchesToMeters(42.6);
+    private static final double L4_HEIGHT_PREP = Units.inchesToMeters(46.6);
     private static final double L4_WRIST_ANGLE_PREP = 0;
 
     //TODO need to set alt values 
+
+    private static final double L1_PIVOT_ANGLE_ALT = 280;
+    public static final double L1_HEIGHT_ALT = Units.inchesToMeters(0);
+    private static final double L1_WRIST_ANGLE_ALT = 0;
+
     private static final double L2_PIVOT_ANGLE_ALT = 280;
     public static final double L2_HEIGHT_ALT = Units.inchesToMeters(0);
     private static final double L2_WRIST_ANGLE_ALT = 0;
@@ -165,7 +171,7 @@ public class MoveEndEffectorRedesign extends Command {
             put(Position.L3_PREP, new Triplet<Double, Double,Double>(L3_HEIGHT_PREP, L3_PIVOT_ANGLE_PREP, L3_WRIST_ANGLE_PREP));
             put(Position.L4_PREP, new Triplet<Double, Double,Double>(L4_HEIGHT_PREP, L4_PIVOT_ANGLE_PREP, L4_WRIST_ANGLE_PREP));
 
-            put(Position.L1, new Triplet<Double, Double,Double>(L1_HEIGHT, L1_PIVOT_ANGLE, L1_WRIST_ANGLE));
+            put(Position.L1_ALT, new Triplet<Double, Double,Double>(L1_HEIGHT_ALT, L1_PIVOT_ANGLE_ALT, L1_WRIST_ANGLE_ALT));
             put(Position.L2_ALT, new Triplet<Double, Double,Double>(L2_HEIGHT_ALT, L2_PIVOT_ANGLE_ALT, L2_WRIST_ANGLE_ALT));
             put(Position.L3_ALT, new Triplet<Double, Double,Double>(L3_HEIGHT_ALT, L3_PIVOT_ANGLE_ALT, L3_WRIST_ANGLE_ALT));
             put(Position.L4_ALT, new Triplet<Double, Double,Double>(L4_HEIGHT_ALT, L4_PIVOT_ANGLE_ALT, L4_WRIST_ANGLE_ALT));
@@ -202,17 +208,10 @@ public class MoveEndEffectorRedesign extends Command {
         m_isAltMode = isAltMode;
         Triplet<Double, Double, Double> desiredPos;
 
-        if (isAltMode.getAsBoolean() == true){
-            String AltModeVal = m_position.toString();
-            Constants.Position altPos = Constants.Position.valueOf(AltModeVal.concat("_ALT"));
-             desiredPos = POSITIONS.get(altPos);
-        }
-        else {
-             desiredPos = POSITIONS.get(position);
-        }
+        m_newPos = m_isAltMode.getAsBoolean() ? returnAltPosition(m_position) : m_position;
 
-        
-        
+        desiredPos = POSITIONS.get(m_newPos);
+
         m_desiredHeight = desiredPos.getValue0();
         m_desiredPivotAngle = Rotation2d.fromDegrees(desiredPos.getValue1());
         m_desiredWristAngle = Rotation2d.fromDegrees(desiredPos.getValue2());
@@ -262,5 +261,11 @@ public class MoveEndEffectorRedesign extends Command {
                 || m_commandTimeout.hasElapsed(m_timeoutDelay);
 
         
+    }
+
+    public Position returnAltPosition(Position pos){
+            String AltModeVal = pos.toString();
+            Constants.Position altPos = Constants.Position.valueOf(AltModeVal.concat("_ALT"));
+             return (altPos);
     }
 }

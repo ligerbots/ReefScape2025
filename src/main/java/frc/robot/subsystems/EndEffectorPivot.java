@@ -66,7 +66,7 @@ public class EndEffectorPivot extends SubsystemBase {
     private static final double ABS_ENCODER_ZERO_OFFSET = 172.25/360.0;//142.05/360;
 
     // Constants for the pivot PID controller
-    private static final double K_P = 4.0;
+    private static final double K_P = 5.0;
     private static final double K_I = 0.0;
     private static final double K_D = 0.0;
 

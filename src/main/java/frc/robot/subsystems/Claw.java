@@ -40,8 +40,9 @@ public class Claw extends SubsystemBase {
     // Speeds
     private static final double INTAKE_SPEED = 0.7;
     private static final double OUTTAKE_SPEED = -0.7;
-    private static final double HOLD_SPEED = 0.1;
-    private static final double OUTTAKE_L1_SPEED = 0.15;
+    private static final double HOLD_SPEED = 0.05;
+    private static final double ALGAE_HOLD_SPEED = 0.2;
+    private static final double OUTTAKE_L1_SPEED = -0.25;
 
     // Max velocity indicating the motor has stalled
     private final static double STALL_VELOCITY_LIMIT = 20;
@@ -67,7 +68,7 @@ public class Claw extends SubsystemBase {
     //  OUTTAKE = run the motor for scoring
     //  HOLD = run intake at low speed to hold the coral in
     private enum State {
-        IDLE, INTAKE, INTAKE_HAS_CORAL, INTAKE_STOPPING, HOLD, OUTTAKE, INTAKE_HAS_ALGAE;
+        IDLE, INTAKE, INTAKE_HAS_CORAL, INTAKE_STOPPING, HOLD, OUTTAKE, INTAKE_HAS_ALGAE, ALGAE_HOLD;
     }
 
     private State m_state = State.HOLD;
@@ -106,7 +107,7 @@ public class Claw extends SubsystemBase {
 
         if (m_state == State.INTAKE_STOPPING) {
             if (stalled) {
-                m_state = State.HOLD;
+                m_state = State.ALGAE_HOLD;
             } else if (m_intakeStopTimer.hasElapsed(STOP_INTAKE_DELAY)) {
                 m_state = State.IDLE;
             }
@@ -116,9 +117,15 @@ public class Claw extends SubsystemBase {
         // HOLD and IDLE might be used at startup, so we want to set them anyway
         if (m_state == State.HOLD) {
             m_motor.set(HOLD_SPEED);
-        } else if (m_state == State.IDLE) {
+        } else if (m_state == State.ALGAE_HOLD){
+            m_motor.set(ALGAE_HOLD_SPEED);
+        }
+        
+        
+            else if (m_state == State.IDLE) {
             m_motor.set(0);
         }
+
 
 
         SmartDashboard.putString("claw/state", m_state.toString());
@@ -132,6 +139,8 @@ public class Claw extends SubsystemBase {
         m_state = State.INTAKE;
     }
 
+    
+
     public void runOuttake() {
         double elevatorH = m_elevatorHeight.getAsDouble();
         if (Math.abs(elevatorH - MoveEndEffectorRedesign.L1_HEIGHT) < 0.01) {
@@ -141,6 +150,10 @@ public class Claw extends SubsystemBase {
         }
 
         m_state = State.OUTTAKE;
+    }
+
+    public void hold(){
+        m_state = State.HOLD;
     }
 
     public void stop() {
@@ -158,6 +171,10 @@ public class Claw extends SubsystemBase {
             m_state = State.IDLE;
             m_motor.set(0);
         }
+    }
+
+    public void trueStop(){
+        m_motor.set(0);
     }
 
     public boolean hasCoral() {

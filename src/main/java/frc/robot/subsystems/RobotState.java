@@ -113,6 +113,37 @@ public class RobotState extends SubsystemBase {
     public void setRobotStateL4_PREP(){
         m_currRobotState = Position.L4_PREP;
     }
+    public void setRobotStateL1_ALT(){
+        m_currRobotState = Position.L1;
+    }
+    public void setRobotStateL2_ALT(){
+        m_currRobotState = Position.L2_ALT;
+    }
+    public void setRobotStateL3_ALT(){
+        m_currRobotState = Position.L3_ALT;
+    }
+    public void setRobotStateL4_ALT(){
+        m_currRobotState = Position.L4_ALT;
+    }
+    public void setRobotStateBARGE_ALT(){
+        m_currRobotState = Position.BARGE_ALT;
+    }
+    public void setRobotStateSTOW_ALT(){
+        m_currRobotState = Position.STOW;
+    }
+    public void setRobotStateL2_PREP_ALT(){
+        m_currRobotState = Position.L2_PREP;
+    }
+    public void setRobotStateL3_PREP_ALT(){
+        m_currRobotState = Position.L3_PREP;
+    }
+    public void setRobotStateL4_PREP_ALT(){
+        m_currRobotState = Position.L4_PREP;
+    }
+
+    public void setRobotStateL1(){
+        m_currRobotState = Position.L1;
+    }
 
     public boolean notHasCoralInGroundIntakeAndHasCoralInEE(){
         if (m_hasCoralInEE == true & m_hasCoralInGroundIntake == false){
