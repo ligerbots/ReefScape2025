@@ -264,8 +264,20 @@ public class MoveEndEffectorRedesign extends Command {
     }
 
     public Position returnAltPosition(Position pos){
-            String AltModeVal = pos.toString();
-            Constants.Position altPos = Constants.Position.valueOf(AltModeVal.concat("_ALT"));
-             return (altPos);
+        String name = pos.name();
+        
+        if (name.endsWith("_ALT")) {
+            // Already in ALT form, don't double it
+            return pos;
+        }
+    
+        String altName = name + "_ALT";
+    
+        try {
+            return Constants.Position.valueOf(altName);
+        } catch (IllegalArgumentException e) {
+            System.err.println("No enum constant for alt position: " + altName);
+            return pos; // Fallback to original if invalid
+        }
     }
 }
