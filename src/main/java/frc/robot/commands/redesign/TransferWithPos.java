@@ -48,15 +48,6 @@ public class TransferWithPos extends SequentialCommandGroup {
     m_wantsAltMode = wantsAltMode;
     m_pos = pos;
 
-
-    try {
-      String AltModeVal = m_pos.toString();
-      m_newPos = Constants.Position.valueOf(AltModeVal + "_ALT");
-    } catch (IllegalArgumentException e) {
-      System.out.println("Invalid alt position: " + m_pos + "_ALT, using original");
-      m_newPos = m_pos;
-    }
-
     addCommands(
       new PrintCommand("Starting TransferWithPos"),
       new InstantCommand(m_coralGround::goToTransferPose).alongWith(new MoveEndEffectorRedesign(Constants.Position.TRANSFER, elevator, pivot, wrist)),

@@ -199,6 +199,10 @@ public class MoveEndEffectorRedesign extends Command {
        this(position, elevator, pivot, wrist, 2.0, ()->false);
     }
 
+    public MoveEndEffectorRedesign(Constants.Position position, Elevator elevator, EndEffectorPivot pivot, EndEffectorWrist wrist, BooleanSupplier wantsAltMode) {
+        this(position, elevator, pivot, wrist, 2.0, wantsAltMode);
+     }
+
     public MoveEndEffectorRedesign(Constants.Position position, Elevator elevator, EndEffectorPivot pivot, EndEffectorWrist wrist, double timeout, BooleanSupplier isAltMode) {
         m_pivot = pivot;
         m_elevator = elevator;
@@ -264,20 +268,24 @@ public class MoveEndEffectorRedesign extends Command {
     }
 
     public Position returnAltPosition(Position pos){
-        String name = pos.name();
+        switch(pos){
+            case L1: 
+                return Position.L1_ALT;
+            case L2: 
+                return Position.L2_ALT;
+            case L3: 
+                return Position.L3_ALT;
+            case L4: 
+                return Position.L4_ALT;
+            case L2_PREP_ALT: 
+                return Position.L2_PREP_ALT;
+            case L3_PREP_ALT: 
+                return Position.L3_PREP_ALT;
+            case L4_PREP_ALT: 
+                return Position.L4_PREP_ALT;
+            default: 
+                return pos;         
+        }
         
-        if (name.endsWith("_ALT")) {
-            // Already in ALT form, don't double it
-            return pos;
-        }
-    
-        String altName = name + "_ALT";
-    
-        try {
-            return Constants.Position.valueOf(altName);
-        } catch (IllegalArgumentException e) {
-            System.err.println("No enum constant for alt position: " + altName);
-            return pos; // Fallback to original if invalid
-        }
     }
 }

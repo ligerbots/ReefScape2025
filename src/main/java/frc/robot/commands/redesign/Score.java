@@ -62,11 +62,11 @@ public class Score extends Command {
               moveCommand = new MoveEndEffectorRedesign(Constants.Position.L4_ALT, m_elevator, m_pivot, m_wrist);
             
               break;
-            case L1: 
+          case L1: 
                 moveCommand = new MoveEndEffectorRedesign(Constants.Position.L1, m_elevator, m_pivot, m_wrist);
                 m_claw.runOuttake();
                 L1Mode = true;
-                case L1_ALT: 
+            case L1_ALT: 
                 moveCommand = new MoveEndEffectorRedesign(Constants.Position.L1_ALT, m_elevator, m_pivot, m_wrist);
                 m_claw.runOuttake();
                 L1Mode = true;
