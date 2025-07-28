@@ -31,7 +31,7 @@ public class RobotState extends SubsystemBase {
         SmartDashboard.putBoolean("RobotState/hasAlgaeInEE", m_hasAlgaeInEE);
         if(m_hasAlgaeInEE == true && m_hasCoralInEE == true ){
             setHasAlgaeInEEFalse();
-            System.err.println("double ee err: has both algae and coral in ee, correcting to hjust have a coral");
+            System.err.println("double ee err: has both algae and coral in ee, correcting to just have a coral");
         }
 
     }

@@ -284,7 +284,9 @@ public class MoveEndEffectorRedesign extends Command {
             case L4_PREP_ALT: 
                 return Position.L4_PREP_ALT;
             default: 
-                return pos;         
+                System.err.println("return alt position, bad argument:" + pos + "does not have a defined alt" );   
+                return pos;  
+                    
         }
         
     }

@@ -36,6 +36,25 @@ public class FieldConstants {
     public static final Pose2d REEF_K = new Pose2d(3.994, 5.209, Rotation2d.fromDegrees(-60.0));
     public static final Pose2d REEF_L = new Pose2d(3.708, 5.044, Rotation2d.fromDegrees(-60.0));
 
+    
+    public static final Pose2d ALT_REEF_A = returnAltReefPose(REEF_A, REEF_B);
+    public static final Pose2d ALT_REEF_B = returnAltReefPose(REEF_B, REEF_A);
+
+    public static final Pose2d ALT_REEF_C = returnAltReefPose(REEF_C, REEF_D);
+    public static final Pose2d ALT_REEF_D = returnAltReefPose(REEF_D, REEF_C);
+
+    public static final Pose2d ALT_REEF_E = returnAltReefPose(REEF_E, REEF_F);
+    public static final Pose2d ALT_REEF_F = returnAltReefPose(REEF_F, REEF_E);
+
+    public static final Pose2d ALT_REEF_G = returnAltReefPose(REEF_G, REEF_H);
+    public static final Pose2d ALT_REEF_H = returnAltReefPose(REEF_H, REEF_G);
+
+    public static final Pose2d ALT_REEF_I = returnAltReefPose(REEF_I, REEF_J);
+    public static final Pose2d ALT_REEF_J = returnAltReefPose(REEF_J, REEF_I);
+
+    public static final Pose2d ALT_REEF_K = returnAltReefPose(REEF_K, REEF_L);
+    public static final Pose2d ALT_REEF_L = returnAltReefPose(REEF_L, REEF_K);
+
     // Algae robot positions - these positions are 1.0 inches short of the wall
 
     public static final Pose2d REEF_ALGAE_AB = new Pose2d(3.188, 4.021, Rotation2d.fromDegrees(0.0));
@@ -44,6 +63,13 @@ public class FieldConstants {
     public static final Pose2d REEF_ALGAE_GH = new Pose2d(5.791, 4.021, Rotation2d.fromDegrees(180.0));
     public static final Pose2d REEF_ALGAE_IJ = new Pose2d(5.140, 5.148, Rotation2d.fromDegrees(-120.0));
     public static final Pose2d REEF_ALGAE_KL = new Pose2d(3.839, 5.148, Rotation2d.fromDegrees(-60.0));
+    
+    public static final Pose2d ALT_REEF_ALGAE_AB = new Pose2d(3.188, 4.021, Rotation2d.fromDegrees(0.0));
+    public static final Pose2d ALT_REEF_ALGAE_CD = new Pose2d(3.839, 2.893, Rotation2d.fromDegrees(60.0));
+    public static final Pose2d ALT_REEF_ALGAE_EF = new Pose2d(5.140, 2.893, Rotation2d.fromDegrees(120.0));
+    public static final Pose2d ALT_REEF_ALGAE_GH = new Pose2d(5.791, 4.021, Rotation2d.fromDegrees(180.0));
+    public static final Pose2d ALT_REEF_ALGAE_IJ = new Pose2d(5.140, 5.148, Rotation2d.fromDegrees(-120.0));
+    public static final Pose2d ALT_REEF_ALGAE_KL = new Pose2d(3.839, 5.148, Rotation2d.fromDegrees(-60.0));
 
     // Coral Slot robot locations - these positions push 2.0 inches into the wall
 
@@ -82,7 +108,15 @@ public class FieldConstants {
         FieldConstants.REEF_G, FieldConstants.REEF_H, 
         FieldConstants.REEF_I, FieldConstants.REEF_J, 
         FieldConstants.REEF_K, FieldConstants.REEF_L);
-    //TODO get real center of reef 
+    public static final List<Pose2d> ALT_REEF_SCORING_LOCATIONS = List.of(
+        FieldConstants.ALT_REEF_A, FieldConstants.ALT_REEF_B,
+        FieldConstants.ALT_REEF_C, FieldConstants.ALT_REEF_D, 
+        FieldConstants.ALT_REEF_E, FieldConstants.ALT_REEF_F,
+        FieldConstants.ALT_REEF_G, FieldConstants.ALT_REEF_H, 
+        FieldConstants.ALT_REEF_I, FieldConstants.ALT_REEF_J, 
+        FieldConstants.ALT_REEF_K, FieldConstants.ALT_REEF_L);
+    
+        //TODO get real center of reef 
     public static final Pose2d REEF_CENTER = new Pose2d(FIELD_WIDTH/2 ,Units.feetToMeters(12.0), Rotation2d.fromDegrees(0)); 
 
     public static boolean isRedAlliance() {
@@ -117,4 +151,38 @@ public class FieldConstants {
     public static Pose2d mirrorPose(Pose2d pose) {
         return new Pose2d(mirrorTranslation(pose.getTranslation()), pose.getRotation().unaryMinus());
     }
+
+    public static Pose2d returnAltReefPose(Pose2d wantedPos, Pose2d refPos){
+        double altshift = Units.inchesToMeters(4.0); //how far from the wall we want 
+        
+        double wantedX = wantedPos.getX();
+        double wantedY = wantedPos.getY();
+        double refX = refPos.getX();
+        double refY = refPos.getY();
+
+        Translation2d midpoint = new Translation2d((wantedX+refX)/2, (wantedY+refY)/2);
+        Translation2d dirVector = new Translation2d(refX-wantedX, refY-wantedY);
+
+        Translation2d perpVector1 = new Translation2d(-dirVector.getX(), dirVector.getY());
+        Translation2d perpVector2 = new Translation2d(dirVector.getX(), -dirVector.getY());
+        //get both because we dont know which one is pointing out. 
+        Translation2d outwardNormal;
+        if( dot(perpVector1, midpoint.minus(REEF_CENTER.getTranslation())) > 0 ){
+            outwardNormal = perpVector1;
+        }else{
+            outwardNormal = perpVector2;
+        }
+
+        Translation2d shiftVector = outwardNormal.times(altshift/outwardNormal.getNorm());
+
+        Translation2d shiftedPos = wantedPos.getTranslation().plus(shiftVector);
+
+        return new Pose2d(shiftedPos, wantedPos.getRotation().plus(new Rotation2d(Math.toRadians(180))));
+    }
+
+    private static double dot(Translation2d v1, Translation2d v2){
+        return v1.getX()*v2.getX()+v1.getY()*v2.getY();
+    }
 }
+
+

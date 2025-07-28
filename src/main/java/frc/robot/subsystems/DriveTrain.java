@@ -346,6 +346,7 @@ public class DriveTrain extends SubsystemBase {
         SmartDashboard.putBoolean("driveTrain/readyToClimb", readyToClimb());
         SmartDashboard.putNumber("driveTrain/pitch", getPitch().getDegrees());
         SmartDashboard.putNumber("driveTrain/yaw", getYaw().getDegrees());
+        SmartDashboard.putBoolean("driveTrain/wantsAltMode", wantsAltMode());
         
         for (SwerveModule swerveModule : m_swerveDrive.getModules()) {
             SmartDashboard.putNumber("drivetrain/driveCurrent", ((TalonFX) swerveModule.getDriveMotor().getMotor()).getStatorCurrent().getValueAsDouble());
