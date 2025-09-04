@@ -132,13 +132,18 @@ public class RobotState extends SubsystemBase {
         m_currRobotState = Position.STOW;
     }
     public void setRobotStateL2_PREP_ALT(){
-        m_currRobotState = Position.L2_PREP;
+        m_currRobotState = Position.L2_PREP_ALT;
     }
     public void setRobotStateL3_PREP_ALT(){
-        m_currRobotState = Position.L3_PREP;
+        m_currRobotState = Position.L3_PREP_ALT;
     }
     public void setRobotStateL4_PREP_ALT(){
-        m_currRobotState = Position.L4_PREP;
+        m_currRobotState = Position.L4_PREP_ALT;
+    }
+
+    public void setRobotStateL1Alt(){
+        m_currRobotState = Position.L1_ALT;
+ 
     }
 
     public void setRobotStateL1(){

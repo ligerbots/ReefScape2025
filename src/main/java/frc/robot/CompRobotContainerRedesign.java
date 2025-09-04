@@ -87,7 +87,7 @@ public class CompRobotContainerRedesign extends RobotContainer {
             DriverStation.silenceJoystickConnectionWarning(true);
         }
         
-        m_driverController.leftTrigger().whileTrue(new StartEndCommand(m_coralGroundIntake::deploy, m_coralGroundIntake::stow, m_coralGroundIntake));
+        m_driverController.leftTrigger().whileTrue(new StartEndCommand(m_coralGroundIntake::deploy, m_coralGroundIntake::stow, m_coralGroundIntake).alongWith(new InstantCommand(m_robotState::setHasCoralInGroundIntakeTrue)));
 
         m_driverController.rightTrigger().whileTrue(
                 new ConditionalCommand(

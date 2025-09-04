@@ -35,6 +35,8 @@ public class MoveEndEffectorRedesign extends Command {
     Timer m_commandTimeout = new Timer();
     double m_timeoutDelay;
 
+
+
     private static final double DEFAULT_TIMEOUT = 2.0;
     
     private static final double L1_PIVOT_ANGLE = 285.0;
@@ -72,24 +74,24 @@ public class MoveEndEffectorRedesign extends Command {
     public static final double L1_HEIGHT_ALT = Units.inchesToMeters(0);
     private static final double L1_WRIST_ANGLE_ALT = 0;
 
-    private static final double L2_PIVOT_ANGLE_ALT = 280;
+    private static final double L2_PIVOT_ANGLE_ALT = 50;
     public static final double L2_HEIGHT_ALT = Units.inchesToMeters(0);
     private static final double L2_WRIST_ANGLE_ALT = 0;
 
-    private static final double L3_PIVOT_ANGLE_ALT = 280;
-    public static final double L3_HEIGHT_ALT = Units.inchesToMeters(13.35);
+    private static final double L3_PIVOT_ANGLE_ALT = 100;
+    public static final double L3_HEIGHT_ALT = Units.inchesToMeters(0);
     private static final double L3_WRIST_ANGLE_ALT = 0;
 
     private static final double L4_PIVOT_ANGLE_ALT = 270.0;
     public static final double L4_HEIGHT_ALT = Units.inchesToMeters(35.0);
     private static final double L4_WRIST_ANGLE_ALT = 0;
 
-    private static final double L2_PIVOT_ANGLE_PREP_ALT = 245;
-    public static final double L2_HEIGHT_PREP_ALT = Units.inchesToMeters(0);
+    private static final double L2_PIVOT_ANGLE_PREP_ALT = 85;
+    public static final double L2_HEIGHT_PREP_ALT = Units.inchesToMeters(1);
     private static final double L2_WRIST_ANGLE_PREP_ALT = 0;
 
-    private static final double L3_PIVOT_ANGLE_PREP_ALT = 235.0;
-    public static final double L3_HEIGHT_PREP_ALT = Units.inchesToMeters(15.35);
+    private static final double L3_PIVOT_ANGLE_PREP_ALT = 110;
+    public static final double L3_HEIGHT_PREP_ALT = Units.inchesToMeters(2);
     private static final double L3_WRIST_ANGLE_PREP_ALT = 0;
 
     private static final double L4_PIVOT_ANGLE_PREP_ALT = 256.0;
@@ -137,11 +139,11 @@ public class MoveEndEffectorRedesign extends Command {
     
     private static final double L3_ALGAE_HEIGHT= Units.inchesToMeters(24.0);
     private static final double L3_ALGAE_PIVOT_ANGLE = 270;    
-    private static final double L3_ALGAE_WRITST_ANGLE = 0;
+    private static final double L3_ALGAE_WRIST_ANGLE = 0;
 
     private static final double PROCESSOR_HEIGHT = Units.inchesToMeters(0);
     private static final double PROCESSOR_PIVOT_ANGLE = 300;
-    private static final double PROCESSOR_WIRST_ANGLE = 90;
+    private static final double PROCESSOR_WRIST_ANGLE = 90;
 
     private static final double CLIMB_PIVOT_ANGLE = 0;
     private static final double CLIMB_HEIGHT = 4.5;
@@ -183,9 +185,9 @@ public class MoveEndEffectorRedesign extends Command {
             put(Position.FRONT_INTAKE, new Triplet<Double, Double,Double>(FRONT_INTAKE_HEIGHT, FRONT_INTAKE_PIVOT_ANGLE, FRONT_INTAKE_WRIST_ANGLE));
             put(Position.BACK_INTAKE, new Triplet<Double, Double,Double>(BACK_INTAKE_HEIGHT, BACK_INTAKE_PIVOT_ANGLE, BACK_INTAKE_WRIST_ANGLE));
             put(Position.L2_ALGAE, new Triplet<Double, Double,Double>(L2_ALGAE_HEIGHT, L2_ALGAE_PIVOT_ANGLE, L2_ALGAE_WRIST_ANGLE));
-            put(Position.L3_ALGAE, new Triplet<Double, Double,Double>(L3_ALGAE_HEIGHT, L3_ALGAE_PIVOT_ANGLE, L3_ALGAE_WRITST_ANGLE));
+            put(Position.L3_ALGAE, new Triplet<Double, Double,Double>(L3_ALGAE_HEIGHT, L3_ALGAE_PIVOT_ANGLE, L3_ALGAE_WRIST_ANGLE));
             put(Position.STOW, new Triplet<Double, Double,Double>(STOW_HEIGHT, STOW_PIVOT_ANGLE, STOW_WRIST_ANGLE));
-            put(Position.PROCESSOR, new Triplet<Double, Double,Double>(PROCESSOR_HEIGHT, PROCESSOR_PIVOT_ANGLE, PROCESSOR_WIRST_ANGLE));
+            put(Position.PROCESSOR, new Triplet<Double, Double,Double>(PROCESSOR_HEIGHT, PROCESSOR_PIVOT_ANGLE, PROCESSOR_WRIST_ANGLE));
             put(Position.CLIMB, new Triplet<Double, Double,Double>(CLIMB_HEIGHT, CLIMB_PIVOT_ANGLE, CLIMB_WRIST_ANGLE));
             put(Position.TRANSFER, new Triplet<Double,Double,Double>(TRANSFER_HEIGHT, TRANSFER_PIVOT_ANGLE, TRANSFER_WRIST_ANGLE));
             put(Position.TRANSFER_WAIT, new Triplet<Double,Double,Double>(TRANSFER_HEIGHT_WAIT, TRANSFER_PIVOT_ANGLE_WAIT, TRANSFER_WRIST_ANGLE_WAIT));
@@ -212,7 +214,19 @@ public class MoveEndEffectorRedesign extends Command {
         m_isAltMode = isAltMode;
         Triplet<Double, Double, Double> desiredPos;
 
-        m_newPos = m_isAltMode.getAsBoolean() ? returnAltPosition(m_position) : m_position;
+        System.out.println("Alt mode supplier returns: " + m_isAltMode.getAsBoolean());
+        System.out.println("Original position: " + m_position);
+    
+
+
+
+        if(m_isAltMode.getAsBoolean() == true){
+            m_newPos = returnAltPosition(m_position);
+        }else{
+            m_newPos = m_position;
+        }
+
+        System.out.println("Using position: " + m_newPos);
 
         desiredPos = POSITIONS.get(m_newPos);
 
@@ -243,7 +257,7 @@ public class MoveEndEffectorRedesign extends Command {
     @Override
     public void execute() {
         double pivotAngle = m_pivot.getAngle().getDegrees();
-        if (! m_wristSet && pivotAngle > 90 && pivotAngle < 270) {
+        if (! m_wristSet && pivotAngle > 30 && pivotAngle < 270) {
             m_wrist.setAngle(m_desiredWristAngle);
             m_wristSet = true;
         }
@@ -268,6 +282,11 @@ public class MoveEndEffectorRedesign extends Command {
     }
 
     public Position returnAltPosition(Position pos){
+        if (pos == null) {
+            System.err.println("Error: position is null!");
+            return Position.STOW; 
+        }
+        
         switch(pos){
             case L1: 
                 return Position.L1_ALT;
@@ -277,11 +296,11 @@ public class MoveEndEffectorRedesign extends Command {
                 return Position.L3_ALT;
             case L4: 
                 return Position.L4_ALT;
-            case L2_PREP_ALT: 
+            case L2_PREP: 
                 return Position.L2_PREP_ALT;
-            case L3_PREP_ALT: 
+            case L3_PREP: 
                 return Position.L3_PREP_ALT;
-            case L4_PREP_ALT: 
+            case L4_PREP: 
                 return Position.L4_PREP_ALT;
             default: 
                 System.err.println("return alt position, bad argument:" + pos + "does not have a defined alt" );   

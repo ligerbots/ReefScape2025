@@ -346,7 +346,8 @@ public class DriveTrain extends SubsystemBase {
         SmartDashboard.putBoolean("driveTrain/readyToClimb", readyToClimb());
         SmartDashboard.putNumber("driveTrain/pitch", getPitch().getDegrees());
         SmartDashboard.putNumber("driveTrain/yaw", getYaw().getDegrees());
-        SmartDashboard.putBoolean("driveTrain/wantsAltMode", wantsAltMode());
+        SmartDashboard.putBoolean("driveTrain/wantsAltMode", checkAltMode());
+        
         
         for (SwerveModule swerveModule : m_swerveDrive.getModules()) {
             SmartDashboard.putNumber("drivetrain/driveCurrent", ((TalonFX) swerveModule.getDriveMotor().getMotor()).getStatorCurrent().getValueAsDouble());
@@ -558,6 +559,24 @@ public class DriveTrain extends SubsystemBase {
     
     //     // true = front face is more aligned
     //     return !(Math.abs(frontDiff) < Math.abs(backDiff));
-    return true;//just for testing. 
+    return false;//just for testing. 
+    }
+
+    public boolean checkAltMode() {
+             Translation2d reef = FieldConstants.flipPose(FieldConstants.REEF_CENTER).getTranslation();
+        Translation2d robot = getPose().getTranslation();
+        Rotation2d heading = getPose().getRotation();
+    
+        // Vector from robot to reef
+        double dx = reef.getX() - robot.getX();
+        double dy = reef.getY() - robot.getY();
+        double angleToReef = Math.toDegrees(Math.atan2(dy, dx));
+    
+        double robotHeading = heading.getDegrees();
+        double frontDiff = Math.IEEEremainder(angleToReef - robotHeading, 360.0);
+        double backDiff = Math.IEEEremainder(angleToReef - (robotHeading + 180.0), 360.0);
+    
+        // true = front face is more aligned
+        return !(Math.abs(frontDiff) < Math.abs(backDiff)); 
     }
 }

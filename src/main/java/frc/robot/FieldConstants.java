@@ -37,23 +37,18 @@ public class FieldConstants {
     public static final Pose2d REEF_L = new Pose2d(3.708, 5.044, Rotation2d.fromDegrees(-60.0));
 
     
-    public static final Pose2d ALT_REEF_A = returnAltReefPose(REEF_A, REEF_B);
-    public static final Pose2d ALT_REEF_B = returnAltReefPose(REEF_B, REEF_A);
-
-    public static final Pose2d ALT_REEF_C = returnAltReefPose(REEF_C, REEF_D);
-    public static final Pose2d ALT_REEF_D = returnAltReefPose(REEF_D, REEF_C);
-
-    public static final Pose2d ALT_REEF_E = returnAltReefPose(REEF_E, REEF_F);
-    public static final Pose2d ALT_REEF_F = returnAltReefPose(REEF_F, REEF_E);
-
-    public static final Pose2d ALT_REEF_G = returnAltReefPose(REEF_G, REEF_H);
-    public static final Pose2d ALT_REEF_H = returnAltReefPose(REEF_H, REEF_G);
-
-    public static final Pose2d ALT_REEF_I = returnAltReefPose(REEF_I, REEF_J);
-    public static final Pose2d ALT_REEF_J = returnAltReefPose(REEF_J, REEF_I);
-
-    public static final Pose2d ALT_REEF_K = returnAltReefPose(REEF_K, REEF_L);
-    public static final Pose2d ALT_REEF_L = returnAltReefPose(REEF_L, REEF_K);
+    public static Pose2d ALT_REEF_A;
+    public static Pose2d ALT_REEF_B;
+    public static Pose2d ALT_REEF_C;
+    public static Pose2d ALT_REEF_D;
+    public static Pose2d ALT_REEF_E;
+    public static Pose2d ALT_REEF_F;
+    public static Pose2d ALT_REEF_G;
+    public static Pose2d ALT_REEF_H;
+    public static Pose2d ALT_REEF_I;
+    public static Pose2d ALT_REEF_J;
+    public static Pose2d ALT_REEF_K;
+    public static Pose2d ALT_REEF_L;
 
     // Algae robot positions - these positions are 1.0 inches short of the wall
 
@@ -64,12 +59,12 @@ public class FieldConstants {
     public static final Pose2d REEF_ALGAE_IJ = new Pose2d(5.140, 5.148, Rotation2d.fromDegrees(-120.0));
     public static final Pose2d REEF_ALGAE_KL = new Pose2d(3.839, 5.148, Rotation2d.fromDegrees(-60.0));
     
-    public static final Pose2d ALT_REEF_ALGAE_AB = new Pose2d(3.188, 4.021, Rotation2d.fromDegrees(0.0));
-    public static final Pose2d ALT_REEF_ALGAE_CD = new Pose2d(3.839, 2.893, Rotation2d.fromDegrees(60.0));
-    public static final Pose2d ALT_REEF_ALGAE_EF = new Pose2d(5.140, 2.893, Rotation2d.fromDegrees(120.0));
-    public static final Pose2d ALT_REEF_ALGAE_GH = new Pose2d(5.791, 4.021, Rotation2d.fromDegrees(180.0));
-    public static final Pose2d ALT_REEF_ALGAE_IJ = new Pose2d(5.140, 5.148, Rotation2d.fromDegrees(-120.0));
-    public static final Pose2d ALT_REEF_ALGAE_KL = new Pose2d(3.839, 5.148, Rotation2d.fromDegrees(-60.0));
+    public static Pose2d ALT_REEF_ALGAE_AB;
+    public static Pose2d ALT_REEF_ALGAE_CD;
+    public static Pose2d ALT_REEF_ALGAE_EF;
+    public static Pose2d ALT_REEF_ALGAE_GH;
+    public static Pose2d ALT_REEF_ALGAE_IJ;
+    public static Pose2d ALT_REEF_ALGAE_KL;
 
     // Coral Slot robot locations - these positions push 2.0 inches into the wall
 
@@ -101,23 +96,47 @@ public class FieldConstants {
     public static final Pose2d SOURCE_2_CENTER = new Pose2d(1.17, 7.07, Rotation2d.fromDegrees(-52.7));
     public static final Pose2d SOURCE_2_OUT = new Pose2d(1.67, 7.41, Rotation2d.fromDegrees(-52.7));
     
-    public static final List<Pose2d> REEF_SCORING_LOCATIONS = List.of(
-        FieldConstants.REEF_A, FieldConstants.REEF_B,
-        FieldConstants.REEF_C, FieldConstants.REEF_D, 
-        FieldConstants.REEF_E, FieldConstants.REEF_F,
-        FieldConstants.REEF_G, FieldConstants.REEF_H, 
-        FieldConstants.REEF_I, FieldConstants.REEF_J, 
-        FieldConstants.REEF_K, FieldConstants.REEF_L);
-    public static final List<Pose2d> ALT_REEF_SCORING_LOCATIONS = List.of(
-        FieldConstants.ALT_REEF_A, FieldConstants.ALT_REEF_B,
-        FieldConstants.ALT_REEF_C, FieldConstants.ALT_REEF_D, 
-        FieldConstants.ALT_REEF_E, FieldConstants.ALT_REEF_F,
-        FieldConstants.ALT_REEF_G, FieldConstants.ALT_REEF_H, 
-        FieldConstants.ALT_REEF_I, FieldConstants.ALT_REEF_J, 
-        FieldConstants.ALT_REEF_K, FieldConstants.ALT_REEF_L);
+
     
         //TODO get real center of reef 
     public static final Pose2d REEF_CENTER = new Pose2d(FIELD_WIDTH/2 ,Units.feetToMeters(12.0), Rotation2d.fromDegrees(0)); 
+
+     // Dynamic lists - filled in init()
+     public static List<Pose2d> REEF_SCORING_LOCATIONS;
+     public static List<Pose2d> ALT_REEF_SCORING_LOCATIONS;
+ 
+     // Call this once from robotInit()
+     public static void init() {
+         ALT_REEF_A = returnAltReefPose(REEF_A, REEF_B);
+         ALT_REEF_B = returnAltReefPose(REEF_B, REEF_A);
+         ALT_REEF_C = returnAltReefPose(REEF_C, REEF_D);
+         ALT_REEF_D = returnAltReefPose(REEF_D, REEF_C);
+         ALT_REEF_E = returnAltReefPose(REEF_E, REEF_F);
+         ALT_REEF_F = returnAltReefPose(REEF_F, REEF_E);
+         ALT_REEF_G = returnAltReefPose(REEF_G, REEF_H);
+         ALT_REEF_H = returnAltReefPose(REEF_H, REEF_G);
+         ALT_REEF_I = returnAltReefPose(REEF_I, REEF_J);
+         ALT_REEF_J = returnAltReefPose(REEF_J, REEF_I);
+         ALT_REEF_K = returnAltReefPose(REEF_K, REEF_L);
+         ALT_REEF_L = returnAltReefPose(REEF_L, REEF_K);
+ 
+         ALT_REEF_ALGAE_AB = REEF_ALGAE_AB;
+         ALT_REEF_ALGAE_CD = REEF_ALGAE_CD;
+         ALT_REEF_ALGAE_EF = REEF_ALGAE_EF;
+         ALT_REEF_ALGAE_GH = REEF_ALGAE_GH;
+         ALT_REEF_ALGAE_IJ = REEF_ALGAE_IJ;
+         ALT_REEF_ALGAE_KL = REEF_ALGAE_KL;
+ 
+         REEF_SCORING_LOCATIONS = List.of(
+             REEF_A, REEF_B, REEF_C, REEF_D, REEF_E, REEF_F,
+             REEF_G, REEF_H, REEF_I, REEF_J, REEF_K, REEF_L
+         );
+ 
+         ALT_REEF_SCORING_LOCATIONS = List.of(
+             ALT_REEF_A, ALT_REEF_B, ALT_REEF_C, ALT_REEF_D, ALT_REEF_E, ALT_REEF_F,
+             ALT_REEF_G, ALT_REEF_H, ALT_REEF_I, ALT_REEF_J, ALT_REEF_K, ALT_REEF_L
+         );
+     }
 
     public static boolean isRedAlliance() {
         Optional<Alliance> alliance = DriverStation.getAlliance();
