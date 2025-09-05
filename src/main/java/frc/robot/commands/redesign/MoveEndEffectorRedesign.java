@@ -57,15 +57,15 @@ public class MoveEndEffectorRedesign extends Command {
     private static final double L4_WRIST_ANGLE = 0;
 
     private static final double L2_PIVOT_ANGLE_PREP = 235;
-    public static final double L2_HEIGHT_PREP = Units.inchesToMeters(0);
+    public static final double L2_HEIGHT_PREP = Units.inchesToMeters(1);
     private static final double L2_WRIST_ANGLE_PREP = 0;
 
     private static final double L3_PIVOT_ANGLE_PREP = 235.0;
-    public static final double L3_HEIGHT_PREP = Units.inchesToMeters(15.35);
+    public static final double L3_HEIGHT_PREP = Units.inchesToMeters(16.35);
     private static final double L3_WRIST_ANGLE_PREP = 0;
 
     private static final double L4_PIVOT_ANGLE_PREP = 256.0;
-    private static final double L4_HEIGHT_PREP = Units.inchesToMeters(46.6);
+    private static final double L4_HEIGHT_PREP = Units.inchesToMeters(48);
     private static final double L4_WRIST_ANGLE_PREP = 0;
 
     //TODO need to set alt values 
@@ -117,7 +117,7 @@ public class MoveEndEffectorRedesign extends Command {
 
 
     private static final double BARGE_HEIGHT = Units.inchesToMeters(62.0);
-    private static final double BARGE_PIVOT_ANGLE = 300.0;
+    private static final double BARGE_PIVOT_ANGLE = 100.0;
     private static final double BARGE_WRIST_ANGLE = 0;
 
     private static final double ALT_BARGE_HEIGHT = Units.inchesToMeters(36.4);  //TODO FIX ME
