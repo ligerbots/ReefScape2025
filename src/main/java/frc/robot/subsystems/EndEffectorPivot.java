@@ -57,9 +57,9 @@ public class EndEffectorPivot extends SubsystemBase {
     // Constants to limit the shooterPivot rotation speed
     // max vel: 1 rotation = 10 seconds  and then gear_ratio
     // private static final double MAX_VEL_ROT_PER_SEC = 1.5;
-    private static final double MAX_VEL_ROT_PER_SEC = 1.5;
+    private static final double MAX_VEL_ROT_PER_SEC = 2.5;
 
-    private static final double MAX_ACC_ROT_PER_SEC2 = 4.5;
+    private static final double MAX_ACC_ROT_PER_SEC2 = 7.5;
     private static final double ROBOT_LOOP_PERIOD = 0.02;
 
     // Zero point of the absolute encoder

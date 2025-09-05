@@ -64,8 +64,8 @@ public class MoveEndEffectorRedesign extends Command {
     public static final double L3_HEIGHT_PREP = Units.inchesToMeters(16.35);
     private static final double L3_WRIST_ANGLE_PREP = 0;
 
-    private static final double L4_PIVOT_ANGLE_PREP = 256.0;
-    private static final double L4_HEIGHT_PREP = Units.inchesToMeters(48);
+    private static final double L4_PIVOT_ANGLE_PREP = 235;
+    private static final double L4_HEIGHT_PREP = Units.inchesToMeters(37);
     private static final double L4_WRIST_ANGLE_PREP = 0;
 
     //TODO need to set alt values 
