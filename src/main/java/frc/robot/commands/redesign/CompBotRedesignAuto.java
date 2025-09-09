@@ -32,9 +32,10 @@ public class CompBotRedesignAuto extends ReefscapeAbstractAutoRedesign {
 
     private final double CORAL_PICKUP_WAIT_TIME;
     private final double INTAKE_TIME = 4.0;  
+
     PathConstraints constraints =  new PathConstraints(
-    4.0, 3.0,
-    Math.toRadians(540), Math.toRadians(720));
+            4.0, 3.0,
+            Math.toRadians(540), Math.toRadians(720));
     
     // private static Map<Pose2d, Double> elevatorRaiseTime = new HashMap<>();
     // static {
@@ -90,7 +91,7 @@ public class CompBotRedesignAuto extends ReefscapeAbstractAutoRedesign {
 
             addCommands(new InstantCommand(m_claw::hasCoral));
             addCommands(m_driveTrain.followPath(firstCoralPath).alongWith(
-                    new MoveEndEffectorRedesign(Constants.Position.L4_PREP_ALT, m_elevator, m_pivot, m_wrist)));
+                    new MoveEndEffectorRedesign(Constants.Position.L4_PREP_ALT, m_elevator, m_pivot, m_wrist).withTimeout(1)));
             addCommands(new Score(() -> Position.L4_ALT, m_pivot, m_wrist, m_elevator, m_claw)
                     .withTimeout(CORAL_SCORE_WAIT_TIME));
 

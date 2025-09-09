@@ -88,11 +88,12 @@ public class CompRobotContainerRedesign extends RobotContainer {
 
         m_driverController.rightTrigger().whileTrue(
                 new ConditionalCommand(
-                new Score(()->m_robotState.getRobotState(), m_pivot, m_wrist, m_elevator, m_claw).alongWith(new InstantCommand(m_robotState::setHasCoralInEEFalse)).alongWith(new InstantCommand(m_claw::trueStop)),
-
-                new StartEndCommand(m_claw::runOuttake, m_claw::stop, m_claw).alongWith(new InstantCommand(m_robotState::setHasAlgaeInEEFalse)),
-                        m_robotState::hasCoralInEE)
-        );
+                        new Score(() -> m_robotState.getRobotState(), m_pivot, m_wrist, m_elevator, m_claw)
+                                .alongWith(new InstantCommand(m_robotState::setHasCoralInEEFalse))
+                                .alongWith(new InstantCommand(m_claw::trueStop)),
+                        new StartEndCommand(m_claw::runOuttake, m_claw::stop, m_claw)
+                                .alongWith(new InstantCommand(m_robotState::setHasAlgaeInEEFalse)),
+                        m_robotState::hasCoralInEE));
 
         // Trigger coralRumble = new Trigger(() -> m_coralEffector.hasCoral());
 
