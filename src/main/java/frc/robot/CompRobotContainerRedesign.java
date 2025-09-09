@@ -194,6 +194,8 @@ public class CompRobotContainerRedesign extends RobotContainer {
         m_farm.button(8).whileTrue(new StartEndCommand(m_claw::runOuttake, m_claw::stop, m_claw));
         m_farm.button(5).whileTrue(new StartEndCommand(m_coralGroundIntake::TransferCoral, m_coralGroundIntake::stow, m_coralGroundIntake));
 
+        m_farm.button(10).onTrue(new MoveEndEffectorRedesign(Position.FRONT_INTAKE, m_elevator, m_pivot, m_wrist).alongWith(new InstantCommand(m_claw::runIntake)));
+
         m_farm.button(4).onTrue(new MoveEndEffectorRedesign(Position.TRANSFER_WAIT, m_elevator, m_pivot, m_wrist));
         m_farm.button(21).onTrue(new InstantCommand(m_robotState::setHasCoralInEETrue).alongWith(new InstantCommand(m_robotState::setHasCoralInGroundIntakeFalse)));
 

@@ -23,8 +23,8 @@ public class FieldConstants {
 
     // Reef pole robot positions
 
-    public static final Pose2d REEF_A = new Pose2d(3.213, 4.186, Rotation2d.fromDegrees(0.0));
-    public static final Pose2d REEF_B = new Pose2d(3.213, 3.856, Rotation2d.fromDegrees(0.0));
+    public static final Pose2d REEF_A = new Pose2d(3.213, 4.186, Rotation2d.fromDegrees(180));
+    public static final Pose2d REEF_B = new Pose2d(3.213, 3.856, Rotation2d.fromDegrees(180));
     public static final Pose2d REEF_C = new Pose2d(3.708, 2.998, Rotation2d.fromDegrees(60.0));
     public static final Pose2d REEF_D = new Pose2d(3.994, 2.833, Rotation2d.fromDegrees(60.0));
     public static final Pose2d REEF_E = new Pose2d(4.985, 2.833, Rotation2d.fromDegrees(120.0));

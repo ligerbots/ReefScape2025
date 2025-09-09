@@ -82,8 +82,8 @@ public class MoveEndEffectorRedesign extends Command {
     public static final double L3_HEIGHT_ALT = Units.inchesToMeters(0);
     private static final double L3_WRIST_ANGLE_ALT = 0;
 
-    private static final double L4_PIVOT_ANGLE_ALT = 270.0;
-    public static final double L4_HEIGHT_ALT = Units.inchesToMeters(35.0);
+    private static final double L4_PIVOT_ANGLE_ALT = 90;
+    public static final double L4_HEIGHT_ALT = Units.inchesToMeters(20);
     private static final double L4_WRIST_ANGLE_ALT = 0;
 
     private static final double L2_PIVOT_ANGLE_PREP_ALT = 85;
@@ -94,8 +94,8 @@ public class MoveEndEffectorRedesign extends Command {
     public static final double L3_HEIGHT_PREP_ALT = Units.inchesToMeters(2);
     private static final double L3_WRIST_ANGLE_PREP_ALT = 0;
 
-    private static final double L4_PIVOT_ANGLE_PREP_ALT = 256.0;
-    private static final double L4_HEIGHT_PREP_ALT = Units.inchesToMeters(42.6);
+    private static final double L4_PIVOT_ANGLE_PREP_ALT = 90;
+    private static final double L4_HEIGHT_PREP_ALT = Units.inchesToMeters(36);
     private static final double L4_WRIST_ANGLE_PREP_ALT = 0;
 
     private static final double TRANSFER_PIVOT_ANGLE_WAIT = 0;
@@ -126,7 +126,7 @@ public class MoveEndEffectorRedesign extends Command {
     
     private static final double FRONT_INTAKE_HEIGHT = 0;
     private static final double FRONT_INTAKE_PIVOT_ANGLE = 245;
-    private static final double FRONT_INTAKE_WRIST_ANGLE = 0;
+    private static final double FRONT_INTAKE_WRIST_ANGLE = 90;
 
 
     private static final double BACK_INTAKE_HEIGHT = Units.inchesToMeters(4.5);
