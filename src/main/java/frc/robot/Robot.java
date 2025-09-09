@@ -72,7 +72,7 @@ public class Robot extends TimedRobot {
             m_robotType = RobotType.TESTBENCH;
         } else {
             // default to the Comp robot. Helps with simulation
-            m_robotType = RobotType.COMP_V1;
+            m_robotType = RobotType.REDESIGN;
         }
         SmartDashboard.putString("robotType", m_robotType.toString());
 
