@@ -267,7 +267,7 @@ public class CompRobotContainerRedesign extends RobotContainer {
             String autoFlavor = m_chosenAutoFlavor.getSelected();
 
             m_autoCommand = new CompBotRedesignAuto(FieldConstants.ROBOT_START_3, FieldConstants.SOURCE_2_CENTER, REEF_POINTS_JKLA, 
-                     m_driveTrain, m_elevator, m_claw , m_wrist, m_pivot, m_coralGroundIntake, m_chosenFieldSide.getSelected().equals("Processor Side"), false);
+                     m_driveTrain, m_elevator, m_claw , m_wrist, m_pivot, m_coralGroundIntake, true, false);
             
             // if(autoFlavor.equals("Algae")) { 
             //     m_autoCommand = new CompBotAlgaeAuto(FieldConstants.ROBOT_START_2, FieldConstants.ROBOT_START_2, REEF_POINTS_H, 
@@ -301,7 +301,8 @@ public class CompRobotContainerRedesign extends RobotContainer {
     }
     
     public Pose2d getInitialPose() {
-        return ((AutoCommandInterface) getAutonomousCommand()).getInitialPose();
+        // return ((AutoCommandInterface) getAutonomousCommand()).getInitialPose();
+        return FieldConstants.mirrorPose(FieldConstants.flipPose(FieldConstants.ROBOT_START_3a));
     }
 
     

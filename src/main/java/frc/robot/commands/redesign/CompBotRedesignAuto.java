@@ -62,6 +62,7 @@ public class CompBotRedesignAuto extends ReefscapeAbstractAutoRedesign {
             Elevator elevator, Claw claw ,  EndEffectorWrist wrist, EndEffectorPivot pivot, CoralGroundIntakeRedesign coralGround, boolean isProcessorSide, boolean doTushPush) {
                 super(startPoint, sourcePoint, reefPoints, driveTrain, elevator, claw, wrist, pivot, coralGround, isProcessorSide);
     
+                m_initPose = startPoint;
                 
             if (Robot.isSimulation()) {
                 CORAL_PICKUP_WAIT_TIME = 1.0;
