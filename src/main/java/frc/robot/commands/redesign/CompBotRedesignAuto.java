@@ -44,18 +44,18 @@ public class CompBotRedesignAuto extends ReefscapeAbstractAutoRedesign {
     //     elevatorRaiseTime.put(FieldConstants.REEF_A, 0.9);
     // }
         
-    private static Map<Pose2d, String> approachPathNames = new HashMap<>();
-    static {
-        approachPathNames.put(FieldConstants.REEF_K, "Source2Center to ReefApproachK");
-        approachPathNames.put(FieldConstants.REEF_L, "Source2Center to ReefApproachL");
-        approachPathNames.put(FieldConstants.REEF_A, "Source2Center to ReefApproachA");
-    }
+    // private static Map<Pose2d, String> approachPathNames = new HashMap<>();
+    // static {
+    //     approachPathNames.put(FieldConstants.REEF_K, "Source2Center to ReefApproachK");
+    //     approachPathNames.put(FieldConstants.REEF_L, "Source2Center to ReefApproachL");
+    //     approachPathNames.put(FieldConstants.REEF_A, "Source2Center to ReefApproachA");
+    // }
 
     private static Map<Pose2d, String> groundPickupPathNames = new HashMap<>();
     static {
         groundPickupPathNames.put(FieldConstants.REEF_J, "reefJ to GroundPickup");
         groundPickupPathNames.put(FieldConstants.REEF_K, "reefK to GroundPickup");
-        groundPickupPathNames.put(FieldConstants.REEF_L, "reefL to GroundPickup");
+        // groundPickupPathNames.put(FieldConstants.REEF_L, "reefL to GroundPickup");
     }
 
     public CompBotRedesignAuto(Pose2d startPoint, Pose2d sourcePoint, Pose2d[] reefPoints, DriveTrain driveTrain,
@@ -94,15 +94,16 @@ public class CompBotRedesignAuto extends ReefscapeAbstractAutoRedesign {
             addCommands(new Score(() -> Position.L4_ALT, m_pivot, m_wrist, m_elevator, m_claw)
                     .withTimeout(CORAL_SCORE_WAIT_TIME));
 
-            // if (reefPoints.length > 1) {
-            //     addCommands(
-            //             pickupCorralThenScoreL4Ground(reefPoints[0], groundPickupPathNames.get(reefPoints[0]),
-            //                     reefPoints[1]),
-            //             pickupCorralThenScoreL4Ground(reefPoints[1], groundPickupPathNames.get(reefPoints[1]),
-            //                     reefPoints[2]),
-            //             pickupCorralThenScoreL4Ground(reefPoints[2], groundPickupPathNames.get(reefPoints[2]),
-            //                     reefPoints[3]));
-            // }
+            if (reefPoints.length > 1) {
+                addCommands(
+                        pickupCoralThenScoreL4Ground(reefPoints[0], groundPickupPathNames.get(reefPoints[0]),
+                                reefPoints[1]),
+                        pickupCoralThenScoreL4Ground(reefPoints[1], groundPickupPathNames.get(reefPoints[1]),
+                                reefPoints[2])
+                        // pickupCoralThenScoreL4Ground(reefPoints[2], groundPickupPathNames.get(reefPoints[2]),
+                        //         reefPoints[3])
+                );
+            }
 
         } catch (Exception e) {
             DriverStation.reportError("Unable to load PP path Test", true);
@@ -114,28 +115,31 @@ public class CompBotRedesignAuto extends ReefscapeAbstractAutoRedesign {
         return m_isProcessorSide ? FieldConstants.mirrorPose(pose) : pose;
     }
         
-    //     private Command pickupCorralThenScoreL4(Pose2d driveStartPoint, String approachPath, Pose2d targetScore) {
-    //         double raiseElevatorBeforeReef = RAISE_ELEVATOR_AFTER_PATH_START; //elevatorRaiseTime.get(targetScore);
-    //         targetScore = mirrorIfNeeded(targetScore);
+    // private Command pickupCoralThenScoreL4(Pose2d driveStartPoint, String approachPath, Pose2d targetScore) {
+    //     double raiseElevatorBeforeReef = RAISE_ELEVATOR_AFTER_PATH_START; // elevatorRaiseTime.get(targetScore);
+    //     targetScore = mirrorIfNeeded(targetScore);
     //     return Commands.sequence(
-    //                 Commands.parallel(new MoveEndEffector(Constants.Position.BACK_INTAKE, m_elevator, m_pivot, LOWER_ELEVATOR_WAIT_TIME),
-    //                     Commands.parallel(m_driveTrain.followPath(PathFactory.getPath(driveStartPoint, m_sourcePoint, m_isProcessorSide)),
-    //                                       new WaitCommand(START_INTAKE_AFTER_PATH_START).andThen(
-    //                                           new StartEndCommand(m_coralEffector::runIntake, m_coralEffector::stop, m_coralEffector)
-    //                                                 .until(m_coralEffector::hasCoral).withTimeout(CORAL_PICKUP_WAIT_TIME))
-    //                         )
-    //                     ),
-    //                 Commands.parallel(
+    //             Commands.parallel(
+    //                     new MoveEndEffector(Constants.Position.BACK_INTAKE, m_elevator, m_pivot,
+    //                             LOWER_ELEVATOR_WAIT_TIME),
+    //                     Commands.parallel(
+    //                             m_driveTrain.followPath(
+    //                                     PathFactory.getPath(driveStartPoint, m_sourcePoint, m_isProcessorSide)),
+    //                             new WaitCommand(START_INTAKE_AFTER_PATH_START).andThen(
+    //                                     new StartEndCommand(m_coralEffector::runIntake, m_coralEffector::stop,
+    //                                             m_coralEffector)
+    //                                             .until(m_coralEffector::hasCoral)
+    //                                             .withTimeout(CORAL_PICKUP_WAIT_TIME)))),
+    //             Commands.parallel(
     //                     Commands.sequence(m_driveTrain.followPath(PathFactory.getPath(approachPath, m_isProcessorSide)),
-    //                                     m_driveTrain.pathFindToPose(FieldConstants.flipPose(targetScore), constraints)
-    //                                     ),
-    //                     new WaitCommand(raiseElevatorBeforeReef).andThen(new MoveEndEffector(Constants.Position.L4, m_elevator, m_pivot, RAISE_ELEVATOR_WAIT_TIME))
-    //                 ),
-    //                 new StartEndCommand(m_coralEffector::runOuttake, m_coralEffector::stop, m_coralEffector).withTimeout(CORAL_SCORE_WAIT_TIME)
-    //             );
+    //                             m_driveTrain.pathFindToPose(FieldConstants.flipPose(targetScore), constraints)),
+    //                     new WaitCommand(raiseElevatorBeforeReef).andThen(new MoveEndEffector(Constants.Position.L4,
+    //                             m_elevator, m_pivot, RAISE_ELEVATOR_WAIT_TIME))),
+    //             new StartEndCommand(m_coralEffector::runOuttake, m_coralEffector::stop, m_coralEffector)
+    //                     .withTimeout(CORAL_SCORE_WAIT_TIME));
     // }
 
-    private Command pickupCorralThenScoreL4Ground(Pose2d driveStartPoint, String groundPickupPath, Pose2d targetScore) {
+    private Command pickupCoralThenScoreL4Ground(Pose2d driveStartPoint, String groundPickupPath, Pose2d targetScore) {
         targetScore = mirrorIfNeeded(targetScore);
         return Commands.sequence(
                 Commands.parallel(new MoveEndEffectorRedesign(Constants.Position.STOW, m_elevator, m_pivot, m_wrist)),
@@ -155,7 +159,7 @@ public class CompBotRedesignAuto extends ReefscapeAbstractAutoRedesign {
                         new MoveEndEffectorRedesign(Constants.Position.L4_PREP, m_elevator, m_pivot, m_wrist)));
     }
 
-    // private Command pickupCorralThenScoreL4Coast(Pose2d driveStartPoint, String approachPath, Pose2d targetScore) {
+    // private Command pickupCoralThenScoreL4Coast(Pose2d driveStartPoint, String approachPath, Pose2d targetScore) {
     //     targetScore = mirrorIfNeeded(targetScore);
     //     return Commands.sequence(
     //                 Commands.parallel(new MoveEndEffector(Constants.Position.BACK_INTAKE, m_elevator, m_pivot, LOWER_ELEVATOR_WAIT_TIME),
