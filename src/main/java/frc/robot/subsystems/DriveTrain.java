@@ -544,38 +544,40 @@ public class DriveTrain extends SubsystemBase {
     }
 
     public boolean wantsAltMode() {
-        Translation2d reef = FieldConstants.flipPose(FieldConstants.REEF_CENTER).getTranslation();
-        Translation2d robot = getPose().getTranslation();
-        Rotation2d heading = getPose().getRotation();
+        // Translation2d reef = FieldConstants.flipPose(FieldConstants.REEF_CENTER).getTranslation();
+        // Translation2d robot = getPose().getTranslation();
+        // Rotation2d heading = getPose().getRotation();
     
-        // Vector from robot to reef
-        double dx = reef.getX() - robot.getX();
-        double dy = reef.getY() - robot.getY();
-        double angleToReef = Math.toDegrees(Math.atan2(dy, dx));
+        // // Vector from robot to reef
+        // double dx = reef.getX() - robot.getX();
+        // double dy = reef.getY() - robot.getY();
+        // double angleToReef = Math.toDegrees(Math.atan2(dy, dx));
     
-        double robotHeading = heading.getDegrees();
-        double frontDiff = Math.IEEEremainder(angleToReef - robotHeading, 360.0);
-        double backDiff = Math.IEEEremainder(angleToReef - (robotHeading + 180.0), 360.0);
+        // double robotHeading = heading.getDegrees();
+        // double frontDiff = Math.IEEEremainder(angleToReef - robotHeading, 360.0);
+        // double backDiff = Math.IEEEremainder(angleToReef - (robotHeading + 180.0), 360.0);
     
-        // true = front face is more aligned
-        return (Math.abs(frontDiff) < Math.abs(backDiff));
+        // // true = front face is more aligned
+        // return (Math.abs(frontDiff) < Math.abs(backDiff));
+        return true; 
     }
 
     public boolean checkAltMode() {
-             Translation2d reef = FieldConstants.flipPose(FieldConstants.REEF_CENTER).getTranslation();
-        Translation2d robot = getPose().getTranslation();
-        Rotation2d heading = getPose().getRotation();
+        //      Translation2d reef = FieldConstants.flipPose(FieldConstants.REEF_CENTER).getTranslation();
+        // Translation2d robot = getPose().getTranslation();
+        // Rotation2d heading = getPose().getRotation();
     
-        // Vector from robot to reef
-        double dx = reef.getX() - robot.getX();
-        double dy = reef.getY() - robot.getY();
-        double angleToReef = Math.toDegrees(Math.atan2(dy, dx));
+        // // Vector from robot to reef
+        // double dx = reef.getX() - robot.getX();
+        // double dy = reef.getY() - robot.getY();
+        // double angleToReef = Math.toDegrees(Math.atan2(dy, dx));
     
-        double robotHeading = heading.getDegrees();
-        double frontDiff = Math.IEEEremainder(angleToReef - robotHeading, 360.0);
-        double backDiff = Math.IEEEremainder(angleToReef - (robotHeading + 180.0), 360.0);
+        // double robotHeading = heading.getDegrees();
+        // double frontDiff = Math.IEEEremainder(angleToReef - robotHeading, 360.0);
+        // double backDiff = Math.IEEEremainder(angleToReef - (robotHeading + 180.0), 360.0);
     
-        // true = front face is more aligned
-        return (Math.abs(frontDiff) < Math.abs(backDiff)); 
+        // // true = front face is more aligned
+        // return (Math.abs(frontDiff) < Math.abs(backDiff)); 
+        return false;
     }
 }

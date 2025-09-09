@@ -70,9 +70,9 @@ public class MoveEndEffectorRedesign extends Command {
 
     //TODO need to set alt values 
 
-    private static final double L1_PIVOT_ANGLE_ALT = 280;
-    public static final double L1_HEIGHT_ALT = Units.inchesToMeters(0);
-    private static final double L1_WRIST_ANGLE_ALT = 0;
+    private static final double L1_PIVOT_ANGLE_ALT = 285;
+    public static final double L1_HEIGHT_ALT = Units.inchesToMeters(1);
+    private static final double L1_WRIST_ANGLE_ALT = 90;
 
     private static final double L2_PIVOT_ANGLE_ALT = 50;
     public static final double L2_HEIGHT_ALT = Units.inchesToMeters(0);
