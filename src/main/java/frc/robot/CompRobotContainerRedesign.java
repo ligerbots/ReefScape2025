@@ -4,7 +4,6 @@
 
 package frc.robot;
 
-import java.time.Instant;
 import java.util.Objects;
 import java.util.Set;
 
@@ -19,11 +18,9 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.ConditionalCommand;
 import edu.wpi.first.wpilibj2.command.DeferredCommand;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
-import edu.wpi.first.wpilibj2.command.PrintCommand;
 import edu.wpi.first.wpilibj2.command.StartEndCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandJoystick;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
-import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.Position;
 import frc.robot.commands.*;
 import frc.robot.commands.redesign.*;
@@ -301,8 +298,8 @@ public class CompRobotContainerRedesign extends RobotContainer {
     }
     
     public Pose2d getInitialPose() {
-        // return ((AutoCommandInterface) getAutonomousCommand()).getInitialPose();
-        return FieldConstants.mirrorPose(FieldConstants.flipPose(FieldConstants.ROBOT_START_3a));
+        return ((AutoCommandInterface) getAutonomousCommand()).getInitialPose();
+        // return FieldConstants.mirrorPose(FieldConstants.flipPose(FieldConstants.ROBOT_START_3a));
     }
 
     
