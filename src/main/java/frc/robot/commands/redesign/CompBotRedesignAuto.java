@@ -77,17 +77,17 @@ public class CompBotRedesignAuto extends ReefscapeAbstractAutoRedesign {
 
             PathPlannerPath firstCoralPath = PathFactory.getPath(startPoint, reefPoints[0], isProcessorSide);
 
-            if (doTushPush) {
-                PathPlannerPath tushPushPath = PathFactory.getPath("StartX to TushPush", isProcessorSide);
-                m_initPose = tushPushPath.getStartingHolonomicPose().get();
+            // if (doTushPush) {
+            //     PathPlannerPath tushPushPath = PathFactory.getPath("StartX to TushPush", isProcessorSide);
+            //     m_initPose = tushPushPath.getStartingHolonomicPose().get();
 
-                PathPlannerPath driveBackToOriginalStart = PathFactory.getPath("TushPush to Start3", isProcessorSide);
+            //     PathPlannerPath driveBackToOriginalStart = PathFactory.getPath("TushPush to Start3", isProcessorSide);
 
-                addCommands(m_driveTrain.followPath(tushPushPath), m_driveTrain.followPath(driveBackToOriginalStart));
+            //     addCommands(m_driveTrain.followPath(tushPushPath), m_driveTrain.followPath(driveBackToOriginalStart));
 
-            } else {
+            // } else {
                 m_initPose = firstCoralPath.getStartingHolonomicPose().get();
-            }
+            // }
 
             addCommands(new InstantCommand(m_claw::hasCoral));
             addCommands(m_driveTrain.followPath(firstCoralPath).alongWith(
