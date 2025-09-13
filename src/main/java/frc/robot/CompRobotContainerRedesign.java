@@ -103,11 +103,11 @@ public class CompRobotContainerRedesign extends RobotContainer {
         
         // m_driverController.rightBumper().onTrue(new MoveEndEffector(Constants.Position.STOW, m_elevator, m_pivot).andThen().finallyDo(() -> m_coralMode = true));
         
-        m_driverController.rightBumper().onTrue(new DeferredCommand(new RedesignReefTractorBeamWithDirectPath(m_driveTrain, false, ()->m_driveTrain.wantsAltMode()), Set.of(m_driveTrain)));
+        m_driverController.rightBumper().onTrue(new DeferredCommand(new RedesignReefTractorBeamWithDirectPath(m_driveTrain, false, ()->true), Set.of(m_driveTrain)));
 
 
         m_driverController.leftBumper().onTrue(new ConditionalCommand(
-            new DeferredCommand(new RedesignReefTractorBeamWithDirectPath(m_driveTrain, true, ()->m_driveTrain.wantsAltMode()), Set.of(m_driveTrain)), 
+            new DeferredCommand(new RedesignReefTractorBeamWithDirectPath(m_driveTrain, true, ()->true), Set.of(m_driveTrain)), 
             new StartEndCommand(m_claw::runIntake, m_claw::stop, m_claw),
             m_robotState::hasCoralInEE));
 
@@ -192,6 +192,11 @@ public class CompRobotContainerRedesign extends RobotContainer {
         m_farm.button(8).whileTrue(new StartEndCommand(m_claw::runOuttake, m_claw::stop, m_claw));
         m_farm.button(5).whileTrue(new StartEndCommand(m_coralGroundIntake::TransferCoral, m_coralGroundIntake::stow, m_coralGroundIntake));
 
+        m_farm.button(9).onTrue(new MoveEndEffectorRedesign(Constants.Position.L4_PREP_ALT, m_elevator, m_pivot, m_wrist).andThen(m_robotState::setHasCoralInEETrue));
+
+        m_farm.button(9).onTrue(new InstantCommand(m_robotState::setRobotStateL4_PREP_ALT));
+
+        m_farm.button(3).onTrue(new InstantCommand(m_claw::hold));
         m_farm.button(10).onTrue(new MoveEndEffectorRedesign(Position.FRONT_INTAKE, m_elevator, m_pivot, m_wrist).alongWith(new InstantCommand(m_claw::runIntake)));
 
         m_farm.button(4).onTrue(new MoveEndEffectorRedesign(Position.TRANSFER_WAIT, m_elevator, m_pivot, m_wrist));

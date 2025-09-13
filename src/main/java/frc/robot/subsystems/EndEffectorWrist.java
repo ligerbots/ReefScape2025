@@ -45,7 +45,7 @@ public class EndEffectorWrist extends SubsystemBase {
     private static final double ROBOT_LOOP_PERIOD = 0.02;
 
     // Zero point of the absolute encoder
-    private static final double ABS_ENCODER_ZERO_OFFSET = (-277.99/360);//(-123.5*2)/360.0;
+    private static final double ABS_ENCODER_ZERO_OFFSET = -292.06/360;//(-123.5*2)/360.0;
 
     // Constants for the pivot PID controller
     private static final double K_P = 10.0;
