@@ -54,8 +54,8 @@ public class CompBotRedesignAuto extends ReefscapeAbstractAutoRedesign {
 
     private static Map<Pose2d, String> groundPickupPathNames = new HashMap<>();
     static {
-        groundPickupPathNames.put(FieldConstants.REEF_J, "reefJ to GroundPickup");
-        groundPickupPathNames.put(FieldConstants.REEF_K, "reefK to GroundPickup");
+        groundPickupPathNames.put(FieldConstants.REEF_J, "reefJ to Source2Center");
+        groundPickupPathNames.put(FieldConstants.REEF_K, "reefK to Source2Center");
         // groundPickupPathNames.put(FieldConstants.REEF_L, "reefL to GroundPickup");
     }
 
@@ -77,17 +77,7 @@ public class CompBotRedesignAuto extends ReefscapeAbstractAutoRedesign {
 
             PathPlannerPath firstCoralPath = PathFactory.getPath(startPoint, reefPoints[0], isProcessorSide);
 
-            // if (doTushPush) {
-            //     PathPlannerPath tushPushPath = PathFactory.getPath("StartX to TushPush", isProcessorSide);
-            //     m_initPose = tushPushPath.getStartingHolonomicPose().get();
-
-            //     PathPlannerPath driveBackToOriginalStart = PathFactory.getPath("TushPush to Start3", isProcessorSide);
-
-            //     addCommands(m_driveTrain.followPath(tushPushPath), m_driveTrain.followPath(driveBackToOriginalStart));
-
-            // } else {
                 m_initPose = firstCoralPath.getStartingHolonomicPose().get();
-            // }
 
             addCommands(new InstantCommand(m_claw::hasCoral));
             addCommands(m_driveTrain.followPath(firstCoralPath).alongWith(
@@ -97,9 +87,9 @@ public class CompBotRedesignAuto extends ReefscapeAbstractAutoRedesign {
 
             if (reefPoints.length > 1) {
                 addCommands(
-                        pickupCoralThenScoreL4Ground(reefPoints[0], groundPickupPathNames.get(reefPoints[0]),
+                        pickupCoralThenScoreL4Ground(reefPoints[0], groundPickupPathNames.get(reefPoints[0]), "Source2Center to ReefApproachK",
                                 reefPoints[1]),
-                        pickupCoralThenScoreL4Ground(reefPoints[1], groundPickupPathNames.get(reefPoints[1]),
+                        pickupCoralThenScoreL4Ground(reefPoints[1], groundPickupPathNames.get(reefPoints[1]), "Source2Center to ReefApproachL",
                                 reefPoints[2])
                         // pickupCoralThenScoreL4Ground(reefPoints[2], groundPickupPathNames.get(reefPoints[2]),
                         //         reefPoints[3])
@@ -140,44 +130,26 @@ public class CompBotRedesignAuto extends ReefscapeAbstractAutoRedesign {
     //                     .withTimeout(CORAL_SCORE_WAIT_TIME));
     // }
 
-    private Command pickupCoralThenScoreL4Ground(Pose2d driveStartPoint, String groundPickupPath, Pose2d targetScore) {
+    private Command pickupCoralThenScoreL4Ground(Pose2d driveStartPoint, String groundPickupPath, String approachPath, Pose2d targetScore) {
         targetScore = mirrorIfNeeded(targetScore);
         return Commands.sequence(
-                Commands.parallel(new MoveEndEffectorRedesign(Constants.Position.STOW, m_elevator, m_pivot, m_wrist)),
+                new MoveEndEffectorRedesign(Constants.Position.STOW, m_elevator, m_pivot, m_wrist),
                 Commands.parallel(m_driveTrain.followPath(PathFactory.getPath(groundPickupPath, m_isProcessorSide)),
                         new WaitCommand(START_INTAKE_AFTER_PATH_START).andThen(
-                                new InstantCommand(m_coralGround::deploy),
-                                new WaitCommand(INTAKE_TIME),
-                                new TransferWithPos(m_pivot, m_wrist, m_elevator, m_claw, () -> m_elevator.getHeight(),
-                                        m_coralGround, Constants.Position.STOW, () -> false))
-
-                ),
+                                new InstantCommand(m_claw::runIntake),
+                                new MoveEndEffectorRedesign(Constants.Position.FRONT_INTAKE, m_elevator, m_pivot, m_wrist))),
+                            //start intake
+                new WaitCommand(INTAKE_TIME),
                 Commands.parallel(
                         Commands.sequence(
-                                m_driveTrain.pathFindToPose(FieldConstants.flipPose(targetScore), constraints),
-                                new Score(() -> Position.L4, m_pivot, m_wrist, m_elevator, m_claw)
-                                        .withTimeout(CORAL_SCORE_WAIT_TIME)),
-                        new MoveEndEffectorRedesign(Constants.Position.L4_PREP, m_elevator, m_pivot, m_wrist)));
+                            m_driveTrain.followPath(PathFactory.getPath(approachPath, m_isProcessorSide)),
+                                m_driveTrain.pathFindToPose(FieldConstants.flipPose(targetScore), constraints).alongWith(
+                                    new MoveEndEffectorRedesign(Constants.Position.L4_PREP_ALT, m_elevator, m_pivot, m_wrist).withTimeout(1)),
+                                    new Score(() -> Position.L4_ALT, m_pivot, m_wrist, m_elevator, m_claw)
+                                // new Score(() -> Position.L4, m_pivot, m_wrist, m_elevator, m_claw)
+                                        .withTimeout(CORAL_SCORE_WAIT_TIME),
+                        new MoveEndEffectorRedesign(Constants.Position.L4_PREP, m_elevator, m_pivot, m_wrist))));
     }
 
-    // private Command pickupCoralThenScoreL4Coast(Pose2d driveStartPoint, String approachPath, Pose2d targetScore) {
-    //     targetScore = mirrorIfNeeded(targetScore);
-    //     return Commands.sequence(
-    //                 Commands.parallel(new MoveEndEffector(Constants.Position.BACK_INTAKE, m_elevator, m_pivot, LOWER_ELEVATOR_WAIT_TIME),
-    //                     Commands.parallel(m_driveTrain.followPath(PathFactory.getPath(driveStartPoint, m_sourcePoint, m_isProcessorSide))
-    //                                             .andThen(new InstantCommand(() -> m_driveTrain.setBrakeMode(false))),
-    //                                       new WaitCommand(START_INTAKE_AFTER_PATH_START).andThen(
-    //                                           new StartEndCommand(m_coralEffector::runIntake, m_coralEffector::stop, m_coralEffector)
-    //                                                 .until(m_coralEffector::hasCoral).withTimeout(CORAL_PICKUP_WAIT_TIME))
-    //                         )
-    //                     ),
-    //                 Commands.parallel(
-    //                     Commands.sequence(m_driveTrain.followPath(PathFactory.getPath(approachPath, m_isProcessorSide)),
-    //                                     m_driveTrain.pathFindToPose(FieldConstants.flipPose(targetScore), constraints)
-    //                                     ),
-    //                     new WaitCommand(RAISE_ELEVATOR_AFTER_PATH_START).andThen(new MoveEndEffector(Constants.Position.L4, m_elevator, m_pivot, RAISE_ELEVATOR_WAIT_TIME))
-    //                 ),
-    //                 new StartEndCommand(m_coralEffector::runOuttake, m_coralEffector::stop, m_coralEffector).withTimeout(CORAL_SCORE_WAIT_TIME)
-    //             );
-    // }
 }
+
