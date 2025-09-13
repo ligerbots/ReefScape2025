@@ -82,8 +82,7 @@ public class CompBotRedesignAuto extends ReefscapeAbstractAutoRedesign {
             addCommands(new InstantCommand(m_claw::hasCoral));
             addCommands(m_driveTrain.followPath(firstCoralPath).alongWith(
                     new MoveEndEffectorRedesign(Constants.Position.L4_PREP_ALT, m_elevator, m_pivot, m_wrist).withTimeout(1)));
-            addCommands(new Score(() -> Position.L4_ALT, m_pivot, m_wrist, m_elevator, m_claw)
-                    .withTimeout(CORAL_SCORE_WAIT_TIME));
+            addCommands(new Score(() -> Position.L4_ALT, m_pivot, m_wrist, m_elevator, m_claw));
 
             if (reefPoints.length > 1) {
                 addCommands(
@@ -133,12 +132,14 @@ public class CompBotRedesignAuto extends ReefscapeAbstractAutoRedesign {
     private Command pickupCoralThenScoreL4Ground(Pose2d driveStartPoint, String groundPickupPath, String approachPath, Pose2d targetScore) {
         targetScore = mirrorIfNeeded(targetScore);
         return Commands.sequence(
-                new MoveEndEffectorRedesign(Constants.Position.STOW, m_elevator, m_pivot, m_wrist),
-                Commands.parallel(m_driveTrain.followPath(PathFactory.getPath(groundPickupPath, m_isProcessorSide)),
-                        new WaitCommand(START_INTAKE_AFTER_PATH_START).andThen(
-                                new InstantCommand(m_claw::runIntake),
-                                new MoveEndEffectorRedesign(Constants.Position.FRONT_INTAKE, m_elevator, m_pivot, m_wrist))),
-                            //start intake
+                
+                Commands.parallel(
+                    m_driveTrain.followPath(PathFactory.getPath(groundPickupPath, m_isProcessorSide)),
+                    Commands.sequence(
+                        new MoveEndEffectorRedesign(Constants.Position.STOW, m_elevator, m_pivot, m_wrist),
+                        new WaitCommand(START_INTAKE_AFTER_PATH_START),
+                        new InstantCommand(m_claw::runIntake),
+                        new MoveEndEffectorRedesign(Constants.Position.FRONT_INTAKE, m_elevator, m_pivot, m_wrist))),
                 new WaitCommand(INTAKE_TIME),
                 Commands.parallel(
                         Commands.sequence(
