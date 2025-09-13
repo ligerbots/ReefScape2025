@@ -50,12 +50,12 @@ public class TransferWithPos extends SequentialCommandGroup {
 
     addCommands(
       new PrintCommand("Starting TransferWithPos"),
-      new InstantCommand(m_coralGround::goToTransferPose).alongWith(new MoveEndEffectorRedesign(Constants.Position.TRANSFER, elevator, pivot, wrist)),
+      new InstantCommand(m_coralGround::goToTransferPose).alongWith(new MoveEndEffectorRedesign(Constants.Position.TRANSFER, m_elevator, m_pivot, m_wrist)),
       new InstantCommand(m_claw::runIntake),
       new WaitCommand(.025),
       new InstantCommand(m_coralGround::TransferCoral),
       new WaitCommand(transferTime),
-      new InstantCommand(m_coralGround::stow).alongWith(new MoveEndEffectorRedesign(m_pos, elevator, pivot, wrist, 2.0 , wantsAltMode),
+      new InstantCommand(m_coralGround::stow).alongWith(new MoveEndEffectorRedesign(m_pos, m_elevator, m_pivot, m_wrist, 2.0 , m_wantsAltMode),
       new WaitCommand(.5),
       new InstantCommand(m_claw::hold)
     ));

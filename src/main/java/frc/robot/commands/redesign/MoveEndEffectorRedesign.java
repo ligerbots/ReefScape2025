@@ -13,6 +13,7 @@ import edu.wpi.first.math.Pair;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Constants;
 import frc.robot.Constants.Position;
@@ -220,7 +221,7 @@ public class MoveEndEffectorRedesign extends Command {
 
 
 
-        if(m_isAltMode.getAsBoolean() == true){
+        if(m_isAltMode.getAsBoolean()){
             m_newPos = returnAltPosition(m_position);
         }else{
             m_newPos = m_position;
@@ -303,7 +304,7 @@ public class MoveEndEffectorRedesign extends Command {
             case L4_PREP: 
                 return Position.L4_PREP_ALT;
             default: 
-                System.err.println("return alt position, bad argument:" + pos + "does not have a defined alt" );   
+                SmartDashboard.putString("/bad argument: does not have a defined alt", pos.toString() );   
                 return pos;  
                     
         }
