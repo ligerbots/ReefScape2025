@@ -54,8 +54,8 @@ public class CompBotRedesignAuto extends ReefscapeAbstractAutoRedesign {
 
     private static Map<Pose2d, String> groundPickupPathNames = new HashMap<>();
     static {
-        groundPickupPathNames.put(FieldConstants.REEF_J, "reefJ to Source2Center");
-        groundPickupPathNames.put(FieldConstants.REEF_K, "reefK to Source2Center");
+        groundPickupPathNames.put(FieldConstants.REEF_J, "ReefJ to Source2Center");
+        groundPickupPathNames.put(FieldConstants.REEF_K, "ReefK to Source2Center");
         // groundPickupPathNames.put(FieldConstants.REEF_L, "reefL to GroundPickup");
     }
 
