@@ -213,8 +213,14 @@ public class MoveEndEffectorRedesign extends Command {
         m_wrist = wrist;
         m_timeoutDelay = timeout;
         m_isAltMode = isAltMode;
-        Triplet<Double, Double, Double> desiredPos;
-
+        
+        // Require the elevator and pivot, since we are waiting for them to reach goal
+        addRequirements(elevator, pivot, wrist);
+    }
+    
+    // Called when the command is initially scheduled.
+    @Override
+    public void initialize() {
         System.out.println("Alt mode supplier returns: " + m_isAltMode.getAsBoolean());
         System.out.println("Original position: " + m_position);
     
@@ -228,22 +234,13 @@ public class MoveEndEffectorRedesign extends Command {
         }
 
         System.out.println("Using position: " + m_newPos);
-
-        desiredPos = POSITIONS.get(m_newPos);
+        Triplet<Double, Double, Double> desiredPos = POSITIONS.get(m_newPos);
 
         m_desiredHeight = desiredPos.getValue0();
         m_desiredPivotAngle = Rotation2d.fromDegrees(desiredPos.getValue1());
         m_desiredWristAngle = Rotation2d.fromDegrees(desiredPos.getValue2());
-        
-        // Require the elevator and pivot, since we are waiting for them to reach goal
-        addRequirements(elevator, pivot, wrist);
-    }
-    
-    // Called when the command is initially scheduled.
-    @Override
-    public void initialize() {
+
         System.out.println("starting MoveEERedesign to " + m_position);
-        m_commandTimeout.restart();
 
         m_pivot.setAngle(m_desiredPivotAngle);
 
@@ -251,7 +248,7 @@ public class MoveEndEffectorRedesign extends Command {
 
         // figure out whether to set the elevator immediately, or delay a bit
         m_wristSet = false;
-        // m_commandTimeout.restart();
+        m_commandTimeout.restart();
     }
     
     // Called every time the scheduler runs while the command is scheduled.
