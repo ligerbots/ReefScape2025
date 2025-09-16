@@ -86,13 +86,10 @@ public class RedesignReefTractorBeamWithDirectPath implements Supplier<Command> 
         Pose2d currentPose = FieldConstants.flipPose(m_driveTrain.getPose());
 
         Pose2d destination;
-        if (m_wantsAltMode.getAsBoolean() == false) {
-            Pair<Pose2d, Pose2d> coralLeftRight = ALT_REEF_POSITIONS.get(currentPose.nearest(ALT_REEF_ALGAE_POSES));
-            destination = m_goLeft ? coralLeftRight.getFirst() : coralLeftRight.getSecond();
-        } else {
+
             Pair<Pose2d, Pose2d> coralLeftRight = REEF_POSITIONS.get(currentPose.nearest(REEF_ALGAE_POSES));
             destination = m_goLeft ? coralLeftRight.getFirst() : coralLeftRight.getSecond();
-        }
+        
 
         destination = FieldConstants.flipPose(destination); // flip back over from calculations
         return destination;

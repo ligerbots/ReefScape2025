@@ -103,11 +103,11 @@ public class CompRobotContainerRedesign extends RobotContainer {
         
         // m_driverController.rightBumper().onTrue(new MoveEndEffector(Constants.Position.STOW, m_elevator, m_pivot).andThen().finallyDo(() -> m_coralMode = true));
         
-        m_driverController.rightBumper().onTrue(new DeferredCommand(new RedesignReefTractorBeamWithDirectPath(m_driveTrain, false, ()->true), Set.of(m_driveTrain)));
+        m_driverController.rightBumper().onTrue(new DeferredCommand(new RedesignReefTractorBeamWithDirectPath(m_driveTrain, false, ()->false), Set.of(m_driveTrain)));
 
 
         m_driverController.leftBumper().onTrue(new ConditionalCommand(
-            new DeferredCommand(new RedesignReefTractorBeamWithDirectPath(m_driveTrain, true, ()->true), Set.of(m_driveTrain)), 
+            new DeferredCommand(new RedesignReefTractorBeamWithDirectPath(m_driveTrain, true, ()->false), Set.of(m_driveTrain)), 
             new StartEndCommand(m_claw::runIntake, m_claw::stop, m_claw),
             m_robotState::hasCoralInEE));
 
