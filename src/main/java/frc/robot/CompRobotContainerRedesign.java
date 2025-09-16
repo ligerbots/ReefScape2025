@@ -250,10 +250,10 @@ public class CompRobotContainerRedesign extends RobotContainer {
         // m_chosenStartPoint.addOption("Field Center", FieldConstants.ROBOT_START_2);
 
         m_chosenAutoFlavor.addOption("Algae", "Algae");
-        m_chosenAutoFlavor.setDefaultOption("Primary Coral - JK-L", "Primary");
-        m_chosenAutoFlavor.addOption("Secondary Coral - JK-A", "Secondary");
-        m_chosenAutoFlavor.addOption("TushPush then Primary Coral", "TushPush");
-        m_chosenAutoFlavor.addOption("SingleL4+PickupAlgae", "AlgaeAlt");
+        m_chosenAutoFlavor.setDefaultOption("Coral - JK-L", "Coral");
+        // m_chosenAutoFlavor.addOption("Secondary Coral - JK-A", "Secondary");
+        // m_chosenAutoFlavor.addOption("TushPush then Primary Coral", "TushPush");
+        // m_chosenAutoFlavor.addOption("SingleL4+PickupAlgae", "AlgaeAlt");
 
 
         SmartDashboard.putData("Field Side", m_chosenFieldSide);
@@ -270,17 +270,16 @@ public class CompRobotContainerRedesign extends RobotContainer {
         if (m_autoSelectionCode != currentAutoSelectionCode) {
             String autoFlavor = m_chosenAutoFlavor.getSelected();
 
-            m_autoCommand = new CompBotRedesignAuto(FieldConstants.ROBOT_START_3, FieldConstants.SOURCE_2_CENTER, REEF_POINTS_JKLA, 
-                     m_driveTrain, m_elevator, m_claw , m_wrist, m_pivot, m_coralGroundIntake, true, false);
             
-            // if(autoFlavor.equals("Algae")) { 
-            //     m_autoCommand = new CompBotAlgaeAuto(FieldConstants.ROBOT_START_2, FieldConstants.ROBOT_START_2, REEF_POINTS_H, 
-            //             m_driveTrain, m_elevator, m_coralEffector, m_algaeEffector, m_pivot, m_chosenFieldSide.getSelected().equals("Processor Side"));
-            // }
-            // if(autoFlavor.equals("Primary")) { 
-            //     m_autoCommand = new CompBotExperimentalAutoRefactor(FieldConstants.ROBOT_START_3, FieldConstants.SOURCE_2_CENTER, REEF_POINTS_JKLA, 
-            //             m_driveTrain, m_elevator, m_coralEffector, m_algaeEffector, m_pivot, m_chosenFieldSide.getSelected().equals("Processor Side"), false);
-            // }
+            if(autoFlavor.equals("Algae")) { 
+                m_autoCommand = new CompBotAlgaeAutoRedesign(FieldConstants.ROBOT_START_2, FieldConstants.ROBOT_START_2, REEF_POINTS_H, 
+                        m_driveTrain, m_elevator, m_claw , m_wrist, m_pivot, m_coralGroundIntake, m_chosenFieldSide.getSelected().equals("Processor Side"));
+            }
+            if(autoFlavor.equals("Coral")) { 
+                m_autoCommand = new CompBotRedesignAuto(FieldConstants.ROBOT_START_3, FieldConstants.SOURCE_2_CENTER, REEF_POINTS_JKLA, 
+                m_driveTrain, m_elevator, m_claw , m_wrist, m_pivot, m_coralGroundIntake, m_chosenFieldSide.getSelected().equals("Processor Side"), false);
+            }
+
             // if(autoFlavor.equals("Secondary")) { 
             //     m_autoCommand = new CompBotExperimentalAutoRefactor(FieldConstants.ROBOT_START_3, FieldConstants.SOURCE_2_CENTER, REEF_POINTS_JKAL, 
             //             m_driveTrain, m_elevator, m_coralEffector, m_algaeEffector, m_pivot, m_chosenFieldSide.getSelected().equals("Processor Side"), false);

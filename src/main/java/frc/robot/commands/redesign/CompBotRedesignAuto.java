@@ -36,14 +36,6 @@ public class CompBotRedesignAuto extends ReefscapeAbstractAutoRedesign {
     PathConstraints constraints =  new PathConstraints(
             4.0, 3.0,
             Math.toRadians(540), Math.toRadians(720));
-    
-    // private static Map<Pose2d, Double> elevatorRaiseTime = new HashMap<>();
-    // static {
-    //     elevatorRaiseTime.put(FieldConstants.REEF_J, 1.0);
-    //     elevatorRaiseTime.put(FieldConstants.REEF_K, 0.8);
-    //     elevatorRaiseTime.put(FieldConstants.REEF_L, 0.8);
-    //     elevatorRaiseTime.put(FieldConstants.REEF_A, 0.9);
-    // }
         
     // private static Map<Pose2d, String> approachPathNames = new HashMap<>();
     // static {
@@ -86,11 +78,11 @@ public class CompBotRedesignAuto extends ReefscapeAbstractAutoRedesign {
 
             if (reefPoints.length > 1) {
                 addCommands(
-                        pickupCoralThenScoreL4Ground(reefPoints[0], groundPickupPathNames.get(reefPoints[0]), "Source2Center to ReefApproachK",
+                        pickupCoralThenScoreL4NewClaw(reefPoints[0], groundPickupPathNames.get(reefPoints[0]), "Source2Center to ReefApproachK",
                                 reefPoints[1]),
-                        pickupCoralThenScoreL4Ground(reefPoints[1], groundPickupPathNames.get(reefPoints[1]), "Source2Center to ReefApproachL",
+                        pickupCoralThenScoreL4NewClaw(reefPoints[1], groundPickupPathNames.get(reefPoints[1]), "Source2Center to ReefApproachL",
                                 reefPoints[2])
-                        // pickupCoralThenScoreL4Ground(reefPoints[2], groundPickupPathNames.get(reefPoints[2]),
+                        // pickupCoralThenScoreL4NewClaw(reefPoints[2], groundPickupPathNames.get(reefPoints[2]),
                         //         reefPoints[3])
                 );
             }
@@ -129,7 +121,7 @@ public class CompBotRedesignAuto extends ReefscapeAbstractAutoRedesign {
     //                     .withTimeout(CORAL_SCORE_WAIT_TIME));
     // }
 
-    private Command pickupCoralThenScoreL4Ground(Pose2d driveStartPoint, String groundPickupPath, String approachPath, Pose2d targetScore) {
+    private Command pickupCoralThenScoreL4NewClaw(Pose2d driveStartPoint, String groundPickupPath, String approachPath, Pose2d targetScore) {
         targetScore = mirrorIfNeeded(targetScore);
         return Commands.sequence(
                 
