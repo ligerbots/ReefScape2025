@@ -154,6 +154,9 @@ public class MoveEndEffectorRedesign extends Command {
     private static final double ALGAE_TRANSFER_PIVOT_ANGLE = 0.0;
     private static final double ALGAE_TRANSFER_WRIST_ANGLE = 0.0;
 
+    private static final double L2_ALGAE_ALT_HEIGHT= Units.inchesToMeters(0.0);
+    private static final double L2_ALGAE_ALT_PIVOT_ANGLE = 67.0;
+    private static final double L2_ALGAE_ALT_WRIST_ANGLE = 90;
 
 
     // support delaying the elevator motion for a little bit
@@ -186,6 +189,7 @@ public class MoveEndEffectorRedesign extends Command {
             put(Position.FRONT_INTAKE, new Triplet<Double, Double,Double>(FRONT_INTAKE_HEIGHT, FRONT_INTAKE_PIVOT_ANGLE, FRONT_INTAKE_WRIST_ANGLE));
             put(Position.BACK_INTAKE, new Triplet<Double, Double,Double>(BACK_INTAKE_HEIGHT, BACK_INTAKE_PIVOT_ANGLE, BACK_INTAKE_WRIST_ANGLE));
             put(Position.L2_ALGAE, new Triplet<Double, Double,Double>(L2_ALGAE_HEIGHT, L2_ALGAE_PIVOT_ANGLE, L2_ALGAE_WRIST_ANGLE));
+            put(Position.L2_ALGAE_ALT, new Triplet<Double, Double,Double>(L2_ALGAE_ALT_HEIGHT, L2_ALGAE_ALT_PIVOT_ANGLE, L2_ALGAE_ALT_WRIST_ANGLE));
             put(Position.L3_ALGAE, new Triplet<Double, Double,Double>(L3_ALGAE_HEIGHT, L3_ALGAE_PIVOT_ANGLE, L3_ALGAE_WRIST_ANGLE));
             put(Position.STOW, new Triplet<Double, Double,Double>(STOW_HEIGHT, STOW_PIVOT_ANGLE, STOW_WRIST_ANGLE));
             put(Position.PROCESSOR, new Triplet<Double, Double,Double>(PROCESSOR_HEIGHT, PROCESSOR_PIVOT_ANGLE, PROCESSOR_WRIST_ANGLE));
