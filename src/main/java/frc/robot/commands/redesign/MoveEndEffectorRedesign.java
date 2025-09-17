@@ -155,8 +155,8 @@ public class MoveEndEffectorRedesign extends Command {
     private static final double ALGAE_TRANSFER_WRIST_ANGLE = 0.0;
 
     private static final double L2_ALGAE_ALT_HEIGHT= Units.inchesToMeters(0.0);
-    private static final double L2_ALGAE_ALT_PIVOT_ANGLE = 67.0;
-    private static final double L2_ALGAE_ALT_WRIST_ANGLE = 90;
+    private static final double L2_ALGAE_ALT_PIVOT_ANGLE = 80.0;
+    private static final double L2_ALGAE_ALT_WRIST_ANGLE = 0.0;
 
 
     // support delaying the elevator motion for a little bit
