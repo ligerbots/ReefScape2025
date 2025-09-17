@@ -11,9 +11,11 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.StartEndCommand;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.Constants;
+import frc.robot.Constants.Position;
 import frc.robot.FieldConstants;
 import frc.robot.PathFactory;
 import frc.robot.Robot;
@@ -62,16 +64,20 @@ public class CompBotAlgaeAutoRedesign extends ReefscapeAbstractAutoRedesign {
             m_initPose = startPath.getStartingHolonomicPose().get();
             // m_initPose = FieldConstants.flipPose(driveTrain.getPose());
             
-            addCommands(m_driveTrain.followPath(startPath));
-
-            // addCommands(m_driveTrain.followPath(startPath).alongWith(
-            //     new MoveEndEffector(Constants.Position.L4, elevator, pivot, RAISE_ELEVATOR_WAIT_TIME)));
-            // addCommands(new StartEndCommand(coralEffector::runOuttake, coralEffector::stop, coralEffector).withTimeout(CORAL_SCORE_WAIT_TIME));                
-
+            addCommands(new InstantCommand(m_claw::hasCoral));
+            addCommands(m_driveTrain.followPath(startPath).alongWith(
+                    new MoveEndEffectorRedesign(Constants.Position.L4_PREP_ALT, elevator, pivot, wrist).withTimeout(1)));
+            addCommands(new Score(() -> Position.L4_ALT, pivot, wrist, elevator, claw));
             addCommands(m_driveTrain.followPath(PathFactory.getPath("Algae backup path", isProcessorSide)));
 
-            // addCommands(m_driveTrain.pathFindToPose(FieldConstants.flipPose(REEF_ALGAE_GH_AUTO_PICKUP), constraints).alongWith(
-            //     new MoveEndEffector(Constants.Position.L2_ALGAE, elevator, pivot, LOWER_ELEVATOR_WAIT_TIME)));
+            addCommands(m_driveTrain.pathFindToPose(FieldConstants.flipPose(REEF_ALGAE_GH_AUTO_PICKUP), constraints).alongWith(
+                new MoveEndEffectorRedesign(Constants.Position.L2_ALGAE, elevator, pivot, wrist),
+                new InstantCommand(m_claw::runIntake)
+                ));
+            addCommands(new WaitCommand(1.0).until(m_claw::hasAlgae));
+
+            addCommands(m_driveTrain.followPath(PathFactory.getPath("AlgaeGH to Barge SHED", false)));
+
             // addCommands(new StartEndCommand(algaeEffector::runIntake, algaeEffector::stop, algaeEffector).until(algaeEffector::hasAlgae).withTimeout(ALGAE_PICKUP_WAIT_TIME));
             // addCommands(m_driveTrain.followPath(PathFactory.getPath("AlgaeGH to Barge", false)).alongWith(
             //     new WaitCommand(0.2).andThen(new MoveEndEffector(Constants.Position.BARGE, elevator, pivot, LOWER_ELEVATOR_WAIT_TIME))));              
