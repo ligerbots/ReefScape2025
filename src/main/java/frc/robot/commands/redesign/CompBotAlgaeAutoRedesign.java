@@ -66,8 +66,8 @@ public class CompBotAlgaeAutoRedesign extends ReefscapeAbstractAutoRedesign {
             
             addCommands(new InstantCommand(m_claw::hasCoral));
             addCommands(m_driveTrain.followPath(startPath).alongWith(
-                    new MoveEndEffectorRedesign(Constants.Position.L4_PREP_ALT, elevator, pivot, wrist).withTimeout(1)));
-            addCommands(new Score(() -> Position.L4_ALT, pivot, wrist, elevator, claw));
+                    new MoveEndEffectorRedesign(Constants.Position.L4_PREP, elevator, pivot, wrist).withTimeout(1)));
+            addCommands(new Score(() -> Position.L4, pivot, wrist, elevator, claw));
             addCommands(m_driveTrain.followPath(PathFactory.getPath("Algae backup path", isProcessorSide)));
 
             addCommands(m_driveTrain.pathFindToPose(FieldConstants.flipPose(REEF_ALGAE_GH_AUTO_PICKUP), constraints).alongWith(
