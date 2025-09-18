@@ -34,7 +34,7 @@ public class CompBotAlgaeAutoRedesign extends ReefscapeAbstractAutoRedesign {
     public static final double RAISE_ELEVATOR_WAIT_TIME = 2.0;
     private static final double LOWER_ELEVATOR_WAIT_TIME = 0.5;  // maybe can be lower
 
-    private static final boolean SHED_PRACTICE = false;
+    private static final boolean SHED_PRACTICE = true; // false for real field, true for shed practice;
 
     private DriveTrain m_driveTrain;
     
