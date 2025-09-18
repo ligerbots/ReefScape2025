@@ -3,29 +3,29 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 5.79,
-        "y": 4.02
-      },
-      "prevControl": null,
-      "nextControl": {
-        "x": 6.011318399057252,
-        "y": 4.1362676491494295
-      },
-      "isLocked": false,
-      "linkedName": null
-    },
-    {
-      "anchor": {
         "x": 6.7,
         "y": 1.9
       },
+      "prevControl": null,
+      "nextControl": {
+        "x": 5.813326874821691,
+        "y": 1.8108313828764626
+      },
+      "isLocked": false,
+      "linkedName": "BargeSHEDONLY"
+    },
+    {
+      "anchor": {
+        "x": 5.318,
+        "y": 2.54
+      },
       "prevControl": {
-        "x": 6.479333889088991,
-        "y": 1.7824990744912594
+        "x": 5.838066001792211,
+        "y": 2.2589494376600676
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "BargeSHEDONLY"
+      "linkedName": null
     }
   ],
   "rotationTargets": [],
@@ -33,16 +33,16 @@
   "pointTowardsZones": [],
   "eventMarkers": [],
   "globalConstraints": {
-    "maxVelocity": 2.0,
-    "maxAcceleration": 2.0,
+    "maxVelocity": 4.0,
+    "maxAcceleration": 3.5,
     "maxAngularVelocity": 540.0,
     "maxAngularAcceleration": 720.0,
     "nominalVoltage": 12.0,
     "unlimited": false
   },
   "goalEndState": {
-    "velocity": 0,
-    "rotation": 180.0
+    "velocity": 1.5,
+    "rotation": 119.99999999999999
   },
   "reversed": false,
   "folder": null,
@@ -50,5 +50,5 @@
     "velocity": 0,
     "rotation": 180.0
   },
-  "useDefaultConstraints": false
+  "useDefaultConstraints": true
 }

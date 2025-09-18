@@ -38,7 +38,7 @@ public final class Constants {
         L1_ALT, L2_ALT, L3_ALT, L4_ALT,
         BARGE, BARGE_ALT,
         FRONT_INTAKE, BACK_INTAKE, 
-        L2_ALGAE, L3_ALGAE, L2_ALGAE_ALT,  
+        L2_ALGAE, L3_ALGAE, L2_ALGAE_ALT, L3_ALGAE_ALT,
         STOW,
         PROCESSOR,
         CLIMB, L2_PREP, L3_PREP, L4_PREP,

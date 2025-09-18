@@ -203,6 +203,16 @@ public class FieldConstants {
     private static double dot(Translation2d v1, Translation2d v2){
         return v1.getX()*v2.getX()+v1.getY()*v2.getY();
     }
+
+    public static void main(String[] args) {
+        // for testing
+        FieldConstants.init();
+        System.out.println("mirror AlgaeIJ: " + mirrorPose(REEF_ALGAE_IJ));
+        System.out.println(" AlgaeEF: " + REEF_ALGAE_EF);
+
+        Pose2d algaeApproachIJ = new Pose2d(5.318, 5.510, Rotation2d.fromDegrees(-120));
+        System.out.println("mirror algaeApproachIJ: " + mirrorPose(algaeApproachIJ));
+    }
 }
 
 
