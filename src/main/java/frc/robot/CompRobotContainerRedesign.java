@@ -249,8 +249,8 @@ public class CompRobotContainerRedesign extends RobotContainer {
         // m_chosenStartPoint.setDefaultOption("3rd cage-- usual spot", FieldConstants.ROBOT_START_3);
         // m_chosenStartPoint.addOption("Field Center", FieldConstants.ROBOT_START_2);
 
-        m_chosenAutoFlavor.addOption("Algae", "Algae");
-        m_chosenAutoFlavor.setDefaultOption("Coral - JK-L", "Coral");
+        m_chosenAutoFlavor.setDefaultOption("Algae", "Algae");
+        m_chosenAutoFlavor.addOption("Coral - JK-L", "Coral");
         // m_chosenAutoFlavor.addOption("Secondary Coral - JK-A", "Secondary");
         // m_chosenAutoFlavor.addOption("TushPush then Primary Coral", "TushPush");
         // m_chosenAutoFlavor.addOption("SingleL4+PickupAlgae", "AlgaeAlt");
