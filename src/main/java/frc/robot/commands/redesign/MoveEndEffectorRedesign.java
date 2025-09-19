@@ -117,8 +117,8 @@ public class MoveEndEffectorRedesign extends Command {
     private static final double TRANSFER_WRIST_ANGLE = 90;
 
 
-    private static final double BARGE_HEIGHT = Units.inchesToMeters(40);
-    private static final double BARGE_PIVOT_ANGLE = 136.0;
+    public static final double BARGE_HEIGHT = Units.inchesToMeters(40);
+    public static final double BARGE_PIVOT_ANGLE = 224.0;
     private static final double BARGE_WRIST_ANGLE = 0;
 
     private static final double ALT_BARGE_HEIGHT = Units.inchesToMeters(40);  //TODO FIX ME
@@ -233,9 +233,6 @@ public class MoveEndEffectorRedesign extends Command {
         System.out.println("Alt mode supplier returns: " + m_isAltMode.getAsBoolean());
         System.out.println("Original position: " + m_position);
     
-
-
-
         if(m_isAltMode.getAsBoolean()){
             m_newPos = returnAltPosition(m_position);
         }else{

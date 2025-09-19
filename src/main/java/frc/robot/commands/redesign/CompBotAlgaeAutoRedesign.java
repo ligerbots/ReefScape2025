@@ -80,39 +80,50 @@ public class CompBotAlgaeAutoRedesign extends ReefscapeAbstractAutoRedesign {
                 ));
             addCommands(new WaitCommand(1.0).until(m_claw::hasAlgae));
 
-            if(SHED_PRACTICE){
-                addCommands(m_driveTrain.followPath(PathFactory.getPath("AlgaeGH to Barge SHED", false)).alongWith((new MoveEndEffectorRedesign(Constants.Position.STOW, elevator, pivot, wrist).withTimeout(1))));
-        } else {
-                addCommands(m_driveTrain.followPath(PathFactory.getPath("AlgaeGH to Barge", false)).alongWith((new MoveEndEffectorRedesign(Constants.Position.STOW, elevator, pivot, wrist).withTimeout(1))));
-            }
-        //
-        // score algae: raise elevator, outtake algae, lower elevator
-        //
-            if(SHED_PRACTICE){
-                addCommands(m_driveTrain.followPath(PathFactory.getPath("Barge SHED to AlgaeApproachEF", false)).alongWith(
-                    (new MoveEndEffectorRedesign(Constants.Position.STOW, elevator, pivot, wrist).withTimeout(1))
-                    //Lower Elevator while driving
-                    ));
-                    // Note mirrorPose for IJ pickup spot == EF pickup spot, which we want in the shed ONLY
-                addCommands(m_driveTrain.pathFindToPose(FieldConstants.flipPose(REEF_ALGAE_EF_AUTO_PICKUP), constraints).alongWith(
-                    new MoveEndEffectorRedesign(Constants.Position.L3_ALGAE_ALT, elevator, pivot, wrist),
-                    new InstantCommand(m_claw::runIntake)
-                    ));
-                addCommands(m_driveTrain.followPath(PathFactory.getPath("AlgaeEF to Barge SHED", false)).alongWith((new MoveEndEffectorRedesign(Constants.Position.STOW, elevator, pivot, wrist).withTimeout(1))));
-
+            if (SHED_PRACTICE) {
+                addCommands(m_driveTrain.followPath(PathFactory.getPath("AlgaeGH to Barge SHED", false)).alongWith(
+                        (new MoveEndEffectorRedesign(Constants.Position.STOW, elevator, pivot, wrist).withTimeout(1))));
             } else {
-                // REAL FIELD
-                addCommands(m_driveTrain.followPath(PathFactory.getPath("Barge to AlgaeApproachIJ", false)).alongWith(
-                    (new MoveEndEffectorRedesign(Constants.Position.STOW, elevator, pivot, wrist).withTimeout(1))
-                    //Lower Elevator while driving
-                    ));
-                addCommands(m_driveTrain.pathFindToPose(FieldConstants.flipPose(REEF_ALGAE_IJ_AUTO_PICKUP), constraints).alongWith(
-                    new MoveEndEffectorRedesign(Constants.Position.L3_ALGAE_ALT, elevator, pivot, wrist),
-                    new InstantCommand(m_claw::runIntake)
-                    ));
-                addCommands(m_driveTrain.followPath(PathFactory.getPath("AlgaeIJ to Barge", false)).alongWith((new MoveEndEffectorRedesign(Constants.Position.STOW, elevator, pivot, wrist).withTimeout(1))));
-
+                addCommands(m_driveTrain.followPath(PathFactory.getPath("AlgaeGH to Barge", false)).alongWith(
+                        (new MoveEndEffectorRedesign(Constants.Position.STOW, elevator, pivot, wrist).withTimeout(1))));
             }
+            
+            //
+            // score algae: raise elevator, outtake algae, lower elevator
+            //
+            addCommands(new InstantCommand(() -> elevator.setHeight(MoveEndEffectorRedesign.BARGE_HEIGHT)),
+                    new WaitCommand(2),
+                    new InstantCommand(() -> pivot.setAngle(Rotation2d.fromDegrees(MoveEndEffectorRedesign.BARGE_PIVOT_ANGLE))),
+                    new WaitCommand(0.2),
+                    new InstantCommand(claw::runOuttake),
+                    new WaitCommand(0.1),
+                    new InstantCommand(claw::stop));
+
+            // if(SHED_PRACTICE){
+            //     addCommands(m_driveTrain.followPath(PathFactory.getPath("Barge SHED to AlgaeApproachEF", false)).alongWith(
+            //         (new MoveEndEffectorRedesign(Constants.Position.STOW, elevator, pivot, wrist).withTimeout(1))
+            //         //Lower Elevator while driving
+            //         ));
+            //         // Note mirrorPose for IJ pickup spot == EF pickup spot, which we want in the shed ONLY
+            //     addCommands(m_driveTrain.pathFindToPose(FieldConstants.flipPose(REEF_ALGAE_EF_AUTO_PICKUP), constraints).alongWith(
+            //         new MoveEndEffectorRedesign(Constants.Position.L3_ALGAE_ALT, elevator, pivot, wrist),
+            //         new InstantCommand(m_claw::runIntake)
+            //         ));
+            //     addCommands(m_driveTrain.followPath(PathFactory.getPath("AlgaeEF to Barge SHED", false)).alongWith((new MoveEndEffectorRedesign(Constants.Position.STOW, elevator, pivot, wrist).withTimeout(1))));
+
+            // } else {
+            //     // REAL FIELD
+            //     addCommands(m_driveTrain.followPath(PathFactory.getPath("Barge to AlgaeApproachIJ", false)).alongWith(
+            //         (new MoveEndEffectorRedesign(Constants.Position.STOW, elevator, pivot, wrist).withTimeout(1))
+            //         //Lower Elevator while driving
+            //         ));
+            //     addCommands(m_driveTrain.pathFindToPose(FieldConstants.flipPose(REEF_ALGAE_IJ_AUTO_PICKUP), constraints).alongWith(
+            //         new MoveEndEffectorRedesign(Constants.Position.L3_ALGAE_ALT, elevator, pivot, wrist),
+            //         new InstantCommand(m_claw::runIntake)
+            //         ));
+            //     addCommands(m_driveTrain.followPath(PathFactory.getPath("AlgaeIJ to Barge", false)).alongWith((new MoveEndEffectorRedesign(Constants.Position.STOW, elevator, pivot, wrist).withTimeout(1))));
+
+            // }
         //
         // score algae: raise elevator, outtake algae, lower elevator
         //
