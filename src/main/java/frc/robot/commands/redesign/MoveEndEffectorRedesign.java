@@ -147,7 +147,7 @@ public class MoveEndEffectorRedesign extends Command {
     private static final double PROCESSOR_WRIST_ANGLE = 90;
 
     private static final double CLIMB_PIVOT_ANGLE = 0;
-    private static final double CLIMB_HEIGHT = 4.5;
+    private static final double CLIMB_HEIGHT = Units.inchesToMeters(4.5);
     private static final double CLIMB_WRIST_ANGLE = 0;
 
     private static final double ALGAE_TRANSFER_HEIGHT = Units.inchesToMeters(0.0);
