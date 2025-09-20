@@ -118,7 +118,7 @@ public class MoveEndEffectorRedesign extends Command {
 
 
     public static final double BARGE_HEIGHT = Units.inchesToMeters(40);
-    public static final double BARGE_PIVOT_ANGLE = 224.0;
+    public static final double BARGE_PIVOT_ANGLE = 200.0;
     private static final double BARGE_WRIST_ANGLE = 0;
 
     private static final double ALT_BARGE_HEIGHT = Units.inchesToMeters(40);  //TODO FIX ME

@@ -89,9 +89,9 @@ public class CompBotAlgaeAutoRedesign extends ReefscapeAbstractAutoRedesign {
             // score algae: raise elevator, outtake algae, lower elevator
             //
             addCommands(new InstantCommand(() -> elevator.setHeight(MoveEndEffectorRedesign.BARGE_HEIGHT)),
-                    new WaitCommand(2),
+                    new WaitCommand(1.5),
                     new InstantCommand(() -> pivot.setAngle(Rotation2d.fromDegrees(MoveEndEffectorRedesign.BARGE_PIVOT_ANGLE))),
-                    new WaitCommand(0.2),
+                    new WaitCommand(1.0),
                     new InstantCommand(claw::runOuttake),
                     new WaitCommand(0.1),
                     new InstantCommand(claw::stop));

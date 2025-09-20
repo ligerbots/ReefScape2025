@@ -84,7 +84,8 @@ public class CompRobotContainerRedesign extends RobotContainer {
             DriverStation.silenceJoystickConnectionWarning(true);
         }
         
-        m_driverController.leftTrigger().whileTrue(new StartEndCommand(m_coralGroundIntake::deploy, m_coralGroundIntake::stow, m_coralGroundIntake).alongWith(new InstantCommand(m_robotState::setHasCoralInGroundIntakeTrue)));
+        m_driverController.leftTrigger().whileTrue(new StartEndCommand(m_coralGroundIntake::deploy, m_coralGroundIntake::stow, m_coralGroundIntake).alongWith(
+                new InstantCommand(m_robotState::setHasCoralInGroundIntakeTrue)));
 
         m_driverController.rightTrigger().whileTrue(
                 new ConditionalCommand(
@@ -111,7 +112,7 @@ public class CompRobotContainerRedesign extends RobotContainer {
             new StartEndCommand(m_claw::runIntake, m_claw::stop, m_claw),
             m_robotState::hasCoralInEE));
 
-            m_driverController.leftBumper().onTrue(new ConditionalCommand(
+        m_driverController.leftBumper().onTrue(new ConditionalCommand(
                 new InstantCommand(), 
                 new InstantCommand(() -> m_driveTrain.getDefaultCommand().schedule()),
                 m_robotState::hasCoralInEE));
