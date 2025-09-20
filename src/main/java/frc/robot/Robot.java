@@ -5,11 +5,17 @@
 package frc.robot;
 
 import edu.wpi.first.hal.HALUtil;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.livewindow.LiveWindow;
+import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
+import edu.wpi.first.wpilibj.smartdashboard.MechanismLigament2d;
+import edu.wpi.first.wpilibj.smartdashboard.MechanismRoot2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj.util.Color;
+import edu.wpi.first.wpilibj.util.Color8Bit;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.subsystems.CoralEffector;
@@ -36,7 +42,15 @@ public class Robot extends TimedRobot {
     private static RobotType m_robotType;
 
     private final RobotContainer m_robotContainer;
-    
+
+    // Make a Mechanism2D for the elevator height to log for Advantage Scope
+    // This should be defined in elevator.jave, but it's here for now
+    private final double ELEVATOR_ACTUAL_MIN_HEIGHT = Units.inchesToMeters(36.0);
+
+    private final MechanismLigament2d m_elevatorMech;
+    private final MechanismLigament2d m_armMech;
+
+   
     /**
     * This function is run when the robot is first started up and should be used for any
     * initialization code.
@@ -93,6 +107,23 @@ public class Robot extends TimedRobot {
         if (coralE != null) {
             addPeriodic(coralE.updateLimitSwitch(), 0.002);
         }
+
+        // Make the Mechanism2D
+        Mechanism2d m_elevatorMechanism2d = new Mechanism2d(Units.inchesToMeters(27.0), ELEVATOR_ACTUAL_MIN_HEIGHT);
+
+        // the mechanism root node
+        MechanismRoot2d root = m_elevatorMechanism2d.getRoot("EndEffector", 0, 0);
+
+        // MechanismLigament2d objects represent each "section"/"stage" of the mechanism, and are based
+        // off the root node or another ligament object
+        m_elevatorMech = root.append(new MechanismLigament2d("elevator", ELEVATOR_ACTUAL_MIN_HEIGHT, 90));
+        m_armMech = m_elevatorMech.append(
+            new MechanismLigament2d("arm", Units.inchesToMeters(20.0), 180, 6, new Color8Bit(Color.kPurple)));
+
+    // post the mechanism to the dashboard
+    SmartDashboard.putData("End Effector", m_elevatorMechanism2d);
+
+
     }
 
     public static RobotType getRobotType() {
@@ -113,6 +144,10 @@ public class Robot extends TimedRobot {
         // and running subsystem periodic() methods.  This must be called from the robot's periodic
         // block in order for anything in the Command-based framework to work.
         CommandScheduler.getInstance().run();
+
+        // Log the Mechanism2d for AdvantageScope
+        m_elevatorMech.setLength(ELEVATOR_ACTUAL_MIN_HEIGHT + m_robotContainer.getElevator().getHeight());
+        m_armMech.setAngle(m_robotContainer.getEndEffectorPivot().getAngle());
     }
     
     /** This function is called once each time the robot enters Disabled mode. */

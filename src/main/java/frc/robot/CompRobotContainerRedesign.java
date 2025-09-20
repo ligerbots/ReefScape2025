@@ -342,6 +342,16 @@ public class CompRobotContainerRedesign extends RobotContainer {
         return m_driveTrain;
     }
         
+    @Override
+    public EndEffectorPivot getEndEffectorPivot() {
+        return m_pivot;
+    }
+
+    @Override
+    public Elevator getElevator() {
+        return m_elevator;
+    }
+
     // @Override
     // public CoralEffector getCoralEffector() {
     //     return m_coralEffector;

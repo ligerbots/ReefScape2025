@@ -16,9 +16,13 @@ import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.GravityTypeValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
+import com.ctre.phoenix6.sim.TalonFXSimState;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.RobotBase;
+import edu.wpi.first.wpilibj.RobotController;
+import edu.wpi.first.wpilibj.simulation.DCMotorSim;
 // import edu.wpi.first.wpilibj.AnalogPotentiometer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -67,6 +71,14 @@ public class Elevator extends SubsystemBase {
     private final TalonFX m_motorLeft;
     private final TalonFX m_motorRight;
 
+    // Simulated motors
+    private final TalonFXSimState m_motorSimLeft;
+    private final TalonFXSimState m_motorSimRight;
+
+    private final DCMotorSim m_motorSimModelLeft;
+    private final DCMotorSim m_motorSimModelRight;
+
+
     // private final AnalogPotentiometer m_stringPotentiometer;
     
     // height goal in meters
@@ -79,6 +91,8 @@ public class Elevator extends SubsystemBase {
     public Elevator() {
         m_motorLeft = new TalonFX(Constants.ELEVATOR_LEFT_CAN_ID);
         m_motorRight = new TalonFX(Constants.ELEVATOR_RIGHT_CAN_ID);
+
+        m_motorSimLeft = m_motorLeft.getSimState();
 
         TalonFXConfiguration talonFXConfigs = new TalonFXConfiguration();
         
@@ -238,5 +252,24 @@ public class Elevator extends SubsystemBase {
     
     private static double limitElevatorLength(double length, boolean pivotOutsideRange) {
         return MathUtil.clamp(length, pivotOutsideRange ? HEIGHT_LOW_RANGE : MIN_LENGTH_METERS, MAX_LENGTH_METERS);
+    }
+
+    public void simulationPeriodic() {
+        // set the supply voltage of the TalonFX
+        m_motorSimLeft.setSupplyVoltage(RobotController.getBatteryVoltage());
+
+        // get the motor voltage of the TalonFX
+        var motorVoltage = m_motorSimLeft.getMotorVoltageMeasure();
+
+        // use the motor voltage to calculate new position and velocity
+        // using WPILib's DCMotorSim class for physics simulation
+        m_motorSimLeft.setInputVoltage(motorVoltage.in(Volts));
+        m_motorSimLeft.update(0.020); // assume 20 ms loop time
+
+        // apply the new rotor position and velocity to the TalonFX;
+        // note that this is rotor position/velocity (before gear ratio), but
+        // DCMotorSim returns mechanism position/velocity (after gear ratio)
+        m_motorSimLeft.setRawRotorPosition(m_motorSimModel.getAngularPosition().times(kGearRatio));
+        m_motorSimLeft.setRotorVelocity(m_motorSimModel.getAngularVelocity().times(kGearRatio));
     }
 }

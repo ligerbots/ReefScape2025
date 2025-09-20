@@ -8,6 +8,8 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.CoralEffector;
 import frc.robot.subsystems.DriveTrain;
+import frc.robot.subsystems.Elevator;
+import frc.robot.subsystems.EndEffectorPivot;
 
 public abstract class RobotContainer  {
     public abstract Command getAutonomousCommand();
@@ -18,4 +20,9 @@ public abstract class RobotContainer  {
     public void resetAllGoals() { return; }
 
     public CoralEffector getCoralEffector() { return null; };
+
+    public Elevator getElevator() { return null; };
+    
+    public EndEffectorPivot getEndEffectorPivot() { return null; };
+ 
 }
