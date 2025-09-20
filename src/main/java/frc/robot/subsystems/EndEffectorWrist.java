@@ -45,7 +45,7 @@ public class EndEffectorWrist extends SubsystemBase {
     private static final double ROBOT_LOOP_PERIOD = 0.02;
 
     // Zero point of the absolute encoder
-    private static final double ABS_ENCODER_ZERO_OFFSET = -91.1/360;;//(-123.5*2)/360.0;
+    private static final double ABS_ENCODER_ZERO_OFFSET = -97.1/360;;//(-123.5*2)/360.0;
 
     //TODO 
     //to fix wrist skipping first set wrist offset to zero then deploy

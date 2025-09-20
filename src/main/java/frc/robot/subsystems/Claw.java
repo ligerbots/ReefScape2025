@@ -52,7 +52,7 @@ public class Claw extends SubsystemBase {
 
 
     private final ValueThreshold m_speedThres = new ValueThreshold(Direction.FALLING, STALL_VELOCITY_LIMIT);
-    private static final double STOP_INTAKE_DELAY = 1;
+    private static final double STOP_INTAKE_DELAY = 2.0;
     private final Timer m_intakeStopTimer = new Timer();
     private final DoubleSupplier m_elevatorHeight;
     TalonFXConfiguration talonFXConfigs = new TalonFXConfiguration();
@@ -94,6 +94,7 @@ public class Claw extends SubsystemBase {
     public void periodic() {
         // always want this to run
         double velocity = m_motor.getVelocity().getValueAsDouble();
+        
         // detect a stall as when the velocity *falls* below a threshold
         boolean stalled = m_speedThres.compute(Math.abs(velocity));
 
