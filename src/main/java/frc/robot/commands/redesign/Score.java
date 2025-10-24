@@ -6,11 +6,11 @@ import frc.robot.Constants;
 import frc.robot.Constants.Position;
 import frc.robot.subsystems.Claw;
 import frc.robot.subsystems.Elevator;
-import frc.robot.subsystems.EndEffectorPivot;
+import frc.robot.subsystems.YAMSEndEffectorPivot;
 import frc.robot.subsystems.EndEffectorWrist;
 
 public class Score extends Command {
-    private EndEffectorPivot m_pivot;
+    private YAMSEndEffectorPivot m_pivot;
     private EndEffectorWrist m_wrist;
     private Elevator m_elevator;
     private Claw m_claw;
@@ -24,7 +24,7 @@ public class Score extends Command {
     private Command m_moveCommand;
 
     // Constructor expects a Supplier<Position> instead of Position directly
-    public Score(Supplier<Position> robotState, EndEffectorPivot pivot, EndEffectorWrist wrist, Elevator elevator, Claw claw) {
+    public Score(Supplier<Position> robotState, YAMSEndEffectorPivot pivot, EndEffectorWrist wrist, Elevator elevator, Claw claw) {
         m_pivot = pivot;
         m_wrist = wrist;
         m_elevator = elevator;

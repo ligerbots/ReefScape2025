@@ -25,7 +25,7 @@ import frc.robot.subsystems.AlgaeEffector;
 import frc.robot.subsystems.CoralEffector;
 import frc.robot.subsystems.DriveTrain;
 import frc.robot.subsystems.Elevator;
-import frc.robot.subsystems.EndEffectorPivot;
+import frc.robot.subsystems.YAMSEndEffectorPivot;
 
 public class CompBotExperimentalAutoRefactor extends ReefscapeAbstractAuto {
 
@@ -51,7 +51,7 @@ public class CompBotExperimentalAutoRefactor extends ReefscapeAbstractAuto {
         }
     
         public CompBotExperimentalAutoRefactor(Pose2d startPoint, Pose2d sourcePoint, Pose2d[] reefPoints, DriveTrain driveTrain, 
-            Elevator elevator, CoralEffector coralEffector, AlgaeEffector algaeEffector, EndEffectorPivot pivot, boolean isProcessorSide, boolean doTushPush) {
+            Elevator elevator, CoralEffector coralEffector, AlgaeEffector algaeEffector, YAMSEndEffectorPivot pivot, boolean isProcessorSide, boolean doTushPush) {
                 super(startPoint, sourcePoint, reefPoints, driveTrain, elevator, coralEffector, algaeEffector, pivot, isProcessorSide);
     
                 

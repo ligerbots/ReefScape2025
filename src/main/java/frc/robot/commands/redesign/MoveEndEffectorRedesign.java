@@ -18,11 +18,11 @@ import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Constants;
 import frc.robot.Constants.Position;
 import frc.robot.subsystems.Elevator;
-import frc.robot.subsystems.EndEffectorPivot;
+import frc.robot.subsystems.YAMSEndEffectorPivot;
 import frc.robot.subsystems.EndEffectorWrist;
 
 public class MoveEndEffectorRedesign extends Command {
-    EndEffectorPivot m_pivot;
+    YAMSEndEffectorPivot m_pivot;
     Elevator m_elevator;
     EndEffectorWrist m_wrist;
     BooleanSupplier m_isAltMode;
@@ -207,15 +207,15 @@ public class MoveEndEffectorRedesign extends Command {
         }
     };
     
-    public MoveEndEffectorRedesign(Constants.Position position, Elevator elevator, EndEffectorPivot pivot, EndEffectorWrist wrist) {
+    public MoveEndEffectorRedesign(Constants.Position position, Elevator elevator, YAMSEndEffectorPivot pivot, EndEffectorWrist wrist) {
        this(position, elevator, pivot, wrist, 2.0, ()->false);
     }
 
-    public MoveEndEffectorRedesign(Constants.Position position, Elevator elevator, EndEffectorPivot pivot, EndEffectorWrist wrist, BooleanSupplier wantsAltMode) {
+    public MoveEndEffectorRedesign(Constants.Position position, Elevator elevator, YAMSEndEffectorPivot pivot, EndEffectorWrist wrist, BooleanSupplier wantsAltMode) {
         this(position, elevator, pivot, wrist, 2.0, wantsAltMode);
      }
 
-    public MoveEndEffectorRedesign(Constants.Position position, Elevator elevator, EndEffectorPivot pivot, EndEffectorWrist wrist, double timeout, BooleanSupplier isAltMode) {
+    public MoveEndEffectorRedesign(Constants.Position position, Elevator elevator, YAMSEndEffectorPivot pivot, EndEffectorWrist wrist, double timeout, BooleanSupplier isAltMode) {
         m_pivot = pivot;
         m_elevator = elevator;
         m_position = position;

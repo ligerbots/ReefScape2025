@@ -19,13 +19,13 @@ import frc.robot.Constants.Position;
 import frc.robot.subsystems.Claw;
 import frc.robot.subsystems.CoralGroundIntakeRedesign;
 import frc.robot.subsystems.Elevator;
-import frc.robot.subsystems.EndEffectorPivot;
+import frc.robot.subsystems.YAMSEndEffectorPivot;
 import frc.robot.subsystems.EndEffectorWrist;
 
 /* You should consider using the more terse Command factories API instead https://docs.wpilib.org/en/stable/docs/software/commandbased/organizing-command-based.html#defining-commands */
 public class TransferWithPos extends SequentialCommandGroup {
   /** Creates a new Transfer. */
-  EndEffectorPivot m_pivot;
+  YAMSEndEffectorPivot m_pivot;
   Elevator m_elevator;
   EndEffectorWrist m_wrist;
   Claw m_claw;
@@ -38,7 +38,7 @@ public class TransferWithPos extends SequentialCommandGroup {
   double m_timeoutDelay = 2;
   double transferTime = 0.2;
 
-  public TransferWithPos(EndEffectorPivot pivot, EndEffectorWrist wrist, Elevator elevator, Claw claw, DoubleSupplier elevatorHeight, CoralGroundIntakeRedesign coralGround, Position pos, BooleanSupplier wantsAltMode) {
+  public TransferWithPos(YAMSEndEffectorPivot pivot, EndEffectorWrist wrist, Elevator elevator, Claw claw, DoubleSupplier elevatorHeight, CoralGroundIntakeRedesign coralGround, Position pos, BooleanSupplier wantsAltMode) {
     m_pivot = pivot;
     m_claw = claw;
     m_elevator = elevator;

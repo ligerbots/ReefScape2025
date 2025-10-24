@@ -8,7 +8,7 @@ import frc.robot.subsystems.AlgaeEffector;
 import frc.robot.subsystems.CoralEffector;
 import frc.robot.subsystems.DriveTrain;
 import frc.robot.subsystems.Elevator;
-import frc.robot.subsystems.EndEffectorPivot;
+import frc.robot.subsystems.YAMSEndEffectorPivot;
 
 public abstract class ReefscapeAbstractAuto extends AutoCommandInterface {
 
@@ -24,11 +24,11 @@ public abstract class ReefscapeAbstractAuto extends AutoCommandInterface {
     protected Elevator m_elevator;
     protected CoralEffector m_coralEffector;
     protected AlgaeEffector m_algaeEffector;
-    protected EndEffectorPivot m_pivot;
+    protected YAMSEndEffectorPivot m_pivot;
     protected boolean m_isProcessorSide;
 
     ReefscapeAbstractAuto(Pose2d startPoint, Pose2d sourcePoint, Pose2d[] reefPoints, DriveTrain driveTrain,
-            Elevator elevator, CoralEffector coralEffector, AlgaeEffector algaeEffector, EndEffectorPivot pivot, boolean isProcessorSide) {
+            Elevator elevator, CoralEffector coralEffector, AlgaeEffector algaeEffector, YAMSEndEffectorPivot pivot, boolean isProcessorSide) {
                 m_sourcePoint = sourcePoint;
                 m_driveTrain = driveTrain;
                 m_elevator = elevator;

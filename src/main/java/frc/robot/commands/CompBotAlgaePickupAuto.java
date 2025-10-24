@@ -20,7 +20,7 @@ import frc.robot.subsystems.AlgaeEffector;
 import frc.robot.subsystems.CoralEffector;
 import frc.robot.subsystems.DriveTrain;
 import frc.robot.subsystems.Elevator;
-import frc.robot.subsystems.EndEffectorPivot;
+import frc.robot.subsystems.YAMSEndEffectorPivot;
 
 public class CompBotAlgaePickupAuto extends ReefscapeAbstractAuto {
     private static final double CORAL_SCORE_WAIT_TIME = 0.1;
@@ -35,7 +35,7 @@ public class CompBotAlgaePickupAuto extends ReefscapeAbstractAuto {
 
     /** Creates a new CompBotAlgaePickupAuto. */
     public CompBotAlgaePickupAuto(Pose2d startPoint, Pose2d sourcePoint, Pose2d[] reefPoints, DriveTrain driveTrain, 
-    Elevator elevator, CoralEffector coralEffector, AlgaeEffector algaeEffector, EndEffectorPivot pivot, boolean isProcessorSide) {
+    Elevator elevator, CoralEffector coralEffector, AlgaeEffector algaeEffector, YAMSEndEffectorPivot pivot, boolean isProcessorSide) {
         super(startPoint, sourcePoint, reefPoints, driveTrain, elevator, coralEffector, algaeEffector, pivot, isProcessorSide);
         m_driveTrain = driveTrain;
         

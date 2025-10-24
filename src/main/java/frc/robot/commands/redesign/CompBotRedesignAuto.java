@@ -25,7 +25,7 @@ import frc.robot.subsystems.Claw;
 import frc.robot.subsystems.CoralGroundIntakeRedesign;
 import frc.robot.subsystems.DriveTrain;
 import frc.robot.subsystems.Elevator;
-import frc.robot.subsystems.EndEffectorPivot;
+import frc.robot.subsystems.YAMSEndEffectorPivot;
 import frc.robot.subsystems.EndEffectorWrist;
 
 public class CompBotRedesignAuto extends ReefscapeAbstractAutoRedesign {
@@ -52,7 +52,7 @@ public class CompBotRedesignAuto extends ReefscapeAbstractAutoRedesign {
     }
 
     public CompBotRedesignAuto(Pose2d startPoint, Pose2d sourcePoint, Pose2d[] reefPoints, DriveTrain driveTrain,
-            Elevator elevator, Claw claw, EndEffectorWrist wrist, EndEffectorPivot pivot,
+            Elevator elevator, Claw claw, EndEffectorWrist wrist, YAMSEndEffectorPivot pivot,
             CoralGroundIntakeRedesign coralGround, boolean isProcessorSide, boolean doTushPush) {
         super(startPoint, sourcePoint, reefPoints, driveTrain, elevator, claw, wrist, pivot, coralGround,
                 isProcessorSide);

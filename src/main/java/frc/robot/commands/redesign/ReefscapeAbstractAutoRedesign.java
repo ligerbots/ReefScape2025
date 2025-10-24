@@ -9,7 +9,7 @@ import frc.robot.subsystems.Claw;
 import frc.robot.subsystems.CoralGroundIntakeRedesign;
 import frc.robot.subsystems.DriveTrain;
 import frc.robot.subsystems.Elevator;
-import frc.robot.subsystems.EndEffectorPivot;
+import frc.robot.subsystems.YAMSEndEffectorPivot;
 import frc.robot.subsystems.EndEffectorWrist;
 
 public abstract class ReefscapeAbstractAutoRedesign extends AutoCommandInterface {
@@ -24,14 +24,14 @@ public abstract class ReefscapeAbstractAutoRedesign extends AutoCommandInterface
     protected Pose2d m_sourcePoint;
     protected DriveTrain m_driveTrain;
     protected Elevator m_elevator;
-    protected EndEffectorPivot m_pivot;
+    protected YAMSEndEffectorPivot m_pivot;
     protected EndEffectorWrist m_wrist;
     protected Claw m_claw;
     protected CoralGroundIntakeRedesign  m_coralGround;
     protected boolean m_isProcessorSide;
 
     ReefscapeAbstractAutoRedesign(Pose2d startPoint, Pose2d sourcePoint, Pose2d[] reefPoints, DriveTrain driveTrain,
-            Elevator elevator, Claw claw, EndEffectorWrist wrist, EndEffectorPivot pivot, CoralGroundIntakeRedesign coralGround, boolean isProcessorSide) {
+            Elevator elevator, Claw claw, EndEffectorWrist wrist, YAMSEndEffectorPivot pivot, CoralGroundIntakeRedesign coralGround, boolean isProcessorSide) {
                 m_sourcePoint = sourcePoint;
                 m_driveTrain = driveTrain;
                 m_elevator = elevator;

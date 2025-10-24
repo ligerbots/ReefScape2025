@@ -38,7 +38,7 @@ public class CompRobotContainerRedesign extends RobotContainer {
     // private final PowerDistribution m_pdh = new PowerDistribution();
 
     private final Elevator m_elevator = new Elevator();
-    private final EndEffectorPivot m_pivot = new EndEffectorPivot(() -> m_elevator.getHeight());
+    private final YAMSEndEffectorPivot m_pivot = new YAMSEndEffectorPivot(() -> m_elevator.getHeight());
     private final EndEffectorWrist m_wrist = new EndEffectorWrist(()-> m_elevator.getGoal());
     private final Claw m_claw = new Claw(()-> m_elevator.getGoal());
     private final CoralGroundIntakeRedesign m_coralGroundIntake = new CoralGroundIntakeRedesign();

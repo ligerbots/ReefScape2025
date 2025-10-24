@@ -15,7 +15,7 @@ import frc.robot.subsystems.AlgaeGroundIntakeRedesign;
 import frc.robot.subsystems.Claw;
 import frc.robot.subsystems.CoralGroundIntakeRedesign;
 import frc.robot.subsystems.Elevator;
-import frc.robot.subsystems.EndEffectorPivot;
+import frc.robot.subsystems.YAMSEndEffectorPivot;
 import frc.robot.subsystems.EndEffectorWrist;
 
 // NOTE:  Consider using this command inline, rather than writing a subclass.  For more
@@ -23,7 +23,7 @@ import frc.robot.subsystems.EndEffectorWrist;
 // https://docs.wpilib.org/en/stable/docs/software/commandbased/convenience-features.html
 public class GoToAlgaeTransfer extends SequentialCommandGroup {
   /** Creates a new AlgaeTransfer. */
-   EndEffectorPivot m_pivot;
+   YAMSEndEffectorPivot m_pivot;
   Elevator m_elevator;
   EndEffectorWrist m_wrist;
   Claw m_claw;
@@ -34,7 +34,7 @@ public class GoToAlgaeTransfer extends SequentialCommandGroup {
   double m_timeoutDelay = 2;
   double transferTime = 0.5;
   double coralGroundMoveTime = .2;
-  public GoToAlgaeTransfer(EndEffectorPivot pivot, EndEffectorWrist wrist, Elevator elevator, Claw claw, CoralGroundIntakeRedesign coralGround, AlgaeGroundIntakeRedesign algaeGround ) {
+  public GoToAlgaeTransfer(YAMSEndEffectorPivot pivot, EndEffectorWrist wrist, Elevator elevator, Claw claw, CoralGroundIntakeRedesign coralGround, AlgaeGroundIntakeRedesign algaeGround ) {
     // Add your commands in the addCommands() call, e.g.
     m_pivot = pivot;
     m_claw = claw;

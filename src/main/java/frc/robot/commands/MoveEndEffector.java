@@ -14,10 +14,10 @@ import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Constants;
 import frc.robot.Constants.Position;
 import frc.robot.subsystems.Elevator;
-import frc.robot.subsystems.EndEffectorPivot;
+import frc.robot.subsystems.YAMSEndEffectorPivot;
 
 public class MoveEndEffector extends Command {
-    EndEffectorPivot m_pivot;
+    YAMSEndEffectorPivot m_pivot;
     Elevator m_elevator;
     // boolean m_cancel;  // TODO some way to cancel the motion?
     
@@ -88,11 +88,11 @@ public class MoveEndEffector extends Command {
         }
     };
     
-    public MoveEndEffector(Constants.Position position, Elevator elevator, EndEffectorPivot pivot) {
+    public MoveEndEffector(Constants.Position position, Elevator elevator, YAMSEndEffectorPivot pivot) {
         this(position, elevator, pivot, DEFAULT_TIMEOUT);
     }
 
-    public MoveEndEffector(Constants.Position position, Elevator elevator, EndEffectorPivot pivot, double timeout) {
+    public MoveEndEffector(Constants.Position position, Elevator elevator, YAMSEndEffectorPivot pivot, double timeout) {
         m_pivot = pivot;
         m_elevator = elevator;
         m_position = position;

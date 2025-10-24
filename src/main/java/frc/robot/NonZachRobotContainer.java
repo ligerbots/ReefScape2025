@@ -38,7 +38,7 @@ public class NonZachRobotContainer extends RobotContainer {
     // private final PowerDistribution m_pdh = new PowerDistribution();
 
     private final Elevator m_elevator = new Elevator();
-    private final EndEffectorPivot m_pivot = new EndEffectorPivot(() -> m_elevator.getHeight());
+    private final YAMSEndEffectorPivot m_pivot = new YAMSEndEffectorPivot(() -> m_elevator.getHeight());
     private final CoralEffector m_coralEffector = new CoralEffector(()-> m_elevator.getGoal());
     private final AlgaeEffector m_algaeEffector = new AlgaeEffector(() -> m_elevator.getGoal());
     private final CoralGroundIntake m_coralGroundIntake = new CoralGroundIntake();
