@@ -205,15 +205,16 @@ public class AprilTagVision {
                     try {
                         Optional<EstimatedRobotPose> estPose = cam.poseEstimator.update(pipeRes);
                         // if we got not estimate, just move on
-                        if (!estPose.isPresent())
+                        if (estPose.isEmpty())
                             continue;
 
-                        Pose2d pose = estPose.get().estimatedPose.toPose2d();
-                        Optional<Matrix<N3, N1>> estStdDev = estimateStdDev(pipeRes, pose);
+                        EstimatedRobotPose poseEstimate = estPose.get();
+                        Optional<Matrix<N3, N1>> estStdDev = estimateStdDev(poseEstimate);
                         if (estStdDev.isPresent()) {
                             // Everything succeeded. Update the main poseEstimator with the vision result
                             // Make sure to use the timestamp of this result
-                            swerve.addVisionMeasurement(pose, pipeRes.getTimestampSeconds(), estStdDev.get());
+                            Pose2d pose = poseEstimate.estimatedPose.toPose2d();
+                            swerve.addVisionMeasurement(pose, poseEstimate.timestampSeconds, estStdDev.get());
                             globalMeasurements.add(pose);
                         }
                     } catch (Exception e) {
@@ -283,26 +284,29 @@ public class AprilTagVision {
         return Optional.of(tagPose.get().toPose2d());
     }
 
-    // Calculates new standard deviations 
+    // Calculates "confidence" in the pose estimate
     // This algorithm is a heuristic that creates dynamic standard deviations based
     // on number of tags, estimation strategy, and distance from the tags.
-    private Optional<Matrix<N3, N1>> estimateStdDev(PhotonPipelineResult pipeRes, Pose2d poseEst) {
-
-        // Pose present. Start running Heuristic
-        int numTags = 0;
-        double avgDist = 0;
-
-        // Precalculation - see how many tags we found, and calculate an
-        // average-distance metric
-        for (PhotonTrackedTarget tgt : pipeRes.targets) {
-            double dist = tgt.getBestCameraToTarget().getTranslation().getNorm();
-            avgDist += dist;
-            numTags++;
-        }
-
+    private Optional<Matrix<N3, N1>> estimateStdDev(EstimatedRobotPose poseEst) {
+        int numTags = poseEst.targetsUsed.size();
         // Should not happen, but protect against divide by zero
         if (numTags == 0)
             return Optional.empty();
+
+        boolean usedMultitag = poseEst.strategy == PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR
+                || poseEst.strategy == PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR;
+        
+        // if there are >1 tag and we did not use MultiTag, BAD
+        if (numTags > 1 && !usedMultitag)
+            return Optional.empty();
+
+        // Pose present. Start running Heuristic
+
+        // Find the average distance for the tags used
+        double avgDist = 0;
+        for (PhotonTrackedTarget tgt : poseEst.targetsUsed) {
+            avgDist += tgt.getBestCameraToTarget().getTranslation().getNorm();;
+        }
         avgDist /= numTags;
 
         // Single tags further away than 4 meter (~13 ft) are useless
@@ -310,7 +314,9 @@ public class AprilTagVision {
             return Optional.empty();
 
         // Starting estimate = multitag or not
-        Matrix<N3, N1> estStdDev = numTags == 1 ? SINGLE_TAG_BASE_STDDEV : MULTI_TAG_BASE_STDDEV;
+        Matrix<N3, N1> estStdDev = poseEst.strategy == PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR
+                ? SINGLE_TAG_BASE_STDDEV
+                : MULTI_TAG_BASE_STDDEV;
 
         // Increase std devs based on (average) distance
         // This is taken from YAGSL vision example.
