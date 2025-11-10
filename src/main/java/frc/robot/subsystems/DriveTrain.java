@@ -339,9 +339,10 @@ public class DriveTrain extends SubsystemBase {
 
     @Override
     public void periodic() {
-        // Have the vision system update based on the Apriltags, if seen
-        // need to add the pipeline result
+        // allow Vision to update any internal Pose estimates based on wheel odometry
         m_aprilTagVision.updateOdometry(m_swerveDrive);
+        // Have the vision system update based on the Apriltags, if seen
+        m_aprilTagVision.addVisionMeasurements(m_swerveDrive);
         
         SmartDashboard.putBoolean("driveTrain/readyToClimb", readyToClimb());
         SmartDashboard.putNumber("driveTrain/pitch", getPitch().getDegrees());
@@ -383,6 +384,9 @@ public class DriveTrain extends SubsystemBase {
      */
     public void setPose(Pose2d pose) {
         m_swerveDrive.resetOdometry(pose);
+
+        // AprilTagVision needs to be told
+        m_aprilTagVision.setPose(pose);
     }
 
     /**
