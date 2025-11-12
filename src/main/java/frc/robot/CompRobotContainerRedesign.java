@@ -118,7 +118,7 @@ public class CompRobotContainerRedesign extends RobotContainer {
                 m_robotState::hasCoralInEE));
 
         // Algae Scoring
-        m_driverController.a().onTrue(new MoveEndEffectorRedesign(Constants.Position.L2_ALGAE, m_elevator, m_pivot, m_wrist).alongWith(new InstantCommand(m_robotState::setRobotStateL2_ALGAE).alongWith(new InstantCommand(m_robotState::setHasCoralInEEFalse))));
+        // m_driverController.a().onTrue(new MoveEndEffectorRedesign(Constants.Position.L2_ALGAE, m_elevator, m_pivot, m_wrist).alongWith(new InstantCommand(m_robotState::setRobotStateL2_ALGAE).alongWith(new InstantCommand(m_robotState::setHasCoralInEEFalse))));
         m_driverController.x().onTrue(new MoveEndEffectorRedesign(Constants.Position.L3_ALGAE, m_elevator, m_pivot, m_wrist).alongWith(new InstantCommand(m_robotState::setRobotStateL3_ALGAE)).alongWith(new InstantCommand(m_robotState::setHasCoralInEEFalse)));
         m_driverController.y().onTrue(new MoveEndEffectorRedesign(Constants.Position.BARGE, m_elevator, m_pivot, m_wrist).alongWith(new InstantCommand(m_robotState::setRobotStateBARGE)));
         m_driverController.b().onTrue(new MoveEndEffectorRedesign(Constants.Position.STOW, m_elevator, m_pivot, m_wrist ).alongWith(new InstantCommand(m_robotState::setRobotStateSTOW)));
@@ -229,7 +229,8 @@ public class CompRobotContainerRedesign extends RobotContainer {
   
 
         m_farm.button(22).onTrue(new InstantCommand(() -> m_elevator.setHeight(Units.inchesToMeters(SmartDashboard.getNumber("elevator/testGoal", 0)))));
-        m_farm.button(23).onTrue(new InstantCommand(() -> m_pivot.setAngle(Rotation2d.fromDegrees(SmartDashboard.getNumber("pivot/testAngle", 0.0)))));
+        // m_farm.button(23).onTrue(new InstantCommand(() -> m_pivot.setAngle(Rotation2d.fromDegrees(SmartDashboard.getNumber("pivot/testAngle", 0.0)))));
+        m_driverController.a().onTrue(new InstantCommand(() -> m_pivot.setAngle(Rotation2d.fromDegrees(SmartDashboard.getNumber("pivot/testAngle", 0.0)))));
             //Flip end effector to stow
         m_farm.button(24).onTrue(new InstantCommand(() -> m_wrist.setAngle(Rotation2d.fromDegrees(SmartDashboard.getNumber("wrist/testAngle", 0.0)))));
     }
