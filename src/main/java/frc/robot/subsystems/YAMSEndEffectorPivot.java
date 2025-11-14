@@ -4,18 +4,12 @@
 
 package frc.robot.subsystems;
 
-import static edu.wpi.first.units.Units.Amps;
-import static edu.wpi.first.units.Units.Degrees;
-import static edu.wpi.first.units.Units.Pounds;
-import static edu.wpi.first.units.Units.Inches;
-import static edu.wpi.first.units.Units.Meters;
-import static edu.wpi.first.units.Units.Radians;
-import static edu.wpi.first.units.Units.RotationsPerSecond;
-import static edu.wpi.first.units.Units.RotationsPerSecondPerSecond;
-import static edu.wpi.first.units.Units.Seconds;
+import static edu.wpi.first.units.Units.*;
 
 import java.util.function.DoubleSupplier;
 
+import com.revrobotics.sim.SparkAbsoluteEncoderSim;
+import com.revrobotics.spark.SparkAbsoluteEncoder;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.SparkMax;
 import edu.wpi.first.math.MathUtil;
@@ -46,11 +40,11 @@ import yams.motorcontrollers.local.SparkWrapper;
 
 public class YAMSEndEffectorPivot extends SubsystemBase {
     
-    private static final Angle MIN_ANGLE_LOW_DEG = Degrees.of(25);
-    private static final Angle MAX_ANGLE_LOW_DEG = Degrees.of(302);
+    private static final Angle MIN_ANGLE_LOW = Degrees.of(25);
+    private static final Angle MAX_ANGLE_LOW = Degrees.of(302);
 
-    private static final Angle MIN_ANGLE_HIGH_DEG = Degrees.of(-50);
-    private static final Angle MAX_ANGLE_HIGH_DEG = Degrees.of(302);
+    private static final Angle MIN_ANGLE_HIGH = Degrees.of(-50);
+    private static final Angle MAX_ANGLE_HIGH = Degrees.of(302);
 
     // NOTE: All constants were taken from the 2023 arm 
     // Note: Current values for limits are refrenced with the shooter being flat
@@ -58,8 +52,7 @@ public class YAMSEndEffectorPivot extends SubsystemBase {
     // As of writing the above note we still may want to change the limits
     public static final Angle ANGLE_TOLERANCE = Degrees.of(1.0);
 
-
-    private static final double GEAR_RATIO = 18.0/42.0/25.0;
+    // private static final double GEAR_RATIO = 18.0/42.0/25.0;
 
 
     // position constants for commands
@@ -72,13 +65,10 @@ public class YAMSEndEffectorPivot extends SubsystemBase {
     // max vel: 1 rotation = 10 seconds  and then gear_ratio
     // private static final double MAX_VEL_ROT_PER_SEC = 1.5;
     private static final AngularVelocity MAX_VEL_ROT_PER_SEC = RotationsPerSecond.of(2.5);
-
-    
     private static final AngularAcceleration MAX_ACC_ROT_PER_SEC2 = RotationsPerSecondPerSecond.of(7.5);
-    private static final double ROBOT_LOOP_PERIOD = 0.02;
 
     // Zero point of the absolute encoder
-    private static final double ABS_ENCODER_ZERO_OFFSET = 172.25/360.0;//142.05/360;
+    private static final double ABS_ENCODER_ZERO_OFFSET = 172.25/360.0;
 
     // Constants for the pivot PID controller
     private static final double K_P = 5.0;
@@ -93,24 +83,14 @@ public class YAMSEndEffectorPivot extends SubsystemBase {
     private static final Mass MASS = Pounds.of(3); // TODO check mass
     private static final Distance LENGTH = Inches.of(18); // TODO check length
 
-    private static final Angle MIN_ANGLE = MIN_ANGLE_HIGH_DEG;
-    private static final Angle MAX_ANGLE = MAX_ANGLE_HIGH_DEG;
-
-    private static final MotorMode COAST_MODE = MotorMode.BRAKE;
-
-
     private final SparkMax m_armMotor = new SparkMax(Constants.END_EFFECTOR_PIVOT_CAN_ID, MotorType.kBrushless);
-    //  private final SmartMotorControllerTelemetryConfig motorTelemetryConfig = new SmartMotorControllerTelemetryConfig()
-    //          .withMechanismPosition()
-    //          .withRotorPosition()
-    //          .withMechanismLowerLimit()
-    //          .withMechanismUpperLimit();
+
     private final SmartMotorControllerConfig m_motorConfig = new SmartMotorControllerConfig(this)
         .withClosedLoopController(K_P, K_I, K_D, MAX_VEL_ROT_PER_SEC, MAX_ACC_ROT_PER_SEC2)
         .withSimClosedLoopController(K_P, K_I, K_D, MAX_VEL_ROT_PER_SEC, MAX_ACC_ROT_PER_SEC2)
-        .withSoftLimit(MIN_ANGLE, MAX_ANGLE)
+        .withSoftLimit(MIN_ANGLE_HIGH, MAX_ANGLE_HIGH)
         .withGearing(new MechanismGearing(GearBox.fromReductionStages(3, 4)))
-        .withIdleMode(COAST_MODE)
+        .withIdleMode(MotorMode.BRAKE)
         .withTelemetry("PivotMotor", TelemetryVerbosity.HIGH)
         .withStatorCurrentLimit(CURRENT_LIMIT)
         .withMotorInverted(false)
@@ -119,35 +99,45 @@ public class YAMSEndEffectorPivot extends SubsystemBase {
         .withFeedforward(new ArmFeedforward(0, K_G, 0, 0))
         .withSimFeedforward(new ArmFeedforward(0, K_G, 0, 0))
         .withControlMode(ControlMode.CLOSED_LOOP);
+
     private final SmartMotorController m_smartMotor = new SparkWrapper(m_armMotor, DCMotor.getNEO(1), m_motorConfig);
+    
     private final MechanismPositionConfig m_robotToMechanism = new MechanismPositionConfig()
         .withMaxRobotHeight(ROBOT_MAX_HEIGHT)
         .withMaxRobotLength(ROBOT_MAX_LENGTH)
-        .withRelativePosition(new Translation3d(Meters.of(0), Meters.of(0), Meters.of(0.5)));
-
+        .withRelativePosition(new Translation3d(Inches.of(0), Inches.of(0), Inches.of(30)));
 
     private ArmConfig m_config = new ArmConfig(m_smartMotor)
         .withLength(LENGTH)
-        .withHardLimit(MIN_ANGLE, MAX_ANGLE)
+        .withHardLimit(MIN_ANGLE_HIGH, MAX_ANGLE_HIGH)
         .withTelemetry("Pivot", TelemetryVerbosity.HIGH)
         .withMass(MASS)
-        .withStartingPosition(MIN_ANGLE)
-        //.withHorizontalZero(Degrees.of(0))
+        .withStartingPosition(MIN_ANGLE_LOW)
         .withMechanismPositionConfig(m_robotToMechanism);
+
     private final Arm m_arm = new Arm(m_config);
+
+    private final SparkAbsoluteEncoder m_absoluteEncoder;
+    private final SparkAbsoluteEncoderSim m_absoluteEncoderSim;
+
     private final DoubleSupplier m_elevatorHeight;
 
     /** Creates a new YAMSEndEffectorPivot. */
     public YAMSEndEffectorPivot(DoubleSupplier elevatorHeight) {
         m_elevatorHeight = elevatorHeight;
+
+        m_absoluteEncoder = m_armMotor.getAbsoluteEncoder();
+        m_absoluteEncoderSim = new SparkAbsoluteEncoderSim(m_armMotor);
+        m_absoluteEncoderSim.setZeroOffset(ABS_ENCODER_ZERO_OFFSET);
+
         SmartDashboard.putNumber("pivot/testAngle", 0);
     }
 
     @Override
     public void periodic() {
+        // This method will be called once per scheduler run
         m_arm.updateTelemetry();
 
-        // This method will be called once per scheduler run
         SmartDashboard.putNumber("pivot/angle", m_arm.getAngle().in(Degrees));
     }
 
@@ -156,55 +146,59 @@ public class YAMSEndEffectorPivot extends SubsystemBase {
         // This method will be called once per scheduler run during simulation
         m_arm.simIterate();
     }
+    
+    // configure the encoders, once everything is initialized
+    // also set current setPoint so that it does not move immediately when enabled
+    public void initPivot() {
+        Rotation2d currAng = Rotation2d.fromRotations(m_absoluteEncoder.getPosition());
+        m_smartMotor.setEncoderPosition(currAng.getMeasure());
+        // reset the goal angle to be the current value
+        setAngle(currAng);
+    }
 
     // get the current pivot angle
     public Rotation2d getAngle() {
         return new Rotation2d(m_arm.getAngle());
     }
-    public Rotation2d getTarget() {
-        return new Rotation2d(m_arm.getMechanismSetpoint().orElse(Radians.zero()));
+
+    private Rotation2d getTarget() {
+        return new Rotation2d(m_arm.getMechanismSetpoint().orElse(Degrees.zero()));
     }
-    // // Encoder returns RPM
-    // public Rotation2d getVelocity() {
-    //     arm.set();
-    // }
-    // public void run(double speed) {
-        
-    // }
+
     // set shooterPivot angle
-    public void setAngle(Rotation2d angle) {
-        System.out.println("Setting arm angle to " + angle.getDegrees());
-        
-        // double elevHeight = m_elevatorHeight.getAsDouble();
-        // Rotation2d limitedAngle = limitPivotAngle(angle, elevHeight);
+    public void setAngle(Rotation2d angle) {       
+        double elevHeight = m_elevatorHeight.getAsDouble();
+        Rotation2d limitedAngle = limitPivotAngle(angle, elevHeight);
 
         // setAngle returns a Command. It does not actually set the angle
         // arm.setAngle(limitedAngle.getMeasure());
 
-        m_arm.getMotor().setPosition(angle.getMeasure());
+        m_arm.getMotor().setPosition(limitedAngle.getMeasure());
     }
+
     public boolean isOutsideLowRange() {
         Angle angle = getAngle().getMeasure();
-        return angle.lte(MIN_ANGLE_LOW_DEG) || angle.gte(MAX_ANGLE_LOW_DEG);
+        return angle.lte(MIN_ANGLE_LOW) || angle.gte(MAX_ANGLE_LOW);
     }
+
     // needs to be public so that commands can get the restricted angle
     public Rotation2d limitPivotAngle(Rotation2d angle, double elevHeight) {
         double angleClamped;
         if (elevHeight <= Elevator.HEIGHT_LOW_RANGE)
-            angleClamped = MathUtil.clamp(angle.getDegrees(), MIN_ANGLE_LOW_DEG.in(Degrees), MAX_ANGLE_LOW_DEG.in(Degrees));
-        else angleClamped = MathUtil.clamp(angle.getDegrees(), MIN_ANGLE_HIGH_DEG.in(Degrees), MAX_ANGLE_HIGH_DEG.in(Degrees));
+            angleClamped = MathUtil.clamp(angle.getDegrees(), MIN_ANGLE_LOW.in(Degrees), MAX_ANGLE_LOW.in(Degrees));
+        else angleClamped = MathUtil.clamp(angle.getDegrees(), MIN_ANGLE_HIGH.in(Degrees), MAX_ANGLE_HIGH.in(Degrees));
         return Rotation2d.fromDegrees(angleClamped);
     }
+
     public boolean angleWithinTolerance() {
         return getAngle().getMeasure().isNear(getTarget().getMeasure(), ANGLE_TOLERANCE);
     }
+
     public void setCoastMode() {
         boolean coastMode = SmartDashboard.getBoolean("shooterPivot/coastMode", false);
-        if (coastMode) {
+        if (coastMode)
             m_motorConfig.withIdleMode(MotorMode.COAST);
-        } else m_motorConfig.withIdleMode(COAST_MODE);
-    }
-    public void initPivot() {
-
+        else
+            m_motorConfig.withIdleMode(MotorMode.BRAKE);
     }
 }
