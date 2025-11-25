@@ -2,11 +2,18 @@
 // Open Source Software; you can modify and/or share it under the terms of
 // the WPILib BSD license file in the root directory of this project.
 
+// Some points:
+//
+// When adding a vision measurement to a WPILib PoseEstimator, the code will
+// throw out existing measurements which are newer, so it helps to add them in
+// time order, especially across multiple cameras.
+
 package frc.robot.subsystems;
 
 import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -99,6 +106,24 @@ public class AprilTagVision {
 
     private Camera[] m_cameras;
 
+    // Used to hold results from the cameras. Sorts into time increasing order.
+    private class CameraMeasurement implements Comparable<CameraMeasurement> {
+        public Camera camera;
+        public PhotonPipelineResult pipelineResult;
+        public CameraMeasurement(Camera c, PhotonPipelineResult pRes) {
+            camera = c;
+            pipelineResult = pRes;
+        }
+        @Override
+        public int compareTo(CameraMeasurement other) {
+            double tMe = pipelineResult.getTimestampSeconds();
+            double tOther = other.pipelineResult.getTimestampSeconds();
+            if (tMe < tOther) return -1;
+            if (tOther < tMe) return 1;
+            return 0;
+        }
+    };
+
     private AprilTagFieldLayout m_aprilTagFieldLayout;
 
     // Simulation support
@@ -174,25 +199,37 @@ public class AprilTagVision {
         if (m_aprilTagFieldLayout == null)
             return;
 
-        Pose2d currentPose = swerve.getPose();
-
         // Some lists for later plotting
         // Accumulate the results, and then plot them at the end
         ArrayList<Pose2d> visibleTags = new ArrayList<Pose2d>();
         ArrayList<Pose2d> globalMeasurements = new ArrayList<Pose2d>();
 
         try {
+            // First collect all the camera measurements into a list
+            ArrayList<CameraMeasurement> camFrames = new ArrayList<CameraMeasurement>();
             for (Camera cam : m_cameras) {
                 boolean isConnected = cam.photonCamera.isConnected();
                 SmartDashboard.putBoolean("aprilTagVision/" + cam.photonCamera.getName(), isConnected);
                 if (!isConnected)
                     continue;
 
-                cam.poseEstimator.setReferencePose(currentPose);
-
                 for (PhotonPipelineResult pipeRes : cam.photonCamera.getAllUnreadResults()) {
+                    camFrames.add(new CameraMeasurement(cam, pipeRes));
+                }
+            }
+
+            // Sort the frames in time order
+            Collections.sort(camFrames);
+
+            Pose2d currentPose = swerve.getPose();
+
+            // Work through all the available frames, in time order, and use any measurements
+            for (CameraMeasurement frame : camFrames) {
+                frame.camera.poseEstimator.setReferencePose(currentPose);
+
+                if (PLOT_VISIBLE_TAGS) {
                     // accumulate the visible tags
-                    for (PhotonTrackedTarget target : pipeRes.targets) {
+                    for (PhotonTrackedTarget target : frame.pipelineResult.targets) {
                         int targetFiducialId = target.getFiducialId();
                         if (targetFiducialId > 0) {
                             Optional<Pose3d> targetPosition = m_aprilTagFieldLayout.getTagPose(targetFiducialId);
@@ -200,27 +237,27 @@ public class AprilTagVision {
                                 visibleTags.add(targetPosition.get().toPose2d());
                         }
                     }
-    
-                    // find the best global pose estimate, and update the odometry
-                    try {
-                        Optional<EstimatedRobotPose> estPose = cam.poseEstimator.update(pipeRes);
-                        // if we got not estimate, just move on
-                        if (estPose.isEmpty())
-                            continue;
+                }
 
-                        EstimatedRobotPose poseEstimate = estPose.get();
-                        Optional<Matrix<N3, N1>> estStdDev = estimateStdDev(poseEstimate);
-                        if (estStdDev.isPresent()) {
-                            // Everything succeeded. Update the main poseEstimator with the vision result
-                            // Make sure to use the timestamp of this result
-                            Pose2d pose = poseEstimate.estimatedPose.toPose2d();
-                            swerve.addVisionMeasurement(pose, poseEstimate.timestampSeconds, estStdDev.get());
-                            globalMeasurements.add(pose);
-                        }
-                    } catch (Exception e) {
-                        // bad! log this and keep going
-                        DriverStation.reportError("Exception running PhotonPoseEstimator", e.getStackTrace());
+                // find the best global pose estimate, and update the odometry
+                try {
+                    Optional<EstimatedRobotPose> estPose = frame.camera.poseEstimator.update(frame.pipelineResult);
+                    // if we got not estimate, just move on
+                    if (estPose.isEmpty())
+                        continue;
+
+                    EstimatedRobotPose poseEstimate = estPose.get();
+                    Optional<Matrix<N3, N1>> estStdDev = estimateStdDev(poseEstimate);
+                    if (estStdDev.isPresent()) {
+                        // Everything succeeded. Update the main poseEstimator with the vision result
+                        // Make sure to use the timestamp of this result
+                        Pose2d pose = poseEstimate.estimatedPose.toPose2d();
+                        swerve.addVisionMeasurement(pose, poseEstimate.timestampSeconds, estStdDev.get());
+                        globalMeasurements.add(pose);
                     }
+                } catch (Exception e) {
+                    // bad! log this and keep going
+                    DriverStation.reportError("Exception running PhotonPoseEstimator", e.getStackTrace());
                 }
             }
         } catch (Exception e) {
