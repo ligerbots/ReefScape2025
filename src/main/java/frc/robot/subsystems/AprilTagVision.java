@@ -29,6 +29,7 @@ import org.photonvision.targeting.PhotonPipelineResult;
 import org.photonvision.targeting.PhotonTrackedTarget;
 
 // import edu.wpi.first.apriltag.AprilTag;
+import edu.wpi.first.apriltag.AprilTag;
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.math.Matrix;
@@ -156,10 +157,10 @@ public class AprilTagVision {
 
         // initialize individual tag pose estimators
         m_singleTagPoses = new java.util.HashMap<Integer, SingleTagPose>();
-        for (int tagId = 1; tagId <= AprilTagFieldLayout.loadField(APRILTAG_FIELD).getTags().size(); tagId++) { // for every april tag in the game
-            m_singleTagPoses.put(tagId, new SingleTagPose());
+        List<AprilTag> tags = AprilTagFieldLayout.loadField(APRILTAG_FIELD).getTags();
+        for (AprilTag tag : tags) {
+            m_singleTagPoses.put(tag.ID, new SingleTagPose());
         }
-
 
         // Comp Feb 8
         m_cameras[Cam.FRONT_RIGHT.idx] = new Camera("ArducamFrontRight", new Transform3d(
