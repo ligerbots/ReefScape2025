@@ -16,6 +16,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.util.Map;
 
 import org.photonvision.EstimatedRobotPose;
 import org.photonvision.PhotonCamera;
@@ -50,7 +51,7 @@ import swervelib.SwerveDrive;
 import swervelib.telemetry.SwerveDriveTelemetry;
 
 public class AprilTagVision {
-    // static final AprilTagFields APRILTAG_FIELD = AprilTagFields.k2025ReefscapeWelded;
+    static final AprilTagFields APRILTAG_FIELD = AprilTagFields.k2025ReefscapeWelded;
     // static final AprilTagFields APRILTAG_FIELD = AprilTagFields.k2025ReefscapeAndyMark;
 
     static private final String CUSTOM_FIELD = "2025-reefscape-andymark_custom.json";
@@ -104,6 +105,13 @@ public class AprilTagVision {
         }
     }
 
+    private class SingleTagPose { // the last pose estimated for a given tag
+        public double timestampSeconds;
+        Pose2d lastPoseEstimate;
+    }
+
+    private Map<Integer, SingleTagPose> m_singleTagPoses;
+
     private Camera[] m_cameras;
 
     // Used to hold results from the cameras. Sorts into time increasing order.
@@ -145,6 +153,13 @@ public class AprilTagVision {
 
         // initialize cameras
         m_cameras = new Camera[Cam.values().length];
+
+        // initialize individual tag pose estimators
+        m_singleTagPoses = new java.util.HashMap<Integer, SingleTagPose>();
+        for (int tagId = 1; tagId <= AprilTagFieldLayout.loadField(APRILTAG_FIELD).getTags().size(); tagId++) { // for every april tag in the game
+            m_singleTagPoses.put(tagId, new SingleTagPose());
+        }
+
 
         // Comp Feb 8
         m_cameras[Cam.FRONT_RIGHT.idx] = new Camera("ArducamFrontRight", new Transform3d(
@@ -235,6 +250,18 @@ public class AprilTagVision {
                             Optional<Pose3d> targetPosition = m_aprilTagFieldLayout.getTagPose(targetFiducialId);
                             if (targetPosition.isPresent())
                                 visibleTags.add(targetPosition.get().toPose2d());
+
+                            PhotonPipelineResult OneTagResult;
+                            OneTagResult = frame.pipelineResult;
+                            OneTagResult.targets = List.of(target);
+                            Optional<EstimatedRobotPose> tagPoseEstimate = frame.camera.poseEstimator.update(OneTagResult);
+
+                            if (tagPoseEstimate.isEmpty())
+                                continue;
+                            
+                            EstimatedRobotPose SingleTagEstimatedPose = tagPoseEstimate.get();
+                            m_singleTagPoses.get(targetFiducialId).timestampSeconds = SingleTagEstimatedPose.timestampSeconds;
+                            m_singleTagPoses.get(targetFiducialId).lastPoseEstimate = SingleTagEstimatedPose.estimatedPose.toPose2d();
                         }
                     }
                 }
