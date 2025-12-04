@@ -107,7 +107,7 @@ public class AprilTagVision {
 
     private class SingleTagPose { // the last pose estimated for a given tag
         public double timestampSeconds;
-        Pose2d lastPoseEstimate;
+        public Pose2d lastPoseEstimate;
     }
 
     private Map<Integer, SingleTagPose> m_singleTagPoses;
