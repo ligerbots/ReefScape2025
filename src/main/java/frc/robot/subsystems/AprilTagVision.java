@@ -28,10 +28,10 @@ import org.photonvision.simulation.VisionSystemSim;
 import org.photonvision.targeting.PhotonPipelineResult;
 import org.photonvision.targeting.PhotonTrackedTarget;
 
-// import edu.wpi.first.apriltag.AprilTag;
 import edu.wpi.first.apriltag.AprilTag;
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -243,28 +243,33 @@ public class AprilTagVision {
             for (CameraMeasurement frame : camFrames) {
                 frame.camera.poseEstimator.setReferencePose(currentPose);
 
-                if (PLOT_VISIBLE_TAGS) {
-                    // accumulate the visible tags
-                    for (PhotonTrackedTarget target : frame.pipelineResult.targets) {
-                        int targetFiducialId = target.getFiducialId();
-                        if (targetFiducialId > 0) {
-                            Optional<Pose3d> targetPosition = m_aprilTagFieldLayout.getTagPose(targetFiducialId);
-                            if (targetPosition.isPresent())
-                                visibleTags.add(targetPosition.get().toPose2d());
+                // loop over the individual tags in the frame
+                // a) add them to a list so we can plot them
+                // b) use each to update the individual tag pose estimators
+                for (PhotonTrackedTarget target : frame.pipelineResult.targets) {
+                    int targetFiducialId = target.getFiducialId();
+                    if (targetFiducialId <= 0)
+                        continue;
+                    Optional<Pose3d> targetPosition = m_aprilTagFieldLayout.getTagPose(targetFiducialId);
+                    if (targetPosition.isEmpty())
+                        continue;
 
-                            PhotonPipelineResult OneTagResult;
-                            OneTagResult = frame.pipelineResult;
-                            OneTagResult.targets = List.of(target);
-                            Optional<EstimatedRobotPose> tagPoseEstimate = frame.camera.poseEstimator.update(OneTagResult);
-
-                            if (tagPoseEstimate.isEmpty())
-                                continue;
-                            
-                            EstimatedRobotPose SingleTagEstimatedPose = tagPoseEstimate.get();
-                            m_singleTagPoses.get(targetFiducialId).timestampSeconds = SingleTagEstimatedPose.timestampSeconds;
-                            m_singleTagPoses.get(targetFiducialId).lastPoseEstimate = SingleTagEstimatedPose.estimatedPose.toPose2d();
-                        }
+                    if (PLOT_VISIBLE_TAGS) {
+                        visibleTags.add(targetPosition.get().toPose2d());
                     }
+
+                    PhotonPipelineResult OneTagResult;
+                    OneTagResult = frame.pipelineResult;
+                    OneTagResult.targets = List.of(target);
+                    Optional<EstimatedRobotPose> tagPoseEstimate = frame.camera.poseEstimator.update(OneTagResult);
+
+                    if (tagPoseEstimate.isEmpty())
+                        continue;
+
+                    EstimatedRobotPose SingleTagEstimatedPose = tagPoseEstimate.get();
+                    m_singleTagPoses.get(targetFiducialId).timestampSeconds = SingleTagEstimatedPose.timestampSeconds;
+                    m_singleTagPoses.get(targetFiducialId).lastPoseEstimate = SingleTagEstimatedPose.estimatedPose
+                            .toPose2d();
                 }
 
                 // find the best global pose estimate, and update the odometry
@@ -301,8 +306,8 @@ public class AprilTagVision {
     }
 
     // ** Still will work, but need to decide which camera. Keep for future need.
-    // // get the tag ID closest to horizontal center of camera
-    // // we might want to use this to do fine adjustments on field element locations
+    // get the tag ID closest to horizontal center of camera
+    // we might want to use this to do fine adjustments on field element locations
     // public int getCentralTagId() {
     //     // make sure camera connected
     //     if (!m_cameras[Cam.FRONT_RIGHT.idx].photonCamera.isConnected())
@@ -391,39 +396,35 @@ public class AprilTagVision {
         return Optional.of(estStdDev);
     }
 
-    // Private routines for calculating the odometry info
+    // Implement a Closest To Reference *Heading* strategy for single tag results
+    private Optional<EstimatedRobotPose> closestToReferenceHeading(Camera cam, PhotonTrackedTarget targetResult, 
+            final double refHeadingRad, final double timestamp)
+    {
+        Optional<Pose3d> targetPosition = m_aprilTagFieldLayout.getTagPose(targetResult.fiducialId);
+        if (targetPosition.isEmpty())
+            return Optional.ofNullable(null);
 
-    // // create a strategy based off closestToReferencePoseStrategy that returns all
-    // // possible robot positions
-    // private static ArrayList<Pose3d> getAmbiguousPoses(PhotonPipelineResult result, Transform3d robotToCamera) {
-    //     ArrayList<Pose3d> ambigiousPoses = new ArrayList<>();
-    //     for (PhotonTrackedTarget target : result.targets) {
-    //         int targetFiducialId = target.getFiducialId();
+        // Compute the 2 possible robot poses
+        Pose3d bestPose = targetPosition.get()
+                .transformBy(targetResult.getBestCameraToTarget().inverse())
+                .transformBy(cam.robotToCam.inverse());
 
-    //         // Don't report errors for non-fiducial targets. This could also be resolved by
-    //         // adding -1 to
-    //         // the initial HashSet.
-    //         if (targetFiducialId == -1)
-    //             continue;
+        // Warning: angles out of a Rotation2d are not bounded so use MathUtil.angleModulus()
+        double bestDiff = Math.abs(MathUtil.angleModulus(bestPose.toPose2d().getRotation().getRadians()) - refHeadingRad);
 
-    //         Optional<Pose3d> targetPosition = m_aprilTagFieldLayout.getTagPose(target.getFiducialId());
+        Pose3d altPose = targetPosition.get()
+                .transformBy(targetResult.getAlternateCameraToTarget().inverse())
+                .transformBy(cam.robotToCam.inverse());
+        double altDiff = Math.abs(MathUtil.angleModulus(altPose.toPose2d().getRotation().getRadians()) - refHeadingRad);
 
-    //         if (targetPosition.isEmpty())
-    //             continue;
-
-    //         // add all possible robot positions to the array that is returned
-    //         ambigiousPoses.add(
-    //                 targetPosition.get()
-    //                         .transformBy(target.getBestCameraToTarget().inverse())
-    //                         .transformBy(robotToCamera.inverse()));
-    //         ambigiousPoses.add(
-    //                 targetPosition.get()
-    //                         .transformBy(target.getAlternateCameraToTarget().inverse())
-    //                         .transformBy(robotToCamera.inverse()));
-    //     }
-
-    //     return ambigiousPoses;
-    // }
+        // pick the closest and return it
+        // Note: PoseStrategy does not have value for this strategy, so just use Closes
+        return Optional.of(new EstimatedRobotPose(
+                altDiff < bestDiff ? altPose : bestPose,
+                timestamp,
+                List.of(targetResult),
+                PoseStrategy.CLOSEST_TO_REFERENCE_POSE));
+    }
 
     // private static AprilTag constructTag(int id, double x, double y, double z,
     // double angle) {
